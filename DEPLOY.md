@@ -1,6 +1,6 @@
 # Guia de Deploy - Jogo de Investigação
 
-Este documento detalha o processo de deploy do backend no **Railway** e do frontend no **Netlify**, incluindo comandos, variáveis de ambiente necessárias e validação.
+Este documento detalha o processo de deploy do backend no **Railway** e do frontend no **Netlify** ou **Vercel**, incluindo comandos, variáveis de ambiente necessárias e validação.
 
 ---
 
@@ -29,18 +29,22 @@ Cadastre as seguintes variáveis no painel do seu serviço no Railway:
 
 ---
 
-## 2. Deploy do Frontend (Netlify)
+## 2. Deploy do Frontend (Netlify ou Vercel)
 
-### Pasta a ser publicada
-- **Pasta:** `/frontend` (ou pasta raiz com o subdiretório de build configurado para `frontend/dist`).
-
-### Comandos no Netlify
+### Deploy no Netlify
 - **Base directory:** `frontend`
 - **Build command:** `npm run build`
 - **Publish directory:** `dist` (relativo à pasta `frontend`)
 
-### Variáveis de Ambiente no Netlify
-Cadastre as seguintes variáveis no painel de configurações de ambiente do Netlify (Site Settings > Environment variables):
+### Deploy na Vercel
+- **Root directory:** `frontend`
+- **Build command:** `npm run build` (ou deixar padrão detectado)
+- **Output directory:** `dist` (ou deixar padrão detectado)
+> [!NOTE]
+> O arquivo `frontend/vercel.json` já está configurado no projeto para fazer os rewrites necessários do React Router SPA (evitando erro 404 ao atualizar rotas internas como `/lobby` ou `/room`).
+
+### Variáveis de Ambiente (Netlify e Vercel)
+Cadastre as seguintes variáveis no painel de configurações do seu projeto (Vercel ou Netlify):
 
 | Variável | Descrição | Exemplo |
 | :--- | :--- | :--- |
