@@ -88,7 +88,7 @@
 }
 
 .home { margin: 0; }
-.home-hero { min-height: 590px; position: relative; display: flex; align-items: flex-end; padding: 72px 8%; overflow: hidden; background: var(--ink); margin-left: -24px !important; margin-right: -24px !important; width: calc(100% + 48px) !important; max-width: none !important; }
+.home-hero { min-height: 590px; position: relative; display: flex; align-items: flex-end; padding: 72px 8%; overflow: hidden; background: var(--ink); margin-left: -24px !important; margin-right: -24px !important; margin-top: -88px !important; width: calc(100% + 48px) !important; max-width: none !important; }
 .home-hero::after, .immersive-page::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .08; mix-blend-mode: screen; background-image: radial-gradient(rgba(242,238,229,.35) .6px, transparent .8px); background-size: 5px 5px; }
 .home-hero-logo { width: 180px; height: 180px; object-fit: contain; margin-bottom: 24px; display: block; filter: sepia(.15) saturate(.7); }
 .home-hero-image { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(24,33,38,.9) 0%, rgba(24,33,38,.4) 48%, rgba(24,33,38,.2)), linear-gradient(0deg, rgba(24,33,38,.98), transparent 58%), url('/capa_quarto_7.png') center/cover; filter: saturate(.72) contrast(1.05); }
@@ -114,7 +114,7 @@
 .home-note { margin: 28px 8% 48px; display: flex; gap: 20px; align-items: flex-start; color: var(--muted); }.note-rule { width: 44px; height: 1px; margin-top: 9px; background: var(--gold); }.home-note p { font-family: var(--serif); font-size: 20px; color: var(--paper); margin-top: 8px; }
 
 @media (max-width: 760px) {
-  .home { margin: 0; }.home-hero { min-height: min(560px, calc(100dvh - 76px)); padding: 40px 24px 48px; }.home-hero-image { background-position: 62% center; }.home-hero-caption { display: none; }.home-featured { padding: 42px 0 20px; }.section-heading { align-items: center; }.section-heading h2 { font-size: 27px; }.case-rail { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin-right: 0; padding-right: 0; }.featured-card, .featured-card-primary { min-width: min(78vw, 360px); scroll-snap-align: start; }.featured-image, .featured-card-primary .featured-image { height: 190px; }.home-note { margin-left: 0; margin-right: 0; }.section-heading .text-link { font-size: 0; flex: 0 0 auto; }.section-heading .text-link svg { width: 20px; height: 20px; }
+  .home { margin: 0; }.home-hero { min-height: min(560px, calc(100dvh - 76px)); padding: 40px 24px 48px; margin-top: -76px !important; }.home-hero-image { background-position: 62% center; }.home-hero-caption { display: none; }.home-featured { padding: 42px 0 20px; }.section-heading { align-items: center; }.section-heading h2 { font-size: 27px; }.case-rail { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin-right: 0; padding-right: 0; }.featured-card, .featured-card-primary { min-width: min(78vw, 360px); scroll-snap-align: start; }.featured-image, .featured-card-primary .featured-image { height: 190px; }.home-note { margin-left: 0; margin-right: 0; }.section-heading .text-link { font-size: 0; flex: 0 0 auto; }.section-heading .text-link svg { width: 20px; height: 20px; }
 }
 
 @media (min-width: 761px) and (max-width: 1100px) {
@@ -127,7 +127,7 @@
   .home-note { margin-left: 7%; margin-right: 7%; }
 }
 
-.cases-page, .profile-page, .messages-page, .lobby-list-page, .immersive-page { background-color: var(--petrol) !important; color: var(--paper) !important; font-family: var(--sans) !important; background-position: center top; background-size: cover; background-attachment: fixed; margin-left: -24px !important; margin-right: -24px !important; width: calc(100% + 48px) !important; max-width: none !important; padding-left: 24px !important; padding-right: 24px !important; min-height: 100vh !important; min-height: 100dvh !important; }
+.cases-page, .profile-page, .messages-page, .lobby-list-page, .immersive-page { background-color: var(--petrol) !important; color: var(--paper) !important; font-family: var(--sans) !important; background-position: center top; background-size: cover; background-attachment: fixed; margin-left: -24px !important; margin-right: -24px !important; margin-top: -88px !important; width: calc(100% + 48px) !important; max-width: none !important; padding-left: 24px !important; padding-right: 24px !important; min-height: 100vh !important; min-height: 100dvh !important; }
 .cases-page { background-image: linear-gradient(180deg, rgba(31,42,48,.72), rgba(31,42,48,.98) 58%), url('/backgrounds/mapa-da-investigacao.png') !important; }
 .profile-page { background-image: linear-gradient(180deg, rgba(31,42,48,.7), rgba(31,42,48,.98) 62%), url('/backgrounds/equipe-investigadores.png') !important; }
 .messages-page { background-image: linear-gradient(180deg, rgba(31,42,48,.82), rgba(31,42,48,.98) 58%), url('/backgrounds/lobby.png') !important; }
@@ -173,8 +173,8 @@
 .cases-page [style*="maxHeight"] { max-height: 90dvh !important; }
 
 @media (max-width: 640px) {
-  .cases-page, .profile-page, .messages-page { padding-top: 84px !important; }
-  .immersive-page, .lobby-list-page { margin: 0; border-radius: 12px; min-height: calc(100vh - 76px) !important; min-height: calc(100dvh - 76px) !important; }
+  .cases-page, .profile-page, .messages-page { padding-top: 84px !important; margin-top: -76px !important; }
+  .immersive-page, .lobby-list-page { margin-left: 0 !important; margin-right: 0 !important; margin-top: -76px !important; border-radius: 12px; min-height: calc(100vh - 76px) !important; min-height: calc(100dvh - 76px) !important; }
   .immersive-page > div:last-child { min-height: calc(100vh - 76px); min-height: calc(100dvh - 76px); }
   .game-page form { gap: 8px !important; }
   .game-page form input { flex: 1 1 100%; }
