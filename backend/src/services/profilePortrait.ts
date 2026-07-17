@@ -12,7 +12,9 @@ const profilePortraitPrompt = `EDIT THE PROVIDED REFERENCE PHOTOGRAPH — do NOT
 
 This is strictly an image-editing task: take the supplied reference photograph and edit only its clothing, background, lighting and color grading. The face, hair, body, age and all physical characteristics must remain pixel-identical to the reference. Do not recreate, reinterpret or generate the person from scratch.
 
-Create an official investigator profile portrait for the premium mystery game "Último Vestígio".
+Create an ultra-realistic photographic portrait of the SAME person from the reference image, preserving exact facial structure, proportions, skin texture and natural asymmetries.
+
+This is an official investigator profile portrait for the premium mystery game "Último Vestígio".
 
 ABSOLUTE RULE: The person's age must remain exactly as in the reference photo. Do NOT add any wrinkles, aging, or maturity that is not already present. This is the most important rule.
 
@@ -62,6 +64,13 @@ Do not smooth the skin.
 Do not change ethnicity, age or body type.
 
 Preserve the person's natural expression whenever possible.
+
+FACE:
+
+- realistic skin texture — pores, light freckles and natural imperfections must be visible
+- neutral, soft makeup or no-makeup look
+- do not smooth, airbrush or plasticize the skin
+- do not add foundation or heavy makeup
 
 The result must look like the original person photographed during the same professional photo session used for every investigator in the game.
 
@@ -192,37 +201,31 @@ Avoid:
 07. FIXED PHOTOGRAPHIC TREATMENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Premium contemporary editorial photography.
+Premium contemporary editorial photography — ultra-realistic, photographic, 8K quality.
 
-Natural full-frame camera appearance.
+Camera:
+- natural full-frame camera appearance
+- 85 mm portrait lens
+- shallow depth of field
+- sharp focus on the eyes
+- eyes must be the sharpest point of the image
 
-85 mm portrait-lens look.
+Skin:
+- realistic skin texture with visible pores and natural detail
+- no beauty filter
+- no artificial sharpening
+- no plastic skin
+- no skin smoothing
 
-Moderately shallow depth of field.
-
-Eyes and facial features in sharp focus.
-
-Background softly blurred.
-
-Realistic skin texture.
-
-Subtle cinematic grain.
-
-Controlled dynamic range.
-
-Natural colors.
-
-No beauty filter.
-
-No artificial sharpening.
-
-No plastic skin.
-
-No illustration.
-
-No painterly effect.
-
-No 3D-rendered appearance.
+Treatment:
+- subtle cinematic grain
+- controlled dynamic range
+- natural colors
+- no illustration
+- no painterly effect
+- no 3D-rendered appearance
+- no AI artifacts
+- no cartoon style
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 08. EDITING BOUNDARIES — EDIT, DO NOT REGENERATE
@@ -251,13 +254,15 @@ The result must satisfy all of these conditions:
 1. It is unmistakably the same person as the reference photograph — the face, hair, skin and age are identical.
 2. It matches the same framing used for every investigator.
 3. It uses a distinct color combination from other portraits, with matte fabrics and no logos.
-4. It uses the same lighting setup.
+4. It uses the same lighting setup — soft front-left light, both eyes clearly visible.
 5. It uses the same background environment.
 6. It uses the same game color palette and photographic treatment.
 7. It looks like part of one cohesive investigator roster.
 8. It does not look like an independently generated cinematic character.
 9. The person's apparent age is exactly the same as in the reference photograph — no added wrinkles, aging or maturity.
 10. The original photograph was edited, not discarded — the person was not regenerated from scratch.
+11. The skin has realistic texture — pores, freckles and natural imperfections are visible, not smoothed or airbrushed.
+12. The eyes are in sharp focus — the sharpest point of the entire image.
 
 The final image must feel like the original photograph was professionally reshot inside the visual universe of "Último Vestígio", not like the person was redesigned by AI.`;
 
