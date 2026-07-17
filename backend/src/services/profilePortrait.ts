@@ -16,6 +16,8 @@ This is an image-editing task, not a new character generation.
 
 The reference photograph is the absolute ground truth for the person's identity.
 
+ABSOLUTE RULE: The person's age must remain exactly as in the reference photo. Do NOT add any wrinkles, aging, or maturity that is not already present. This is the most important rule.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 01. IDENTITY — VARIABLE PER USER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -23,6 +25,8 @@ The reference photograph is the absolute ground truth for the person's identity.
 Preserve the exact identity and physical characteristics of the person shown in the reference image.
 
 The final portrait must be immediately recognizable as the same real person.
+
+CRITICAL: Do NOT alter the person's apparent age. Do NOT add wrinkles, creases, age spots, gray hair, receded hairline, sagging skin, or any other aging effects that are not present in the reference photograph. The person must look exactly the same age as in the supplied photo.
 
 Keep unchanged:
 
@@ -223,7 +227,7 @@ Change only:
 - framing adjustments required by the fixed portrait standard
 - color grading
 
-Preserve the original person's identity, face, hair and physical characteristics.
+Preserve the original person's identity, face, age, hair and physical characteristics.
 
 When a requested stylistic change conflicts with identity preservation, preserve identity and reduce the stylistic transformation.
 
@@ -241,6 +245,7 @@ The result must satisfy all of these conditions:
 6. It uses the same game color palette and photographic treatment.
 7. It looks like part of one cohesive investigator roster.
 8. It does not look like an independently generated cinematic character.
+9. The person's apparent age is exactly the same as in the reference photograph — no added wrinkles, aging or maturity.
 
 The final image must feel like the original photograph was professionally reshot inside the visual universe of "Último Vestígio", not like the person was redesigned by AI.`;
 
