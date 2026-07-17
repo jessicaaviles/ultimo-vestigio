@@ -8,13 +8,11 @@ const imageModels = [
   'gemini-3-pro-image'
 ].filter(Boolean) as string[];
 
-const profilePortraitPrompt = `EDIT THE PROVIDED REFERENCE PHOTOGRAPH.
+const profilePortraitPrompt = `EDIT THE PROVIDED REFERENCE PHOTOGRAPH — do NOT generate a new person.
+
+This is strictly an image-editing task: take the supplied reference photograph and edit only its clothing, background, lighting and color grading. The face, hair, body, age and all physical characteristics must remain pixel-identical to the reference. Do not recreate, reinterpret or generate the person from scratch.
 
 Create an official investigator profile portrait for the premium mystery game "Último Vestígio".
-
-This is an image-editing task, not a new character generation.
-
-The reference photograph is the absolute ground truth for the person's identity.
 
 ABSOLUTE RULE: The person's age must remain exactly as in the reference photo. Do NOT add any wrinkles, aging, or maturity that is not already present. This is the most important rule.
 
@@ -91,14 +89,24 @@ Do not crop the top of the hair.
 Maintain comfortable negative space around the head and shoulders.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-03. FIXED WARDROBE
+03. VARIABLE WARDROBE — DIFFERENT PER PERSON
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Replace only the visible clothing with:
+Replace only the visible clothing. Each investigator must have a distinct color combination so no two portraits share the same outfit colors.
 
-- dark desaturated olive overshirt
-- warm light-beige crew-neck shirt underneath
-- matte natural fabrics
+For every new portrait, choose a unique color combination from the game's palette. Vary both the outer and inner layer. Examples of possible combinations (pick ONE per portrait, rotate across users):
+
+- charcoal overshirt + cream shirt underneath
+- dark olive overshirt + light beige shirt underneath
+- muted burgundy overshirt + warm gray shirt underneath
+- deep blue-gray overshirt + off-white shirt underneath
+- warm brown overshirt + sand shirt underneath
+- dark slate overshirt + pale ivory shirt underneath
+- desaturated teal overshirt + light stone shirt underneath
+- black-brown overshirt + soft ecru shirt underneath
+
+Rules:
+- matte natural fabrics only
 - no logos
 - no text
 - no uniform
@@ -106,8 +114,9 @@ Replace only the visible clothing with:
 - no police badge
 - no costume
 - no visible investigative accessories
+- the portrait must not look like a school photo or corporate ID
 
-The clothing must be identical in style, color family and visual weight across all investigator portraits.
+Each portrait's clothing must look intentional and curated, not random.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 04. FIXED LIGHTING
@@ -216,18 +225,20 @@ No painterly effect.
 No 3D-rendered appearance.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-08. EDITING BOUNDARIES
+08. EDITING BOUNDARIES — EDIT, DO NOT REGENERATE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This is a photo-editing task. Edit the existing photograph. Do not discard it and generate a new synthetic person.
 
 Change only:
 
-- clothing
+- clothing (colors and style per section 03)
 - background
 - lighting treatment
 - framing adjustments required by the fixed portrait standard
 - color grading
 
-Preserve the original person's identity, face, age, hair and physical characteristics.
+Preserve the original person's identity, face, age, hair and physical characteristics exactly as they appear in the reference.
 
 When a requested stylistic change conflicts with identity preservation, preserve identity and reduce the stylistic transformation.
 
@@ -237,15 +248,16 @@ When a requested stylistic change conflicts with identity preservation, preserve
 
 The result must satisfy all of these conditions:
 
-1. It is unmistakably the same person as the reference photograph.
+1. It is unmistakably the same person as the reference photograph — the face, hair, skin and age are identical.
 2. It matches the same framing used for every investigator.
-3. It uses the same wardrobe standard.
+3. It uses a distinct color combination from other portraits, with matte fabrics and no logos.
 4. It uses the same lighting setup.
 5. It uses the same background environment.
 6. It uses the same game color palette and photographic treatment.
 7. It looks like part of one cohesive investigator roster.
 8. It does not look like an independently generated cinematic character.
 9. The person's apparent age is exactly the same as in the reference photograph — no added wrinkles, aging or maturity.
+10. The original photograph was edited, not discarded — the person was not regenerated from scratch.
 
 The final image must feel like the original photograph was professionally reshot inside the visual universe of "Último Vestígio", not like the person was redesigned by AI.`;
 
