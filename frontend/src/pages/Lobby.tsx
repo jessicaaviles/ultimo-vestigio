@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSocket } from '../contexts/SocketContext';
+import { useSocket } from '../contexts/useSocket';
 import { QRCodeCanvas } from 'qrcode.react';
 import Loading from '../components/Loading';
 

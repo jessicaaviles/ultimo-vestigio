@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSocket } from '../contexts/SocketContext';
+import { useSocket } from '../contexts/useSocket';
 import Loading from '../components/Loading';
 
 const Briefing: React.FC = () => { const { roomId } = useParams(); const navigate = useNavigate(); const socket = useSocket(); const [room, setRoom] = useState<any>(null); const [ready, setReady] = useState(false);

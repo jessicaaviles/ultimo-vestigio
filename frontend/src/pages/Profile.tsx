@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, Check, Download, Edit3, LogOut, Mail, UserPlus, X } from 'lucide-react';
+import { Camera, Check, Download, Edit3, Image, LogOut, Mail, Upload, UserPlus, X } from 'lucide-react';
 import { getProfile, updateProfile, authValidate, authLogout } from '../services/api';
 import Loading from '../components/Loading';
 
@@ -32,9 +32,11 @@ const Profile: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState('');
   const [photoViewer, setPhotoViewer] = useState(false);
+  const [showPhotoActions, setShowPhotoActions] = useState(false);
   const [generatingPortrait, setGeneratingPortrait] = useState(false);
 
   const fetchSeqRef = useRef(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!authToken) { setLoading(false); return; }
@@ -185,7 +187,7 @@ const Profile: React.FC = () => {
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div className="profile-hero">
         <div className="profile-avatar-wrap">
-          <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: image ? 'pointer' : 'default' }} onClick={() => image && setPhotoViewer(true)}>
+          <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: image ? 'pointer' : 'default' }} onClick={() => image && setShowPhotoActions(true)}>
             {image ? <img src={image} alt={`Retrato de ${name}`} /> : <Camera size={28} strokeWidth={1.3} />}
             {generatingPortrait && <div className="profile-avatar-spinner" />}
           </div>
@@ -198,13 +200,36 @@ const Profile: React.FC = () => {
         </div>
         <div>
           <span className="eyebrow">Arquivo do investigador</span>
-          <h1>{profile?.displayName || name}</h1>
-          <p>{profile?.bio || 'Ainda sem descrição.'}</p>
+          {editing ? (
+            <input className="input-field" value={name} onChange={(e) => setName(e.target.value)} maxLength={32} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: '4px 8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--gold)', borderRadius: 4, color: '#F8F9FA', width: '100%' }} />
+          ) : (
+            <h1>{profile?.displayName || name}</h1>
+          )}
+          {editing ? (
+            <textarea className="input-field" value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} rows={2} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, padding: '4px 8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--gold)', borderRadius: 4, resize: 'vertical', width: '100%' }} />
+          ) : (
+            <p>{profile?.bio || 'Ainda sem descrição.'}</p>
+          )}
         </div>
         <button className="btn-secondary profile-edit-trigger" onClick={() => editing ? setEditing(false) : startEditing()}>
-          <Edit3 size={15} /> {editing ? 'Fechar edição' : 'Editar perfil'}
+          <Edit3 size={15} /> {editing ? 'Cancelar' : 'Editar perfil'}
         </button>
       </div>
+
+      {showPhotoActions && (
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 50, background: '#13191C', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: 8, display: 'flex', flexDirection: 'column', gap: 4, boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+          <button onClick={() => { setShowPhotoActions(false); setPhotoViewer(true); }} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: 'transparent', border: 'none', color: '#F8F9FA', borderRadius: 8, cursor: 'pointer', fontSize: 13, textAlign: 'left' }}>
+            <Image size={16} /> Ver foto
+          </button>
+          <button onClick={() => { setShowPhotoActions(false); fileInputRef.current?.click(); }} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: 'transparent', border: 'none', color: '#F8F9FA', borderRadius: 8, cursor: 'pointer', fontSize: 13, textAlign: 'left' }}>
+            <Upload size={16} /> Alterar foto
+          </button>
+        </div>
+      )}
+
+      {showPhotoActions && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 49 }} onClick={() => setShowPhotoActions(false)} />
+      )}
 
       {status && <div className="profile-status" role="status">{status}</div>}
 
@@ -213,7 +238,7 @@ const Profile: React.FC = () => {
           <div className="profile-form-photo">
             <label className="photo-picker" style={{ opacity: (profile?.portraitGenerationsRemaining ?? 3) <= 0 ? 0.4 : 1 }}>
               <Camera size={18} /> {profile?.portraitGenerationsRemaining !== undefined && profile.portraitGenerationsRemaining <= 0 ? 'Limite atingido' : 'Escolher foto'}
-              <input type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={(profile?.portraitGenerationsRemaining ?? 3) <= 0} />
+              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={(profile?.portraitGenerationsRemaining ?? 3) <= 0} />
             </label>
             <small>A IA preservará suas características e aplicará a direção cinematográfica do jogo.</small>
             {profile?.portraitGenerationsRemaining !== undefined && (
@@ -222,20 +247,17 @@ const Profile: React.FC = () => {
               </small>
             )}
           </div>
-          <label>
-            Nome de investigador
-            <input className="input-field" value={name} onChange={(event) => setName(event.target.value)} maxLength={32} required />
-          </label>
-          <label>
-            Bio curta
-            <textarea className="input-field" value={bio} onChange={(event) => setBio(event.target.value)} maxLength={280} rows={3} placeholder="Como você investiga?" />
-          </label>
           <label className="profile-toggle">
             <input type="checkbox" checked={active} onChange={(event) => setActive(event.target.checked)} /> Perfil ativo para a equipe
           </label>
-          <button className="btn-primary" type="submit" disabled={saving}>
-            {saving ? (photoData ? 'Gerando retrato…' : 'Salvando…') : 'Salvar perfil'}
-          </button>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button className="btn-primary" type="submit" disabled={saving}>
+              {saving ? (photoData ? 'Gerando retrato…' : 'Salvando…') : 'Salvar perfil'}
+            </button>
+            <button type="button" className="btn-secondary" onClick={() => { setEditing(false); setName(profile?.displayName || 'Investigador'); setBio(profile?.bio || ''); setPhotoData(''); setPreview(''); }} disabled={saving}>
+              Cancelar
+            </button>
+          </div>
         </form>
       )}
 
@@ -287,7 +309,9 @@ const Profile: React.FC = () => {
               <X size={20} />
             </button>
           </div>
-          <img src={profile.photo} alt={`Retrato de ${profile.displayName}`} style={{ maxWidth: '90%', maxHeight: '70vh', borderRadius: 12, objectFit: 'contain' }} onClick={(e) => e.stopPropagation()} />
+          <div style={{ maxWidth: '90%', maxHeight: '70vh', aspectRatio: '1/1', borderRadius: 8, overflow: 'hidden' }}>
+            <img src={profile.photo} alt={`Retrato de ${profile.displayName}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onClick={(e) => e.stopPropagation()} />
+          </div>
         </div>
       )}
     </div>

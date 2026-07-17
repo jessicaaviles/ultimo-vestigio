@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authRegister, authGoogle } from '../services/api';
 import Loading from '../components/Loading';
@@ -15,26 +15,7 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.onload = () => {
-      window.google?.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: handleGoogleResponse,
-        cancel_on_tap_outside: false,
-      });
-      window.google?.accounts.id.renderButton(
-        document.getElementById('google-signup-button'),
-        { theme: 'outline', size: 'large', text: 'signup_with', shape: 'pill', width: 380 }
-      );
-    };
-    document.body.appendChild(script);
-    return () => { document.body.removeChild(script); };
-  }, []);
-
-  const handleGoogleResponse = async (response: any) => {
+  const handleGoogleResponse = useCallback(async (response: any) => {
     setLoading(true);
     setError('');
     try {
@@ -51,7 +32,7 @@ const Register: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate, displayName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +55,25 @@ const Register: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.onload = () => {
+      window.google?.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+        cancel_on_tap_outside: false,
+      });
+      window.google?.accounts.id.renderButton(
+        document.getElementById('google-signup-button'),
+        { theme: 'outline', size: 'large', text: 'signup_with', shape: 'pill', width: 380 }
+      );
+    };
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, [handleGoogleResponse]);
 
   return (
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
