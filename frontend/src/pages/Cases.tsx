@@ -43,7 +43,7 @@ const Cases: React.FC = () => {
       fontFamily: 'system-ui, -apple-system, sans-serif'
     }}>
       {/* Header da Página */}
-      <div style={{ marginBottom: '32px', marginTop: '64px' }}>
+      <div style={{ marginBottom: '32px' }}>
         <span style={{ color: '#C5A880', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
           ARQUIVO MUNICIPAL
         </span>

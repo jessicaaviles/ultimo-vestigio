@@ -75,7 +75,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div style={{ maxWidth: 400, margin: '60px auto' }}>
+      <div style={{ maxWidth: 400, margin: '0 auto' }}>
         <span className="eyebrow">Acesso</span>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '8px 0 24px' }}>Entrar</h1>
 
