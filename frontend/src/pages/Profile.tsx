@@ -36,13 +36,6 @@ const Profile: React.FC = () => {
 
   const fetchSeqRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const nameInputRef = useRef<HTMLTextAreaElement>(null);
-  const bioInputRef = useRef<HTMLTextAreaElement>(null);
-
-  const autoGrow = (el: HTMLTextAreaElement) => {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  };
 
   useEffect(() => {
     if (!authToken) { setLoading(false); return; }
@@ -232,12 +225,12 @@ const Profile: React.FC = () => {
         <div>
           <span className="eyebrow">Arquivo do investigador</span>
           {editing ? (
-            <textarea ref={nameInputRef} value={name} onChange={(e) => { setName(e.target.value); autoGrow(e.target); }} maxLength={32} rows={1} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', color: '#F8F9FA', width: '100%', outline: 'none', lineHeight: 1.2, boxSizing: 'border-box', resize: 'none', overflow: 'hidden' }} />
+            <input value={name} onChange={(e) => setName(e.target.value)} maxLength={32} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', color: '#F8F9FA', width: '100%', outline: 'none', lineHeight: 1.2, boxSizing: 'border-box' }} />
           ) : (
             <h1 style={{ margin: '5px 0', lineHeight: 1.2, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{profile?.displayName || name}</h1>
           )}
           {editing ? (
-            <textarea ref={bioInputRef} value={bio} onChange={(e) => { setBio(e.target.value); autoGrow(e.target); }} maxLength={280} rows={1} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, margin: 0, padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', resize: 'none', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box', overflow: 'hidden' }} />
+            <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} rows={3} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, margin: 0, padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', resize: 'vertical', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box' }} />
           ) : (
             <p style={{ margin: 0, lineHeight: 1.5, whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: 'break-word', color: 'var(--muted)', maxWidth: 440, fontSize: 14, fontFamily: 'inherit' }}>{profile?.bio || 'Ainda sem descrição.'}</p>
           )}
