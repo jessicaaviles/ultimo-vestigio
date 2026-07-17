@@ -234,6 +234,7 @@ const Profile: React.FC = () => {
       setEditing(false);
       const genStatus = (response as any).portraitStatus;
       if (hasPhoto && genStatus === 'READY') setStatus('Perfil salvo! Retrato gerado com sucesso.');
+      else if (hasPhoto && genStatus === 'GENERATING') setStatus('Perfil salvo! Retrato sendo gerado em segundo plano — atualize a página em alguns segundos para vê-lo.');
       else if (hasPhoto && genStatus === 'UNAVAILABLE') setStatus('Perfil salvo, mas o retrato não pôde ser gerado no momento.');
       else setStatus('Perfil salvo com sucesso!');
     } catch (error) {

@@ -31,18 +31,38 @@ export const updateProfile = async (req: Request, res: Response) => {
   if (!cleanName) return res.status(400).json({ success: false, error: 'Display name is required' });
   if (bio !== undefined && String(bio).length > 280) return res.status(400).json({ success: false, error: 'Bio is too long' });
 
-  let generatedPortrait: string | null | undefined;
-  let portraitStatus = current.generated_profile_photo_data ? 'READY' : 'NOT_REQUESTED';
-  let portraitError: string | undefined;
   if (photoData) {
-    if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(String(photoData)) || Buffer.byteLength(String(photoData).split(',')[1], 'base64') > 4 * 1024 * 1024) return res.status(400).json({ success: false, error: 'Invalid profile image' });
-    generatedPortrait = null;
-    if (generatePortrait) {
-      try { generatedPortrait = await generateProfilePortrait(String(photoData)); portraitStatus = 'READY'; }
-      catch (error) { portraitStatus = 'UNAVAILABLE'; portraitError = error instanceof Error ? error.message : 'Unknown image generation error'; console.error('Profile portrait generation failed:', portraitError); }
-    }
+    if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(String(photoData)) || Buffer.byteLength(String(photoData).split(',')[1], 'base64') > 4 * 1024 * 1024)
+      return res.status(400).json({ success: false, error: 'Invalid profile image' });
   }
 
-  const user = await prisma.anonymous_users.update({ where: { id: current.id }, data: { default_display_name: cleanName, bio: String(bio ?? current.bio ?? '').trim().slice(0, 280), profile_active: active !== false, profile_photo_data: photoData ? String(photoData) : undefined, generated_profile_photo_data: generatedPortrait === undefined ? undefined : generatedPortrait, profile_photo_updated_at: photoData ? new Date() : undefined } });
-  res.json({ success: true, portraitStatus, portraitError: process.env.NODE_ENV === 'production' ? undefined : portraitError, data: publicProfile(user) });
+  let portraitStatus = current.generated_profile_photo_data ? 'READY' : 'NOT_REQUESTED';
+
+  // Save profile data immediately (without generated portrait)
+  const user = await prisma.anonymous_users.update({
+    where: { id: current.id },
+    data: {
+      default_display_name: cleanName,
+      bio: String(bio ?? current.bio ?? '').trim().slice(0, 280),
+      profile_active: active !== false,
+      profile_photo_data: photoData ? String(photoData) : undefined,
+      generated_profile_photo_data: photoData ? null : undefined,
+      profile_photo_updated_at: photoData ? new Date() : undefined,
+    }
+  });
+
+  // Start portrait generation in background if requested
+  if (photoData && generatePortrait) {
+    portraitStatus = 'GENERATING';
+    generateProfilePortrait(String(photoData)).then(async (portraitData) => {
+      await prisma.anonymous_users.update({
+        where: { id: current.id },
+        data: { generated_profile_photo_data: portraitData }
+      });
+    }).catch((error) => {
+      console.error('Background portrait generation failed:', error);
+    });
+  }
+
+  res.json({ success: true, portraitStatus, data: publicProfile(user) });
 };
