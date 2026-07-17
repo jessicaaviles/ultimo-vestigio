@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FolderOpen, Users, MessageCircle, UserRound, Menu } from 'lucide-react';
+import { Home, FolderOpen, Users, MessageCircle, UserRound, Menu, X } from 'lucide-react';
 import { useNotifications } from '../contexts/NotificationsContext';
 
 interface LayoutProps { children: React.ReactNode; }
@@ -57,7 +57,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           aria-haspopup="true"
           onClick={() => setMenuOpen((open) => !open)}
         >
-          <Menu size={20} strokeWidth={1.6} />
+          <span className="menu-icon-wrap" aria-hidden="true">
+            <Menu size={20} strokeWidth={1.6} className={`menu-icon-hamburger${menuOpen ? ' menu-icon-hamburger--hidden' : ''}`} />
+            <X size={20} strokeWidth={1.6} className={`menu-icon-x${menuOpen ? ' menu-icon-x--visible' : ''}`} />
+          </span>
           {hasAny && !menuOpen && <span className="notification-dot" aria-hidden="true" />}
         </button>
         <div className={`menu-dropdown${menuOpen ? ' menu-dropdown--open' : ''}`} role="menu">

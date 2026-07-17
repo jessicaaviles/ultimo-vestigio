@@ -1,6 +1,15 @@
 .route-page { min-height: calc(100vh - 88px); min-height: calc(100dvh - 88px); }
 .menu-wrapper { position: relative; }
 .menu-button { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); color: var(--paper); background: rgba(15,21,24,.35); display: grid; place-items: center; cursor: pointer; transition: background 150ms ease, border-color 150ms ease; }
+/* Hamburger → X morph */
+.menu-icon-wrap { position: relative; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+.menu-icon-hamburger,
+.menu-icon-x { position: absolute; top: 0; left: 0; transition: opacity 200ms ease, transform 220ms cubic-bezier(.34,1.56,.64,1); }
+.menu-icon-hamburger { opacity: 1; transform: rotate(0deg) scale(1); }
+.menu-icon-hamburger--hidden { opacity: 0; transform: rotate(-90deg) scale(0.7); }
+.menu-icon-x { opacity: 0; transform: rotate(90deg) scale(0.7); }
+.menu-icon-x--visible { opacity: 1; transform: rotate(0deg) scale(1); }
+
 .menu-button--active,
 .menu-button:active { background: rgba(132,147,107,.18); border-color: rgba(132,147,107,.45); }
 .menu-dropdown {
