@@ -36,7 +36,7 @@ const generateViaInteractions = async (ai: GoogleGenAI, model: string, mimeType:
       { type: 'image' as const, data: base64Data, mime_type: mimeType },
       { type: 'text' as const, text: profilePortraitPrompt }
     ],
-    response_modalities: ['TEXT', 'IMAGE'],
+    response_modalities: ['text', 'image'],
   });
   if (interaction.output_image?.data) {
     const outMime = interaction.output_image.mime_type || 'image/png';
