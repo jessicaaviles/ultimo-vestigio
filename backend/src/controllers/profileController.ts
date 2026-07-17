@@ -36,9 +36,17 @@ export const updateProfile = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, error: 'Invalid profile image' });
   }
 
-  let portraitStatus = current.generated_profile_photo_data ? 'READY' : 'NOT_REQUESTED';
+  let generatedPortrait: string | null | undefined;
+  let portraitStatus: string;
+  if (current.generated_profile_photo_data) {
+    portraitStatus = 'READY';
+  } else if (photoData && generatePortrait) {
+    portraitStatus = 'GENERATING';
+  } else {
+    portraitStatus = 'NOT_REQUESTED';
+  }
 
-  // Save profile data immediately (without generated portrait)
+  // Save profile data immediately
   const user = await prisma.anonymous_users.update({
     where: { id: current.id },
     data: {
@@ -51,18 +59,26 @@ export const updateProfile = async (req: Request, res: Response) => {
     }
   });
 
-  // Start portrait generation in background if requested
+  // Generate portrait synchronously so it's ready in the response
   if (photoData && generatePortrait) {
-    portraitStatus = 'GENERATING';
-    generateProfilePortrait(String(photoData)).then(async (portraitData) => {
+    try {
+      generatedPortrait = await generateProfilePortrait(String(photoData));
+      portraitStatus = 'READY';
+      // Update the DB with the generated portrait
       await prisma.anonymous_users.update({
         where: { id: current.id },
-        data: { generated_profile_photo_data: portraitData }
+        data: { generated_profile_photo_data: generatedPortrait }
       });
-    }).catch((error) => {
-      console.error('Background portrait generation failed:', error);
-    });
+    } catch (error) {
+      portraitStatus = 'UNAVAILABLE';
+      console.error('Profile portrait generation failed:', error);
+    }
   }
 
-  res.json({ success: true, portraitStatus, data: publicProfile(user) });
+  // Re-fetch to return updated data
+  const updated = generatedPortrait
+    ? await prisma.anonymous_users.findUnique({ where: { id: current.id } })
+    : user;
+
+  res.json({ success: true, portraitStatus, data: publicProfile(updated ?? user) });
 };
