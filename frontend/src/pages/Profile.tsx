@@ -230,9 +230,9 @@ const Profile: React.FC = () => {
             <h1>{profile?.displayName || name}</h1>
           )}
           {editing ? (
-            <textarea className="input-field" value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} rows={2} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', resize: 'vertical', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+            <textarea className="input-field" value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} rows={1} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', resize: 'vertical', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box' }} />
           ) : (
-            <p>{profile?.bio || 'Ainda sem descrição.'}</p>
+            <p style={{ margin: 0 }}>{profile?.bio || 'Ainda sem descrição.'}</p>
           )}
         </div>
         {!editing && (
