@@ -210,6 +210,10 @@ const Profile: React.FC = () => {
           localStorage.setItem('userId', reg.data.userId);
           localStorage.setItem('deviceToken', reg.data.deviceToken);
           setUserId(reg.data.userId);
+          // Clear stale authToken — it was tied to the deleted user
+          localStorage.removeItem('authToken');
+          setAuthToken(null);
+          setAuthEmail(null);
           response = await updateProfile(currentUserId, {
             displayName: name, bio, active,
             photoData: photoData || undefined,

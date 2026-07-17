@@ -139,7 +139,6 @@ export const validateToken = async (req: Request, res: Response) => {
       success: true,
       data: {
         userId: user.id,
-        authToken,
         displayName: user.default_display_name,
         email: user.email,
       }
