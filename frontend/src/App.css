@@ -42,12 +42,12 @@
   .home-note { margin-left: 7%; margin-right: 7%; }
 }
 
-.cases-page, .profile-page, .messages-page, .lobby-list-page, .immersive-page { background-color: var(--petrol) !important; color: var(--paper) !important; font-family: var(--sans) !important; background-position: center top; background-size: cover; background-attachment: fixed; margin-left: -24px !important; margin-right: -24px !important; width: calc(100% + 48px) !important; max-width: none !important; padding-left: 24px !important; padding-right: 24px !important; }
+.cases-page, .profile-page, .messages-page, .lobby-list-page, .immersive-page { background-color: var(--petrol) !important; color: var(--paper) !important; font-family: var(--sans) !important; background-position: center top; background-size: cover; background-attachment: fixed; margin-left: -24px !important; margin-right: -24px !important; width: calc(100% + 48px) !important; max-width: none !important; padding-left: 24px !important; padding-right: 24px !important; min-height: 100vh !important; min-height: 100dvh !important; }
 .cases-page { background-image: linear-gradient(180deg, rgba(31,42,48,.72), rgba(31,42,48,.98) 58%), url('/backgrounds/mapa-da-investigacao.png') !important; }
 .profile-page { background-image: linear-gradient(180deg, rgba(31,42,48,.7), rgba(31,42,48,.98) 62%), url('/backgrounds/equipe-investigadores.png') !important; }
 .messages-page { background-image: linear-gradient(180deg, rgba(31,42,48,.82), rgba(31,42,48,.98) 58%), url('/backgrounds/lobby.png') !important; }
 .lobby-list-page { background-image: linear-gradient(180deg, rgba(31,42,48,.7), rgba(31,42,48,.98) 64%), url('/backgrounds/lobby.png') !important; }
-.cases-page, .profile-page, .messages-page { min-height: auto !important; padding: 108px 24px 36px !important; }
+.cases-page, .profile-page, .messages-page { min-height: 100vh !important; min-height: 100dvh !important; padding: 108px 24px 36px !important; }
 .cases-page h1, .profile-page h2, .messages-page h1, .lobby-list-page h1 { color: var(--paper) !important; }
 .cases-page h3, .profile-page h3, .messages-page h3 { font-family: var(--serif) !important; }
 .cases-page > div:not(:first-child), .profile-page > div, .messages-page > div > div, .lobby-list-page > div { animation: scene-enter 300ms ease both; }
