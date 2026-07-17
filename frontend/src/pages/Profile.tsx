@@ -225,7 +225,7 @@ const Profile: React.FC = () => {
         <div>
           <span className="eyebrow">Arquivo do investigador</span>
           {editing ? (
-            <input value={name} onChange={(e) => setName(e.target.value)} maxLength={32} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', color: '#F8F9FA', width: '100%', outline: 'none', lineHeight: 1.2, boxSizing: 'border-box' }} />
+            <textarea value={name} onChange={(e) => setName(e.target.value)} maxLength={32} rows={2} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', color: '#F8F9FA', width: '100%', outline: 'none', lineHeight: 1.2, boxSizing: 'border-box', resize: 'none' }} />
           ) : (
             <h1 style={{ margin: '5px 0', lineHeight: 1.2, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{profile?.displayName || name}</h1>
           )}
