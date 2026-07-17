@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
-import { Award, Camera, Check, Edit3, Shield, Trophy, UserPlus } from 'lucide-react';
+import { Camera, Check, Edit3, UserPlus } from 'lucide-react';
 import { getProfile, updateProfile, registerAnonymousUser } from '../services/api';
 import Loading from '../components/Loading';
 
@@ -212,12 +212,12 @@ const Profile: React.FC = () => {
       <div className="profile-stats">
         <div>
           <span>Investigações</span>
-          <strong>02</strong>
+          <strong>0</strong>
           <small>concluídas</small>
         </div>
         <div>
           <span>Precisão</span>
-          <strong>90%</strong>
+          <strong>—</strong>
           <small>das teorias</small>
         </div>
       </div>
@@ -225,29 +225,7 @@ const Profile: React.FC = () => {
       <section className="profile-section">
         <span className="eyebrow">Marcas de campo</span>
         <h2>Conquistas</h2>
-        <div className="profile-achievements">
-          <div>
-            <Award size={20} />
-            <span>
-              <strong>Lente Analítica</strong>
-              <small>Primeiro caso difícil desbloqueado</small>
-            </span>
-          </div>
-          <div>
-            <Trophy size={20} />
-            <span>
-              <strong>Dedução Pura</strong>
-              <small>Teoria com precisão total</small>
-            </span>
-          </div>
-          <div>
-            <Shield size={20} />
-            <span>
-              <strong>Trabalho de Campo</strong>
-              <small>Investigações em equipe</small>
-            </span>
-          </div>
-        </div>
+        <p style={{ color: 'var(--muted)', fontSize: '13px', padding: '24px 0' }}>Nenhuma conquista desbloqueada ainda. Complete investigações para ganhar marcas de campo.</p>
       </section>
     </div>
   );
