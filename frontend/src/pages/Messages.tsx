@@ -62,6 +62,39 @@ const Messages: React.FC = () => {
       time: newMessage.time
     });
     setInputMessage('');
+
+    // Resposta automática se a mensagem for enviada para o Mestre IA fora de uma sala
+    if (activeChat.id === 'system-ia') {
+      setTimeout(() => {
+        const reply = {
+          sender: 'them' as const,
+          text: 'Olá, investigador. O Motor Forense da IA opera exclusivamente dentro de salas de investigação ativas, pois necessito do contexto específico e das pistas de um caso para analisar e responder. Por favor, crie ou entre em uma sala na aba "Investigação" para iniciarmos a perícia.',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setChats(prevChats => prevChats.map(c => {
+          if (c.id === 'system-ia') {
+            return {
+              ...c,
+              messages: [...c.messages, reply],
+              lastMessage: reply.text,
+              time: reply.time
+            };
+          }
+          return c;
+        }));
+        setActiveChat(prevActive => {
+          if (prevActive && prevActive.id === 'system-ia') {
+            return {
+              ...prevActive,
+              messages: [...prevActive.messages, reply],
+              lastMessage: reply.text,
+              time: reply.time
+            };
+          }
+          return prevActive;
+        });
+      }, 1000);
+    }
   };
 
   return (
