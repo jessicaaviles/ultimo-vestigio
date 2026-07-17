@@ -1,17 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { Award, Camera, Check, Edit3, Shield, Trophy } from 'lucide-react';
-import { getProfile, updateProfile } from '../services/api';
+import { getProfile, updateProfile, registerAnonymousUser } from '../services/api';
 
 interface ProfileData { id: string; displayName: string; bio: string; active: boolean; photo: string | null; hasGeneratedPortrait: boolean; }
 
 const Profile: React.FC = () => {
-  const userId = localStorage.getItem('userId');
+  const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [name, setName] = useState('Investigador'); const [bio, setBio] = useState(''); const [active, setActive] = useState(true);
   const [photoData, setPhotoData] = useState(''); const [preview, setPreview] = useState(''); const [editing, setEditing] = useState(false); const [saving, setSaving] = useState(false); const [status, setStatus] = useState('');
 
-  useEffect(() => { if (!userId) return; getProfile(userId).then((response) => { if (response.success) { setProfile(response.data); setName(response.data.displayName); setBio(response.data.bio); setActive(response.data.active); } }).catch(() => setStatus('Não foi possível carregar o perfil.')); }, [userId]);
+  useEffect(() => {
+    if (!userId) {
+      registerAnonymousUser().then((res) => {
+        if (res.success) {
+          localStorage.setItem('deviceToken', res.data.deviceToken);
+          localStorage.setItem('userId', res.data.userId);
+          setUserId(res.data.userId);
+        }
+      }).catch(() => setStatus('Não foi possível registrar seu perfil temporário.'));
+      return;
+    }
+    getProfile(userId).then((response) => {
+      if (response.success) {
+        setProfile(response.data);
+        setName(response.data.displayName);
+        setBio(response.data.bio);
+        setActive(response.data.active);
+      }
+    }).catch(() => setStatus('Não foi possível carregar o perfil.'));
+  }, [userId]);
   const choosePhoto = (event: ChangeEvent<HTMLInputElement>) => { const file = event.target.files?.[0]; if (!file) return; if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024) return setStatus('Use uma imagem JPG, PNG ou WEBP de até 4 MB.'); const reader = new FileReader(); reader.onload = () => { const value = String(reader.result); setPhotoData(value); setPreview(value); setStatus(''); }; reader.readAsDataURL(file); };
   const save = async (event: FormEvent) => { event.preventDefault(); if (!userId) return; setSaving(true); setStatus('Gerando retrato cinematográfico...'); try { const response = await updateProfile(userId, { displayName: name, bio, active, photoData: photoData || undefined, generatePortrait: Boolean(photoData) }); if (!response.success) throw new Error(response.error); setProfile(response.data); setName(response.data.displayName); setBio(response.data.bio); setActive(response.data.active); setPhotoData(''); setPreview(''); setEditing(false); setStatus(response.portraitStatus === 'UNAVAILABLE' ? `Perfil salvo, mas a IA não gerou o retrato agora.${response.portraitError ? ` Motivo: ${response.portraitError}` : ''}` : response.data.hasGeneratedPortrait ? 'Perfil e retrato atualizados.' : 'Perfil atualizado.'); } catch (error) { setStatus(error instanceof Error ? error.message : 'Não foi possível atualizar o perfil.'); } finally { setSaving(false); } };
   const image = preview || profile?.photo;
