@@ -38,7 +38,7 @@ PRESERVE EXACTLY (do not change):
 
 CHANGE:
 - Pose: 3/4 angle (three-quarter turn), person looking directly toward the camera
-- Framing: face centered in the frame, shoulders and torso visible, tight portrait crop
+- Framing: face perfectly centered in the image — eyes at the exact vertical center, equal space above the head and below the chin, shoulders and upper torso visible, tight portrait crop optimized for a circular avatar (the face must not be cut off when cropped as a circle)
 - Clothing: ${outfit.description}
 - Background: replace the background with ${bg.description}
 - Lighting: dramatic chiaroscuro — deep navy-black shadows against warm gold highlights, melancholic mysterious mood, cinematographic lighting inspired by thriller films
