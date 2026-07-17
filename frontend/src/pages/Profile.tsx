@@ -224,8 +224,16 @@ const Profile: React.FC = () => {
         </div>
         <div>
           <span className="eyebrow">Arquivo do investigador</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} maxLength={32} readOnly={!editing} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: 0, border: 'none', borderBottom: editing ? '1px solid var(--gold)' : 'none', background: 'transparent', color: '#F8F9FA', width: '100%', outline: 'none', lineHeight: 1.2, boxSizing: 'border-box', cursor: editing ? 'text' : 'default' }} />
-          <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} readOnly={!editing} rows={1} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, margin: 0, padding: 0, border: 'none', borderBottom: editing ? '1px solid var(--gold)' : 'none', background: 'transparent', resize: 'vertical', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box', cursor: editing ? 'text' : 'default', overflow: 'hidden' }} />
+          {editing ? (
+            <input value={name} onChange={(e) => setName(e.target.value)} maxLength={32} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', color: '#F8F9FA', width: '100%', outline: 'none', lineHeight: 1.2, boxSizing: 'border-box' }} />
+          ) : (
+            <h1 style={{ margin: '5px 0', lineHeight: 1.2, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{profile?.displayName || name}</h1>
+          )}
+          {editing ? (
+            <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} rows={2} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, margin: 0, padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', resize: 'vertical', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box' }} />
+          ) : (
+            <p style={{ margin: 0, lineHeight: 1.5, whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: 'break-word', color: 'var(--muted)', maxWidth: 440, fontSize: 14, fontFamily: 'inherit' }}>{profile?.bio || 'Ainda sem descrição.'}</p>
+          )}
         </div>
         {!editing && (
           <button className="btn-secondary profile-edit-trigger" onClick={startEditing}>
