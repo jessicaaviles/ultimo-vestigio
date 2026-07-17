@@ -92,28 +92,11 @@ const Profile: React.FC = () => {
     document.body.removeChild(link);
   };
 
-  const choosePhoto = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024)
-      return setStatus('Use uma imagem JPG, PNG ou WEBP de até 4 MB.');
-    if ((profile?.portraitGenerationsRemaining ?? 3) <= 0)
-      return setStatus('Limite de retratos atingido (máximo 3).');
-    const reader = new FileReader();
-    reader.onload = () => {
-      const value = String(reader.result);
-      setPhotoData(value);
-      setPreview(value);
-      setStatus('');
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const save = async (event: FormEvent) => {
-    event.preventDefault();
+  const save = async (event?: FormEvent) => {
+    if (event) event.preventDefault();
     if (!profile?.id || !authToken) return;
+    const hasPhoto = Boolean(photoData || preview && !profile.photo);
     setSaving(true);
-    const hasPhoto = Boolean(photoData);
     setStatus(hasPhoto ? 'Gerando retrato investigador…' : 'Salvando perfil…');
     if (hasPhoto) setGeneratingPortrait(true);
     try {
@@ -140,6 +123,48 @@ const Profile: React.FC = () => {
       setSaving(false);
       setGeneratingPortrait(false);
     }
+  };
+
+  const choosePhoto = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024)
+      return setStatus('Use uma imagem JPG, PNG ou WEBP de até 4 MB.');
+    if ((profile?.portraitGenerationsRemaining ?? 3) <= 0)
+      return setStatus('Limite de retratos atingido (máximo 3).');
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const value = String(reader.result);
+      setPhotoData(value);
+      setPreview(value);
+      setStatus('Gerando retrato investigador…');
+      setGeneratingPortrait(true);
+      if (profile?.id && authToken) {
+        try {
+          const response = await updateProfile(profile.id, {
+            displayName, bio, active,
+            photoData: value,
+            generatePortrait: true,
+          });
+          if (!response.success) throw new Error(response.error);
+          setProfile(response.data);
+          setName(response.data.displayName);
+          setBio(response.data.bio);
+          setActive(response.data.active);
+          setPhotoData('');
+          setPreview('');
+          const genStatus = (response as any).portraitStatus;
+          if (genStatus === 'READY') setStatus('Retrato gerado com sucesso!');
+          else if (genStatus === 'UNAVAILABLE') setStatus('Não foi possível gerar o retrato no momento.');
+          else setStatus('Perfil salvo com sucesso!');
+        } catch (error) {
+          setStatus(error instanceof Error ? error.message : 'Erro ao gerar retrato.');
+        } finally {
+          setGeneratingPortrait(false);
+        }
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const startEditing = () => {
