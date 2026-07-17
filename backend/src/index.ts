@@ -11,7 +11,7 @@ import { normalizeQuestion } from './game/rules';
 
 dotenv.config();
 
-const frontendUrl = process.env.FRONTEND_URL;
+const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : undefined;
 
 const app = express();
 const server = createServer(app);
