@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FolderOpen, Users, MessageCircle, UserRound, Menu, X } from 'lucide-react';
+import { Home, FolderOpen, Users, MessageCircle, UserRound, Menu } from 'lucide-react';
+import { useNotifications } from '../contexts/NotificationsContext';
 
 interface LayoutProps { children: React.ReactNode; }
 
@@ -8,20 +9,36 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const { notifications, hasAny } = useNotifications();
+
   const isActive = (path: string) => path === '/' ? location.pathname === '/' : path === 'map' ? location.pathname.includes('/cases') : location.pathname.includes(path);
+
   const navItems = [
-    { label: 'INVESTIGAÇÃO', route: '/', icon: Home },
-    { label: 'CASOS', route: 'map', icon: FolderOpen },
-    { label: 'SALAS', route: 'lobby', icon: Users },
-    { label: 'MENSAGENS', route: 'messages', icon: MessageCircle },
-    { label: 'PERFIL', route: 'profile', icon: UserRound },
+    { label: 'INVESTIGAÇÃO', route: '/', icon: Home, badge: false },
+    { label: 'CASOS', route: 'map', icon: FolderOpen, badge: false },
+    { label: 'SALAS', route: 'lobby', icon: Users, badge: notifications.rooms },
+    { label: 'MENSAGENS', route: 'messages', icon: MessageCircle, badge: notifications.messages > 0 },
+    { label: 'PERFIL', route: 'profile', icon: UserRound, badge: false },
   ];
+
   const handleNav = (route: string) => {
     if (route === '/') return navigate('/');
     if (route === 'map') return navigate('/cases');
     const match = location.pathname.match(/\/room\/([^/]+)/);
     navigate(match && route !== 'cases' && route !== 'profile' ? `/room/${match[1]}/${route}` : `/${route}`);
   };
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuOpen]);
 
   return <div className="app-shell">
     <header className="topbar">
@@ -32,25 +49,48 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       ) : (
         <div style={{ width: '72px' }} />
       )}
-      <button className="menu-button" style={{ position: 'relative', zIndex: menuOpen ? 42 : undefined }} aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
-        <div className="menu-button-icon">
-          <Menu size={19} strokeWidth={1.5} className={`menu-icon ${menuOpen ? 'menu-icon--hidden' : ''}`} />
-          <X size={19} strokeWidth={1.5} className={`menu-icon menu-icon--x ${menuOpen ? 'menu-icon--visible' : ''}`} />
+      <div className="menu-wrapper" ref={menuRef}>
+        <button
+          className={`menu-button${menuOpen ? ' menu-button--active' : ''}`}
+          aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={menuOpen}
+          aria-haspopup="true"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <Menu size={20} strokeWidth={1.6} />
+          {hasAny && !menuOpen && <span className="notification-dot" aria-hidden="true" />}
+        </button>
+        <div className={`menu-dropdown${menuOpen ? ' menu-dropdown--open' : ''}`} role="menu">
+          <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>
+            Meu perfil
+          </button>
+          <button className="menu-dropdown-item menu-dropdown-item--with-badge" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/messages'); }}>
+            Mensagens
+            {notifications.messages > 0 && (
+              <span className="menu-badge">{notifications.messages > 99 ? '99+' : notifications.messages}</span>
+            )}
+          </button>
+          <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/tutorial'); }}>
+            Como funciona
+          </button>
         </div>
-        <span className="notification-dot" />
-      </button>
+      </div>
     </header>
-    {menuOpen && <div className="menu-backdrop" onClick={() => setMenuOpen(false)} />}
-    <div className={`menu-drawer ${menuOpen ? 'menu-drawer--open' : ''}`}>
-      <button className="menu-drawer-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Meu perfil</button>
-      <button className="menu-drawer-item" onClick={() => { setMenuOpen(false); navigate('/messages'); }}>Mensagens</button>
-      <button className="menu-drawer-item" onClick={() => { setMenuOpen(false); navigate('/tutorial'); }}>Como funciona</button>
-    </div>
     <main className="app-content">{children}</main>
     <nav className="bottom-nav" aria-label="Navegação principal"><div className="bottom-nav-inner">
-      {navItems.map(({ label, route, icon: Icon }) => <button className={`nav-item ${isActive(route) ? 'active' : ''}`} key={label} onClick={() => handleNav(route)}>
-        <Icon size={19} strokeWidth={isActive(route) ? 1.8 : 1.4} /><span>{label}</span>
-      </button>)}
+      {navItems.map(({ label, route, icon: Icon, badge }) => (
+        <button
+          className={`nav-item ${isActive(route) ? 'active' : ''}`}
+          key={label}
+          onClick={() => handleNav(route)}
+        >
+          <span className="nav-item-icon-wrap">
+            <Icon size={19} strokeWidth={isActive(route) ? 1.8 : 1.4} />
+            {badge && <span className="nav-badge" aria-label="novidade" />}
+          </span>
+          <span>{label}</span>
+        </button>
+      ))}
     </div></nav>
   </div>;
 };

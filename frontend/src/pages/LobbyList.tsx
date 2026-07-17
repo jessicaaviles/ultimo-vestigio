@@ -1,9 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Plus, Key } from 'lucide-react';
+import { useNotifications } from '../contexts/NotificationsContext';
+import { useSocket } from '../contexts/useSocket';
 
 const LobbyList: React.FC = () => {
   const navigate = useNavigate();
+  const { clearRooms } = useNotifications();
+  const socket = useSocket();
+
+  // Limpa o badge ao entrar na tela de salas
+  useEffect(() => {
+    clearRooms();
+  }, [clearRooms]);
+
+  // Escuta socket para novos convites/salas (outros arquivos podem emitir room_invited)
+  useEffect(() => {
+    // Nada a fazer aqui — o badge é setado externamente via setRoomsActivity
+    return () => {};
+  }, [socket]);
 
   return (
     <div className="lobby-list-page" style={{

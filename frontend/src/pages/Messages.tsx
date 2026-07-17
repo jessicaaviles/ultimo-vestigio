@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNotifications } from '../contexts/NotificationsContext';
 
 interface Chat {
   id: string;
@@ -30,6 +31,18 @@ const Messages: React.FC = () => {
   const [chats, setChats] = useState<Chat[]>(INITIAL_CHATS);
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [inputMessage, setInputMessage] = useState('');
+  const { setUnreadMessages, clearMessages } = useNotifications();
+
+  // Ao entrar na tela, zera o badge global de mensagens
+  useEffect(() => {
+    clearMessages();
+  }, [clearMessages]);
+
+  // Mantém o contexto global sincronizado com a contagem local de não lidas
+  useEffect(() => {
+    const unreadCount = chats.filter(c => c.unread).length;
+    setUnreadMessages(unreadCount);
+  }, [chats, setUnreadMessages]);
 
   const handleSendMessage = () => {
     if (!inputMessage.trim() || !activeChat) return;

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SocketProvider } from './contexts/SocketContext';
+import { NotificationsProvider } from './contexts/NotificationsContext';
 import Home from './pages/Home';
 import CreateRoom from './pages/CreateRoom';
 import JoinRoom from './pages/JoinRoom';
@@ -17,13 +18,16 @@ import RecoveryCode from './pages/RecoveryCode';
 import Briefing from './pages/Briefing';
 import RoomEntry from './pages/RoomEntry';
 import Layout from './components/Layout';
+import { SocketNotificationsBridge } from './contexts/SocketNotificationsBridge';
 import './App.css';
 
 function App() {
   return (
     <SocketProvider>
+      <NotificationsProvider>
       <div className="app-container">
         <BrowserRouter>
+          <SocketNotificationsBridge />
           <Routes>
             {/* Rotas com Bottom Navigation */}
             <Route path="/" element={<Layout><Home /></Layout>} />
@@ -45,6 +49,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </div>
+      </NotificationsProvider>
     </SocketProvider>
   );
 }
