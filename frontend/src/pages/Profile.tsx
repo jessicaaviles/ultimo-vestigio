@@ -51,10 +51,6 @@ const Profile: React.FC = () => {
         if (seq !== fetchSeqRef.current) return;
         if (res.success) {
           currentUserId = res.data.userId;
-          if (currentUserId !== userId) {
-            localStorage.setItem('userId', currentUserId);
-            setUserId(currentUserId);
-          }
           setAuthEmail(res.data.email || null);
         } else {
           localStorage.removeItem('authToken');
@@ -70,7 +66,6 @@ const Profile: React.FC = () => {
             currentUserId = res.data.userId;
             localStorage.setItem('deviceToken', res.data.deviceToken);
             localStorage.setItem('userId', currentUserId);
-            setUserId(currentUserId);
           } else {
             setLoading(false);
             return;
@@ -102,6 +97,11 @@ const Profile: React.FC = () => {
         if (seq !== fetchSeqRef.current) return;
         setStatus('Não foi possível carregar o perfil.');
         setProfile({ id: currentUserId, displayName: 'Investigador', bio: '', active: true, photo: null, hasGeneratedPortrait: false, hasProfile: false });
+      }
+
+      if (currentUserId !== userId) {
+        localStorage.setItem('userId', currentUserId);
+        setUserId(currentUserId);
       }
       setLoading(false);
     })();
