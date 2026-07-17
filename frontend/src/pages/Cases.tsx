@@ -15,79 +15,10 @@ interface CaseItem {
   image: string;
 }
 
-const CASES_DATA: CaseItem[] = [
-  {
-    slug: 'o-quarto-7',
-    title: 'O Quarto 7',
-    synopsis: 'Helena Duarte foi encontrada no Hotel Vesper. Uma chave, uma câmera e um relógio quebrado aguardam uma explicação.',
-    type: 'Caso Oficial',
-    duration: '15 a 20 min',
-    difficulty: 'Fácil',
-    players: '2-6 Jogadores',
-    tension: 3,
-    image: '/capa_quarto_7.png'
-  },
-  {
-    slug: 'o-guarda-chuva-molhado',
-    title: 'O Guarda-chuva Molhado',
-    synopsis: 'Uma pessoa entra em uma sala vazia e encontra um guarda-chuva completamente molhado. O céu está limpo e não choveu naquele dia.',
-    type: 'Caso Tutorial',
-    duration: '3 a 5 min',
-    difficulty: 'Muito fácil',
-    players: '2-6 Jogadores',
-    tension: 1,
-    image: '/backgrounds/mapa-da-investigacao.png'
-  },
-  {
-    slug: 'o-presente-desaparecido',
-    title: 'O Presente Desaparecido',
-    synopsis: 'Durante uma comemoração em família, um presente desaparece de uma mesa diante de todos. Ninguém saiu do ambiente e nenhuma pessoa admite ter tocado na caixa.',
-    type: 'Caso Rápido',
-    duration: '5 a 8 min',
-    difficulty: 'Fácil',
-    players: '2-6 Jogadores',
-    tension: 1,
-    image: '/backgrounds/cena-do-crime.png'
-  },
-  {
-    slug: 'o-elevador-que-nao-parou',
-    title: 'O Elevador que Não Parou',
-    synopsis: 'Uma mulher entra sozinha em um elevador no térreo. As câmeras mostram as portas se fechando, mas o elevador não para em nenhum andar e, quando retorna ao térreo, está vazio.',
-    type: 'Caso Rápido',
-    duration: '8 a 12 min',
-    difficulty: 'Média',
-    players: '2-6 Jogadores',
-    tension: 3,
-    image: '/backgrounds/lobby.png'
-  },
-  {
-    slug: 'a-mensagem-das-23h17',
-    title: 'A Mensagem das 23h17',
-    synopsis: 'Às 23h17, uma pessoa envia uma mensagem dizendo: "Agora todos vão entender". Poucos minutos depois, desaparece. O celular é encontrado em casa no carregador.',
-    type: 'Caso Rápido',
-    duration: '10 a 15 min',
-    difficulty: 'Difícil',
-    players: '3-6 Jogadores',
-    tension: 4,
-    image: '/backgrounds/equipe-investigadores.png'
-  },
-  {
-    slug: 'o-retrato-que-piscou',
-    title: 'O Retrato que Piscou',
-    synopsis: 'Durante um jantar, todos veem o retrato antigo da sala piscar. Segundos depois, uma joia desaparece de uma mesa próxima. A pintura não possui mecanismos.',
-    type: 'Caso Rápido',
-    duration: '7 a 12 min',
-    difficulty: 'Sobrenatural',
-    players: '2-6 Jogadores',
-    tension: 3,
-    image: '/capa_carta_anonima.png'
-  }
-];
-
 const Cases: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCase, setSelectedCase] = useState<CaseItem | null>(null);
-  const [cases, setCases] = useState<CaseItem[]>(CASES_DATA);
+  const [cases, setCases] = useState<CaseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 

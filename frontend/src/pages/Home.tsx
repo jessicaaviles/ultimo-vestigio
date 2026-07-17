@@ -5,8 +5,7 @@ import { registerAnonymousUser } from '../services/api';
 
 const featuredCases = [
   { title: 'O Quarto 7', subtitle: 'Hotel Vesper · Mistério clássico', level: 'Fácil', image: '/capa_quarto_7.png', description: 'Uma chave, uma câmera e a última noite de Helena Duarte.' },
-  { title: 'Delegacia Central', subtitle: 'Arquivo · Linha do tempo', level: 'Médio', image: '/backgrounds/equipe-investigadores.png', description: 'Os depoimentos do Hotel Vesper não concordam entre si.' },
-  { title: 'Laboratório Forense', subtitle: 'Evidências · Análise', level: 'Difícil', image: '/backgrounds/cena-do-crime.png', description: 'Uma digital parcial pode mudar a leitura do quarto.' },
+  { title: 'O Presente Desaparecido', subtitle: 'Arquivo · Linha do tempo', level: 'Fácil', image: '/backgrounds/cena-do-crime.png', description: 'Durante uma comemoração em família, um presente desaparece de uma mesa diante de todos.' }
 ];
 
 const Home: React.FC = () => {

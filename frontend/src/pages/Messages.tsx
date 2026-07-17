@@ -13,56 +13,15 @@ interface Chat {
 
 const INITIAL_CHATS: Chat[] = [
   {
-    id: '1',
-    name: 'Sofia Mendes',
-    role: 'Detetive de Campo',
-    avatar: 'SM',
-    lastMessage: 'Acho que a chave do quarto 7 não foi encontrada no chão por acaso. Alguém a colocou lá.',
-    time: '14:32',
-    unread: true,
-    messages: [
-      { sender: 'them', text: 'Helena, você já olhou os relatórios de presença do hotel?', time: '14:28' },
-      { sender: 'me', text: 'Ainda não, Sofia. Estou focada na linha do tempo por enquanto.', time: '14:30' },
-      { sender: 'them', text: 'Acho que a chave do quarto 7 não foi encontrada no chão por acaso. Alguém a colocou lá.', time: '14:32' }
-    ]
-  },
-  {
-    id: '2',
+    id: 'system-ia',
     name: 'Mestre IA',
     role: 'Motor Forense',
     avatar: 'IA',
-    lastMessage: 'Fatos analisados. Nenhuma inconsistência lógica detectada na teoria preliminar.',
-    time: 'Ontem',
+    lastMessage: 'Sistema de IA ativo. Pronto para receber e avaliar as teorias da sua equipe.',
+    time: 'Agora',
     unread: false,
     messages: [
-      { sender: 'them', text: 'Pronto para avaliar novas conexões de pistas.', time: 'Ontem 10:15' },
-      { sender: 'me', text: 'Analise se o anfitrião possuía álibi durante o brinde.', time: 'Ontem 10:20' },
-      { sender: 'them', text: 'Fatos analisados. Nenhuma inconsistência lógica detectada na teoria preliminar.', time: 'Ontem 10:22' }
-    ]
-  },
-  {
-    id: '3',
-    name: 'Noah Carter',
-    role: 'Perito Forense',
-    avatar: 'NC',
-    lastMessage: 'A análise de resíduos na toalha de mesa foi concluída. Nada incomum além de cera de vela.',
-    time: 'Ontem',
-    unread: false,
-    messages: [
-      { sender: 'them', text: 'A análise de resíduos na toalha de mesa foi concluída. Nada incomum além de cera de vela.', time: 'Ontem 18:04' }
-    ]
-  },
-  {
-    id: '4',
-    name: 'Maya Costa',
-    role: 'Analista de Sistemas',
-    avatar: 'MC',
-    lastMessage: 'Estou monitorando a transmissão das câmeras. O atraso do HMR foi resolvido.',
-    time: '2 dias atrás',
-    unread: false,
-    messages: [
-      { sender: 'them', text: 'Helena, os logs mostram que a sala de controle está estável agora.', time: '2 dias atrás' },
-      { sender: 'them', text: 'Estou monitorando a transmissão das câmeras. O atraso do HMR foi resolvido.', time: '2 dias atrás' }
+      { sender: 'them', text: 'Bem-vindo ao canal seguro do Último Vestígio. O motor forense está pronto para avaliar as teorias enviadas durante as investigações. Crie ou entre em uma sala para iniciar um caso.', time: 'Agora' }
     ]
   }
 ];
