@@ -11,7 +11,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isActive = (path: string) => path === '/' ? location.pathname === '/' : path === 'map' ? location.pathname.includes('/cases') : location.pathname.includes(path);
   const navItems = [
     { label: 'INVESTIGAÇÃO', route: '/', icon: Home },
-    { label: 'MAPA', route: 'map', icon: FolderOpen },
+    { label: 'CASOS', route: 'map', icon: FolderOpen },
     { label: 'LOBBY', route: 'lobby', icon: Users },
     { label: 'MENSAGENS', route: 'messages', icon: MessageCircle },
     { label: 'PERFIL', route: 'profile', icon: UserRound },
