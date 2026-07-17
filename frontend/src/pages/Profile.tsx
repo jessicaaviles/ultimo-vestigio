@@ -219,13 +219,14 @@ const Profile: React.FC = () => {
 
       {status && <div className="profile-status" role="status">{status}</div>}
 
+      <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} style={{ display: 'none' }} />
+
       {editing && (
         <form className="profile-form" onSubmit={save}>
           <div className="profile-form-photo">
-            <label className="photo-picker" style={{ opacity: (profile?.portraitGenerationsRemaining ?? 3) <= 0 ? 0.4 : 1 }}>
+            <button type="button" className="photo-picker" onClick={() => fileInputRef.current?.click()} style={{ opacity: (profile?.portraitGenerationsRemaining ?? 3) <= 0 ? 0.4 : 1, background: 'transparent', border: '1px solid var(--line)', borderRadius: 8, padding: '11px 14px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--paper)', fontSize: 13 }}>
               <Camera size={18} /> {profile?.portraitGenerationsRemaining !== undefined && profile.portraitGenerationsRemaining <= 0 ? 'Limite atingido' : 'Escolher foto'}
-              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={choosePhoto} disabled={(profile?.portraitGenerationsRemaining ?? 3) <= 0} />
-            </label>
+            </button>
             <small>A IA preservará suas características e aplicará a direção cinematográfica do jogo.</small>
             {profile?.portraitGenerationsRemaining !== undefined && (
               <small style={{ color: 'var(--gold-soft)', fontWeight: 600 }}>
