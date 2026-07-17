@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { Award, Camera, Check, Edit3, Shield, Trophy, UserPlus } from 'lucide-react';
 import { getProfile, updateProfile, registerAnonymousUser } from '../services/api';
@@ -27,6 +27,9 @@ const Profile: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState('');
 
+  const savingRef = useRef(false);
+  const fetchSeqRef = useRef(0);
+
   useEffect(() => {
     if (!userId) {
       registerAnonymousUser().then((res) => {
@@ -38,8 +41,11 @@ const Profile: React.FC = () => {
       }).catch(() => setStatus('Não foi possível registrar seu perfil temporário.'));
       return;
     }
+    if (savingRef.current) return;
     setLoading(true);
+    const seq = ++fetchSeqRef.current;
     getProfile(userId).then((response) => {
+      if (seq !== fetchSeqRef.current) return;
       if (response.success) {
         setProfile(response.data);
         setName(response.data.displayName);
@@ -50,6 +56,7 @@ const Profile: React.FC = () => {
       }
       setLoading(false);
     }).catch(() => {
+      if (seq !== fetchSeqRef.current) return;
       setStatus('Não foi possível carregar o perfil.');
       setProfile({ id: userId, displayName: 'Investigador', bio: '', active: true, photo: null, hasGeneratedPortrait: false, hasProfile: false });
       setLoading(false);
@@ -74,6 +81,7 @@ const Profile: React.FC = () => {
   const save = async (event: FormEvent) => {
     event.preventDefault();
     if (!userId) return;
+    savingRef.current = true;
     setSaving(true);
     setStatus('Salvando perfil...');
     try {
@@ -111,6 +119,7 @@ const Profile: React.FC = () => {
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Não foi possível atualizar o perfil.');
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   };
