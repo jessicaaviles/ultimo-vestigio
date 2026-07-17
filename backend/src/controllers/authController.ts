@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const prisma = new PrismaClient();
 
@@ -145,6 +148,56 @@ export const validateToken = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Erro interno ao validar token.' });
+  }
+};
+
+export const googleLogin = async (req: Request, res: Response) => {
+  try {
+    const { credential, displayName } = req.body;
+    if (!credential) return res.status(400).json({ success: false, error: 'Credencial do Google é obrigatória.' });
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: String(credential),
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) return res.status(401).json({ success: false, error: 'Token do Google inválido.' });
+
+    const email = payload.email.toLowerCase().trim();
+    let user = await prisma.anonymous_users.findUnique({ where: { email } });
+
+    if (user) {
+      const authToken = crypto.randomUUID();
+      const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
+      await prisma.anonymous_users.update({
+        where: { id: user.id },
+        data: { auth_token_hash: authTokenHash, last_active_at: new Date() },
+      });
+      return res.json({
+        success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email },
+      });
+    }
+
+    const deviceToken = crypto.randomUUID();
+    const authToken = crypto.randomUUID();
+    const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
+    const deviceTokenHash = crypto.createHash('sha256').update(deviceToken).digest('hex');
+
+    user = await prisma.anonymous_users.create({
+      data: {
+        device_token_hash: deviceTokenHash,
+        email,
+        auth_token_hash: authTokenHash,
+        default_display_name: displayName || payload.name || 'Investigador',
+      },
+    });
+
+    res.json({
+      success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email },
+    });
+  } catch (error) {
+    console.error('Google login error:', error);
+    res.status(401).json({ success: false, error: 'Falha na autenticação com Google.' });
   }
 };
 

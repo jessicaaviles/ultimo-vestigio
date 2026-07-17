@@ -76,3 +76,8 @@ export const authLogout = async (token: string) => {
   const res = await fetch(`${API_URL}/auth/logout`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } });
   return res.json();
 };
+
+export const authGoogle = async (credential: string, displayName?: string) => {
+  const res = await fetch(`${API_URL}/auth/google`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ credential, displayName }) });
+  return res.json();
+};

@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authRegister } from '../services/api';
+import { authRegister, authGoogle } from '../services/api';
 import Loading from '../components/Loading';
+
+declare global {
+  interface Window { google?: any; }
+}
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -10,6 +14,44 @@ const Register: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.onload = () => {
+      window.google?.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+        cancel_on_tap_outside: false,
+      });
+      window.google?.accounts.id.renderButton(
+        document.getElementById('google-signup-button'),
+        { theme: 'outline', size: 'large', text: 'signup_with', shape: 'pill', width: 380 }
+      );
+    };
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
+
+  const handleGoogleResponse = async (response: any) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await authGoogle(response.credential, displayName || undefined);
+      if (res.success) {
+        localStorage.setItem('authToken', res.data.authToken);
+        localStorage.setItem('userId', res.data.userId);
+        navigate('/profile');
+      } else {
+        setError(res.error || 'Erro ao autenticar com Google.');
+      }
+    } catch {
+      setError('Erro de conexão.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,12 +81,24 @@ const Register: React.FC = () => {
         <span className="eyebrow">Novo investigador</span>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '8px 0 24px' }}>Criar Conta</h1>
         <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 24, lineHeight: 1.5 }}>
-          Vincule seu perfil a um email para acessá-lo de qualquer dispositivo.
+          Crie sua conta para participar das investigações e salvar seu progresso.
         </p>
+
+        {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+          <>
+            <div id="google-signup-button" style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+              <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
+              <span style={{ color: 'var(--muted)', fontSize: 12 }}>ou</span>
+              <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
+            </div>
+          </>
+        )}
+
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <label style={{ color: 'var(--gold-soft)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-            Nome de investigador (opcional)
-            <input className="input-field" type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={32} placeholder="Como você quer ser chamado?" />
+            Nome de investigador
+            <input className="input-field" type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={32} placeholder="Como você quer ser chamado?" required />
           </label>
           <label style={{ color: 'var(--gold-soft)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Email

@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authLogin } from '../services/api';
+import { authLogin, authGoogle } from '../services/api';
 import Loading from '../components/Loading';
+
+declare global {
+  interface Window { google?: any; }
+}
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -9,6 +13,44 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.onload = () => {
+      window.google?.accounts.id.initialize({
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+        cancel_on_tap_outside: false,
+      });
+      window.google?.accounts.id.renderButton(
+        document.getElementById('google-signin-button'),
+        { theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', width: 380 }
+      );
+    };
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
+
+  const handleGoogleResponse = async (response: any) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await authGoogle(response.credential);
+      if (res.success) {
+        localStorage.setItem('authToken', res.data.authToken);
+        localStorage.setItem('userId', res.data.userId);
+        navigate('/profile');
+      } else {
+        setError(res.error || 'Erro ao autenticar com Google.');
+      }
+    } catch {
+      setError('Erro de conexão.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +78,18 @@ const Login: React.FC = () => {
       <div style={{ maxWidth: 400, margin: '60px auto' }}>
         <span className="eyebrow">Acesso</span>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '8px 0 24px' }}>Entrar</h1>
+
+        {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+          <>
+            <div id="google-signin-button" style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+              <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
+              <span style={{ color: 'var(--muted)', fontSize: 12 }}>ou</span>
+              <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
+            </div>
+          </>
+        )}
+
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <label style={{ color: 'var(--gold-soft)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Email
@@ -54,11 +108,6 @@ const Login: React.FC = () => {
           Ainda não tem conta?{' '}
           <button onClick={() => navigate('/register')} style={{ color: 'var(--gold-soft)', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}>
             Criar conta
-          </button>
-        </p>
-        <p style={{ textAlign: 'center', marginTop: 8 }}>
-          <button onClick={() => navigate('/profile')} style={{ color: 'var(--muted)', background: 'none', border: 'none', fontSize: 12, cursor: 'pointer', textDecoration: 'underline' }}>
-            Continuar como anônimo
           </button>
         </p>
       </div>

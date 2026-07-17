@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, Check, Download, Edit3, LogOut, Mail, UserPlus, X } from 'lucide-react';
-import { getProfile, updateProfile, registerAnonymousUser, authValidate, authLogin, authLogout, authLink } from '../services/api';
+import { getProfile, updateProfile, authValidate, authLogout } from '../services/api';
 import Loading from '../components/Loading';
 
 interface ProfileData {
@@ -19,7 +19,6 @@ interface ProfileData {
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
   const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
   const [authEmail, setAuthEmail] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -34,137 +33,51 @@ const Profile: React.FC = () => {
   const [status, setStatus] = useState('');
   const [photoViewer, setPhotoViewer] = useState(false);
   const [generatingPortrait, setGeneratingPortrait] = useState(false);
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
-  const [loginLoading, setLoginLoading] = useState(false);
 
-  const savingRef = useRef(false);
   const fetchSeqRef = useRef(0);
 
   useEffect(() => {
+    if (!authToken) { setLoading(false); return; }
     const seq = ++fetchSeqRef.current;
 
     (async () => {
-      let currentUserId = userId;
-
-      /* Phase 1: resolve userId */
-      if (authToken) {
+      setLoading(true);
+      try {
         const res = await authValidate(authToken);
         if (seq !== fetchSeqRef.current) return;
         if (res.success) {
-          currentUserId = res.data.userId;
           setAuthEmail(res.data.email || null);
+          const profileRes = await getProfile(res.data.userId);
+          if (seq !== fetchSeqRef.current) return;
+          if (profileRes.success) {
+            setProfile(profileRes.data);
+            setName(profileRes.data.displayName);
+            setBio(profileRes.data.bio);
+            setActive(profileRes.data.active);
+          } else {
+            setStatus('Perfil não encontrado.');
+          }
         } else {
           localStorage.removeItem('authToken');
+          localStorage.removeItem('userId');
           setAuthToken(null);
-          setLoading(false);
-          return;
-        }
-      } else if (!userId) {
-        try {
-          const res = await registerAnonymousUser();
-          if (seq !== fetchSeqRef.current) return;
-          if (res.success) {
-            currentUserId = res.data.userId;
-            localStorage.setItem('deviceToken', res.data.deviceToken);
-            localStorage.setItem('userId', currentUserId!);
-          } else {
-            setLoading(false);
-            return;
-          }
-        } catch {
-          if (seq !== fetchSeqRef.current) return;
-          setStatus('Não foi possível registrar seu perfil temporário.');
-          setLoading(false);
-          return;
-        }
-      }
-
-      /* Phase 2: load profile */
-      if (!currentUserId) { setLoading(false); return; }
-      if (savingRef.current) { setLoading(false); return; }
-      setLoading(true);
-      try {
-        const response = await getProfile(currentUserId);
-        if (seq !== fetchSeqRef.current) return;
-        if (response.success) {
-          setProfile(response.data);
-          setName(response.data.displayName);
-          setBio(response.data.bio);
-          setActive(response.data.active);
-        } else {
-          setProfile({ id: currentUserId, displayName: 'Investigador', bio: '', active: true, photo: null, hasGeneratedPortrait: false, hasProfile: false });
         }
       } catch {
         if (seq !== fetchSeqRef.current) return;
         setStatus('Não foi possível carregar o perfil.');
-        setProfile({ id: currentUserId, displayName: 'Investigador', bio: '', active: true, photo: null, hasGeneratedPortrait: false, hasProfile: false });
+      } finally {
+        if (seq === fetchSeqRef.current) setLoading(false);
       }
-
-      if (currentUserId !== userId) {
-        localStorage.setItem('userId', currentUserId);
-        setUserId(currentUserId);
-      }
-      setLoading(false);
     })();
-  }, [authToken, userId]);
+  }, [authToken]);
 
   const handleLogout = async () => {
     if (authToken) await authLogout(authToken);
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
     setAuthToken(null);
-    setAuthEmail(null);
+    setProfile(null);
     setStatus('Você saiu da sua conta.');
-  };
-
-  const handleLink = async () => {
-    if (!userId) return;
-    const email = window.prompt('Digite seu email para vincular este perfil:');
-    if (!email) return;
-    const password = window.prompt('Digite uma senha (mínimo 6 caracteres):');
-    if (!password || password.length < 6) return setStatus('A senha deve ter pelo menos 6 caracteres.');
-    setSaving(true);
-    try {
-      const res = await authLink(email, password, userId);
-      if (res.success) {
-        localStorage.setItem('authToken', res.data.authToken);
-        setAuthToken(res.data.authToken);
-        setAuthEmail(email);
-        setStatus('Perfil vinculado com sucesso! Agora você pode acessá-lo de qualquer dispositivo.');
-      } else {
-        setStatus(res.error || 'Erro ao vincular perfil.');
-      }
-    } catch {
-      setStatus('Erro de conexão.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleInlineLogin = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!loginEmail || !loginPassword) return;
-    setLoginError('');
-    setLoginLoading(true);
-    try {
-      const res = await authLogin(loginEmail, loginPassword);
-      if (res.success) {
-        localStorage.setItem('authToken', res.data.authToken);
-        localStorage.setItem('userId', res.data.userId);
-        setAuthToken(res.data.authToken);
-        setAuthEmail(loginEmail);
-        setUserId(res.data.userId);
-        setLoginEmail('');
-        setLoginPassword('');
-      } else {
-        setLoginError(res.error || 'Erro ao entrar.');
-      }
-    } catch {
-      setLoginError('Erro de conexão.');
-    } finally {
-      setLoginLoading(false);
-    }
   };
 
   const handleDownloadPhoto = () => {
@@ -197,37 +110,17 @@ const Profile: React.FC = () => {
 
   const save = async (event: FormEvent) => {
     event.preventDefault();
-    if (!userId) return;
-    savingRef.current = true;
+    if (!profile?.id || !authToken) return;
     setSaving(true);
     const hasPhoto = Boolean(photoData);
     setStatus(hasPhoto ? 'Gerando retrato investigador…' : 'Salvando perfil…');
     if (hasPhoto) setGeneratingPortrait(true);
     try {
-      let currentUserId = userId;
-      let response = await updateProfile(currentUserId, {
+      const response = await updateProfile(profile.id, {
         displayName: name, bio, active,
         photoData: photoData || undefined,
         generatePortrait: Boolean(photoData),
       });
-      if (!response.success && response.error === 'Profile not found') {
-        const reg = await registerAnonymousUser();
-        if (reg.success) {
-          currentUserId = reg.data.userId;
-          localStorage.setItem('userId', reg.data.userId);
-          localStorage.setItem('deviceToken', reg.data.deviceToken);
-          setUserId(reg.data.userId);
-          // Clear stale authToken — it was tied to the deleted user
-          localStorage.removeItem('authToken');
-          setAuthToken(null);
-          setAuthEmail(null);
-          response = await updateProfile(currentUserId, {
-            displayName: name, bio, active,
-            photoData: photoData || undefined,
-            generatePortrait: Boolean(photoData),
-          });
-        }
-      }
       if (!response.success) throw new Error(response.error);
       setProfile(response.data);
       setName(response.data.displayName);
@@ -238,13 +131,11 @@ const Profile: React.FC = () => {
       setEditing(false);
       const genStatus = (response as any).portraitStatus;
       if (hasPhoto && genStatus === 'READY') setStatus('Perfil salvo! Retrato gerado com sucesso.');
-      else if (hasPhoto && genStatus === 'GENERATING') setStatus('Perfil salvo! Retrato sendo gerado em segundo plano — atualize a página em alguns segundos para vê-lo.');
       else if (hasPhoto && genStatus === 'UNAVAILABLE') setStatus('Perfil salvo, mas o retrato não pôde ser gerado no momento.');
       else setStatus('Perfil salvo com sucesso!');
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Não foi possível atualizar o perfil.');
     } finally {
-      savingRef.current = false;
       setSaving(false);
       setGeneratingPortrait(false);
     }
@@ -262,11 +153,7 @@ const Profile: React.FC = () => {
 
   const image = preview || profile?.photo;
 
-  if (loading) {
-    return <Loading message="Carregando perfil..." />;
-  }
-
-  if (profile && !profile.hasProfile && !editing) {
+  if (!authToken) {
     return (
       <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
         <div className="profile-hero" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
@@ -275,24 +162,30 @@ const Profile: React.FC = () => {
               <Camera size={32} strokeWidth={1.3} />
             </div>
           </div>
-          <h1 style={{ margin: 0 }}>Criar Perfil de Investigador</h1>
+          <h1 style={{ margin: 0 }}>Último Vestígio</h1>
           <p style={{ color: '#94A3B8', maxWidth: 400 }}>
-            Você ainda não possui um perfil. Crie seu perfil para participar das investigações.
+            Crie sua conta para participar das investigações e salvar seu progresso como investigador.
           </p>
-          <button className="btn-primary" onClick={startEditing} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <UserPlus size={18} /> Criar Perfil
-          </button>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button className="btn-primary" onClick={() => navigate('/register')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <UserPlus size={18} /> Criar Conta
+            </button>
+            <button className="btn-secondary" onClick={() => navigate('/login')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              Entrar
+            </button>
+          </div>
         </div>
-        {status && <div className="profile-status" role="status">{status}</div>}
       </div>
     );
   }
 
+  if (loading) return <Loading message="Carregando perfil..." />;
+
   return (
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div className="profile-hero">
-          <div className="profile-avatar-wrap">
-            <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: image ? 'pointer' : 'default' }} onClick={() => image && setPhotoViewer(true)}>
+        <div className="profile-avatar-wrap">
+          <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: image ? 'pointer' : 'default' }} onClick={() => image && setPhotoViewer(true)}>
             {image ? <img src={image} alt={`Retrato de ${name}`} /> : <Camera size={28} strokeWidth={1.3} />}
             {generatingPortrait && <div className="profile-avatar-spinner" />}
           </div>
@@ -360,58 +253,17 @@ const Profile: React.FC = () => {
       </div>
 
       <section className="profile-section" style={{ marginTop: 32 }}>
-        <span className="eyebrow">Conta e sincronia</span>
-        {authToken ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0' }}>
+        <span className="eyebrow">Conta</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0' }}>
+          {authEmail && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--olive-light)', fontSize: 13 }}>
-              <Mail size={16} /> {authEmail || 'Conta vinculada'}
+              <Mail size={16} /> {authEmail}
             </div>
-            <button className="btn-secondary" onClick={handleLogout} style={{ alignSelf: 'flex-start', minHeight: 40, fontSize: 12 }}>
-              <LogOut size={14} /> Sair da conta
-            </button>
-          </div>
-        ) : profile?.hasProfile ? (
-          <form onSubmit={handleInlineLogin} style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0' }}>
-            <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.5 }}>
-              Você já possui um perfil cadastrado. Faça login com email e senha para sincronizar seus dados.
-            </p>
-            <input
-              type="email" placeholder="Email" value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-              required
-              style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: 13 }}
-            />
-            <input
-              type="password" placeholder="Senha" value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              required minLength={6}
-              style={{ padding: '10px 12px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text)', fontSize: 13 }}
-            />
-            {loginError && <p style={{ color: 'var(--danger)', fontSize: 12 }}>{loginError}</p>}
-            <button className="btn-primary" type="submit" disabled={loginLoading} style={{ alignSelf: 'flex-start', minHeight: 40, fontSize: 12 }}>
-              {loginLoading ? 'Entrando…' : 'Entrar'}
-            </button>
-          </form>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0' }}>
-            <p style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.5 }}>
-              Vincule seu perfil a um email para acessá-lo de qualquer dispositivo.
-            </p>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button className="btn-primary" onClick={() => navigate('/login')} style={{ minHeight: 40, fontSize: 12 }}>
-                Entrar
-              </button>
-              <button className="btn-secondary" onClick={() => navigate('/register')} style={{ minHeight: 40, fontSize: 12 }}>
-                Criar conta
-              </button>
-              {userId && !authToken && (
-                <button className="btn-secondary" onClick={handleLink} disabled={saving} style={{ minHeight: 40, fontSize: 12 }}>
-                  <Mail size={14} /> Vincular este perfil
-                </button>
-              )}
-            </div>
-          </div>
-        )}
+          )}
+          <button className="btn-secondary" onClick={handleLogout} style={{ alignSelf: 'flex-start', minHeight: 40, fontSize: 12 }}>
+            <LogOut size={14} /> Sair da conta
+          </button>
+        </div>
       </section>
 
       <section className="profile-section" style={{ marginTop: 32 }}>
