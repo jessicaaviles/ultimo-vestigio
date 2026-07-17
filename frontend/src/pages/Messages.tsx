@@ -112,17 +112,13 @@ const Messages: React.FC = () => {
 
   return (
     <div className="messages-page" style={{
-      minHeight: '100vh',
-      backgroundColor: '#0F1417',
-      color: '#F8F9FA',
       paddingBottom: '80px',
       display: 'flex',
-      flexDirection: 'column',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
+      flexDirection: 'column'
     }}>
       {/* Se não houver chat ativo, mostra a lista */}
       {!activeChat ? (
-        <div style={{ padding: '24px 0 0 0', display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '64px' }}>
+        <div style={{ padding: '24px 0 0 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <header>
             <span style={{ color: '#C5A880', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
               CANAL SEGURO
