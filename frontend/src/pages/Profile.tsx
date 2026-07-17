@@ -42,58 +42,69 @@ const Profile: React.FC = () => {
   useEffect(() => {
     const seq = ++fetchSeqRef.current;
 
-    if (authToken) {
-      authValidate(authToken).then((res) => {
+    (async () => {
+      let currentUserId = userId;
+
+      /* Phase 1: resolve userId */
+      if (authToken) {
+        const res = await authValidate(authToken);
         if (seq !== fetchSeqRef.current) return;
         if (res.success) {
-          localStorage.setItem('userId', res.data.userId);
-          setUserId(res.data.userId);
+          currentUserId = res.data.userId;
+          if (currentUserId !== userId) {
+            localStorage.setItem('userId', currentUserId);
+            setUserId(currentUserId);
+          }
           setAuthEmail(res.data.email || null);
         } else {
           localStorage.removeItem('authToken');
           setAuthToken(null);
+          setLoading(false);
+          return;
         }
-        setLoading(false);
-      });
-      return;
-    }
-
-    if (!userId) {
-      registerAnonymousUser().then((res) => {
-        if (seq !== fetchSeqRef.current) return;
-        if (res.success) {
-          localStorage.setItem('deviceToken', res.data.deviceToken);
-          localStorage.setItem('userId', res.data.userId);
-          setUserId(res.data.userId);
+      } else if (!userId) {
+        try {
+          const res = await registerAnonymousUser();
+          if (seq !== fetchSeqRef.current) return;
+          if (res.success) {
+            currentUserId = res.data.userId;
+            localStorage.setItem('deviceToken', res.data.deviceToken);
+            localStorage.setItem('userId', currentUserId);
+            setUserId(currentUserId);
+          } else {
+            setLoading(false);
+            return;
+          }
+        } catch {
+          if (seq !== fetchSeqRef.current) return;
+          setStatus('Não foi possível registrar seu perfil temporário.');
+          setLoading(false);
+          return;
         }
-        setLoading(false);
-      }).catch(() => {
-        if (seq !== fetchSeqRef.current) return;
-        setStatus('Não foi possível registrar seu perfil temporário.');
-        setLoading(false);
-      });
-      return;
-    }
+      }
 
-    if (savingRef.current) return;
-    setLoading(true);
-    getProfile(userId).then((response) => {
-      if (seq !== fetchSeqRef.current) return;
-      if (response.success) {
-        setProfile(response.data);
-        setName(response.data.displayName);
-        setBio(response.data.bio);
-        setActive(response.data.active);
-      } else {
-        setProfile({ id: userId, displayName: 'Investigador', bio: '', active: true, photo: null, hasGeneratedPortrait: false, hasProfile: false });
+      /* Phase 2: load profile */
+      if (!currentUserId) { setLoading(false); return; }
+      if (savingRef.current) { setLoading(false); return; }
+      setLoading(true);
+      try {
+        const response = await getProfile(currentUserId);
+        if (seq !== fetchSeqRef.current) return;
+        if (response.success) {
+          setProfile(response.data);
+          setName(response.data.displayName);
+          setBio(response.data.bio);
+          setActive(response.data.active);
+        } else {
+          setProfile({ id: currentUserId, displayName: 'Investigador', bio: '', active: true, photo: null, hasGeneratedPortrait: false, hasProfile: false });
+        }
+      } catch {
+        if (seq !== fetchSeqRef.current) return;
+        setStatus('Não foi possível carregar o perfil.');
+        setProfile({ id: currentUserId, displayName: 'Investigador', bio: '', active: true, photo: null, hasGeneratedPortrait: false, hasProfile: false });
       }
       setLoading(false);
-    }).catch(() => {
-      if (seq !== fetchSeqRef.current) return;
-      setStatus('Não foi possível carregar o perfil.');
-      setProfile({ id: userId, displayName: 'Investigador', bio: '', active: true, photo: null, hasGeneratedPortrait: false, hasProfile: false });
-      setLoading(false);
-    });
+    })();
   }, [authToken, userId]);
 
   const handleLogout = async () => {
