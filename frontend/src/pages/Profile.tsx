@@ -225,22 +225,35 @@ const Profile: React.FC = () => {
         <div>
           <span className="eyebrow">Arquivo do investigador</span>
           {editing ? (
-            <input className="input-field" value={name} onChange={(e) => setName(e.target.value)} maxLength={32} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: '4px 8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--gold)', borderRadius: 4, color: '#F8F9FA', width: '100%' }} />
+            <input className="input-field" value={name} onChange={(e) => setName(e.target.value)} maxLength={32} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '5px 0', padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', color: '#F8F9FA', width: '100%', outline: 'none', lineHeight: 1.2, boxSizing: 'border-box' }} />
           ) : (
             <h1>{profile?.displayName || name}</h1>
           )}
           {editing ? (
-            <textarea className="input-field" value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} rows={2} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, padding: '4px 8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--gold)', borderRadius: 4, resize: 'vertical', width: '100%' }} />
+            <textarea className="input-field" value={bio} onChange={(e) => setBio(e.target.value)} maxLength={280} rows={2} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', resize: 'vertical', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box' }} />
           ) : (
             <p>{profile?.bio || 'Ainda sem descrição.'}</p>
           )}
         </div>
-        <button className="btn-secondary profile-edit-trigger" onClick={() => editing ? setEditing(false) : startEditing()}>
-          <Edit3 size={15} /> {editing ? 'Cancelar' : 'Editar perfil'}
-        </button>
+        {!editing && (
+          <button className="btn-secondary profile-edit-trigger" onClick={startEditing}>
+            <Edit3 size={15} /> Editar perfil
+          </button>
+        )}
       </div>
 
 
+
+      {editing && (
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn-primary" onClick={save} disabled={saving}>
+            {saving ? (photoData ? 'Gerando retrato…' : 'Salvando…') : 'Salvar perfil'}
+          </button>
+          <button type="button" className="btn-secondary" onClick={() => { setEditing(false); setName(profile?.displayName || 'Investigador'); setBio(profile?.bio || ''); setPhotoData(''); setPreview(''); }} disabled={saving}>
+            Cancelar
+          </button>
+        </div>
+      )}
 
       {status && <div className="profile-status" role="status">{status}</div>}
 
@@ -248,28 +261,9 @@ const Profile: React.FC = () => {
 
       {editing && (
         <form className="profile-form" onSubmit={save}>
-          <div className="profile-form-photo">
-            <button type="button" className="photo-picker" onClick={() => fileInputRef.current?.click()} style={{ opacity: (profile?.portraitGenerationsRemaining ?? 3) <= 0 ? 0.4 : 1, background: 'transparent', border: '1px solid var(--line)', borderRadius: 8, padding: '11px 14px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--paper)', fontSize: 13 }}>
-              <Camera size={18} /> {profile?.portraitGenerationsRemaining !== undefined && profile.portraitGenerationsRemaining <= 0 ? 'Limite atingido' : 'Escolher foto'}
-            </button>
-            <small>A IA preservará suas características e aplicará a direção cinematográfica do jogo.</small>
-            {profile?.portraitGenerationsRemaining !== undefined && (
-              <small style={{ color: 'var(--gold-soft)', fontWeight: 600 }}>
-                Gerações restantes: {profile.portraitGenerationsRemaining} de 3
-              </small>
-            )}
-          </div>
           <label className="profile-toggle">
             <input type="checkbox" checked={active} onChange={(event) => setActive(event.target.checked)} /> Perfil ativo para a equipe
           </label>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button className="btn-primary" type="submit" disabled={saving}>
-              {saving ? (photoData ? 'Gerando retrato…' : 'Salvando…') : 'Salvar perfil'}
-            </button>
-            <button type="button" className="btn-secondary" onClick={() => { setEditing(false); setName(profile?.displayName || 'Investigador'); setBio(profile?.bio || ''); setPhotoData(''); setPreview(''); }} disabled={saving}>
-              Cancelar
-            </button>
-          </div>
         </form>
       )}
 
