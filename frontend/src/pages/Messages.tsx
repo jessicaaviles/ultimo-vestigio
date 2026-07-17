@@ -123,7 +123,7 @@ const Messages: React.FC = () => {
             <span style={{ color: '#C5A880', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
               CANAL SEGURO
             </span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '4px 0' }}>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '4px 0 8px 0' }}>
               Comunicações
             </h1>
             <p style={{ color: '#8E989F', fontSize: '14px', margin: 0, fontWeight: 300 }}>

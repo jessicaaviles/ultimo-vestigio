@@ -23,7 +23,7 @@ const LobbyList: React.FC = () => {
   return (
     <div className="lobby-list-page">
       <span className="eyebrow">Salas</span>
-      <h1>Nenhuma sala ativa</h1>
+      <h1 style={{ margin: '4px 0 8px 0' }}>Nenhuma sala ativa</h1>
       <p style={{ color: 'var(--muted)', fontSize: '14px', lineHeight: 1.5, margin: '12px 0 32px', fontWeight: 300 }}>
         Você deve estar dentro de uma investigação ativa com a sua equipe para acessar a sala.
       </p>
