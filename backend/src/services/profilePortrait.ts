@@ -4,12 +4,13 @@ const allowedMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 const imageModels = [
   process.env.GEMINI_IMAGE_MODEL,
+  'gemini-3.1-flash-lite-image',
   'gemini-3.1-flash-image',
   'gemini-2.5-flash-image',
   'gemini-3-pro-image'
 ].filter(Boolean) as string[];
 
-const NEW_API_MODELS = new Set(['gemini-3.1-flash-image', 'gemini-3-pro-image']);
+const NEW_API_MODELS = new Set(['gemini-3.1-flash-lite-image', 'gemini-3.1-flash-image', 'gemini-3-pro-image']);
 
 const profilePortraitPrompt = `EDIT THIS PHOTO — do NOT generate a new person.
 
