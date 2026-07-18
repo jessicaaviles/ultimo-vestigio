@@ -31,9 +31,10 @@ function buildPrompt(userHash: number): string {
   return `Edit this photo into a mysterious detective portrait.
 
 CRITICAL — keep identical:
+- Gender, age, and ethnicity must remain exactly as in the original photo
 - Face: every detail, skin, expression unchanged
-- Hair: exact color, cut, texture
-- Body: proportions, build, age
+- Hair: exact color, cut, texture, and length
+- Body: proportions, build, head size relative to body must remain natural and unchanged
 
 What to change:
 - Replace the background: ${bg.description}
@@ -42,8 +43,10 @@ What to change:
 
 Composition:
 - Tight portrait crop, head and shoulders visible
-- Face centered and in sharp focus
-- Person looking toward the camera
+- Face perfectly centered in the frame — eyes at the vertical center of the image
+- Person looking directly toward the camera
+- Shallow depth of field: background softly blurred as if shot with an 85mm lens at a wide aperture (f/1.4–f/2)
+- Background out of focus, only the person in sharp focus
 
 Do NOT add film grain, noise, or texture overlay. The person must look exactly like the original photo — this is a realistic photo edit, not an illustration.`
 }
