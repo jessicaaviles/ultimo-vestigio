@@ -104,7 +104,7 @@ const CreateRoom: React.FC = () => {
       }}></div>
 
       {/* Top Bar / Voltar */}
-      <div style={{ position: 'relative', zIndex: 1, padding: '24px' }}>
+      <div style={{ position: 'relative', zIndex: 1, padding: '88px 24px 24px' }}>
         <button onClick={() => navigate(-1)} style={{ color: '#8E989F', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', background: 'transparent', border: 'none', cursor: 'pointer' }}>
           <span style={{ fontSize: '14px' }}>←</span> Voltar
         </button>
