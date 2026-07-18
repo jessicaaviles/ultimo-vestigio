@@ -293,3 +293,68 @@
   height: 48px;
   border-width: 4px;
 }
+
+/* ── Páginas de tela cheia sem scroll ── */
+/* Briefing, Recovery Code e Create Room devem caber na tela sem scroll vertical */
+
+.briefing-page,
+.recovery-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 88px 24px calc(76px + env(safe-area-inset-bottom) + 16px);
+  overflow: hidden;
+  background: var(--petrol);
+  gap: 20px;
+}
+
+/* Briefing */
+.briefing-page h1 { font-size: clamp(26px, 5vw, 40px); margin: 6px 0 10px; line-height: 1.1; }
+.briefing-page .briefing-opening { color: var(--muted); font-size: 14px; line-height: 1.6; }
+.briefing-page .briefing-facts { padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.briefing-page .briefing-facts p { color: var(--muted); font-size: 13px; margin-top: 6px; }
+.briefing-page .turn-order { display: flex; flex-direction: column; gap: 8px; }
+.briefing-page .turn-order > div { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.briefing-page .turn-order span:first-child { color: var(--gold-soft); font-size: 11px; font-weight: 600; letter-spacing: .1em; min-width: 24px; }
+.briefing-page .turn-order small { color: var(--muted); font-size: 11px; margin-left: auto; }
+.briefing-page .btn-primary { width: 100%; justify-content: center; }
+
+/* Recovery Code */
+.recovery-page h1 { font-size: clamp(26px, 5vw, 36px); margin: 6px 0 10px; line-height: 1.1; }
+.recovery-page > p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.recovery-page .recovery-code {
+  font-family: var(--serif);
+  font-size: clamp(22px, 5vw, 32px);
+  letter-spacing: .08em;
+  color: var(--gold-soft);
+  padding: 16px 20px;
+  border: 1px solid rgba(184,153,83,.35);
+  border-radius: 10px;
+  background: rgba(184,153,83,.06);
+  text-align: center;
+  word-break: break-all;
+}
+.recovery-page .invite-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.recovery-page .invite-panel > div { display: flex; flex-direction: column; gap: 6px; }
+.recovery-page .invite-panel strong { font-family: var(--serif); font-size: 20px; color: var(--gold-soft); }
+.recovery-page .invite-panel .btn-secondary { font-size: 11px; min-height: 36px; padding: 0 14px; }
+.recovery-page .recovery-actions { display: flex; gap: 12px; }
+.recovery-page .recovery-actions button { flex: 1; justify-content: center; }
+
+@media (max-width: 640px) {
+  .briefing-page,
+  .recovery-page {
+    padding-top: 76px;
+    padding-bottom: calc(68px + env(safe-area-inset-bottom) + 16px);
+  }
+}
