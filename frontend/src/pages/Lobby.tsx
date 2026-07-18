@@ -32,12 +32,11 @@ const Lobby: React.FC = () => {
   }, [socket, roomId, navigate]);
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-    };
+    const style = document.createElement('style');
+    style.id = '__scroll-lock';
+    style.textContent = 'html, body, #root, .app-shell, .app-content { overflow: hidden !important; height: 100% !important; }';
+    document.head.appendChild(style);
+    return () => { const el = document.getElementById('__scroll-lock'); if (el) el.remove(); };
   }, []);
 
   if (!roomData) return <Loading message="Conectando à sala..." />;
@@ -57,7 +56,6 @@ const Lobby: React.FC = () => {
     <div className="immersive-page is-fixed-height" style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      overflow: 'hidden',
       backgroundColor: 'var(--bg-primary)',
       backgroundImage: `url(/backgrounds/lobby.png)`,
       backgroundSize: 'cover',
