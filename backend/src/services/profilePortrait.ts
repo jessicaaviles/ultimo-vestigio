@@ -28,27 +28,36 @@ function buildPrompt(userHash: number): string {
   const bg = selectBackground(userHash)
   const outfit = selectOutfit(userHash + 7)
 
-  return `Edit this photo into an elegant Hollywood detective film portrait.
+  return `Transform this photo into a cinematic Hollywood detective thriller portrait — the aesthetic of a prestige crime TV series or noir film.
 
 CRITICAL — keep identical:
 - Gender, age, and ethnicity must remain exactly as in the original photo
 - Face: every detail, skin, expression unchanged
-- Hair: exact color, cut, texture, and length
-- Body: proportions, build, head size relative to body must remain natural and unchanged
+- Hair: must be the same texture, color, size
 
 What to change:
 - Replace the background: ${bg.description}
 - Replace the clothing: ${outfit.description}
-- Lighting: warm golden low-light — soft warm light illuminating the face from one side, the rest of the face in soft shadow, elegant chiaroscuro, background much darker than the person
 
-Composition:
-- Tight portrait crop, head and shoulders visible
-- The head must be in the exact center of the image: the distance from the top of the head to the top edge equals the distance from the chin to the bottom edge; the face is centered horizontally
-- This is essential: a circular crop taken from the center of this image must include the full face without cutting any part
-- Person looking directly toward the camera, eyes at the center of the frame
-- Background softly blurred, person in sharp focus
+Cinematic style to apply:
+- Mood: dark, moody, atmospheric — like a Netflix crime thriller or noir Hollywood film
+- Lighting: dramatic single-source side lighting (chiaroscuro) — one side of the face is sharply lit, the other falls into deep shadow; the background is significantly darker than the subject
+- Atmospheric haze: subtle smoke or mist drifting in the background, giving depth and tension
+- Color grade: desaturated, cold-leaning tones — dark teals, muted grays, deep shadows; very little saturation
+- Background: softly blurred (bokeh), dark and moody environment (abandoned office, dimly lit corridor, foggy street, etc.)
+- The subject's eyes carry a serious, intense, detective expression
+- Cinematic depth of field: subject in sharp focus, background blurred
+- Film-quality rendering: photorealistic, high-detail, sharp facial features
 
-Do NOT add film grain, noise, or texture overlay. The person must look exactly like the original photo — this is a realistic photo edit, not an illustration.`
+Composition — CRITICAL for profile circle display:
+- Tight portrait framing: head and upper shoulders fill the frame
+- The ENTIRE head must be fully visible — no part of the skull, hair, or chin may be cut off
+- The face must be horizontally centered in the image
+- Vertical centering: equal space above the top of the head and below the chin
+- Eyes positioned at approximately the center of the image height
+- This is mandatory: when a circle is cropped from the center of this image, the complete face and full head must remain visible without any clipping
+
+Do NOT add film grain, noise, vignette overlay, or illustration effects. This must be a realistic photographic edit.`
 }
 
 const generateViaInteractions = async (ai: GoogleGenAI, model: string, mimeType: string, base64Data: string, prompt: string) => {
