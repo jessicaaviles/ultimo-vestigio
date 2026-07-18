@@ -28,7 +28,7 @@ function buildPrompt(userHash: number): string {
   const bg = selectBackground(userHash)
   const outfit = selectOutfit(userHash + 7)
 
-  return `Edit this photo into a dark mysterious detective portrait.
+  return `Edit this photo into an elegant Hollywood detective film portrait.
 
 CRITICAL — keep identical:
 - Gender, age, and ethnicity must remain exactly as in the original photo
@@ -39,13 +39,14 @@ CRITICAL — keep identical:
 What to change:
 - Replace the background: ${bg.description}
 - Replace the clothing: ${outfit.description}
-- Lighting: very dark low-key lighting — warm golden light gently illuminating only part of the face, deep shadows across most of the face, background very dark and barely visible, moody and mysterious
-- Background must be strongly blurred with bokeh effect, completely out of focus — as if shot with a 50mm lens at f/1.4
+- Lighting: warm golden low-light — soft warm light illuminating the face from one side, the rest of the face in soft shadow, elegant chiaroscuro, background much darker than the person
 
 Composition:
 - Tight portrait crop, head and shoulders visible
-- Face positioned so that when cropped as a circle from the center, the entire face is fully visible and not cut off — eyes centered vertically and horizontally in the frame, equal space above head and below chin
-- Person looking directly toward the camera
+- The head must be in the exact center of the image: the distance from the top of the head to the top edge equals the distance from the chin to the bottom edge; the face is centered horizontally
+- This is essential: a circular crop taken from the center of this image must include the full face without cutting any part
+- Person looking directly toward the camera, eyes at the center of the frame
+- Background softly blurred, person in sharp focus
 
 Do NOT add film grain, noise, or texture overlay. The person must look exactly like the original photo — this is a realistic photo edit, not an illustration.`
 }
