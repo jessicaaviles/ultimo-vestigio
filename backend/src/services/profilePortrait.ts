@@ -39,14 +39,13 @@ CRITICAL — keep identical:
 What to change:
 - Replace the background: ${bg.description}
 - Replace the clothing: ${outfit.description}
-- Lighting: low-light nocturnal scene — soft, diffused illumination falling gently on the face, background darker and receding into shadow, mysterious and melancholic mood, focus on the face with the surroundings dim
+- Lighting: warm golden light — soft warm illumination on the face with gentle shadows across the cheeks and jawline, mysterious mood, dim background receding into shadow
 
 Composition:
 - Tight portrait crop, head and shoulders visible
-- Face perfectly centered in the frame — eyes at the vertical center of the image
+- Face perfectly centered in the frame — eyes at the exact vertical center of the image, equal space above the head and below the chin, so the face is not cut off when cropped as a circle
 - Person looking directly toward the camera
-- Shallow depth of field: background softly blurred as if shot with an 85mm lens at a wide aperture (f/1.4–f/2)
-- Background out of focus, only the person in sharp focus
+- Shot with a 50mm lens at a moderate aperture — slightly blurred background, person in sharp focus
 
 Do NOT add film grain, noise, or texture overlay. The person must look exactly like the original photo — this is a realistic photo edit, not an illustration.`
 }
