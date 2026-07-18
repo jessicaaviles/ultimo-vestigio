@@ -48,8 +48,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <img className="topbar-logo" src="/monograma-ultimo-vestigio.png" alt="Último Vestígio" />
           </button>
           {!['/', '/cases', '/lobby', '/messages', '/profile'].includes(location.pathname) && (
-            <button onClick={() => navigate(-1)} style={{ color: '#8E989F', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', padding: '4px 8px' }}>
-              <span style={{ fontSize: '16px' }}>←</span> Voltar
+            <button onClick={() => navigate(-1)} style={{ color: '#8E989F', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', padding: '4px 8px', lineHeight: 1 }}>
+              <span style={{ fontSize: '13px', lineHeight: 1 }}>←</span> Voltar
             </button>
           )}
         </div>
