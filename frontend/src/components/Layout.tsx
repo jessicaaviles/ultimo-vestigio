@@ -8,6 +8,7 @@ interface LayoutProps { children: React.ReactNode; }
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { notifications, hasAny } = useNotifications();
@@ -40,8 +41,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [menuOpen]);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return <div className="app-shell">
-    <header className="topbar" style={{ position: location.pathname !== '/' ? 'fixed' : 'absolute' } as React.CSSProperties}>
+    <header className="topbar" style={{
+      position: location.pathname !== '/' ? 'fixed' : 'absolute',
+      ...(location.pathname !== '/' && scrolled ? { background: 'rgba(20,27,31,0.72) !important' as any, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' } : {}),
+    } as React.CSSProperties}>
       {location.pathname !== '/' ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button aria-label="Ir para início" onClick={() => navigate('/')} style={{ background: 'none', border: 0 }}>
