@@ -97,7 +97,8 @@ const CreateRoom: React.FC = () => {
     <div className="immersive-page" style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      minHeight: '100vh', 
+      height: '100vh', 
+      overflow: 'hidden',
       backgroundColor: '#0F1417',
       position: 'relative'
     }}>
