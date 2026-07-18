@@ -45,7 +45,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--serif); font-weight: 400; letter-spa
 .app-shell { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
 .app-content { width: 100%; max-width: 1240px; margin: 0 auto; flex: 1; min-width: 0; padding: 88px 24px calc(112px + env(safe-area-inset-bottom)); }
 .topbar { position: absolute; top: 0; left: 0; right: 0; height: 88px; display: flex; align-items: center; justify-content: space-between; max-width: 1240px; width: 100%; margin: 0 auto; padding: 0 24px; z-index: 42; background: transparent !important; }
-.topbar-logo { width: 68px; height: 68px; max-width: 68px; max-height: 68px; object-fit: contain; display: block; filter: sepia(.15) saturate(.7); }
+.topbar-logo { height: 68px; max-height: 68px; object-fit: contain; display: block; filter: sepia(.15) saturate(.7); }
 .topbar-mark { color: var(--gold-soft); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
 .menu-button { position: relative; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); color: var(--paper); background: rgba(15, 21, 24, .35); display: grid; place-items: center; }
 .menu-button:hover { border-color: var(--gold); color: var(--gold-soft); }
@@ -94,7 +94,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 @media (max-width: 640px) {
   .topbar { height: 76px; padding: 0 24px; }
-  .topbar-logo { width: 56px; height: 56px; max-width: 56px; max-height: 56px; }
+  .topbar-logo { height: 56px; max-height: 56px; }
   .topbar-mark { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; }
   .app-content { padding: 76px 24px calc(104px + env(safe-area-inset-bottom)); }
   .page-header { padding-top: 24px; }
