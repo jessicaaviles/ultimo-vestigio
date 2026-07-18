@@ -41,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [menuOpen]);
 
   return <div className="app-shell">
-    <header className="topbar">
+    <header className="topbar" style={{ position: location.pathname !== '/' ? 'fixed' : 'absolute' } as React.CSSProperties}>
       {location.pathname !== '/' ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button aria-label="Ir para início" onClick={() => navigate('/')} style={{ background: 'none', border: 0 }}>
