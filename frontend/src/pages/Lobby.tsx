@@ -63,7 +63,7 @@ const Lobby: React.FC = () => {
         zIndex: 0
       }}></div>
 
-      <div style={{ position: 'relative', zIndex: 1, padding: '24px 0', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+      <div style={{ position: 'relative', zIndex: 1, padding: '24px', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
         <div style={{ marginBottom: '32px', marginTop: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '24px' }}>
           <h2 style={{ fontSize: '32px', marginBottom: '8px', fontFamily: 'var(--font-serif)', lineHeight: 1.2 }}>
             Sala de Briefing · {roomData.case_version?.case_ref?.title || 'O Quarto 7'}

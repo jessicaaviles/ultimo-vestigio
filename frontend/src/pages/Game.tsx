@@ -163,7 +163,7 @@ const Game: React.FC = () => {
         zIndex: 0
       }}></div>
 
-      <div style={{ position: 'relative', zIndex: 1, padding: '24px 0', display: 'flex', flexDirection: 'column', minHeight: '100%', overflowY: 'auto' }}>
+      <div style={{ position: 'relative', zIndex: 1, padding: '24px', display: 'flex', flexDirection: 'column', minHeight: '100%', overflowY: 'auto' }}>
          <div style={{ marginBottom: '24px', marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <h2 style={{ fontSize: '32px', marginBottom: '8px', fontFamily: 'var(--font-serif)', lineHeight: 1.2 }}>{roomData.case_version?.case_ref?.title || 'O Quarto 7'}</h2>
