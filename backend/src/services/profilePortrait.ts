@@ -52,10 +52,10 @@ Cinematic style to apply:
 - Subtle HDR look: slightly enhanced local contrast, micro-detail in skin and fabric, rich blacks with preserved shadow detail — not over-processed, just a cinematic punch
 
 Composition:
-- Tight portrait framing: head and upper shoulders only — nothing below the chest
-- The face must be centered both horizontally and vertically within the frame
-- The ENTIRE head must be fully visible — top of skull, hair, and chin all within the image boundaries
-- Eyes positioned at the vertical midpoint of the image
+- Medium portrait framing: show the full bust — from the top of the head down to approximately the waist or hips
+- The sides of the body may be slightly cut off by the frame edges — this is intentional and cinematic
+- The face is centered horizontally; the top of the head has a small amount of space above it
+- The subject fills most of the vertical frame; the head occupies the upper third
 - Subject looks directly at the camera, expression serious and intense
 - Background softly blurred (bokeh), subject in sharp focus
 
@@ -108,11 +108,11 @@ async function smartCropFace(dataUrl: string): Promise<string> {
     const { width, height } = await img.metadata();
     if (!width || !height) return dataUrl;
 
-    // Em retratos de busto gerados por IA, o centro do rosto está em ~52% da altura
-    // Usamos um quadrado de 60% da altura para capturar cabeça + ombros
-    const size = Math.min(width, Math.round(height * 0.60));
+    // Com enquadramento de busto, o rosto ocupa o terço superior (~30% da altura)
+    // Recortamos um quadrado de 50% da altura centrado no rosto
+    const size = Math.min(width, Math.round(height * 0.50));
     const left = Math.round((width - size) / 2);
-    const faceCenter = Math.round(height * 0.52);
+    const faceCenter = Math.round(height * 0.30);
     const top = Math.max(0, Math.min(height - size, faceCenter - Math.round(size / 2)));
 
     const cropped = await img
