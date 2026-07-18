@@ -34,7 +34,7 @@ function buildPrompt(userHash: number): string {
 CRITICAL — keep identical:
 - Gender, age, and ethnicity must remain exactly as in the original photo
 - Face: every detail, skin, expression unchanged
-- Hair: MUST remain exactly as in the original — same style (loose, curly, straight, wavy, etc.), same volume, same texture, same color, same length. Do NOT tie, pin, braid, pull back, or change the hairstyle in any way.
+- Hair: MUST remain EXACTLY as in the original photo — DO NOT change it in ANY way. If the hair is loose and down, keep it loose and down. If it is curly, keep it curly. If it is wavy, keep it wavy. NEVER tie it, pin it, put it in a bun, ponytail, braid, updo, or pull it back. The hair volume, flow, and placement must be identical to the original.
 
 What to change:
 - Replace the background: ${bg.description}
@@ -108,11 +108,11 @@ async function smartCropFace(dataUrl: string): Promise<string> {
     const { width, height } = await img.metadata();
     if (!width || !height) return dataUrl;
 
-    // O rosto num retrato de busto está entre 20-50% da altura
-    // Centramos o crop a 35% da altura
-    const size = Math.min(width, Math.round(height * 0.55));
+    // Em retratos de busto gerados por IA, o centro do rosto está em ~52% da altura
+    // Usamos um quadrado de 60% da altura para capturar cabeça + ombros
+    const size = Math.min(width, Math.round(height * 0.60));
     const left = Math.round((width - size) / 2);
-    const faceCenter = Math.round(height * 0.35);
+    const faceCenter = Math.round(height * 0.52);
     const top = Math.max(0, Math.min(height - size, faceCenter - Math.round(size / 2)));
 
     const cropped = await img

@@ -145,7 +145,7 @@
 .profile-hero p { color: var(--muted); max-width: 440px; }
 .profile-avatar-wrap { position: relative; }
 .profile-avatar { width: 140px; height: 140px; overflow: hidden; display: grid; place-items: center; color: var(--gold-soft); border: 1px solid var(--gold); border-radius: 50%; background: rgba(44,48,46,.78); position: relative; }
-.profile-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
 .portrait-badge { position: absolute; right: 2px; bottom: 4px; display: grid; place-items: center; width: 24px; height: 24px; color: var(--ink); border: 2px solid var(--petrol); border-radius: 50%; background: var(--olive-light); }
 .profile-edit-trigger { white-space: nowrap; }
 .profile-status { margin: 18px 0; padding: 12px 14px; color: var(--gold-soft); border: 1px solid rgba(184,153,83,.35); border-radius: 8px; background: rgba(184,153,83,.08); }
