@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listCases, generateCaseImage } from '../services/api';
+import { listCases } from '../services/api';
 import { Clock3, Flame, UsersRound } from 'lucide-react';
 import Loading from '../components/Loading';
 
@@ -41,16 +41,6 @@ const Cases: React.FC = () => {
           };
         });
         setCases(mapped);
-        // Gera imagem para casos sem imagem no banco
-        mapped.forEach((c: any) => {
-          if (!c.cover_image_data) {
-            generateCaseImage(c.slug).then((res: any) => {
-              if (res.success) {
-                setCases(prev => prev.map(p => p.slug === c.slug ? { ...p, image: res.data.cover_image_data, cover_image_data: res.data.cover_image_data } : p));
-              }
-            }).catch(() => {});
-          }
-        });
       } else if (!response.success) setError('Não foi possível carregar os casos.');
     }).catch(() => setError('Não foi possível carregar os casos.')).finally(() => setLoading(false));
   }, []);

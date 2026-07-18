@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
-import { registerAnonymousUser, listCases, generateCaseImage } from '../services/api';
+import { registerAnonymousUser, listCases } from '../services/api';
 import Loading from '../components/Loading';
 
 const fallbackImages: Record<string, string> = {
@@ -45,16 +45,6 @@ const Home: React.FC = () => {
         };
       });
       setFeaturedCases(mapped);
-      // Gera imagens para casos sem cover
-      firstTwo.forEach((item: any) => {
-        if (!item.cover_image_data) {
-          generateCaseImage(item.slug).then((genRes: any) => {
-            if (genRes.success) {
-              setFeaturedCases(prev => prev.map(fc => fc.slug === item.slug ? { ...fc, image: genRes.data.cover_image_data } : fc));
-            }
-          }).catch(() => {});
-        }
-      });
     }).catch(() => {
       setFeaturedCases([
         { title: 'O Quarto 7', subtitle: 'Hotel Vesper · Mistério clássico', level: 'Fácil', image: '/capa_quarto_7.png', description: 'Uma chave, uma câmera e a última noite de Helena Duarte.', slug: 'o-quarto-7' },
