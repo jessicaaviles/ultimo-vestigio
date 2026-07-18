@@ -216,15 +216,16 @@ const Messages: React.FC = () => {
             alignItems: 'center',
             gap: '16px'
           }}>
-            <button className="btn-primary"
+            <button
               onClick={() => setActiveChat(null)}
               style={{
                 background: 'transparent',
                 border: 'none',
                 color: '#8E989F',
                 cursor: 'pointer',
-                fontSize: '18px',
-                padding: 0
+                fontSize: '13px',
+                padding: '4px 8px',
+                lineHeight: 1
               }}
             >
               ←
