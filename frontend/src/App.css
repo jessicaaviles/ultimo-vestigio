@@ -90,7 +90,7 @@
 .home { margin: 0; }
 .home-hero { min-height: 590px; position: relative; display: flex; align-items: flex-end; padding: 72px 8%; overflow: hidden; background: var(--ink); margin-left: -24px !important; margin-right: -24px !important; margin-top: -88px !important; width: calc(100% + 48px) !important; max-width: none !important; }
 .home-hero::after, .immersive-page::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .08; mix-blend-mode: screen; background-image: radial-gradient(rgba(242,238,229,.35) .6px, transparent .8px); background-size: 5px 5px; }
-.home-hero-logo { height: 180px; object-fit: contain; margin-bottom: 24px; display: block; filter: sepia(.15) saturate(.7); }
+.home-hero-logo { height: 144px; object-fit: contain; margin-bottom: 24px; display: block; filter: sepia(.15) saturate(.7); }
 .home-hero-image { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(24,33,38,.9) 0%, rgba(24,33,38,.4) 48%, rgba(24,33,38,.2)), linear-gradient(0deg, rgba(24,33,38,.98), transparent 58%), url('/capa_quarto_7.png') center/cover; filter: saturate(.72) contrast(1.05); }
 .home-hero-copy { position: relative; max-width: 590px; z-index: 1; }
 .home-hero h1 { font-size: clamp(42px, 6vw, 72px); line-height: .98; margin: 12px 0 18px; }
