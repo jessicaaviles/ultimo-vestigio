@@ -48,14 +48,16 @@ Cinematic style to apply:
 - The subject's eyes carry a serious, intense, detective expression
 - Cinematic depth of field: subject in sharp focus, background blurred
 - Film-quality rendering: photorealistic, high-detail, sharp facial features
+- Subtle HDR look: slightly enhanced local contrast, micro-detail in skin and fabric, rich blacks with preserved shadow detail — not over-processed, just a cinematic punch
 
 Composition — CRITICAL for profile circle display:
+- The FACE is the absolute main subject: it must occupy the central area of the image and be the visual focal point
 - Tight portrait framing: head and upper shoulders fill the frame
 - The ENTIRE head must be fully visible — no part of the skull, hair, or chin may be cut off
 - The face must be horizontally centered in the image
 - Vertical centering: equal space above the top of the head and below the chin
 - Eyes positioned at approximately the center of the image height
-- This is mandatory: when a circle is cropped from the center of this image, the complete face and full head must remain visible without any clipping
+- This is mandatory: when a circle is cropped from the center of this image, the face must be the dominant element — fully visible, not clipped, and centered within the circle
 
 Do NOT add film grain, noise, vignette overlay, or illustration effects. This must be a realistic photographic edit.`
 }
