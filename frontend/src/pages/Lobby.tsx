@@ -31,6 +31,15 @@ const Lobby: React.FC = () => {
     };
   }, [socket, roomId, navigate]);
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
+
   if (!roomData) return <Loading message="Conectando à sala..." />;
 
   const players = roomData.players || [];
@@ -48,7 +57,8 @@ const Lobby: React.FC = () => {
     <div className="immersive-page" style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      height: '100%', 
+      height: '100vh', 
+      overflow: 'hidden',
       backgroundColor: 'var(--bg-primary)',
       backgroundImage: `url(/backgrounds/lobby.png)`,
       backgroundSize: 'cover',
