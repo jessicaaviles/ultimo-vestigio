@@ -28,23 +28,24 @@ function buildPrompt(userHash: number): string {
   const bg = selectBackground(userHash)
   const outfit = selectOutfit(userHash + 7)
 
-  return `Edit the supplied photograph into a cinematic profile portrait.
+  return `Edit this photo into a moody detective portrait.
 
-PRESERVE EXACTLY (do not change):
-- Face: all facial features, bone structure, skin, and expression must remain identical
-- Hair: exact style, color, length, and texture
-- Age: do not age or de-age
-- Body: proportions and build
+CRITICAL — keep identical:
+- Face: every detail, skin, expression unchanged
+- Hair: exact color, cut, texture
+- Body: proportions, build, age
 
-CHANGE:
-- Pose: 3/4 angle (three-quarter turn), person looking directly toward the camera
-- Framing: face perfectly centered in the image — eyes at the exact vertical center, equal space above the head and below the chin, shoulders and upper torso visible, tight portrait crop, image must be 2:3 aspect ratio (the face must not be cut off when cropped as a circle)
-- Clothing: ${outfit.description}
-- Background: replace the background with ${bg.description}
-- Lighting: dramatic chiaroscuro — deep navy-black shadows against warm gold highlights, melancholic mysterious mood, cinematographic lighting inspired by thriller films
-- Texture: visible film grain, high-caliber photographic film emulation, subtle
+What to change:
+- Replace the background: ${bg.description}
+- Replace the clothing: ${outfit.description}
+- Lighting: dramatic but natural — warm golden light from one side, deep cool shadows on the other, cinematic thriller mood
 
-The person in the output must be IDENTICAL to the person in the input photo. This is an edit, not a new generation.`
+Composition:
+- Tight portrait crop, head and shoulders visible
+- Face centered in frame
+- Person looking toward the camera
+
+Do NOT add film grain, noise, or texture overlay. The person must look exactly like the original photo — this is a realistic photo edit, not an illustration.`
 }
 
 const generateViaInteractions = async (ai: GoogleGenAI, model: string, mimeType: string, base64Data: string, prompt: string) => {
