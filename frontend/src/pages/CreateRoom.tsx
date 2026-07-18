@@ -119,7 +119,7 @@ const CreateRoom: React.FC = () => {
       }}></div>
 
       {/* Bottom Sheet UI */}
-      <div style={{ position: 'relative', zIndex: 1, padding: '0 24px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'flex-end' }}>
+      <div style={{ position: 'relative', zIndex: 1, padding: '0 24px 88px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'flex-end' }}>
         <h2 style={{ fontSize: '32px', marginBottom: '8px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400 }}>Configurar Partida</h2>
         <p style={{ color: '#8E989F', fontSize: '14px', marginBottom: '32px', maxWidth: '85%', fontWeight: 300 }}>Um novo caso o aguarda. Escolha quem participará desta investigação.</p>
 
