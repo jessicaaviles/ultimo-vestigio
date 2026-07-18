@@ -42,18 +42,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return <div className="app-shell">
     <header className="topbar">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        {location.pathname !== '/' && (
-          <button aria-label="Voltar" onClick={() => navigate(-1)} style={{ color: '#8E989F', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', fontSize: '18px' }}>←</button>
-        )}
-        {location.pathname !== '/' ? (
+      {location.pathname !== '/' ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button aria-label="Ir para início" onClick={() => navigate('/')} style={{ background: 'none', border: 0 }}>
             <img className="topbar-logo" src="/monograma-ultimo-vestigio.png" alt="Último Vestígio" />
           </button>
-        ) : (
-          <div style={{ width: '68px' }} />
-        )}
-      </div>
+          {!['/', '/cases', '/lobby', '/messages', '/profile'].includes(location.pathname) && (
+            <button onClick={() => navigate(-1)} style={{ color: '#8E989F', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', padding: '4px 8px' }}>
+              <span style={{ fontSize: '16px' }}>←</span> Voltar
+            </button>
+          )}
+        </div>
+      ) : (
+        <div style={{ width: '68px' }} />
+      )}
       <div className="menu-wrapper" ref={menuRef}>
         <button
           className={`menu-button${menuOpen ? ' menu-button--active' : ''}`}
