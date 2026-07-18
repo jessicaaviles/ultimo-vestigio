@@ -58,7 +58,7 @@ const JoinRoom: React.FC = () => {
 
       <div style={{ position: 'relative', zIndex: 1, padding: '24px', marginTop: '24px' }}>
         <button onClick={() => navigate(-1)} style={{ color: '#8E989F', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-          <span style={{ fontSize: '14px' }}>←</span> Voltar
+          <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> Voltar
         </button>
       </div>
 

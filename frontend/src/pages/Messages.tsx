@@ -223,7 +223,7 @@ const Messages: React.FC = () => {
                 border: 'none',
                 color: '#8E989F',
                 cursor: 'pointer',
-                fontSize: '13px',
+                fontSize: '18px',
                 padding: '4px 8px',
                 lineHeight: 1
               }}
