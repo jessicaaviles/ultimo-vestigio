@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import sharp from 'sharp';
 import { selectBackground } from './portraitBackgrounds';
 import { selectOutfit } from './portraitOutfits';
 
@@ -92,6 +93,40 @@ const generateViaGenerateContent = async (ai: GoogleGenAI, model: string, mimeTy
   throw new Error(`${model} returned no portrait via generateContent`);
 };
 
+/**
+ * Recorta a imagem centralizando no rosto.
+ * Estratégia: num retrato (busto), o rosto ocupa o terço superior-central da imagem.
+ * Recorta um quadrado cujo centro está a 35% da altura total.
+ */
+async function smartCropFace(dataUrl: string): Promise<string> {
+  try {
+    const [, mime, b64] = dataUrl.match(/^data:(image\/[^;]+);base64,(.+)$/) || [];
+    if (!b64) return dataUrl;
+
+    const buf = Buffer.from(b64, 'base64');
+    const img = sharp(buf);
+    const { width, height } = await img.metadata();
+    if (!width || !height) return dataUrl;
+
+    // O rosto num retrato de busto está entre 20-50% da altura
+    // Centramos o crop a 35% da altura
+    const size = Math.min(width, Math.round(height * 0.55));
+    const left = Math.round((width - size) / 2);
+    const faceCenter = Math.round(height * 0.35);
+    const top = Math.max(0, Math.min(height - size, faceCenter - Math.round(size / 2)));
+
+    const cropped = await img
+      .extract({ left, top, width: size, height: size })
+      .toBuffer();
+
+    const outMime = (mime as string) || 'image/jpeg';
+    return `data:${outMime};base64,${cropped.toString('base64')}`;
+  } catch (err) {
+    console.warn('[smartCropFace] crop failed, returning original:', err);
+    return dataUrl;
+  }
+}
+
 export const generateProfilePortrait = async (sourceDataUrl: string, userId?: string) => {
   const match = sourceDataUrl.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
   if (!match || !allowedMimeTypes.has(match[1])) throw new Error('Unsupported profile image');
@@ -107,10 +142,10 @@ export const generateProfilePortrait = async (sourceDataUrl: string, userId?: st
   for (const model of imageModels) {
     try {
       const useNewApi = NEW_API_MODELS.has(model) || (model.startsWith('gemini-3.') && !model.includes('flash-lite'));
-      const result = useNewApi
+      const raw = useNewApi
         ? await generateViaInteractions(ai, model, match[1], match[2], prompt)
         : await generateViaGenerateContent(ai, model, match[1], match[2], prompt);
-      return result;
+      return await smartCropFace(raw);
     } catch (error) {
       lastError = error;
       console.error(`[profilePortrait] ${model} failed:`, error instanceof Error ? error.message : error);
