@@ -33,7 +33,7 @@ function buildPrompt(userHash: number): string {
 CRITICAL — keep identical:
 - Gender, age, and ethnicity must remain exactly as in the original photo
 - Face: every detail, skin, expression unchanged
-- Hair: must be the same texture, color, size
+- Hair: MUST remain exactly as in the original — same style (loose, curly, straight, wavy, etc.), same volume, same texture, same color, same length. Do NOT tie, pin, braid, pull back, or change the hairstyle in any way.
 
 What to change:
 - Replace the background: ${bg.description}
@@ -50,14 +50,13 @@ Cinematic style to apply:
 - Film-quality rendering: photorealistic, high-detail, sharp facial features
 - Subtle HDR look: slightly enhanced local contrast, micro-detail in skin and fabric, rich blacks with preserved shadow detail — not over-processed, just a cinematic punch
 
-Composition — CRITICAL for profile circle display:
-- The FACE is the absolute main subject: it must occupy the central area of the image and be the visual focal point
-- Tight portrait framing: head and upper shoulders fill the frame
-- The ENTIRE head must be fully visible — no part of the skull, hair, or chin may be cut off
-- The face must be horizontally centered in the image
-- Vertical centering: equal space above the top of the head and below the chin
-- Eyes positioned at approximately the center of the image height
-- This is mandatory: when a circle is cropped from the center of this image, the face must be the dominant element — fully visible, not clipped, and centered within the circle
+Composition:
+- Tight portrait framing: head and upper shoulders only — nothing below the chest
+- The face must be centered both horizontally and vertically within the frame
+- The ENTIRE head must be fully visible — top of skull, hair, and chin all within the image boundaries
+- Eyes positioned at the vertical midpoint of the image
+- Subject looks directly at the camera, expression serious and intense
+- Background softly blurred (bokeh), subject in sharp focus
 
 Do NOT add film grain, noise, vignette overlay, or illustration effects. This must be a realistic photographic edit.`
 }
