@@ -46,7 +46,8 @@ const Cases: React.FC = () => {
   }, []);
 
   const handleSelectCase = (slug: string) => {
-    navigate(`/create?caseId=${slug}`);
+    const c = cases.find(item => item.slug === slug);
+    navigate(`/create?caseId=${slug}`, { state: { coverImage: c?.cover_image_data || null } });
   };
 
   return (

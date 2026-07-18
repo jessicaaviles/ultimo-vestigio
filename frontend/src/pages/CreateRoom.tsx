@@ -51,21 +51,23 @@ const CASES_MAP: Record<string, { title: string; synopsis: string; players: stri
 const CreateRoom: React.FC = () => {
   const navigate = useNavigate();
   const { search } = useLocation();
+  const location = useLocation();
   const query = new URLSearchParams(search);
   const selectedCaseId = query.get('caseId') || 'o-quarto-7';
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [timer, setTimer] = useState<number | null>(null);
-  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [coverImage, setCoverImage] = useState<string | null>((location.state as any)?.coverImage || null);
 
   const caseInfo = CASES_MAP[selectedCaseId] || CASES_MAP['o-quarto-7'];
 
   useEffect(() => {
+    if (coverImage) return;
     apiService.generateCaseImage(selectedCaseId).then((res: any) => {
       if (res.success) setCoverImage(res.data.cover_image_data);
     }).catch(() => {});
-  }, [selectedCaseId]);
+  }, [selectedCaseId, coverImage]);
 
   const handleCreate = async () => {
     try {
