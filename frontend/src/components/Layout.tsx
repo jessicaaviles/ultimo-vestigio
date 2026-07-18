@@ -50,8 +50,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return <div className="app-shell">
     <header className="topbar" style={{
-      position: location.pathname !== '/' ? 'fixed' : 'absolute',
-      ...(location.pathname !== '/' && scrolled ? { background: 'rgba(20,27,31,0.72) !important' as any, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' } : {}),
+      position: scrolled || location.pathname !== '/' ? 'fixed' : 'absolute',
+      ...(scrolled ? { background: 'rgba(20,27,31,0.72) !important' as any, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' } : {}),
     } as React.CSSProperties}>
       {location.pathname !== '/' ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
