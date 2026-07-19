@@ -62,6 +62,7 @@ const Profile: React.FC = () => {
           if (profileRes.success) {
             setProfile(profileRes.data);
             setName(profileRes.data.displayName);
+            localStorage.setItem('userName', profileRes.data.displayName);
             setBio(profileRes.data.bio);
             setActive(profileRes.data.active);
           } else {
@@ -117,6 +118,7 @@ const Profile: React.FC = () => {
       if (!response.success) throw new Error(response.error);
       setProfile(response.data);
       setName(response.data.displayName);
+      localStorage.setItem('userName', response.data.displayName);
       setBio(response.data.bio);
       setActive(response.data.active);
       setPhotoData('');
