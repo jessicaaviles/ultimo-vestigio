@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSocket } from '../contexts/useSocket';
 import { QRCodeCanvas } from 'qrcode.react';
+import { getProfile } from '../services/api';
 import Loading from '../components/Loading';
 
 const Lobby: React.FC = () => {
@@ -29,6 +30,27 @@ const Lobby: React.FC = () => {
       socket.off('game_started');
     };
   }, [socket, roomId, navigate]);
+
+  const [profileCache, setProfileCache] = useState<Record<string, any>>({});
+  useEffect(() => {
+    if (!roomData?.players) return;
+    roomData.players.forEach((p: any) => {
+      if (p.user || profileCache[p.anonymous_user_id]) return;
+      getProfile(p.anonymous_user_id).then((res: any) => {
+        if (res.success) setProfileCache(prev => ({ ...prev, [p.anonymous_user_id]: res.data }));
+      }).catch(() => {});
+    });
+  }, [roomData, profileCache]);
+
+  const getPlayerDisplayName = (p: any) => {
+    const profile = p.user || profileCache[p.anonymous_user_id];
+    return profile?.displayName || p.display_name;
+  };
+
+  const getPlayerPhoto = (p: any) => {
+    const profile = p.user || profileCache[p.anonymous_user_id];
+    return profile?.photo || null;
+  };
 
   if (!roomData) return <Loading message="Conectando à sala..." />;
 
@@ -137,12 +159,12 @@ const Lobby: React.FC = () => {
                   backgroundColor: 'rgba(0,0,0,0.3)',
                   border: `1px solid ${p.connection_status === 'CONNECTED' ? 'var(--accent-olive)' : 'var(--error-color)'}`
                 }}>
-                  {(p.user?.profile_photo_data || p.user?.generated_profile_photo_data) ? (
-                    <img src={p.user.generated_profile_photo_data || p.user.profile_photo_data} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {getPlayerPhoto(p) ? (
+                    <img src={getPlayerPhoto(p)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : null}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: '13px', color: '#F8F9FA', fontFamily: 'var(--font-serif)' }}>{p.user?.default_display_name || p.display_name}</div>
+                  <div style={{ fontWeight: 600, fontSize: '13px', color: '#F8F9FA', fontFamily: 'var(--font-serif)' }}>{getPlayerDisplayName(p)}</div>
                   <div style={{ fontSize: '9px', color: p.ready_status === 'READY' ? 'var(--accent-olive)' : '#8E989F', marginTop: '1px', textTransform: 'uppercase', letterSpacing: '1px' }}>
                     {p.ready_status === 'READY' ? '✅ Pronto' : 'Aguardando...'}
                     {p.is_host && <span style={{ color: 'var(--gold-soft)', marginLeft: '6px' }}>• Anfitrião</span>}
