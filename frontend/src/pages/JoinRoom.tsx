@@ -39,7 +39,7 @@ const JoinRoom: React.FC = () => {
         if (reg.data.deviceToken) localStorage.setItem('deviceToken', reg.data.deviceToken);
       }
 
-      const res = await joinRoom(code.toUpperCase(), userId, name);
+      const res = await joinRoom(code.toUpperCase(), userId!, name);
       if (res.success) {
         localStorage.setItem('userName', name.trim());
         navigate(`/room/${res.data.roomId}/lobby`);
