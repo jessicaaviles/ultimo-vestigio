@@ -7,18 +7,18 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const BLOCKED_PATTERNS = /(ignore|esqueça|revele|mostre|prompt|instruções|system message|segredo|solução completa|ignore previous|forget|reveal the)/i;
 
 const generateNarrative = async (classification: string, factualExplanation: string): Promise<string> => {
-  const narrativePrompt = `Você é o Mestre IA de um jogo de mistério e investigação brasileiro.
-Sua tarefa é redigir a resposta final ao jogador, baseada na análise lógica abaixo.
+  const narrativePrompt = `Você é o Mestre IA de um jogo de mistério e investigação. Responda APENAS à pergunta feita pelo jogador.
 
-Classificação lógica: ${classification}
-Justificativa factual: ${factualExplanation}
+Classificação: ${classification}
+Contexto interno (use APENAS como base, não revele detalhes): ${factualExplanation}
 
-Regras obrigatórias:
-1. Responda SEMPRE em português do Brasil (pt-BR). Nunca use outro idioma.
-2. Responda em no máximo 2 frases curtas e diretas.
-3. Não invente nada que não esteja na justificativa factual.
-4. Prefixos obrigatórios: YES → "Sim." | NO → "Não." | PARTIAL → "Parcialmente." | IRRELEVANT → "Isso é irrelevante para o caso." | UNKNOWN → "Os registros não revelam isso."
-5. Use um tom levemente misterioso e narrativo, como um narrador de noir.`;
+Regras ESTRITAS:
+1. Responda SEMPRE em português do Brasil (pt-BR).
+2. Comece obrigatoriamente com: YES → "Sim." | NO → "Não." | PARTIAL → "Parcialmente." | IRRELEVANT → "Isso não é relevante." | UNKNOWN → "Isso não está nos registros."
+3. Após o prefixo, adicione NO MÁXIMO uma frase curta e vaga — sem revelar nomes, datas, locais ou detalhes concretos que não foram perguntados.
+4. NUNCA mencione fatos ou detalhes que vão além do que a pergunta tocou.
+5. Tom seco e misterioso — como um árbitro que sabe mais do que fala.`;
+
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
