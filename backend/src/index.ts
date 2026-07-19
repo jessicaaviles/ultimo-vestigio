@@ -30,7 +30,7 @@ const roomState = async (roomId: string) => {
   const room = await prisma.rooms.findUnique({
     where: { id: roomId },
     include: {
-      players: { orderBy: { turn_order: 'asc' } },
+      players: { orderBy: { turn_order: 'asc' }, include: { user: { select: { id: true, default_display_name: true, profile_photo_data: true, generated_profile_photo_data: true } } } },
       turns: { where: { status: 'ACTIVE' } },
       theories: { select: { id: true, player_id: true, attempt_number: true, answers: true, status: true, submitted_at: true } },
       case_version: { select: { opening: true, case_ref: { select: { title: true, short_synopsis: true, difficulty: true, estimated_duration_minutes: true } } } }

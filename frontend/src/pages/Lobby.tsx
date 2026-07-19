@@ -133,14 +133,18 @@ const Lobby: React.FC = () => {
                 backdropFilter: 'blur(10px)'
               }}>
                 <div style={{
-                  width: '34px', height: '34px', borderRadius: '6px',
+                  width: '34px', height: '34px', borderRadius: '6px', overflow: 'hidden', flexShrink: 0,
                   backgroundColor: 'rgba(0,0,0,0.3)',
                   border: `1px solid ${p.connection_status === 'CONNECTED' ? 'var(--accent-olive)' : 'var(--error-color)'}`
-                }}></div>
+                }}>
+                  {(p.user?.profile_photo_data || p.user?.generated_profile_photo_data) ? (
+                    <img src={p.user.generated_profile_photo_data || p.user.profile_photo_data} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : null}
+                </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, fontSize: '13px', color: '#F8F9FA', fontFamily: 'var(--font-serif)' }}>{p.display_name}</div>
+                  <div style={{ fontWeight: 600, fontSize: '13px', color: '#F8F9FA', fontFamily: 'var(--font-serif)' }}>{p.user?.default_display_name || p.display_name}</div>
                   <div style={{ fontSize: '9px', color: p.ready_status === 'READY' ? 'var(--accent-olive)' : '#8E989F', marginTop: '1px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    {p.ready_status === 'READY' ? '✅ Pronto' : p.is_host ? 'Aguardando...' : 'Aguardando...'}
+                    {p.ready_status === 'READY' ? '✅ Pronto' : 'Aguardando...'}
                     {p.is_host && <span style={{ color: 'var(--gold-soft)', marginLeft: '6px' }}>• Anfitrião</span>}
                   </div>
                 </div>
