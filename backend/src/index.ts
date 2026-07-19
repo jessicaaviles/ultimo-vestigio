@@ -603,13 +603,16 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     const { roomId, userId } = socket.data as { roomId?: string; userId?: string };
     if (roomId && userId) {
-      prisma.room_players.updateMany({ where: { room_id: roomId, anonymous_user_id: userId }, data: { connection_status: 'DISCONNECTED', last_seen_at: new Date() } })
-        .then(async () => {
-          // Aguarda 5s antes de transferir host para evitar transferências acidentais em reconexões rápidas
-          await new Promise(r => setTimeout(r, 5000));
+      recordAnalytics('player_disconnected', roomId, userId).catch(() => undefined);
+      // Aguarda 5s antes de marcar como desconectado para evitar race conditions em reconexões rápidas
+      setTimeout(async () => {
+        try {
+          // Só marca como DISCONNECTED se o jogador ainda não reconectou
+          const player = await prisma.room_players.findFirst({ where: { room_id: roomId, anonymous_user_id: userId } });
+          if (!player || player.connection_status === 'CONNECTED') return;
+          await prisma.room_players.updateMany({ where: { room_id: roomId, anonymous_user_id: userId }, data: { connection_status: 'DISCONNECTED', last_seen_at: new Date() } });
           const current = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: true } });
           if (!current || current.host_user_id !== userId || ['GAME_OVER', 'COMPLETED'].includes(current.status)) return;
-          // Se o host já reconectou nesse intervalo, não transfere
           const hostPlayer = current.players.find((p) => p.anonymous_user_id === userId);
           if (hostPlayer?.connection_status === 'CONNECTED') return;
           const successor = current.players.find((player) => player.anonymous_user_id !== userId && player.connection_status === 'CONNECTED');
@@ -617,9 +620,11 @@ io.on('connection', (socket) => {
             await prisma.$transaction([prisma.rooms.update({ where: { id: roomId }, data: { host_user_id: successor.anonymous_user_id } }), prisma.room_players.updateMany({ where: { room_id: roomId, is_host: true }, data: { is_host: false } }), prisma.room_players.update({ where: { id: successor.id }, data: { is_host: true } })]);
             io.to(roomId).emit('host_transferred', { playerId: successor.id });
           }
-          return emitRoomState(roomId);
-        }).catch(() => undefined);
-      recordAnalytics('player_disconnected', roomId, userId).catch(() => undefined);
+          await emitRoomState(roomId);
+        } catch (err) {
+          console.error("Erro no disconnect handler:", err);
+        }
+      }, 5000);
     }
   });
 });
