@@ -99,7 +99,7 @@ export const createRoom = async (req: Request, res: Response) => {
         data: {
           room_id: newRoom.id,
           anonymous_user_id: hostUserId,
-           display_name: String(hostDisplayName).trim().slice(0, 32),
+          display_name: host.default_display_name || String(hostDisplayName).trim().slice(0, 32) || 'Anfitrião',
           is_host: true,
           connection_status: 'CONNECTED',
           ready_status: 'READY'
@@ -167,14 +167,14 @@ export const joinRoom = async (req: Request, res: Response) => {
         }
       },
       update: {
-        display_name: cleanName,
+        display_name: user.default_display_name || cleanName,
         connection_status: 'CONNECTED',
         last_seen_at: new Date()
       },
       create: {
         room_id: room.id,
         anonymous_user_id: userId,
-        display_name: cleanName,
+        display_name: user.default_display_name || cleanName,
         is_host: room.host_user_id === userId,
         connection_status: 'CONNECTED',
         ready_status: 'NOT_READY'
