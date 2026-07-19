@@ -9,7 +9,6 @@ const Lobby: React.FC = () => {
   const navigate = useNavigate();
   const socket = useSocket();
   const [roomData, setRoomData] = useState<any>(null);
-  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -34,14 +33,17 @@ const Lobby: React.FC = () => {
   if (!roomData) return <Loading message="Conectando à sala..." />;
 
   const players = roomData.players || [];
-  const isHost = players.some((p: any) => p.anonymous_user_id === localStorage.getItem('userId') && p.is_host);
+  const currentUserId = localStorage.getItem('userId');
+  const isHost = players.some((p: any) => p.anonymous_user_id === currentUserId && p.is_host);
+  const me = players.find((p: any) => p.anonymous_user_id === currentUserId);
+  const isReady = me?.ready_status === 'READY';
 
   const handleStart = () => {
-    socket?.emit('start_game', { roomId, userId: localStorage.getItem('userId') });
+    socket?.emit('start_game', { roomId, userId: currentUserId });
   };
 
   const handleReady = () => {
-    const next = !isReady; setIsReady(next); socket?.emit('player_ready', { roomId, userId: localStorage.getItem('userId'), ready: next });
+    socket?.emit('player_ready', { roomId, userId: currentUserId, ready: !isReady });
   };
 
   const invite = `${window.location.origin}/join?room=${roomData.public_code}`;
@@ -137,8 +139,8 @@ const Lobby: React.FC = () => {
                 }}></div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: '13px', color: '#F8F9FA', fontFamily: 'var(--font-serif)' }}>{p.display_name}</div>
-                  <div style={{ fontSize: '9px', color: p.connection_status === 'CONNECTED' ? 'var(--accent-olive)' : '#8E989F', marginTop: '1px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    {p.connection_status === 'CONNECTED' ? 'Online' : 'Offline'}
+                  <div style={{ fontSize: '9px', color: p.ready_status === 'READY' ? 'var(--accent-olive)' : p.connection_status === 'CONNECTED' ? '#8E989F' : '#8E989F', marginTop: '1px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    {p.ready_status === 'READY' ? '✅ Pronto' : p.connection_status === 'CONNECTED' ? 'Online' : 'Offline'}
                     {p.is_host && <span style={{ color: 'var(--gold-soft)', marginLeft: '6px' }}>• Anfitrião</span>}
                   </div>
                 </div>
