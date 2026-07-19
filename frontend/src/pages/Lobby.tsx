@@ -183,7 +183,7 @@ const Lobby: React.FC = () => {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: '13px', color: '#F8F9FA', fontFamily: 'var(--font-serif)' }}>{getPlayerDisplayName(p)}</div>
                   <div style={{ fontSize: '9px', color: p.ready_status === 'READY' ? 'var(--accent-olive)' : '#8E989F', marginTop: '1px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    {p.ready_status === 'READY' ? '✅ Pronto' : p.connection_status === 'CONNECTED' ? 'Online' : 'Offline'}
+                    {p.ready_status === 'READY' ? '✅ Pronto' : 'Aguardando...'}
                     {p.is_host && <span style={{ color: 'var(--gold-soft)', marginLeft: '6px' }}>• Anfitrião</span>}
                   </div>
                 </div>
