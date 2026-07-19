@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SocketProvider } from './contexts/SocketContext';
 import { NotificationsProvider } from './contexts/NotificationsContext';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import CreateRoom from './pages/CreateRoom';
 import JoinRoom from './pages/JoinRoom';
@@ -24,32 +26,36 @@ import './App.css';
 function App() {
   return (
     <SocketProvider>
+      <AuthProvider>
       <NotificationsProvider>
       <div className="app-container">
         <BrowserRouter>
           <SocketNotificationsBridge />
           <Routes>
-            {/* Rotas com Bottom Navigation */}
+            {/* Rotas públicas */}
             <Route path="/" element={<Layout><Home /></Layout>} />
-            <Route path="/create" element={<Layout><CreateRoom /></Layout>} />
-            <Route path="/join" element={<Layout><JoinRoom /></Layout>} />
-            <Route path="/cases" element={<Layout><Cases /></Layout>} />
-            <Route path="/messages" element={<Layout><Messages /></Layout>} />
-            <Route path="/profile" element={<Layout><Profile /></Layout>} />
             <Route path="/login" element={<Layout><Login /></Layout>} />
             <Route path="/register" element={<Layout><Register /></Layout>} />
-            <Route path="/lobby" element={<Layout><LobbyList /></Layout>} />
-            <Route path="/room/:roomId/lobby" element={<Layout><Lobby /></Layout>} />
-            <Route path="/room/:roomCode" element={<Layout><RoomEntry /></Layout>} />
-            <Route path="/room/:roomId/recovery" element={<Layout><RecoveryCode /></Layout>} />
-            <Route path="/room/:roomId/briefing" element={<Layout><Briefing /></Layout>} />
-            <Route path="/room/:roomId/game" element={<Layout><Game /></Layout>} />
-            <Route path="/room/:roomId/feedback" element={<Layout><Feedback /></Layout>} />
             <Route path="/tutorial" element={<Layout><Tutorial /></Layout>} />
+
+            {/* Rotas protegidas */}
+            <Route path="/create" element={<Layout><ProtectedRoute><CreateRoom /></ProtectedRoute></Layout>} />
+            <Route path="/join" element={<Layout><ProtectedRoute><JoinRoom /></ProtectedRoute></Layout>} />
+            <Route path="/cases" element={<Layout><ProtectedRoute><Cases /></ProtectedRoute></Layout>} />
+            <Route path="/messages" element={<Layout><ProtectedRoute><Messages /></ProtectedRoute></Layout>} />
+            <Route path="/profile" element={<Layout><ProtectedRoute><Profile /></ProtectedRoute></Layout>} />
+            <Route path="/lobby" element={<Layout><ProtectedRoute><LobbyList /></ProtectedRoute></Layout>} />
+            <Route path="/room/:roomId/lobby" element={<Layout><ProtectedRoute><Lobby /></ProtectedRoute></Layout>} />
+            <Route path="/room/:roomCode" element={<Layout><ProtectedRoute><RoomEntry /></ProtectedRoute></Layout>} />
+            <Route path="/room/:roomId/recovery" element={<Layout><ProtectedRoute><RecoveryCode /></ProtectedRoute></Layout>} />
+            <Route path="/room/:roomId/briefing" element={<Layout><ProtectedRoute><Briefing /></ProtectedRoute></Layout>} />
+            <Route path="/room/:roomId/game" element={<Layout><ProtectedRoute><Game /></ProtectedRoute></Layout>} />
+            <Route path="/room/:roomId/feedback" element={<Layout><ProtectedRoute><Feedback /></ProtectedRoute></Layout>} />
           </Routes>
         </BrowserRouter>
       </div>
       </NotificationsProvider>
+      </AuthProvider>
     </SocketProvider>
   );
 }
