@@ -25,7 +25,7 @@ Regras obrigatórias:
       const res = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: narrativePrompt,
-        config: { temperature: 0.4, thinkingConfig: { thinkingBudget: 0 } }
+        config: { temperature: 0.4 }
       });
       const text = res.text?.trim();
       if (text && text.length > 5) return text.slice(0, 360);
@@ -89,7 +89,7 @@ Analise a pergunta, extraia as premissas, compare com os Fatos Absolutos e gere 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
-      config: { responseMimeType: 'application/json', responseSchema, temperature: 0.1, thinkingConfig: { thinkingBudget: 0 } }
+      config: { responseMimeType: 'application/json', responseSchema, temperature: 0.1 }
     });
 
     if (!response.text) throw new Error("Resposta vazia do motor lógico");

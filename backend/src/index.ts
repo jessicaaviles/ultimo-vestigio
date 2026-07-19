@@ -303,8 +303,9 @@ io.on('connection', (socket) => {
         return;
       }
 
-      // Falha técnica do Mestre IA — não salvar no banco, pedir tentativa novamente
-      if (aiResponse.fallback_used === true && aiResponse.classification === 'UNKNOWN') {
+      // Falha TÉCNICA do Mestre IA (fallback_used=true) — não salvar, pedir nova tentativa
+      // ATENÇÃO: classification=UNKNOWN com fallback_used=false é resposta VÁLIDA do jogo
+      if (aiResponse.fallback_used === true) {
         socket.emit('question_needs_reformulation', {
           classification: 'TECHNICAL_ERROR',
           message: aiResponse.rendered_text
