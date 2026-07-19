@@ -10,6 +10,7 @@ const Lobby: React.FC = () => {
   const navigate = useNavigate();
   const socket = useSocket();
   const [roomData, setRoomData] = useState<any>(null);
+  const [startError, setStartError] = useState('');
 
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -25,9 +26,14 @@ const Lobby: React.FC = () => {
       navigate(`/room/${roomId}/briefing`);
     });
 
+    socket.on('room_error', (err: string) => {
+      setStartError(String(err));
+    });
+
     return () => {
       socket.off('room_state_updated');
       socket.off('game_started');
+      socket.off('room_error');
     };
   }, [socket, roomId, navigate]);
 
@@ -50,12 +56,12 @@ const Lobby: React.FC = () => {
 
   const getPlayerDisplayName = (p: any) => {
     const profile = p.user || profileCache[p.anonymous_user_id];
-    return profile?.displayName || p.display_name;
+    return profile?.displayName || profile?.default_display_name || p.display_name;
   };
 
   const getPlayerPhoto = (p: any) => {
     const profile = p.user || profileCache[p.anonymous_user_id];
-    return profile?.photo || null;
+    return profile?.photo || profile?.generated_profile_photo_data || profile?.profile_photo_data || null;
   };
 
   if (!roomData) return <Loading message="Conectando à sala..." />;
@@ -181,6 +187,11 @@ const Lobby: React.FC = () => {
           </div>
         </div>
 
+        {startError && (
+          <div style={{ color: '#d79b8e', fontSize: '12px', textAlign: 'center', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(215,155,142,0.3)', background: 'rgba(215,155,142,0.08)' }}>
+            {startError}
+          </div>
+        )}
         {/* Botões */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button className="btn-secondary" onClick={handleReady} style={{ justifyContent: 'center' }}>
