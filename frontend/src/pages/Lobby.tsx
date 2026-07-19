@@ -139,8 +139,8 @@ const Lobby: React.FC = () => {
                 }}></div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: '13px', color: '#F8F9FA', fontFamily: 'var(--font-serif)' }}>{p.display_name}</div>
-                  <div style={{ fontSize: '9px', color: p.ready_status === 'READY' ? 'var(--accent-olive)' : p.connection_status === 'CONNECTED' ? '#8E989F' : '#8E989F', marginTop: '1px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                    {p.ready_status === 'READY' ? '✅ Pronto' : p.connection_status === 'CONNECTED' ? 'Online' : 'Offline'}
+                  <div style={{ fontSize: '9px', color: p.ready_status === 'READY' ? 'var(--accent-olive)' : '#8E989F', marginTop: '1px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    {p.ready_status === 'READY' ? '✅ Pronto' : p.is_host ? 'Aguardando...' : 'Aguardando...'}
                     {p.is_host && <span style={{ color: 'var(--gold-soft)', marginLeft: '6px' }}>• Anfitrião</span>}
                   </div>
                 </div>
