@@ -181,7 +181,7 @@ const Game: React.FC = () => {
       {/* Overlay */}
       <div style={{ position: 'fixed', inset: 0, background: 'linear-gradient(180deg, rgba(15,20,23,0.92) 0%, rgba(15,20,23,0.78) 50%, rgba(15,20,23,0.95) 100%)', zIndex: 0 }} />
 
-      {/* Conteúdo principal — container scrollável */}
+      {/* Conteúdo principal — container flex com scroll + input fixo */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -190,9 +190,9 @@ const Game: React.FC = () => {
         paddingBottom: 'calc(76px + env(safe-area-inset-bottom) + 24px)',
         display: 'flex',
         flexDirection: 'column',
-        overflowY: 'auto'
       }}>
-        <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '100%' }}>
+        {/* Área scrollável */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           {/* Header do caso */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -354,9 +354,14 @@ const Game: React.FC = () => {
                   ))}
                 </div>
               )}
+            </>
+            )}
 
-              {/* Área de ação: formulário + botões */}
-              <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            </div> {/* fim da área scrollável */}
+
+            {status === 'IN_PROGRESS' && (
+            <div style={{ padding: '10px 20px', paddingBottom: 'calc(76px + env(safe-area-inset-bottom) + 12px)', display: 'flex', flexDirection: 'column', gap: '10px', background: 'linear-gradient(0deg, rgba(15,20,23,0.98) 0%, rgba(15,20,23,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
                   <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'stretch' }}>
                     <input
@@ -411,8 +416,8 @@ const Game: React.FC = () => {
                   )}
                 </div>
               </div>
-            </>
-          )}
+            </div>
+            )}
 
           {/* Status: SOLVING */}
           {status === 'SOLVING' && (
@@ -529,7 +534,6 @@ const Game: React.FC = () => {
             </div>
           )}
 
-        </div>
       </div>
     </div>
   );
