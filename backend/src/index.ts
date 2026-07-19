@@ -121,8 +121,10 @@ io.on('connection', (socket) => {
     try {
       const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: true } });
       if (!room || room.host_user_id !== userId) return;
-      if (room.players.length < 2 || room.players.some(player => player.connection_status !== 'CONNECTED')) {
-        socket.emit('room_error', 'A sala precisa ter pelo menos dois jogadores conectados.');
+      console.log('[start_game] players:', room.players.map(p => ({ id: p.anonymous_user_id, name: p.display_name, conn: p.connection_status })));
+      const activePlayers = room.players.filter(p => p.connection_status === 'CONNECTED');
+      if (activePlayers.length < 2) {
+        socket.emit('room_error', `A sala precisa ter pelo menos dois jogadores conectados. Atualmente: ${room.players.length} jogador(es), ${activePlayers.length} conectado(s).`);
         return;
       }
 
