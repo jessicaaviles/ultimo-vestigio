@@ -181,17 +181,18 @@ const Game: React.FC = () => {
       {/* Overlay */}
       <div style={{ position: 'fixed', inset: 0, background: 'linear-gradient(180deg, rgba(15,20,23,0.92) 0%, rgba(15,20,23,0.78) 50%, rgba(15,20,23,0.95) 100%)', zIndex: 0 }} />
 
-      {/* Conteúdo principal — container fixo sem scroll próprio */}
+      {/* Conteúdo principal — container scrollável */}
       <div style={{
         position: 'fixed',
         inset: 0,
         zIndex: 1,
         paddingTop: '88px',
+        paddingBottom: 'calc(76px + env(safe-area-inset-bottom) + 24px)',
         display: 'flex',
         flexDirection: 'column',
+        overflowY: 'auto'
       }}>
-        {/* Área scrollável — tudo exceto o input */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '100%' }}>
 
           {/* Header do caso */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -223,12 +224,12 @@ const Game: React.FC = () => {
                 <span style={{ color: 'var(--accent-gold)', fontSize: '14px', lineHeight: 1 }}>{showCaseSummary ? '▲' : '▼'}</span>
               </button>
               {showCaseSummary && (
-                <div style={{ marginTop: '12px', maxHeight: '160px', overflowY: 'auto' }}>
-                  <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', lineHeight: 1.6, margin: 0, fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>
-                    {caseSynopsis || caseOpening}
-                  </p>
+                <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '160px', overflowY: 'auto' }}>
+                  {caseSynopsis && <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', lineHeight: 1.6, margin: 0, fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>{caseSynopsis}</p>}
+                  {caseOpening && caseSynopsis !== caseOpening && (
+                    <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{caseOpening}</p>
+                  )}
                 </div>
-
               )}
             </div>
           )}
@@ -341,25 +342,7 @@ const Game: React.FC = () => {
                 </div>
               )}
 
-              {/* Loading: IA processando */}
-              {loading && (
-                <div style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.5)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Mestre:</span>
-                  <span style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
-                    {[0, 1, 2].map(i => (
-                      <span key={i} style={{
-                        width: '6px', height: '6px', borderRadius: '50%',
-                        background: 'var(--accent-gold)',
-                        display: 'inline-block',
-                        animation: `pulse-dot 1.2s ease-in-out ${i * 0.2}s infinite`
-                      }} />
-                    ))}
-                  </span>
-                  <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontStyle: 'italic' }}>consultando os arquivos...</span>
-                </div>
-              )}
-
-
+              {/* Pistas usadas */}
               {hints.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {hints.map((hint) => (
@@ -371,14 +354,9 @@ const Game: React.FC = () => {
                   ))}
                 </div>
               )}
-            </>
-            )}
 
-            </div> {/* fim da área scrollável */}
-
-            {status === 'IN_PROGRESS' && (
-            <div style={{ padding: '10px 20px', paddingBottom: 'calc(76px + env(safe-area-inset-bottom) + 12px)', display: 'flex', flexDirection: 'column', gap: '10px', background: 'linear-gradient(0deg, rgba(15,20,23,0.98) 0%, rgba(15,20,23,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {/* Área de ação: formulário + botões */}
+              <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
                   <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'stretch' }}>
                     <input
@@ -433,7 +411,8 @@ const Game: React.FC = () => {
                   )}
                 </div>
               </div>
-            )}
+            </>
+          )}
 
           {/* Status: SOLVING */}
           {status === 'SOLVING' && (
