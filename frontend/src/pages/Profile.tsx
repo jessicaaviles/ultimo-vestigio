@@ -36,6 +36,7 @@ const Profile: React.FC = () => {
 
   const fetchSeqRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const bioInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -222,10 +223,11 @@ const Profile: React.FC = () => {
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div className="profile-hero">
         <div className="profile-avatar-wrap" style={{ position: 'relative' }}>
-          <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: image ? 'pointer' : 'default' }} onClick={() => image && setPhotoViewer(true)}>
-            {image ? <img src={image} alt={`Retrato de ${name}`} /> : <Camera size={28} strokeWidth={1.3} />}
+          <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: 'pointer' }} onClick={() => image ? setPhotoViewer(true) : avatarInputRef.current?.click()}>
+            {image ? <img src={image} alt={`Retrato de ${name}`} /> : <Upload size={24} strokeWidth={1.3} />}
             {generatingPortrait && <div className="profile-avatar-spinner" />}
           </div>
+          <input ref={avatarInputRef} type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = (ev) => { const data = ev.target?.result as string; setPhotoData(data); setPreview(data); }; r.readAsDataURL(f); }} />
           {profile?.hasGeneratedPortrait && <span className="portrait-badge" title="Retrato gerado pela IA"><Check size={12} /></span>}
           {profile?.portraitGenerationsRemaining !== undefined && (
             <span style={{ position: 'absolute', bottom: -16, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: 'var(--muted)', whiteSpace: 'nowrap' }}>
