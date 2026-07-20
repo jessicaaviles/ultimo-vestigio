@@ -25,6 +25,7 @@ const Game: React.FC = () => {
   const [typingPlayer, setTypingPlayer] = useState<string | null>(null);
   const [processingUser, setProcessingUser] = useState<string | null>(null);
   const [showHintsPanel, setShowHintsPanel] = useState(false);
+  const [autoSpeak, setAutoSpeak] = useState(true);
   const [myVote, setMyVote] = useState<string | null>(null);
   const [voteTiedMessage, setVoteTiedMessage] = useState(false);
   const typingTimeoutRef = useRef<any>(null);
@@ -111,6 +112,7 @@ const Game: React.FC = () => {
       setProcessingUser(null);
       setHistory(prev => [...prev, data]);
       setQuestion('');
+      if (autoSpeak && data.responseText) speakAnswer(data.responseText);
     });
 
     socket.on('vote_started', (data) => { setActiveVote(data); setMyVote(null); });
@@ -153,7 +155,7 @@ const Game: React.FC = () => {
       socket.off('player_typing');
       socket.off('question_processing');
     };
-  }, [socket, roomId]);
+  }, [socket, roomId, autoSpeak, speakAnswer]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,6 +179,19 @@ const Game: React.FC = () => {
   const contestAnswer = (questionId: string) => socket?.emit('contest_answer', { roomId, userId, questionId, reason: 'possible_contradiction' });
   const handleSubmitTheory = (e: React.FormEvent) => { e.preventDefault(); socket?.emit('submit_theory', { roomId, userId: localStorage.getItem('userId'), answers: theoryAnswers }); };
   const handleFinishGame = () => { setLoading(true); socket?.emit('finish_game', { roomId, userId: localStorage.getItem('userId') }); };
+
+  const speakAnswer = useCallback((text: string) => {
+    if (!window.speechSynthesis || !text) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    utterance.rate = 1.1;
+    utterance.pitch = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const ptVoice = voices.find(v => v.lang.startsWith('pt'));
+    if (ptVoice) utterance.voice = ptVoice;
+    window.speechSynthesis.speak(utterance);
+  }, []);
 
   const userId = localStorage.getItem('userId');
   const players = roomData?.players || [];
@@ -395,6 +410,7 @@ const Game: React.FC = () => {
                   <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', lineHeight: 1.6 }}>
                     <span style={{ color: 'var(--accent-gold)', fontWeight: 700, marginRight: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Mestre:</span>
                     {item.answer?.rendered_text || item.responseText}
+                    <button onClick={() => speakAnswer(item.answer?.rendered_text || item.responseText)} style={{ marginLeft: '8px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '14px', opacity: 0.5, verticalAlign: 'middle', lineHeight: 1 }} title="Ouvir resposta">🔊</button>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                     <button onClick={() => requestClarification(item.question?.id)} disabled={!item.question?.id || item.clarification} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Esclarecer</button>
@@ -650,6 +666,13 @@ const Game: React.FC = () => {
                       ))}
                     </div>
                   </div>
+                  <button
+                    onClick={() => setAutoSpeak(v => !v)}
+                    style={{ padding: '12px', background: 'transparent', border: `1px solid ${autoSpeak ? 'var(--accent-gold)' : 'rgba(255,255,255,0.15)'}`, borderRadius: '10px', color: autoSpeak ? 'var(--accent-gold)' : 'rgba(255,255,255,0.4)', cursor: 'pointer', fontWeight: 600, fontSize: '13px', flexShrink: 0 }}
+                    title={autoSpeak ? 'Auto-fala ligada' : 'Auto-fala desligada'}
+                  >
+                    🔊
+                  </button>
                   {isMyTurn && (
                     <button
                       onClick={handlePassTurn}
