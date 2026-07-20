@@ -443,10 +443,7 @@ const Game: React.FC = () => {
 
           {status === 'REVEAL' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ ...cardStyle, borderColor: 'rgba(132,147,107,0.5)', background: 'rgba(132,147,107,0.12)' }}>
-                <div style={labelStyle}>A Verdade</div>
-                {trueSolution ? <p style={{ fontSize: '15px', lineHeight: 1.6, color: 'rgba(255,255,255,0.85)', fontFamily: 'var(--font-serif)', fontStyle: 'italic', margin: 0 }}>{trueSolution}</p> : <Loading message="Carregando solução..." fullPage={false} />}
-              </div>
+
               <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', margin: 0, color: 'var(--accent-gold)' }}>Teorias dos Investigadores</h3>
               {theories.map((t: any, idx: number) => {
                 const author = players.find((p: any) => p.id === t.player_id);
@@ -476,7 +473,14 @@ const Game: React.FC = () => {
           {status === 'GAME_OVER' && gameResult && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'center', paddingTop: '40px' }}>
               <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '36px', color: 'var(--accent-gold)', margin: 0 }}>Caso Encerrado</h2>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px' }}>O Mestre avaliou as teorias.</p>
+              
+              {trueSolution && (
+                <div style={{ ...cardStyle, textAlign: 'left', borderColor: 'rgba(132,147,107,0.5)', background: 'rgba(132,147,107,0.12)' }}>
+                  <div style={{ ...labelStyle, marginBottom: '8px' }}>O que realmente aconteceu:</div>
+                  <p style={{ fontSize: '14px', lineHeight: 1.6, color: 'rgba(255,255,255,0.9)', margin: 0 }}>{trueSolution}</p>
+                </div>
+              )}
+
               <div style={{ ...cardStyle, padding: '32px', borderColor: 'rgba(184,153,83,0.3)' }}>
                 <div style={labelStyle}>Precisão Geral da Equipe</div>
                 <div style={{ fontSize: '64px', fontFamily: 'var(--font-serif)', color: '#fff', lineHeight: 1, marginTop: '8px' }}>
