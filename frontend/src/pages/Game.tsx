@@ -71,6 +71,9 @@ const Game: React.FC = () => {
           contestation: null,
         })));
       }
+      if (data.hint_usages?.length) {
+        setHints(data.hint_usages.map((u: any) => ({ hintIndex: u.hint_index, penalty: u.penalty })));
+      }
     });
 
     socket.on('question_processed', (data) => {

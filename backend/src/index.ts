@@ -34,7 +34,8 @@ const roomState = async (roomId: string) => {
       turns: { where: { status: 'ACTIVE' } },
       theories: { select: { id: true, player_id: true, attempt_number: true, answers: true, status: true, submitted_at: true } },
       case_version: { select: { opening: true, case_ref: { select: { title: true, short_synopsis: true, difficulty: true, estimated_duration_minutes: true } } } },
-      questions: { orderBy: { sequence_number: 'asc' }, include: { master_answers: { orderBy: { created_at: 'asc' } }, interpretation: true } }
+      questions: { orderBy: { sequence_number: 'asc' }, include: { master_answers: { orderBy: { created_at: 'asc' } }, interpretation: true } },
+      hint_usages: true
     }
   });
   if (!room) return null;
