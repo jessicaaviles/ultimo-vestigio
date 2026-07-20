@@ -39,10 +39,15 @@ const roomState = async (roomId: string) => {
   });
   if (!room) return null;
   const activeVote = await prisma.votes.findFirst({ where: { room_id: roomId, status: 'OPEN' } });
+  
+  const priorEvaluation = await prisma.theory_evaluations.findFirst({ where: { room_id: roomId }, orderBy: { attempt_number: 'desc' } });
+  const currentAttemptNumber = priorEvaluation ? priorEvaluation.attempt_number + 1 : 1;
+  const activeTheories = room.theories.filter(t => t.attempt_number === currentAttemptNumber);
+
   return {
     ...room,
     case_version_id: room.case_version_id,
-    theories: room.status === 'SOLVING' ? room.theories.map(({ answers: _answers, ...theory }) => theory) : room.theories,
+    theories: room.status === 'SOLVING' ? activeTheories.map(({ answers: _answers, ...theory }) => theory) : activeTheories,
     activeVote
   };
 };
