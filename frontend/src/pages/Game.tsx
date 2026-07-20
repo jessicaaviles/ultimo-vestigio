@@ -24,6 +24,7 @@ const Game: React.FC = () => {
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<any>(null);
   const historyRef = useRef<HTMLDivElement>(null);
+  const prevTurnRef = useRef<string | null>(null);
 
   const toggleVoice = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -73,6 +74,16 @@ const Game: React.FC = () => {
       }
       if (data.hint_usages?.length) {
         setHints(data.hint_usages.map((u: any) => ({ hintIndex: u.hint_index, penalty: u.penalty })));
+      }
+      // Detecta mudança de turno e adiciona notificação ao histórico
+      const newTurn = data.turns?.find((t: any) => t.status === 'ACTIVE');
+      const newTurnId = newTurn?.id || null;
+      if (newTurnId && newTurnId !== prevTurnRef.current) {
+        const player = (data.players || []).find((p: any) => p.id === newTurn?.player_id);
+        if (player) {
+          setHistory(prev => [...prev, { type: 'turn', playerName: player.display_name, playerId: player.id } as any]);
+        }
+        prevTurnRef.current = newTurnId;
       }
     });
 
@@ -332,14 +343,15 @@ const Game: React.FC = () => {
                   );
                 })}
               </div>
-              {/* Indicador de turno */}
-              <div style={{ ...cardStyle, textAlign: 'center', borderColor: isMyTurn ? 'rgba(184,153,83,0.5)' : 'rgba(255,255,255,0.08)', background: isMyTurn ? 'rgba(184,153,83,0.12)' : 'rgba(255,255,255,0.03)', marginBottom: '16px' }}>
-                <div style={{ fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: isMyTurn ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
-                  {isMyTurn ? '✦ É a sua vez' : `Aguardando: ${activePlayer?.display_name || '...'}`}
-                </div>
-              </div>
-              {/* Histórico de perguntas */}
+              {/* Histórico de perguntas + turnos */}
               {history.map((item, idx) => (
+                item.type === 'turn' ? (
+                  <div key={idx} style={{ textAlign: 'center', padding: '8px 0', marginBottom: '16px', borderTop: '1px solid rgba(184,153,83,0.2)', borderBottom: '1px solid rgba(184,153,83,0.2)' }}>
+                    <span style={{ color: 'var(--accent-gold)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>
+                      ⏳ Vez de {item.playerName}
+                    </span>
+                  </div>
+                ) : (
                 <div key={idx} style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.35)', marginBottom: '16px' }}>
                   <div style={{ fontWeight: 600, marginBottom: '6px', color: '#fff', fontSize: '14px', fontStyle: 'italic' }}>
                     "{item.question?.original_text || item.questionText}"
@@ -355,6 +367,7 @@ const Game: React.FC = () => {
                   {item.clarification && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Esclarecimento: {item.clarification}</div>}
                   {item.contestation && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Revisão: {item.contestation}</div>}
                 </div>
+                )
               ))}
               {!history.length && !loading && (
                 <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', textAlign: 'center', fontStyle: 'italic', marginTop: '60px' }}>Faça sua primeira pergunta para iniciar a investigação.</p>
