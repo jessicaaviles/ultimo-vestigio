@@ -300,14 +300,14 @@ const Game: React.FC = () => {
             <div role="alert" style={{ ...cardStyle, borderColor: 'rgba(220,80,80,0.4)', background: 'rgba(220,80,80,0.1)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: '#ff9999', fontSize: '14px' }}>{errorMessage}</span>
-                <button onClick={() => setErrorMessage('')} style={{ color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
+                <button aria-label="Fechar aviso de erro" onClick={() => setErrorMessage('')} style={{ color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
               </div>
             </div>
           )}
 
           {evaluationNotice && (
             <div style={{ ...cardStyle, borderColor: 'rgba(132,147,107,0.5)', background: 'rgba(132,147,107,0.12)', position: 'relative' }}>
-              <button onClick={() => setEvaluationNotice(null)} style={{ position: 'absolute', top: '12px', right: '12px', color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
+              <button aria-label="Fechar aviso de avaliação" onClick={() => setEvaluationNotice(null)} style={{ position: 'absolute', top: '12px', right: '12px', color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
               <div style={labelStyle}>Avaliação da tentativa</div>
               <div style={{ fontSize: '32px', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', marginBottom: '8px' }}>{Math.round(evaluationNotice.groupScore)}%</div>
               <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px', margin: '0 0 12px' }}>{evaluationNotice.message}</p>

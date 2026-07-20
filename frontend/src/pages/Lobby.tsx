@@ -183,7 +183,7 @@ const Lobby: React.FC = () => {
                   border: `1px solid ${p.connection_status === 'CONNECTED' ? 'var(--accent-olive)' : 'var(--error-color)'}`
                 }}>
                   {getPlayerPhoto(p) ? (
-                    <img src={getPlayerPhoto(p)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={getPlayerPhoto(p)} alt={`Foto de perfil de ${getPlayerDisplayName(p)}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : null}
                 </div>
                 <div style={{ flex: 1 }}>

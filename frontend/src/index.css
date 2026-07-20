@@ -78,9 +78,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 [style*="color: '#F8F9FA'"] { color: var(--paper) !important; }
 /* Normalizes legacy inline values to the official palette during migration. */
 [style*="rgb(197, 168, 128)"], [style*="#C5A880"] { color: var(--gold-soft) !important; }
-[style*="background-color: rgb(197, 168, 128)"], [style*="background: rgb(197, 168, 128)"] { background: var(--olive) !important; color: var(--paper) !important; }
 [style*="background-color: rgb(15, 20, 23)"], [style*="background-color: rgb(19, 25, 28)"] { background-color: var(--graphite) !important; }
-[style*="color: rgb(0, 0, 0)"], [style*="color: rgb(255, 255, 255)"] { color: var(--paper) !important; }
 [style*="background: rgb(34, 34, 34)"], [style*="background-color: rgb(34, 34, 34)"] { background: var(--ink) !important; }
 [style*="rgb(142, 152, 159)"], [style*="#8E989F"] { color: var(--muted) !important; }
 [style*="rgb(248, 249, 250)"], [style*="#F8F9FA"] { color: var(--paper) !important; }
