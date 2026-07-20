@@ -76,23 +76,27 @@ const Game: React.FC = () => {
   }, [showHintsPanel]);
 
   const speakAnswer = useCallback((text: string) => {
-    if (!window.speechSynthesis || !text) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-BR';
-    utterance.rate = 1.1;
-    utterance.pitch = 1.0;
-    const voices = window.speechSynthesis.getVoices();
-    
-    // Lista de vozes que costumam ser mais naturais/humanizadas
-    const preferredVoiceNames = ['Luciana', 'Raquel', 'Felipe', 'Google português do Brasil', 'Microsoft Maria'];
-    
-    let ptVoice = voices.find(v => preferredVoiceNames.some(name => v.name.includes(name) && v.lang.includes('pt')));
-    if (!ptVoice) ptVoice = voices.find(v => v.lang === 'pt-BR' || v.lang === 'pt_BR');
-    if (!ptVoice) ptVoice = voices.find(v => v.lang.startsWith('pt'));
-    
-    if (ptVoice) utterance.voice = ptVoice;
-    window.speechSynthesis.speak(utterance);
+    try {
+      if (!window.speechSynthesis || !text) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 1.1;
+      utterance.pitch = 1.0;
+      const voices = window.speechSynthesis.getVoices();
+      
+      // Lista de vozes que costumam ser mais naturais/humanizadas
+      const preferredVoiceNames = ['Luciana', 'Raquel', 'Felipe', 'Google português do Brasil', 'Microsoft Maria'];
+      
+      let ptVoice = voices.find(v => preferredVoiceNames.some(name => v.name.includes(name) && v.lang.includes('pt')));
+      if (!ptVoice) ptVoice = voices.find(v => v.lang === 'pt-BR' || v.lang === 'pt_BR');
+      if (!ptVoice) ptVoice = voices.find(v => v.lang.startsWith('pt'));
+      
+      if (ptVoice) utterance.voice = ptVoice;
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn("Fala automática falhou (comum em mobile sem interação direta):", err);
+    }
   }, []);
 
   useEffect(() => {
@@ -140,11 +144,17 @@ const Game: React.FC = () => {
     });
 
     socket.on('question_processed', (data) => {
-      setLoading(false);
-      setProcessingUser(null);
-      setHistory(prev => [...prev, data]);
-      setQuestion('');
-      if (autoSpeak && data.answer?.rendered_text && data.askedBy === userId) speakAnswer(data.answer.rendered_text);
+      try {
+        setLoading(false);
+        setProcessingUser(null);
+        setHistory(prev => [...prev, data]);
+        setQuestion('');
+        if (autoSpeak && data.answer?.rendered_text && data.askedBy === userId) speakAnswer(data.answer.rendered_text);
+      } catch (err) {
+        console.error("Erro ao processar question_processed no frontend:", err);
+        setLoading(false);
+        setQuestion('');
+      }
     });
 
     socket.on('vote_started', (data) => { setActiveVote(data); setMyVote(null); });
