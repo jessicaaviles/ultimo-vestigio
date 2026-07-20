@@ -23,6 +23,7 @@ const Game: React.FC = () => {
   const [showCaseSummary, setShowCaseSummary] = useState(true);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const historyRef = useRef<HTMLDivElement>(null);
 
   const toggleVoice = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -152,6 +153,11 @@ const Game: React.FC = () => {
     update(); const interval = window.setInterval(update, 1000); return () => window.clearInterval(interval);
   }, [activeTurn?.id, activeTurn?.started_at, timerSeconds, isMyTurn, roomId, socket, userId]);
 
+  // Auto-scroll ao enviar pergunta ou receber resposta
+  useEffect(() => {
+    historyRef.current?.scrollTo({ top: historyRef.current.scrollHeight, behavior: 'smooth' });
+  }, [history, loading]);
+
   if (!roomData) return <Loading message="Recuperando o estado oficial da sala..." />;
 
   // Estilos reutilizáveis
@@ -204,7 +210,7 @@ const Game: React.FC = () => {
         flexDirection: 'column',
       }}>
         {/* Área scrollável */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           {/* Header do caso */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
