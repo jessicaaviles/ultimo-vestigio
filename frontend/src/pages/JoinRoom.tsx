@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { joinRoom } from '../services/api';
 
 const JoinRoom: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const returnUrl = encodeURIComponent(location.pathname + location.search);
+
+  useEffect(() => {
+    if (user && !user.email) {
+      navigate(`/register?return=${returnUrl}`, { replace: true });
+    }
+  }, [user, navigate, returnUrl]);
   const [code, setCode] = useState(() => new URLSearchParams(location.search).get('room')?.toUpperCase() || '');
   const [name, setName] = useState(() => localStorage.getItem('userName') || '');
   const [loading, setLoading] = useState(false);

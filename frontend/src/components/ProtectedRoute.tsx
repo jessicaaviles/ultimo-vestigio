@@ -10,7 +10,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   if (loading) return <Loading message="Verificando autenticação..." />;
 
-  if (!user || !user.email) return <Navigate to={`/register?return=${returnUrl}`} replace />;
+  if (!user) return <Navigate to={`/register?return=${returnUrl}`} replace />;
 
   return <>{children}</>;
 };
