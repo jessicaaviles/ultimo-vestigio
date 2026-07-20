@@ -212,8 +212,8 @@ const Game: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
       }}>
-        {/* Área scrollável */}
-        <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* TOPO FIXO: título, resumo, jogadores e turno */}
+        <div style={{ flexShrink: 0, padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
           {/* Header do caso */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -311,10 +311,9 @@ const Game: React.FC = () => {
             </div>
           )}
 
-          {/* Status: IN_PROGRESS */}
+          {/* Jogadores + Turno (apenas IN_PROGRESS) */}
           {status === 'IN_PROGRESS' && (
             <>
-              {/* Jogadores */}
               <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
                 {players.map((p: any) => {
                   const isActive = p.id === activeTurn?.player_id;
@@ -329,15 +328,19 @@ const Game: React.FC = () => {
                   );
                 })}
               </div>
-
-              {/* Indicador de turno */}
               <div style={{ ...cardStyle, textAlign: 'center', borderColor: isMyTurn ? 'rgba(184,153,83,0.5)' : 'rgba(255,255,255,0.08)', background: isMyTurn ? 'rgba(184,153,83,0.12)' : 'rgba(255,255,255,0.03)' }}>
                 <div style={{ fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: isMyTurn ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
                   {isMyTurn ? '✦ É a sua vez' : `Aguardando: ${activePlayer?.display_name || '...'}`}
                 </div>
               </div>
+            </>
+          )}
+        </div>
 
-              {/* Histórico de perguntas */}
+        {/* Área scrollável: apenas perguntas e respostas */}
+        <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {status === 'IN_PROGRESS' && (
+            <>
               {history.length > 0 && (
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {history.map((item, idx) => (
@@ -359,8 +362,6 @@ const Game: React.FC = () => {
                   ))}
                 </div>
               )}
-
-              {/* Loading: IA processando */}
               {loading && (
                 <div style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.5)', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <span style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Mestre:</span>
@@ -377,8 +378,6 @@ const Game: React.FC = () => {
                   <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontStyle: 'italic' }}>consultando os arquivos...</span>
                 </div>
               )}
-
-              {/* Pistas usadas */}
               {hints.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {hints.map((hint) => (
@@ -391,11 +390,11 @@ const Game: React.FC = () => {
                 </div>
               )}
             </>
-            )}
+          )}
+        </div>
 
-            </div> {/* fim da área scrollável */}
-
-            {status === 'IN_PROGRESS' && (
+        {/* FUNDO FIXO: input + botões */}
+        {status === 'IN_PROGRESS' && (
             <div style={{ padding: '10px 20px', paddingBottom: 'calc(76px + env(safe-area-inset-bottom) + 24px)', display: 'flex', flexDirection: 'column', gap: '10px', background: 'linear-gradient(0deg, rgba(15,20,23,0.98) 0%, rgba(15,20,23,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
