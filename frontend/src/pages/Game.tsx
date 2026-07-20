@@ -74,6 +74,19 @@ const Game: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [showHintsPanel]);
 
+  const speakAnswer = useCallback((text: string) => {
+    if (!window.speechSynthesis || !text) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    utterance.rate = 1.1;
+    utterance.pitch = 1.0;
+    const voices = window.speechSynthesis.getVoices();
+    const ptVoice = voices.find(v => v.lang.startsWith('pt'));
+    if (ptVoice) utterance.voice = ptVoice;
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
   useEffect(() => {
     if (!socket || !roomId) return;
     const userId = localStorage.getItem('userId');
@@ -179,19 +192,6 @@ const Game: React.FC = () => {
   const contestAnswer = (questionId: string) => socket?.emit('contest_answer', { roomId, userId, questionId, reason: 'possible_contradiction' });
   const handleSubmitTheory = (e: React.FormEvent) => { e.preventDefault(); socket?.emit('submit_theory', { roomId, userId: localStorage.getItem('userId'), answers: theoryAnswers }); };
   const handleFinishGame = () => { setLoading(true); socket?.emit('finish_game', { roomId, userId: localStorage.getItem('userId') }); };
-
-  const speakAnswer = useCallback((text: string) => {
-    if (!window.speechSynthesis || !text) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pt-BR';
-    utterance.rate = 1.1;
-    utterance.pitch = 1.0;
-    const voices = window.speechSynthesis.getVoices();
-    const ptVoice = voices.find(v => v.lang.startsWith('pt'));
-    if (ptVoice) utterance.voice = ptVoice;
-    window.speechSynthesis.speak(utterance);
-  }, []);
 
   const userId = localStorage.getItem('userId');
   const players = roomData?.players || [];
