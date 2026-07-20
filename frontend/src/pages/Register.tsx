@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authRegister, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
@@ -17,18 +17,19 @@ const Register: React.FC = () => {
   const [error, setError] = useState('');
 
   const { refresh } = useAuth();
+  const location = useLocation();
+  const returnUrl = new URLSearchParams(location.search).get('return') || '';
 
   const handleGoogleResponse = useCallback(async (response: any) => {
     setLoading(true);
     setError('');
     try {
-      const anonId = localStorage.getItem('userId');
       const res = await authGoogle(response.credential, displayName || undefined);
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
         await refresh();
-        navigate(anonId ? '/cases' : '/profile');
+        navigate(returnUrl || '/cases');
       } else {
         setError(res.error || 'Erro ao autenticar com Google.');
       }
@@ -37,7 +38,7 @@ const Register: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate, displayName, refresh]);
+  }, [navigate, displayName, refresh, returnUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,13 +47,12 @@ const Register: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const anonId = localStorage.getItem('userId');
       const res = await authRegister(email, password, displayName || undefined);
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
         await refresh();
-        navigate(anonId ? '/cases' : '/profile');
+        navigate(returnUrl || '/cases');
       } else {
         setError(res.error || 'Erro ao criar conta.');
       }
