@@ -42,11 +42,13 @@ const Feedback: React.FC = () => {
       backgroundImage: `url(/backgrounds/equipe-investigadores.png)`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      position: 'relative'
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex: 0
     }}>
       {/* Overlay gradiente para escurecer o fundo igual nas outras páginas */}
       <div style={{
-        position: 'fixed',
+        position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
         background: 'linear-gradient(to bottom, rgba(15, 20, 23, 0.6) 0%, rgba(15, 20, 23, 0.95) 100%)',
         zIndex: 0
