@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { authRegister, authGoogle } from '../services/api';
+import { authRegister, authLink, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
 
@@ -49,7 +49,10 @@ const Register: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await authRegister(email, password, displayName || undefined);
+      const existingUserId = localStorage.getItem('userId');
+      const res = existingUserId
+        ? await authLink(email, password, existingUserId)
+        : await authRegister(email, password, displayName || undefined);
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);

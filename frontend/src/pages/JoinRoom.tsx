@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { joinRoom, registerAnonymousUser } from '../services/api';
+import { joinRoom } from '../services/api';
 
 const JoinRoom: React.FC = () => {
   const navigate = useNavigate();
@@ -26,20 +26,14 @@ const JoinRoom: React.FC = () => {
     }
 
     try {
-      let userId = localStorage.getItem('userId');
+      const userId = localStorage.getItem('userId');
       if (!userId) {
-        const reg = await registerAnonymousUser(name);
-        if (!reg.success) {
-          setError('Não foi possível identificar o jogador.');
-          setLoading(false);
-          return;
-        }
-        userId = reg.data.userId;
-        if (userId) localStorage.setItem('userId', userId);
-        if (reg.data.deviceToken) localStorage.setItem('deviceToken', reg.data.deviceToken);
+        setError('Identidade não encontrada. Faça login novamente.');
+        setLoading(false);
+        return;
       }
 
-      const res = await joinRoom(code.toUpperCase(), userId!, name);
+      const res = await joinRoom(code.toUpperCase(), userId, name);
       if (res.success) {
         localStorage.setItem('userName', name.trim());
         navigate(`/room/${res.data.roomId}/lobby`);

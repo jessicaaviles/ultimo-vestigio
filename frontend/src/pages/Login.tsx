@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authLogin, authGoogle } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
 
 declare global {
@@ -9,6 +10,9 @@ declare global {
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnUrl = new URLSearchParams(location.search).get('return') || '';
+  const { refresh } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,7 +26,8 @@ const Login: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
-        navigate('/profile');
+        await refresh();
+        navigate(returnUrl || '/profile');
       } else {
         setError(res.error || 'Erro ao autenticar com Google.');
       }
@@ -31,7 +36,7 @@ const Login: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, refresh, returnUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +48,8 @@ const Login: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
-        navigate('/profile');
+        await refresh();
+        navigate(returnUrl || '/profile');
       } else {
         setError(res.error || 'Erro ao fazer login.');
       }
