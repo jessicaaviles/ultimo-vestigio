@@ -521,7 +521,7 @@ const Game: React.FC = () => {
 
         {/* FUNDO FIXO: input + botões (apenas IN_PROGRESS) */}
         {status === 'IN_PROGRESS' && (
-        <div style={{ flexShrink: 0, padding: '10px 20px', paddingBottom: 'calc(76px + env(safe-area-inset-bottom) + 24px)', display: 'flex', flexDirection: 'column', gap: '10px', background: 'linear-gradient(0deg, rgba(15,20,23,0.98) 0%, rgba(15,20,23,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ flexShrink: 0, padding: '10px 20px', display: 'flex', flexDirection: 'column', gap: '10px', background: 'linear-gradient(0deg, rgba(15,20,23,0.98) 0%, rgba(15,20,23,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
                   <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'stretch' }}>
