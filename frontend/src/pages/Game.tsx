@@ -592,13 +592,15 @@ const Game: React.FC = () => {
                   </button>
                 </form>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    onClick={handleHint}
-                    disabled={loading || hints.length >= 3}
-                    style={{ flex: 1, padding: '12px', background: 'rgba(132,147,107,0.15)', border: '1px solid rgba(132,147,107,0.3)', borderRadius: '10px', color: hints.length >= 3 ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.8)', cursor: hints.length >= 3 ? 'default' : 'pointer', fontWeight: 600, fontSize: '13px' }}
-                  >
-                    Pedir pistas ({Math.max(0, 3 - hints.length)})
-                  </button>
+                  {hints.length < 3 && (
+                    <button
+                      onClick={handleHint}
+                      disabled={loading}
+                      style={{ flex: 1, padding: '12px', background: 'rgba(132,147,107,0.15)', border: '1px solid rgba(132,147,107,0.3)', borderRadius: '10px', color: 'rgba(255,255,255,0.8)', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
+                    >
+                      Pedir pistas ({3 - hints.length})
+                    </button>
+                  )}
                   <div className="menu-wrapper" style={{ flex: 1, position: 'relative' }} ref={hintsMenuRef}>
                     <button
                       onClick={() => setShowHintsPanel(v => !v)}
