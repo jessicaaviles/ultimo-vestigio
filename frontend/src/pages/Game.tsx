@@ -408,7 +408,7 @@ const Game: React.FC = () => {
                   <div style={{ fontWeight: 600, marginBottom: '6px', color: '#fff', fontSize: '14px', fontStyle: 'italic' }}>
                     "{item.question?.original_text || item.questionText}"
                   </div>
-                  <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', lineHeight: 1.6, display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div className="answer-row" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', lineHeight: 1.6, display: 'flex', alignItems: 'flex-start' }}>
                     <div style={{ flex: 1 }}>
                       <span style={{ color: 'var(--accent-gold)', fontWeight: 700, marginRight: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Mestre:</span>
                       {item.answer?.rendered_text || item.responseText}

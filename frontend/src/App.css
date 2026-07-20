@@ -382,6 +382,11 @@
 .recovery-page .recovery-actions { display: flex; gap: 12px; }
 .recovery-page .recovery-actions button { flex: 1; justify-content: center; }
 
+.answer-row { gap: 12px; }
+@media (min-width: 641px) {
+  .answer-row { gap: 24px; }
+}
+
 @media (max-width: 640px) {
   .briefing-page,
   .recovery-page {
