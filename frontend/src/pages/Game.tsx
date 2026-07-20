@@ -224,11 +224,8 @@ const Game: React.FC = () => {
                 <span style={{ color: 'var(--accent-gold)', fontSize: '14px', lineHeight: 1 }}>{showCaseSummary ? '▲' : '▼'}</span>
               </button>
               {showCaseSummary && (
-                <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '160px', overflowY: 'auto' }}>
-                  {caseSynopsis && <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', lineHeight: 1.6, margin: 0, fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>{caseSynopsis}</p>}
-                  {caseOpening && caseSynopsis !== caseOpening && (
-                    <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{caseOpening}</p>
-                  )}
+                <div style={{ marginTop: '12px', maxHeight: '160px', overflowY: 'auto' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', lineHeight: 1.6, margin: 0, fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>{caseSynopsis || caseOpening}</p>
                 </div>
               )}
             </div>
@@ -360,7 +357,7 @@ const Game: React.FC = () => {
             </div> {/* fim da área scrollável */}
 
             {status === 'IN_PROGRESS' && (
-            <div style={{ padding: '10px 20px', paddingBottom: 'calc(76px + env(safe-area-inset-bottom) + 12px)', display: 'flex', flexDirection: 'column', gap: '10px', background: 'linear-gradient(0deg, rgba(15,20,23,0.98) 0%, rgba(15,20,23,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ padding: '10px 20px', paddingBottom: 'calc(76px + env(safe-area-inset-bottom) + 24px)', display: 'flex', flexDirection: 'column', gap: '10px', background: 'linear-gradient(0deg, rgba(15,20,23,0.98) 0%, rgba(15,20,23,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
                   <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'stretch' }}>
