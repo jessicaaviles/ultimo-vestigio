@@ -133,6 +133,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('typing', ({ roomId, userId, typing }) => {
+    console.log(`[typing] room: ${roomId}, user: ${userId}, typing: ${typing}`);
     socket.to(roomId).emit('player_typing', { userId, typing });
   });
 
