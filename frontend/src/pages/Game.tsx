@@ -311,9 +311,13 @@ const Game: React.FC = () => {
             </div>
           )}
 
-          {/* Jogadores + Turno (apenas IN_PROGRESS) */}
+        </div>
+
+        {/* Área scrollável: apenas perguntas e respostas */}
+        <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {status === 'IN_PROGRESS' && (
-            <>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', minHeight: 0 }}>
+              {/* Jogadores */}
               <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
                 {players.map((p: any) => {
                   const isActive = p.id === activeTurn?.player_id;
@@ -328,19 +332,12 @@ const Game: React.FC = () => {
                   );
                 })}
               </div>
+              {/* Indicador de turno */}
               <div style={{ ...cardStyle, textAlign: 'center', borderColor: isMyTurn ? 'rgba(184,153,83,0.5)' : 'rgba(255,255,255,0.08)', background: isMyTurn ? 'rgba(184,153,83,0.12)' : 'rgba(255,255,255,0.03)' }}>
                 <div style={{ fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: isMyTurn ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
                   {isMyTurn ? '✦ É a sua vez' : `Aguardando: ${activePlayer?.display_name || '...'}`}
                 </div>
               </div>
-            </>
-          )}
-        </div>
-
-        {/* Área scrollável: apenas perguntas e respostas */}
-        <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          {status === 'IN_PROGRESS' && (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', minHeight: 0 }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', justifyContent: history.length > 0 ? 'flex-start' : 'center' }}>
                 {history.length > 0 && history.map((item, idx) => (
                   <div key={idx} style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.35)' }}>
