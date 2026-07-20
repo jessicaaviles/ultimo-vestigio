@@ -33,12 +33,12 @@ const Cases: React.FC = () => {
     
     listCases(userId).then((response) => {
       if (response.success && response.data?.length) {
-        // Merge localStorage with DB solved cases
-        const dbSolved = response.solvedSlugs || [];
-        const mergedSolved = Array.from(new Set([...localSolved, ...dbSolved]));
+        // Usar o banco de dados como fonte absoluta da verdade
+        // Se a API retornou a lista, ela sobrescreve qualquer cache incorreto local
+        const mergedSolved = response.solvedSlugs !== undefined ? response.solvedSlugs : localSolved;
         setSolvedCases(mergedSolved);
         
-        // Update local storage just to be safe
+        // Atualiza o local storage para ficar em sincronia com o banco de dados
         localStorage.setItem('solvedCases', JSON.stringify(mergedSolved));
 
         const mapped = response.data.map((item: any) => {
