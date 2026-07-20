@@ -203,6 +203,18 @@ const Game: React.FC = () => {
     historyRef.current?.scrollTo({ top: historyRef.current.scrollHeight, behavior: 'smooth' });
   }, [history, loading]);
 
+  useEffect(() => {
+    if (status === 'GAME_OVER' || status === 'COMPLETED') {
+      const slug = roomData?.case_version?.case_ref?.slug;
+      if (slug) {
+        const solved = JSON.parse(localStorage.getItem('solvedCases') || '[]');
+        if (!solved.includes(slug)) {
+          localStorage.setItem('solvedCases', JSON.stringify([...solved, slug]));
+        }
+      }
+    }
+  }, [status, roomData?.case_version?.case_ref?.slug]);
+
   if (!roomData) return <Loading message="Recuperando o estado oficial da sala..." />;
 
   // Estilos reutilizáveis

@@ -23,8 +23,10 @@ const Cases: React.FC = () => {
   const [cases, setCases] = useState<CaseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [solvedCases, setSolvedCases] = useState<string[]>([]);
 
   React.useEffect(() => {
+    setSolvedCases(JSON.parse(localStorage.getItem('solvedCases') || '[]'));
     listCases().then((response) => {
       if (response.success && response.data?.length) {
         const mapped = response.data.map((item: any) => {
@@ -113,6 +115,25 @@ const Cases: React.FC = () => {
               }}>
                 {item.type}
               </div>
+              
+              {solvedCases.includes(item.slug) && (
+                <div style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  backgroundColor: 'var(--olive)',
+                  color: 'var(--paper)',
+                  padding: '4px 10px',
+                  borderRadius: '4px',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  letterSpacing: '0.8px',
+                  textTransform: 'uppercase',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  ✅ Resolvido
+                </div>
+              )}
             </div>
 
             {/* Conteúdo */}
