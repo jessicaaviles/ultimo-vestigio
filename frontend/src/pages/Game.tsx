@@ -323,32 +323,6 @@ const Game: React.FC = () => {
             </div>
           )}
 
-          {/* Votação ativa */}
-          {activeVote && (
-            <div role="dialog" style={{ ...cardStyle, borderColor: 'rgba(132,147,107,0.4)', background: 'rgba(132,147,107,0.1)' }}>
-              <div style={labelStyle}>Decisão da equipe</div>
-              <h3 style={{ fontFamily: 'var(--font-serif)', margin: '0 0 16px', fontSize: '20px' }}>{activeVote.type === 'START_SOLVING' ? 'Iniciar tentativa de solução?' : 'Escolha uma teoria'}</h3>
-              
-              {voteTiedMessage && (
-                <div style={{ padding: '12px', background: 'rgba(184,153,83,0.15)', border: '1px solid var(--accent-gold)', borderRadius: '8px', marginBottom: '16px', color: '#fff', fontSize: '13px' }}>
-                  <strong>Votação empatada!</strong> Vocês precisam chegar a um consenso. Conversem e votem novamente na mesma opção para prosseguir.
-                </div>
-              )}
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {myVote ? (
-                  <div style={{ textAlign: 'center', padding: '16px', color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
-                    Voto registrado. Aguardando os demais investigadores...
-                  </div>
-                ) : (
-                  JSON.parse(activeVote.options || '[]').map((option: any) => (
-                    <button key={option.id} style={{ padding: '12px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: 600 }} onClick={() => { handleVote(option.id); setMyVote(option.id); }}>{option.label || option.id}</button>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Sala pausada */}
           {status === 'PAUSED' && (
             <div style={{ ...cardStyle, textAlign: 'center', padding: '40px 20px' }}>
@@ -535,9 +509,38 @@ const Game: React.FC = () => {
           )}
         </div>
 
-        {/* FUNDO FIXO: input + botões (apenas IN_PROGRESS) */}
-        {status === 'IN_PROGRESS' && (
+        {/* FUNDO FIXO: input + botões ou VOTAÇÃO */}
+        {(status === 'IN_PROGRESS' || activeVote) && (
         <div style={{ flexShrink: 0, padding: '10px 20px', display: 'flex', flexDirection: 'column', gap: '10px', background: 'linear-gradient(0deg, rgba(15,20,23,0.98) 0%, rgba(15,20,23,0.85) 100%)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          
+          {/* Votação no rodapé */}
+          {activeVote && (
+            <div role="dialog" style={{ padding: '4px 0' }}>
+              <div style={labelStyle}>Decisão da equipe</div>
+              <h3 style={{ fontFamily: 'var(--font-serif)', margin: '0 0 12px', fontSize: '18px', color: 'var(--accent-gold)' }}>{activeVote.type === 'START_SOLVING' ? 'Iniciar tentativa de solução?' : 'Escolha a teoria mais correta:'}</h3>
+              
+              {voteTiedMessage && (
+                <div style={{ padding: '10px', background: 'rgba(184,153,83,0.15)', border: '1px solid var(--accent-gold)', borderRadius: '8px', marginBottom: '12px', color: '#fff', fontSize: '12px' }}>
+                  <strong>Votação empatada!</strong> Cheguem a um consenso e votem novamente.
+                </div>
+              )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto' }}>
+                {myVote ? (
+                  <div style={{ textAlign: 'center', padding: '12px', color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', fontSize: '13px' }}>
+                    Voto registrado. Aguardando a equipe...
+                  </div>
+                ) : (
+                  JSON.parse(activeVote.options || '[]').map((option: any) => (
+                    <button key={option.id} style={{ padding: '10px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '13px', textAlign: 'center' }} onClick={() => { handleVote(option.id); setMyVote(option.id); }}>{option.label || option.id}</button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Chat/Controles Normais */}
+          {!activeVote && status === 'IN_PROGRESS' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
                   <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'stretch' }}>
@@ -621,8 +624,9 @@ const Game: React.FC = () => {
                   )}
                 </div>
               </div>
-            </div>
             )}
+          </div>
+        )}
 
       </div>
     </div>
