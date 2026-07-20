@@ -399,7 +399,8 @@ io.on('connection', (socket) => {
       // 5. Emitir Resultados
        io.to(roomId).emit('question_processed', {
          question: { id: createdQuestionId, original_text: cleanQuestion },
-        answer: { rendered_text: aiResponse.rendered_text }
+        answer: { rendered_text: aiResponse.rendered_text },
+        askedBy: userId
       });
 
        await emitRoomState(roomId);

@@ -125,7 +125,7 @@ const Game: React.FC = () => {
       setProcessingUser(null);
       setHistory(prev => [...prev, data]);
       setQuestion('');
-      if (autoSpeak && data.responseText) speakAnswer(data.responseText);
+      if (autoSpeak && data.responseText && data.askedBy === userId) speakAnswer(data.responseText);
     });
 
     socket.on('vote_started', (data) => { setActiveVote(data); setMyVote(null); });
