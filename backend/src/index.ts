@@ -478,7 +478,8 @@ io.on('connection', (socket) => {
       const responses = await prisma.vote_responses.findMany({ where: { vote_id: voteId } });
       const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: true } });
       const counts = responses.reduce<Record<string, number>>((all, response) => ({ ...all, [response.option_id]: (all[response.option_id] || 0) + 1 }), {});
-      const majority = Math.floor((room?.players.length || 0) / 2) + 1;
+      const activePlayersCount = room?.players.filter(p => p.connection_status === 'CONNECTED').length || 1;
+      const majority = Math.floor(activePlayersCount / 2) + 1;
       const winningOption = Object.entries(counts).find(([, count]) => count >= majority)?.[0];
       if (winningOption) {
         await prisma.votes.update({ where: { id: voteId }, data: { status: 'CLOSED', closed_at: new Date() } });

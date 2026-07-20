@@ -25,6 +25,7 @@ const Game: React.FC = () => {
   const [typingPlayer, setTypingPlayer] = useState<string | null>(null);
   const [showHintsPanel, setShowHintsPanel] = useState(false);
   const [myVote, setMyVote] = useState<string | null>(null);
+  const [voteTiedMessage, setVoteTiedMessage] = useState(false);
   const typingTimeoutRef = useRef<any>(null);
   const recognitionRef = useRef<any>(null);
   const historyRef = useRef<HTMLDivElement>(null);
@@ -110,7 +111,8 @@ const Game: React.FC = () => {
     });
 
     socket.on('vote_started', (data) => { setActiveVote(data); setMyVote(null); });
-    socket.on('vote_closed', () => { setActiveVote(null); setMyVote(null); });
+    socket.on('vote_closed', () => { setActiveVote(null); setMyVote(null); setVoteTiedMessage(false); });
+    socket.on('vote_tied', () => { setVoteTiedMessage(true); });
     socket.on('hint_used', (data) => { setHints(prev => [...prev, data]); setLoading(false); });
     socket.on('question_repeated', (data) => { setLoading(false); setQuestionWarning({ kind: 'repeat', text: `Uma pergunta parecida já foi feita: "${data.previous}"`, answer: data.answer }); });
     socket.on('question_needs_reformulation', (data) => { setLoading(false); setQuestionWarning({ kind: 'reformulate', text: data.message }); });
@@ -326,6 +328,13 @@ const Game: React.FC = () => {
             <div role="dialog" style={{ ...cardStyle, borderColor: 'rgba(132,147,107,0.4)', background: 'rgba(132,147,107,0.1)' }}>
               <div style={labelStyle}>Decisão da equipe</div>
               <h3 style={{ fontFamily: 'var(--font-serif)', margin: '0 0 16px', fontSize: '20px' }}>{activeVote.type === 'START_SOLVING' ? 'Iniciar tentativa de solução?' : 'Escolha uma teoria'}</h3>
+              
+              {voteTiedMessage && (
+                <div style={{ padding: '12px', background: 'rgba(184,153,83,0.15)', border: '1px solid var(--accent-gold)', borderRadius: '8px', marginBottom: '16px', color: '#fff', fontSize: '13px' }}>
+                  <strong>Votação empatada!</strong> Vocês precisam chegar a um consenso. Conversem e votem novamente na mesma opção para prosseguir.
+                </div>
+              )}
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {myVote ? (
                   <div style={{ textAlign: 'center', padding: '16px', color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', background: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
