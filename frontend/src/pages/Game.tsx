@@ -359,7 +359,7 @@ const Game: React.FC = () => {
                     ))}
                   </span>
                   <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontStyle: 'italic' }}>
-                    {players.find(p => p.anonymous_user_id === typingPlayer)?.display_name || 'Alguém'} está digitando...
+                    {players.find((p: any) => p.anonymous_user_id === typingPlayer)?.display_name || 'Alguém'} está digitando...
                   </span>
                 </div>
               )}
