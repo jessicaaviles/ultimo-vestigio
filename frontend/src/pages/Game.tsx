@@ -125,6 +125,10 @@ const Game: React.FC = () => {
           setHistory(prev => [...prev, { type: 'turn', playerName: player.display_name, playerId: player.id } as any]);
         }
         prevTurnRef.current = newTurnId;
+        // Se mudou o turno, qualquer processamento pendente desse dispositivo finalizou
+        setLoading(false);
+        setProcessingUser(null);
+        setQuestion('');
       }
     });
 
@@ -183,10 +187,29 @@ const Game: React.FC = () => {
     };
   }, [socket, roomId, autoSpeak, speakAnswer]);
 
+  const loadingTimeoutRef = useRef<number | null>(null);
+  
+  useEffect(() => {
+    if (!loading && loadingTimeoutRef.current) {
+      window.clearTimeout(loadingTimeoutRef.current);
+      loadingTimeoutRef.current = null;
+    }
+  }, [loading]);
+
+  const startLoadingTimeout = () => {
+    setLoading(true);
+    if (loadingTimeoutRef.current) window.clearTimeout(loadingTimeoutRef.current);
+    loadingTimeoutRef.current = window.setTimeout(() => {
+      setLoading(false);
+      setProcessingUser(null);
+      setErrorMessage("O servidor demorou muito para responder ou sua conexão caiu. Tente novamente.");
+    }, 25000);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!question.trim() || !isMyTurn || loading) return;
-    setLoading(true);
+    startLoadingTimeout();
     socket?.emit('typing', { roomId, userId, typing: false });
     socket?.emit('submit_question', {
       roomId,
@@ -368,7 +391,7 @@ const Game: React.FC = () => {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button style={{ flex: 1, padding: '10px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }} onClick={() => setQuestionWarning(null)}>Reformular</button>
                 {questionWarning.kind === 'repeat' && (
-                  <button style={{ flex: 1, padding: '10px', background: 'var(--accent-gold)', border: 'none', borderRadius: '8px', color: '#000', cursor: 'pointer', fontWeight: 700, fontSize: '13px' }} onClick={() => { setQuestionWarning(null); socket?.emit('submit_question', { roomId, userId, questionText: question, forceRepeat: true, idempotencyKey: `${roomId}:${userId}:${Date.now()}` }); }}>
+                  <button style={{ flex: 1, padding: '10px', background: 'var(--accent-gold)', border: 'none', borderRadius: '8px', color: '#000', cursor: 'pointer', fontWeight: 700, fontSize: '13px' }} onClick={() => { setQuestionWarning(null); startLoadingTimeout(); socket?.emit('submit_question', { roomId, userId, questionText: question, forceRepeat: true, idempotencyKey: `${roomId}:${userId}:${Date.now()}` }); }}>
                     Enviar mesmo assim
                   </button>
                 )}
