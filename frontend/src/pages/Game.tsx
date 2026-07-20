@@ -159,6 +159,10 @@ const Game: React.FC = () => {
       setProcessingUser(processorId);
       setTypingPlayer(null); // Limpa o "está digitando..." quando começa a processar
     });
+    socket.on('question_processing_cancelled', () => {
+      setProcessingUser(null);
+      setLoading(false);
+    });
 
     return () => {
       socket.off('room_state_updated');
@@ -175,6 +179,7 @@ const Game: React.FC = () => {
       socket.off('room_error');
       socket.off('player_typing');
       socket.off('question_processing');
+      socket.off('question_processing_cancelled');
     };
   }, [socket, roomId, autoSpeak, speakAnswer]);
 

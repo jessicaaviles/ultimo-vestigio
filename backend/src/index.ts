@@ -345,6 +345,7 @@ io.on('connection', (socket) => {
 
       // Classificações que pedem reformulação semântica
       if (['AMBIGUOUS', 'MULTI_PREMISE', 'BLOCKED'].includes(aiResponse.classification)) {
+        io.to(roomId).emit('question_processing_cancelled');
         socket.emit('question_needs_reformulation', { classification: aiResponse.classification, message: aiResponse.rendered_text });
         return;
       }
@@ -429,13 +430,17 @@ io.on('connection', (socket) => {
         askedBy: userId
       });
 
+      // 6. Atualizar estado da sala para refletir o novo turno
+      await emitRoomState(roomId);
+
        await emitRoomState(roomId);
        await recordAnalytics('question_sent', roomId, userId);
        await recordRoomEvent(roomId, 'question_submitted', { textLength: cleanQuestion.length });
 
     } catch (err) {
       console.error("Erro em submit_question:", err);
-      socket.emit('error', 'Falha ao processar pergunta.');
+      io.to(roomId).emit('question_processing_cancelled');
+      socket.emit('room_error', 'Falha ao processar pergunta. Tente novamente.');
     }
   });
 
