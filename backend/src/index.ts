@@ -212,18 +212,28 @@ io.on('connection', (socket) => {
   });
 
   socket.on('pass_turn', async ({ roomId, userId, turnId }) => {
+    console.log(`[PASS_TURN] Recebido para room=${roomId}, user=${userId}, turnId=${turnId}`);
     try {
       const room = await prisma.rooms.findUnique({
         where: { id: roomId },
         include: { players: { orderBy: { turn_order: 'asc' } } }
       });
-      if (!room || room.status !== 'IN_PROGRESS' || !room.current_turn_id) return;
+      if (!room || room.status !== 'IN_PROGRESS' || !room.current_turn_id) {
+        console.log(`[PASS_TURN] Falhou: sala inválida ou não IN_PROGRESS`);
+        return;
+      }
 
       // Se foi fornecido um turnId, garante que só passa se for o turno atual
-      if (turnId && room.current_turn_id !== turnId) return;
+      if (turnId && room.current_turn_id !== turnId) {
+        console.log(`[PASS_TURN] Falhou: turnId diverge (${room.current_turn_id} != ${turnId})`);
+        return;
+      }
 
       const currentTurn = await prisma.turns.findUnique({ where: { id: room.current_turn_id } });
-      if (!currentTurn) return;
+      if (!currentTurn) {
+        console.log(`[PASS_TURN] Falhou: turno atual não encontrado`);
+        return;
+      }
 
       const currentPlayer = room.players.find(p => p.id === currentTurn.player_id);
       
@@ -233,10 +243,15 @@ io.on('connection', (socket) => {
       const timeElapsed = (Date.now() - startedAt) / 1000;
       const isTimeUp = timeElapsed >= turnTimer;
 
+      console.log(`[PASS_TURN] isTimeUp=${isTimeUp}, timeElapsed=${timeElapsed}, turnTimer=${turnTimer}`);
+
       if (!currentPlayer || (currentPlayer.anonymous_user_id !== userId && !isTimeUp && room.host_user_id !== userId)) {
+        console.log(`[PASS_TURN] Rejeitado: Não é a vez e o tempo não esgotou.`);
         socket.emit('room_error', 'Não é a sua vez. Aguarde o jogador atual concluir.');
         return;
       }
+      
+      console.log(`[PASS_TURN] Iniciando transação para passar o turno...`);
 
       await prisma.$transaction(async (tx) => {
         // Finaliza turno atual
