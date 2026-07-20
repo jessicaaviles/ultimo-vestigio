@@ -231,7 +231,7 @@ const Game: React.FC = () => {
         overflow: 'hidden',
       }}>
         {/* TOPO FIXO: título, resumo, jogadores e turno */}
-        <div style={{ flexShrink: 0, padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '12px', overflow: 'hidden' }}>
+        <div style={{ flexShrink: 0, padding: '0 20px 8px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
           {/* Header do caso */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -332,7 +332,7 @@ const Game: React.FC = () => {
         </div>
 
         {/* Área scrollável: jogadores, turno, perguntas e respostas */}
-        <div ref={historyRef} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, overflowY: 'auto', padding: '0 20px', paddingTop: '16px', minHeight: 0 }}>
+        <div ref={historyRef} style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, overflowY: 'auto', padding: '0 20px', paddingTop: '24px', minHeight: 0 }}>
           {status === 'IN_PROGRESS' && (
             <>
               {/* Jogadores */}
