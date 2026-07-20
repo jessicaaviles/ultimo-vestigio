@@ -313,12 +313,12 @@ const Game: React.FC = () => {
 
         </div>
 
-        {/* Área scrollável: apenas perguntas e respostas */}
-        <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', padding: '0 20px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        {/* Área scrollável: jogadores, turno, perguntas e respostas */}
+        <div ref={historyRef} style={{ flex: 1, overflowY: 'auto', padding: '0 20px', minHeight: 0 }}>
           {status === 'IN_PROGRESS' && (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', minHeight: 0 }}>
+            <>
               {/* Jogadores */}
-              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px', marginBottom: '16px' }}>
                 {players.map((p: any) => {
                   const isActive = p.id === activeTurn?.player_id;
                   const isMe = p.anonymous_user_id === userId;
@@ -333,35 +333,34 @@ const Game: React.FC = () => {
                 })}
               </div>
               {/* Indicador de turno */}
-              <div style={{ ...cardStyle, textAlign: 'center', borderColor: isMyTurn ? 'rgba(184,153,83,0.5)' : 'rgba(255,255,255,0.08)', background: isMyTurn ? 'rgba(184,153,83,0.12)' : 'rgba(255,255,255,0.03)' }}>
+              <div style={{ ...cardStyle, textAlign: 'center', borderColor: isMyTurn ? 'rgba(184,153,83,0.5)' : 'rgba(255,255,255,0.08)', background: isMyTurn ? 'rgba(184,153,83,0.12)' : 'rgba(255,255,255,0.03)', marginBottom: '16px' }}>
                 <div style={{ fontSize: '12px', letterSpacing: '2px', textTransform: 'uppercase', color: isMyTurn ? 'var(--accent-gold)' : 'rgba(255,255,255,0.5)', fontWeight: 700 }}>
                   {isMyTurn ? '✦ É a sua vez' : `Aguardando: ${activePlayer?.display_name || '...'}`}
                 </div>
               </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px', justifyContent: history.length > 0 ? 'flex-start' : 'center' }}>
-                {history.length > 0 && history.map((item, idx) => (
-                  <div key={idx} style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.35)' }}>
-                    <div style={{ fontWeight: 600, marginBottom: '6px', color: '#fff', fontSize: '14px', fontStyle: 'italic' }}>
-                      "{item.question?.original_text || item.questionText}"
-                    </div>
-                    <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', lineHeight: 1.6 }}>
-                      <span style={{ color: 'var(--accent-gold)', fontWeight: 700, marginRight: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Mestre:</span>
-                      {item.answer?.rendered_text || item.responseText}
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                      <button onClick={() => requestClarification(item.question?.id)} disabled={!item.question?.id || item.clarification} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Esclarecer</button>
-                      <button onClick={() => contestAnswer(item.question?.id)} disabled={!item.question?.id || item.contestation} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Contestar</button>
-                    </div>
-                    {item.clarification && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Esclarecimento: {item.clarification}</div>}
-                    {item.contestation && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Revisão: {item.contestation}</div>}
+              {/* Histórico de perguntas */}
+              {history.map((item, idx) => (
+                <div key={idx} style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.35)', marginBottom: '16px' }}>
+                  <div style={{ fontWeight: 600, marginBottom: '6px', color: '#fff', fontSize: '14px', fontStyle: 'italic' }}>
+                    "{item.question?.original_text || item.questionText}"
                   </div>
-                ))}
-                {!history.length && !loading && (
-                  <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', textAlign: 'center', fontStyle: 'italic', margin: 'auto' }}>Faça sua primeira pergunta para iniciar a investigação.</p>
-                )}
-              </div>
+                  <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', lineHeight: 1.6 }}>
+                    <span style={{ color: 'var(--accent-gold)', fontWeight: 700, marginRight: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Mestre:</span>
+                    {item.answer?.rendered_text || item.responseText}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                    <button onClick={() => requestClarification(item.question?.id)} disabled={!item.question?.id || item.clarification} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Esclarecer</button>
+                    <button onClick={() => contestAnswer(item.question?.id)} disabled={!item.question?.id || item.contestation} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Contestar</button>
+                  </div>
+                  {item.clarification && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Esclarecimento: {item.clarification}</div>}
+                  {item.contestation && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Revisão: {item.contestation}</div>}
+                </div>
+              ))}
+              {!history.length && !loading && (
+                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', textAlign: 'center', fontStyle: 'italic', marginTop: '60px' }}>Faça sua primeira pergunta para iniciar a investigação.</p>
+              )}
               {loading && (
-                <div style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.5)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.5)', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                   <span style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>Mestre:</span>
                   <span style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
                     {[0, 1, 2].map(i => (
@@ -377,7 +376,7 @@ const Game: React.FC = () => {
                 </div>
               )}
               {hints.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
                   {hints.map((hint) => (
                     <div key={hint.hintIndex} style={{ ...cardStyle, borderColor: 'rgba(132,147,107,0.4)', background: 'rgba(132,147,107,0.08)' }}>
                       <div style={labelStyle}>Pista {hint.hintIndex}</div>
@@ -387,7 +386,7 @@ const Game: React.FC = () => {
                   ))}
                 </div>
               )}
-            </div>
+            </>
           )}
 
           {/* Outros status (SOLVING, REVEAL, GAME_OVER) */}
