@@ -33,7 +33,7 @@ const roomState = async (roomId: string) => {
       players: { orderBy: { turn_order: 'asc' }, include: { user: { select: { id: true, default_display_name: true, profile_photo_data: true, generated_profile_photo_data: true } } } },
       turns: { where: { status: 'ACTIVE' } },
       theories: { select: { id: true, player_id: true, attempt_number: true, answers: true, status: true, submitted_at: true } },
-      case_version: { select: { opening: true, case_ref: { select: { title: true, short_synopsis: true, difficulty: true, estimated_duration_minutes: true } } } },
+      case_version: { select: { opening: true, case_ref: { select: { slug: true, title: true, short_synopsis: true, difficulty: true, estimated_duration_minutes: true } } } },
       questions: { orderBy: { sequence_number: 'asc' }, include: { master_answers: { orderBy: { created_at: 'asc' } }, interpretation: true } }
     }
   });
@@ -265,14 +265,7 @@ io.on('connection', (socket) => {
       });
 
       // Busca e emite o novo estado da sala
-      const updatedRoom = await prisma.rooms.findUnique({
-        where: { id: roomId },
-        include: { 
-          players: { include: { user: true }, orderBy: { turn_order: 'asc' } },
-          turns: { where: { status: 'ACTIVE' } }
-        }
-      });
-      io.to(roomId).emit('room_state_updated', updatedRoom);
+      await emitRoomState(roomId);
 
     } catch (err) {
       console.error("Erro ao passar o turno:", err);
@@ -644,11 +637,7 @@ io.on('connection', (socket) => {
 
       io.to(roomId).emit('game_over', { evaluations, groupScore, solution: { text: trueSolution } });
       
-      const updatedRoom = await prisma.rooms.findUnique({
-        where: { id: roomId },
-        include: { players: { include: { user: true }, orderBy: { turn_order: 'asc' } }, theories: true }
-      });
-      io.to(roomId).emit('room_state_updated', updatedRoom);
+      await emitRoomState(roomId);
       
     } catch (err) {
       console.error("Erro em finish_game:", err);
