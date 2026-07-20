@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authRegister, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,6 +15,8 @@ const Register: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const displayNameRef = useRef(displayName);
+  displayNameRef.current = displayName;
 
   const { refresh } = useAuth();
   const location = useLocation();
@@ -24,7 +26,7 @@ const Register: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await authGoogle(response.credential, displayName || undefined);
+      const res = await authGoogle(response.credential, displayNameRef.current || undefined);
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
@@ -38,7 +40,7 @@ const Register: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate, displayName, refresh, returnUrl]);
+  }, [navigate, refresh, returnUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
