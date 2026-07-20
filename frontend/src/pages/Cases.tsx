@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { listCases } from '../services/api';
 import { Clock3, Flame, UsersRound } from 'lucide-react';
 import Loading from '../components/Loading';
+import { useAuth } from '../contexts/AuthContext';
 
 interface CaseItem {
   slug: string;
@@ -24,10 +25,11 @@ const Cases: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [solvedCases, setSolvedCases] = useState<string[]>([]);
+  const { user } = useAuth();
 
   React.useEffect(() => {
     const localSolved = JSON.parse(localStorage.getItem('solvedCases') || '[]');
-    const userId = localStorage.getItem('userId');
+    const userId = user?.userId || localStorage.getItem('userId');
     
     listCases(userId).then((response) => {
       if (response.success && response.data?.length) {
@@ -53,9 +55,14 @@ const Cases: React.FC = () => {
           };
         });
         setCases(mapped);
-      } else if (!response.success) setError('Não foi possível carregar os casos.');
-    }).catch(() => setError('Não foi possível carregar os casos.')).finally(() => setLoading(false));
-  }, []);
+      }
+      setLoading(false);
+    }).catch((err) => {
+      console.error(err);
+      setError('Não foi possível carregar os casos. Tente novamente mais tarde.');
+      setLoading(false);
+    });
+  }, [user?.userId]);
 
   const handleSelectCase = (slug: string) => {
     const c = cases.find(item => item.slug === slug);
@@ -232,6 +239,23 @@ const Cases: React.FC = () => {
                 <span style={{ color: '#8E989F', fontSize: '10px', textTransform: 'uppercase' }}>
                   {selectedCase.difficulty}
                 </span>
+                {solvedCases.includes(selectedCase.slug) && (
+                  <>
+                    <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.2)' }}></span>
+                    <span style={{ 
+                      backgroundColor: 'var(--olive)', 
+                      color: 'var(--paper)', 
+                      padding: '2px 6px', 
+                      borderRadius: '4px', 
+                      fontSize: '9px', 
+                      fontWeight: 700, 
+                      letterSpacing: '0.5px', 
+                      textTransform: 'uppercase' 
+                    }}>
+                      ✅ Resolvido
+                    </span>
+                  </>
+                )}
               </div>
               <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', fontWeight: 400, margin: '0 0 12px 0' }}>
                 {selectedCase.title}

@@ -25,7 +25,7 @@ export const listCases = async (req: Request, res: Response) => {
     let solvedSlugs: string[] = [];
     if (userId) {
       const solvedRooms = await prisma.room_players.findMany({
-        where: { anonymous_user_id: userId, room: { status: 'COMPLETED' } },
+        where: { anonymous_user_id: userId, room: { status: { in: ['COMPLETED', 'GAME_OVER'] } } },
         include: { room: { include: { case_version: { include: { case_ref: true } } } } }
       });
       solvedSlugs = Array.from(new Set(solvedRooms.map(rp => rp.room.case_version.case_ref.slug)));
