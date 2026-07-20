@@ -114,7 +114,7 @@ const Game: React.FC = () => {
         })));
       }
       if (data.hint_usages?.length) {
-        setHints(data.hint_usages.map((u: any) => ({ hintIndex: u.hintIndex || u.hint_index, content: u.content, penalty: u.penalty })));
+        setHints(dedupeHints(data.hint_usages).map((u: any) => ({ hintIndex: u.hintIndex || u.hint_index, content: u.content, penalty: u.penalty })));
       }
       // Detecta mudança de turno e adiciona notificação ao histórico
       const newTurn = data.turns?.find((t: any) => t.status === 'ACTIVE');
@@ -139,7 +139,7 @@ const Game: React.FC = () => {
     socket.on('vote_started', (data) => { setActiveVote(data); setMyVote(null); });
     socket.on('vote_closed', () => { setActiveVote(null); setMyVote(null); setVoteTiedMessage(false); });
     socket.on('vote_tied', () => { setVoteTiedMessage(true); });
-    socket.on('hint_used', (data) => { setHints(prev => [...prev, data]); setLoading(false); });
+    socket.on('hint_used', (data) => { setHints(prev => dedupeHints([...prev, data])); setLoading(false); });
     socket.on('question_repeated', (data) => { setLoading(false); setProcessingUser(null); setQuestionWarning({ kind: 'repeat', text: `Uma pergunta parecida já foi feita: "${data.previous}"`, answer: data.answer }); });
     socket.on('question_needs_reformulation', (data) => { setLoading(false); setProcessingUser(null); setQuestionWarning({ kind: 'reformulate', text: data.message }); });
     socket.on('clarification_added', (data) => setHistory(prev => prev.map(item => item.question?.id === data.questionId ? { ...item, clarification: data.text } : item)));
