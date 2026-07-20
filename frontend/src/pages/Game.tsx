@@ -73,7 +73,7 @@ const Game: React.FC = () => {
         })));
       }
       if (data.hint_usages?.length) {
-        setHints(data.hint_usages.map((u: any) => ({ hintIndex: u.hint_index, penalty: u.penalty })));
+        setHints(data.hint_usages.map((u: any) => ({ hintIndex: u.hintIndex || u.hint_index, content: u.content, penalty: u.penalty })));
       }
       // Detecta mudança de turno e adiciona notificação ao histórico
       const newTurn = data.turns?.find((t: any) => t.status === 'ACTIVE');
