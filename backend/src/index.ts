@@ -224,7 +224,7 @@ io.on('connection', (socket) => {
 
       const currentPlayer = room.players.find(p => p.id === currentTurn.player_id);
       if (!currentPlayer || currentPlayer.anonymous_user_id !== userId) {
-        // Não é a vez deste jogador
+        socket.emit('room_error', 'Não é a sua vez. Aguarde o jogador atual concluir.');
         return;
       }
 
@@ -297,7 +297,8 @@ io.on('connection', (socket) => {
 
       const currentPlayer = room.players.find(p => p.id === currentTurn.player_id);
       if (!currentPlayer || currentPlayer.anonymous_user_id !== userId) {
-        return; // Não é a vez
+        socket.emit('room_error', 'Não é a sua vez. Aguarde o jogador atual concluir.');
+        return;
       }
 
       const previousQuestions = await prisma.questions.findMany({ where: { room_id: roomId }, orderBy: { sequence_number: 'desc' }, take: 20, include: { master_answers: true } });

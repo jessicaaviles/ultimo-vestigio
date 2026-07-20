@@ -199,6 +199,7 @@ const Game: React.FC = () => {
   const activeTurn = roomData?.turns?.find((t: any) => t.status === 'ACTIVE');
   const activePlayer = players.find((p: any) => p.id === activeTurn?.player_id);
   const isMyTurn = activePlayer?.anonymous_user_id === userId;
+  console.log('[Game] userId:', userId, 'activeTurn:', activeTurn, 'activePlayer:', activePlayer, 'isMyTurn:', isMyTurn);
   const isHost = roomData?.host_user_id === userId;
   const status = roomData?.status;
   const theories = roomData?.theories || [];
