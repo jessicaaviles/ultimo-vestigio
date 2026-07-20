@@ -83,7 +83,14 @@ const Game: React.FC = () => {
     utterance.rate = 1.1;
     utterance.pitch = 1.0;
     const voices = window.speechSynthesis.getVoices();
-    const ptVoice = voices.find(v => v.lang.startsWith('pt'));
+    
+    // Lista de vozes que costumam ser mais naturais/humanizadas
+    const preferredVoiceNames = ['Luciana', 'Raquel', 'Felipe', 'Google português do Brasil', 'Microsoft Maria'];
+    
+    let ptVoice = voices.find(v => preferredVoiceNames.some(name => v.name.includes(name) && v.lang.includes('pt')));
+    if (!ptVoice) ptVoice = voices.find(v => v.lang === 'pt-BR' || v.lang === 'pt_BR');
+    if (!ptVoice) ptVoice = voices.find(v => v.lang.startsWith('pt'));
+    
     if (ptVoice) utterance.voice = ptVoice;
     window.speechSynthesis.speak(utterance);
   }, []);
