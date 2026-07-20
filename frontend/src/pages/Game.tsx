@@ -22,6 +22,8 @@ const Game: React.FC = () => {
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
   const [showCaseSummary, setShowCaseSummary] = useState(true);
   const [listening, setListening] = useState(false);
+  const [typingPlayer, setTypingPlayer] = useState<string | null>(null);
+  const typingTimeoutRef = useRef<any>(null);
   const recognitionRef = useRef<any>(null);
   const historyRef = useRef<HTMLDivElement>(null);
   const prevTurnRef = useRef<string | null>(null);
@@ -108,6 +110,9 @@ const Game: React.FC = () => {
     });
     socket.on('theory_evaluation', (data) => setEvaluationNotice(data));
     socket.on('room_error', (err) => { setLoading(false); setErrorMessage(String(err)); });
+    socket.on('player_typing', ({ userId: typerId, typing }) => {
+      if (typerId !== userId) setTypingPlayer(typing ? typerId : null);
+    });
 
     return () => {
       socket.off('room_state_updated');
@@ -129,6 +134,7 @@ const Game: React.FC = () => {
     e.preventDefault();
     if (!question.trim() || !isMyTurn || loading) return;
     setLoading(true);
+    socket?.emit('typing', { roomId, userId, typing: false });
     socket?.emit('submit_question', {
       roomId,
       userId: localStorage.getItem('userId'),
@@ -344,6 +350,19 @@ const Game: React.FC = () => {
                   );
                 })}
               </div>
+              {/* Indicador de digitação */}
+              {typingPlayer && typingPlayer !== userId && (
+                <div style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.5)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ display: 'inline-flex', gap: '3px', alignItems: 'center' }}>
+                    {[0, 1, 2].map(i => (
+                      <span key={i} style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent-gold)', display: 'inline-block', animation: `pulse-dot 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+                    ))}
+                  </span>
+                  <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontStyle: 'italic' }}>
+                    {players.find(p => p.anonymous_user_id === typingPlayer)?.display_name || 'Alguém'} está digitando...
+                  </span>
+                </div>
+              )}
               {/* Histórico de perguntas + turnos */}
               {history.map((item, idx) => (
                 item.type === 'turn' ? (
@@ -506,7 +525,12 @@ const Game: React.FC = () => {
                     <input
                       type="text"
                       value={question}
-                      onChange={(e) => setQuestion(e.target.value)}
+                      onChange={(e) => {
+                        setQuestion(e.target.value);
+                        socket?.emit('typing', { roomId, userId, typing: true });
+                        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+                        typingTimeoutRef.current = setTimeout(() => socket?.emit('typing', { roomId, userId, typing: false }), 1500);
+                      }}
                       placeholder={isMyTurn ? 'Faça uma pergunta de sim ou não...' : 'Aguarde sua vez...'}
                       disabled={!isMyTurn || loading}
                       style={{ ...inputStyle, flex: 1 }}

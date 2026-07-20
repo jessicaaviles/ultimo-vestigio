@@ -463,6 +463,12 @@ io.on('connection', (socket) => {
     } catch { socket.emit('room_error', 'Não foi possível usar a pista.'); }
   });
 
+  socket.on('typing', ({ roomId, userId, typing }) => {
+    if (roomId && userId) {
+      socket.to(roomId).emit('player_typing', { userId, typing });
+    }
+  });
+
   socket.on('cast_vote', async ({ roomId, voteId, userId, optionId }) => {
     try {
       const player = await prisma.room_players.findFirst({ where: { room_id: roomId, anonymous_user_id: userId } });
