@@ -19,7 +19,7 @@ const generateRoomCode = () => {
 export const listCases = async (_req: Request, res: Response) => {
   try {
     const cases = await prisma.cases.findMany({ where: { status: { in: ['PUBLISHED', 'published'] }, deleted_at: null }, orderBy: { created_at: 'asc' } });
-    cases.sort((a, b) => Number(b.slug === 'o-quarto-7') - Number(a.slug === 'o-quarto-7'));
+    cases.sort((a, b) => Number(b.slug === 'o-presente-desaparecido') - Number(a.slug === 'o-presente-desaparecido'));
     res.json({ success: true, data: cases });
   } catch { res.status(500).json({ success: false, error: 'Could not load cases' }); }
 };
