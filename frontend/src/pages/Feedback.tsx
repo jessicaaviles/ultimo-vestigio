@@ -35,21 +35,35 @@ const Feedback: React.FC = () => {
   const labelStyle = { display: 'block', color: 'var(--gold-soft)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '12px' } as any;
 
   return (
-    <div className="immersive-page" style={{
+    <div className="immersive-page is-fixed-height" style={{
       display: 'flex',
       flexDirection: 'column',
       backgroundColor: '#0F1417',
       backgroundImage: `url(/backgrounds/equipe-investigadores.png)`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundBlendMode: 'overlay',
-      padding: '112px 24px 24px 24px', // 88px (header) + 24px (margem)
-      minHeight: '100vh',
-      boxSizing: 'border-box'
+      position: 'relative'
     }}>
-      <div style={{ width: '100%' }}>
+      {/* Overlay gradiente para escurecer o fundo igual nas outras páginas */}
+      <div style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0, bottom: 0,
+        background: 'linear-gradient(to bottom, rgba(15, 20, 23, 0.6) 0%, rgba(15, 20, 23, 0.95) 100%)',
+        zIndex: 0
+      }}></div>
+
+      <div style={{ 
+        position: 'fixed', 
+        inset: 0, 
+        zIndex: 1, 
+        padding: '112px 24px 24px 24px', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center',
+        boxSizing: 'border-box'
+      }}>
         {sent ? (
-          <div style={{ ...cardStyle, textAlign: 'center' }}>
+          <div style={{ ...cardStyle, textAlign: 'center', width: '100%', maxWidth: '400px', height: 'max-content' }}>
             <div style={{ fontSize: '48px', marginBottom: '12px', color: 'var(--accent-gold)' }}>✓</div>
             <span style={labelStyle}>Registro concluído</span>
             <h2 style={{ fontSize: '24px', marginBottom: '12px', fontFamily: 'var(--font-serif)', fontWeight: 400, color: '#F8F9FA' }}>Obrigado por investigar.</h2>
@@ -62,7 +76,7 @@ const Feedback: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div style={cardStyle}>
+          <div style={{ ...cardStyle, width: '100%', maxWidth: '400px', height: 'max-content' }}>
             <span style={labelStyle}>Pós-Investigação</span>
             <h2 style={{ fontSize: '24px', marginBottom: '8px', fontFamily: 'var(--font-serif)', fontWeight: 400, color: '#F8F9FA' }}>Como foi a experiência?</h2>
             <p style={{ color: '#8E989F', fontSize: '12px', lineHeight: 1.5, marginBottom: '24px' }}>Avalie o caso para ajudar a central a melhorar as próximas missões.</p>
