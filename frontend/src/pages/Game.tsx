@@ -299,10 +299,14 @@ const Game: React.FC = () => {
           )}
 
           {evaluationNotice && (
-            <div style={{ ...cardStyle, borderColor: 'rgba(132,147,107,0.5)', background: 'rgba(132,147,107,0.12)' }}>
+            <div style={{ ...cardStyle, borderColor: 'rgba(132,147,107,0.5)', background: 'rgba(132,147,107,0.12)', position: 'relative' }}>
+              <button onClick={() => setEvaluationNotice(null)} style={{ position: 'absolute', top: '12px', right: '12px', color: 'rgba(255,255,255,0.5)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', lineHeight: 1 }}>×</button>
               <div style={labelStyle}>Avaliação da tentativa</div>
               <div style={{ fontSize: '32px', fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', marginBottom: '8px' }}>{Math.round(evaluationNotice.groupScore)}%</div>
-              <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px', margin: 0 }}>{evaluationNotice.message}</p>
+              <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px', margin: '0 0 12px' }}>{evaluationNotice.message}</p>
+              <button onClick={() => setEvaluationNotice(null)} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '6px', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '13px', width: '100%' }}>
+                Continuar investigação
+              </button>
             </div>
           )}
 
