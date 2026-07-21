@@ -92,12 +92,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .app-content, .topbar { padding-left: 24px; padding-right: 24px; }
 }
 @media (max-width: 640px) {
-  .topbar { height: 76px; padding: 0 24px; }
+  .topbar { height: 76px; padding: 0 16px; }
   .topbar-logo { height: 50px; max-height: 50px; }
-  .topbar-mark { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; }
-  .app-content { padding: 76px 24px calc(104px + env(safe-area-inset-bottom)); }
+  .topbar-mark { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; }
+  .app-content { padding: 76px 16px calc(104px + env(safe-area-inset-bottom)); }
   .page-header { padding-top: 24px; }
-  .bottom-nav, .bottom-nav-inner { min-height: 68px; }
+  .bottom-nav, .bottom-nav-inner { min-height: 68px; padding-left: 8px; padding-right: 8px; }
   .nav-item { min-width: 52px; min-height: 50px; font-size: 8px; letter-spacing: .06em; }
 }
 
