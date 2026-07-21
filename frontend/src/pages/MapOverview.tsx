@@ -33,7 +33,7 @@ const MapOverview: React.FC = () => {
       {/* Header Topo */}
       <div style={{ position: 'relative', zIndex: 2 }}>
         {/* Título do Mapa */}
-        <div style={{ padding: '0 24px', marginTop: '8px' }}>
+        <div style={{ padding: '0 24px', marginTop: '100px' }}>
           <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Planta Baixa</span>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>Blackwell House</h1>
           <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', maxWidth: '80%', lineHeight: 1.5 }}>
