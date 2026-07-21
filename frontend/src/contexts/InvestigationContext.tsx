@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
 interface InvestigationContextData {
@@ -12,7 +12,22 @@ const InvestigationContext = createContext<InvestigationContextData | undefined>
 
 export const InvestigationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [activeCaseId] = useState<string | null>('blackwell');
-  const [discoveredClues, setDiscoveredClues] = useState<string[]>([]);
+  
+  const [discoveredClues, setDiscoveredClues] = useState<string[]>(() => {
+    const saved = localStorage.getItem('jogo_investigacao_clues');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('jogo_investigacao_clues', JSON.stringify(discoveredClues));
+  }, [discoveredClues]);
 
   const addClue = (clueId: string) => {
     if (!discoveredClues.includes(clueId)) {
