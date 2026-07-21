@@ -116,8 +116,9 @@ const MapOverview: React.FC = () => {
                         navigate(`/scene/${loc.id}`);
                       }} 
                       style={{ 
-                        background: 'var(--olive)', border: 'none', color: '#13191C', padding: '8px 16px', borderRadius: '20px', 
-                        fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', width: '100%', justifyContent: 'center' 
+                        background: '#C5A880', border: 'none', color: '#0A0D10', padding: '8px 16px', borderRadius: '20px', 
+                        fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', width: '100%', justifyContent: 'center',
+                        textTransform: 'uppercase', letterSpacing: '1px', boxShadow: '0 4px 12px rgba(197, 168, 128, 0.2)'
                       }}
                     >
                       Explorar local <ArrowRight size={12} />
