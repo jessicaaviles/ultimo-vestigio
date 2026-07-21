@@ -53,7 +53,7 @@ const CaseFiles: React.FC = () => {
                 onClick={() => navigate(`/evidence/${item.id}`)}
                 style={{ backgroundColor: '#13191C', borderRadius: '16px', padding: '16px', display: 'flex', gap: '16px', alignItems: 'center', border: '1px solid rgba(255,255,255,0.03)', cursor: 'pointer' }}
               >
-                <div style={{ width: '60px', height: '60px', borderRadius: '12px', backgroundImage: `url(${item.image})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.8 }} />
+                <div style={{ width: '60px', height: '60px', borderRadius: '12px', backgroundImage: `url(${item.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
                 <div>
                   <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '4px' }}>{item.type}</div>
                   <div style={{ color: '#F8F9FA', fontSize: '16px', fontWeight: 600 }}>{item.title}</div>

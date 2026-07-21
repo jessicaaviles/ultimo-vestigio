@@ -47,9 +47,10 @@ const EvidenceAnalysis: React.FC = () => {
         position: 'absolute', top: 0, left: 0, width: '100%', height: '55vh',
         backgroundImage: `url(${mockEvidence.image})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0
       }} />
+      {/* Fade para mesclar com o conteúdo */}
       <div style={{
         position: 'absolute', top: 0, left: 0, width: '100%', height: '55vh',
-        background: 'linear-gradient(180deg, rgba(10,13,16,0.5) 0%, rgba(10,13,16,0.8) 50%, #0A0D10 100%)', zIndex: 1
+        background: 'linear-gradient(180deg, rgba(10,13,16,0) 0%, rgba(10,13,16,0.1) 50%, rgba(10,13,16,0.9) 90%, #0A0D10 100%)', zIndex: 1
       }} />
 
       {/* Header */}
