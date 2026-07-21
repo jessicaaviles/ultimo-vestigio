@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ArrowRight, Lock, LayoutGrid } from 'lucide-react';
+import { useInvestigation } from '../contexts/InvestigationContext';
 
 const MapOverview: React.FC = () => {
   const navigate = useNavigate();
   const [selectedPin, setSelectedPin] = useState<string | null>('living_room');
 
+  const { discoveredClues } = useInvestigation();
+  const libraryUnlocked = discoveredClues.includes('fireplace');
+  const bedroomUnlocked = discoveredClues.includes('desk_letter');
+  const gardenUnlocked = discoveredClues.includes('mirror_msg');
+
   const locations = [
     { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '55%', left: '45%', pistas: 5 },
-    { id: 'library', title: 'Biblioteca', status: 'locked', top: '40%', left: '70%', pistas: 0 },
-    { id: 'bedroom', title: 'Quarto Principal', status: 'locked', top: '30%', left: '30%', pistas: 0 },
-    { id: 'garden', title: 'Jardins', status: 'locked', top: '75%', left: '20%', pistas: 0 }
+    { id: 'library', title: 'Biblioteca', status: libraryUnlocked ? 'investigating' : 'locked', top: '40%', left: '70%', pistas: 5 },
+    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '30%', left: '30%', pistas: 4 },
+    { id: 'garden', title: 'Jardins', status: gardenUnlocked ? 'investigating' : 'locked', top: '75%', left: '20%', pistas: 5 }
   ];
+
+  const totalPossibleClues = 19;
+  const progressPercent = Math.round((discoveredClues.length / totalPossibleClues) * 100);
 
   return (
     <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflowX: 'hidden', paddingBottom: '96px' }}>
@@ -70,10 +79,10 @@ const MapOverview: React.FC = () => {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
               <span style={{ color: '#8E989F', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>Exploração da Mansão</span>
-              <span style={{ color: '#C5A880', fontSize: '11px', fontWeight: 600 }}>68%</span>
+              <span style={{ color: '#C5A880', fontSize: '11px', fontWeight: 600 }}>{progressPercent}%</span>
             </div>
             <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
-              <div style={{ width: '68%', height: '100%', background: '#C5A880', borderRadius: '2px' }} />
+              <div style={{ width: `${progressPercent}%`, height: '100%', background: '#C5A880', borderRadius: '2px' }} />
             </div>
           </div>
         </div>

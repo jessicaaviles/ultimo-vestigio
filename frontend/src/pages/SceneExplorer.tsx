@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronDown, ThumbsUp, ThumbsDown, Brain, X } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
@@ -9,33 +9,70 @@ const SceneExplorer: React.FC = () => {
   const [showMapModal, setShowMapModal] = useState(false);
   const { discoveredClues, addClue } = useInvestigation();
 
-  // Hardcoded for 'sala-de-estar'
-  const totalClues = 5; // To match map 
-  const hotspots = [
-    { id: 'window', label: 'Janela', subLabel: 'Sem arrombamento', top: '30%', left: '15%' },
-    { id: 'armchair', label: 'Poltrona', subLabel: 'Cena montada', top: '75%', left: '85%' },
-    { id: 'table', label: 'Carta Anônima', subLabel: 'Caligrafia familiar', top: '48%', left: '38%' },
-    { id: 'fireplace', label: 'Restos na Lareira', subLabel: 'Passagem aérea', top: '40%', left: '80%' },
-    { id: 'blood', label: 'Sangue Artificial', subLabel: 'Sem respingos', top: '90%', left: '75%', requiresUv: true },
-  ];
-
-  const handleHotspotClick = (id: string) => {
-    addClue(id);
-    navigate(`/evidence/${id}`);
+  const { sceneId } = useParams<{ sceneId: string }>();
+  const id = sceneId || 'living_room';
+  
+  const sceneConfig: Record<string, any> = {
+    living_room: {
+      title: 'Sala de Estar', subtitle: 'Cena do Crime', bg: '/backgrounds/scene_living_room.png',
+      hotspots: [
+        { id: 'window', label: 'Janela', subLabel: 'Sem arrombamento', top: '30%', left: '15%' },
+        { id: 'armchair', label: 'Poltrona', subLabel: 'Cena montada', top: '75%', left: '85%' },
+        { id: 'table', label: 'Carta Anônima', subLabel: 'Caligrafia familiar', top: '48%', left: '38%' },
+        { id: 'fireplace', label: 'Restos na Lareira', subLabel: 'Passagem aérea', top: '40%', left: '80%' },
+        { id: 'blood', label: 'Sangue Artificial', subLabel: 'Sem respingos', top: '90%', left: '75%', requiresUv: true },
+      ]
+    },
+    library: {
+      title: 'Biblioteca', subtitle: 'Escritório de Tomás', bg: '/backgrounds/scene_library.png',
+      hotspots: [
+        { id: 'bookshelf', label: 'Estante', subLabel: 'Livro deslocado', top: '35%', left: '20%' },
+        { id: 'safe', label: 'Cofre Oculto', subLabel: 'Trancado', top: '50%', left: '22%' },
+        { id: 'desk_letter', label: 'Carta de Helena', subLabel: 'Aviso urgente', top: '65%', left: '55%' },
+        { id: 'whiskey', label: 'Copo de Uísque', subLabel: 'Marca de batom', top: '70%', left: '45%' },
+        { id: 'uv_handprint', label: 'Marcas de Mão', subLabel: 'Luta recente', top: '45%', left: '75%', requiresUv: true },
+      ]
+    },
+    bedroom: {
+      title: 'Quarto Principal', subtitle: 'Aposentos de Clara', bg: '/backgrounds/scene_bedroom.png',
+      hotspots: [
+        { id: 'bed', label: 'Cama', subLabel: 'Bagunçada', top: '60%', left: '40%' },
+        { id: 'nightstand', label: 'Criado-mudo', subLabel: 'Chave antiga', top: '55%', left: '25%' },
+        { id: 'suitcase', label: 'Mala', subLabel: 'Feita às pressas', top: '80%', left: '60%' },
+        { id: 'mirror_msg', label: 'Mensagem no Espelho', subLabel: 'Escrita em segredo', top: '35%', left: '70%', requiresUv: true },
+      ]
+    },
+    garden: {
+      title: 'Jardins', subtitle: 'Área Externa', bg: '/backgrounds/scene_garden.png',
+      hotspots: [
+        { id: 'fountain', label: 'Fonte de Pedra', subLabel: 'Livro-caixa queimado', top: '70%', left: '30%' },
+        { id: 'mud', label: 'Pegadas na Lama', subLabel: 'Duas pessoas', top: '85%', left: '65%' },
+        { id: 'shovel', label: 'Pá', subLabel: 'Terra recente', top: '75%', left: '15%' },
+        { id: 'gate', label: 'Portão', subLabel: 'Deixado aberto', top: '40%', left: '80%' },
+        { id: 'uv_drops', label: 'Gotas', subLabel: 'Tinta da caneta', top: '80%', left: '50%', requiresUv: true },
+      ]
+    }
   };
 
-  // Mapeamento de imagens para cada pista
+  const scene = sceneConfig[id] || sceneConfig['living_room'];
+  const hotspots = scene.hotspots;
+  const totalClues = hotspots.length;
+
+  const handleHotspotClick = (clueId: string) => {
+    addClue(clueId);
+    navigate(`/evidence/${clueId}`);
+  };
+
   const clueImages: Record<string, string> = {
-    window: '/backgrounds/ev_photo.png',
-    armchair: '/backgrounds/ev_letter.png',
-    table: '/backgrounds/ev_letter.png',
-    fireplace: '/backgrounds/ev_photo.png',
-    blood: '/backgrounds/ev_key_7.png',
+    window: '/backgrounds/ev_photo.png', armchair: '/backgrounds/ev_letter.png', table: '/backgrounds/ev_letter.png', fireplace: '/backgrounds/ev_photo.png', blood: '/backgrounds/ev_key_7.png',
+    bookshelf: '/backgrounds/ev_diary.png', safe: '/backgrounds/ev_photo.png', desk_letter: '/backgrounds/ev_letter.png', whiskey: '/backgrounds/ev_photo.png', uv_handprint: '/backgrounds/ev_photo.png',
+    bed: '/backgrounds/ev_photo.png', nightstand: '/backgrounds/ev_key_7.png', suitcase: '/backgrounds/ev_photo.png', mirror_msg: '/backgrounds/ev_letter.png',
+    fountain: '/backgrounds/ev_diary.png', mud: '/backgrounds/ev_photo.png', shovel: '/backgrounds/ev_photo.png', gate: '/backgrounds/ev_photo.png', uv_drops: '/backgrounds/ev_letter.png'
   };
 
   const foundClues = discoveredClues
-    .filter(id => hotspots.some(h => h.id === id))
-    .map(id => ({ id, url: clueImages[id] || '/backgrounds/ev_letter.png' }));
+    .filter(cid => hotspots.some((h: any) => h.id === cid))
+    .map(cid => ({ id: cid, url: clueImages[cid] || '/backgrounds/ev_letter.png' }));
 
   return (
     <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflowX: 'hidden', paddingBottom: '96px' }}>
@@ -43,7 +80,7 @@ const SceneExplorer: React.FC = () => {
       {/* Background da Cena */}
       <div style={{ 
         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-        backgroundImage: 'url(/backgrounds/scene_living_room.png)', backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0,
+        backgroundImage: `url(${scene.bg})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0,
         filter: uvLight ? 'brightness(0.7) contrast(1.4) sepia(1) hue-rotate(240deg) saturate(2.5)' : 'none',
         transition: 'filter 0.5s ease'
       }} />
@@ -57,8 +94,8 @@ const SceneExplorer: React.FC = () => {
         {/* Informações Superiores e Minimapa */}
         <div style={{ display: 'flex', padding: '0 24px', marginTop: '100px', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>Cena do Crime</span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '0 0 8px 0', color: '#F8F9FA', fontWeight: 400 }}>Sala de Estar</h1>
+            <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>{scene.subtitle}</span>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '0 0 8px 0', color: '#F8F9FA', fontWeight: 400 }}>{scene.title}</h1>
             <p style={{ color: '#8E989F', fontSize: '13px', margin: '0 0 24px 0', maxWidth: '200px', lineHeight: 1.4 }}>
               Explore a cena. Cada detalhe pode ser uma pista.
             </p>

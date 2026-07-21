@@ -8,18 +8,20 @@ const InvestigationBoard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('mural');
   const [showResolution, setShowResolution] = useState(false);
 
-  // Cards de evidência para o novo roteiro
+  // Cards de evidência para o novo roteiro expandido
   const cards = [
-    { id: 'clara', type: 'person', image: '/backgrounds/clara_portrait.png', title: 'Clara Mendes', label: 'Desaparecida... ou foragida?', top: '10%', left: '15%', rotation: '-5deg' },
+    { id: 'clara', type: 'person', image: '/backgrounds/clara_portrait.png', title: 'Clara Mendes', label: 'Forjou a própria morte', top: '10%', left: '15%', rotation: '-5deg' },
     { id: 'letter', type: 'note', text: 'Carta anônima\n\nA caligrafia é do Sr. Tomás, mas a tinta é da caneta que Clara usa.', top: '12%', left: '40%', rotation: '2deg' },
     { id: 'tomas', type: 'person', image: '/backgrounds/tomas_portrait.png', title: 'Sr. Tomás Blackwell', label: 'O alvo da armação', top: '15%', left: '70%', rotation: '4deg' },
     { id: 'house', type: 'location', image: '/backgrounds/map_blackwell.png', title: 'Mansão Blackwell', top: '45%', left: '35%', rotation: '-2deg' },
     { id: 'flight', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Passagem p/ Buenos Aires', label: 'Comprada por C.M.', top: '55%', left: '5%', rotation: '-8deg' },
-    { id: 'helena', type: 'person', image: '/backgrounds/helena_portrait.png', title: 'Helena', label: 'Enganada por Clara?', top: '65%', left: '38%', rotation: '3deg' },
-    { id: 'diary', type: 'item', image: '/backgrounds/ev_diary.png', title: 'Diário de Elisa', label: 'O verdadeiro motivo.', top: '55%', left: '72%', rotation: '-4deg' },
+    { id: 'helena', type: 'person', image: '/backgrounds/helena_portrait.png', title: 'Helena', label: 'Ajudou na fuga', top: '65%', left: '38%', rotation: '3deg' },
+    { id: 'ledger', type: 'item', image: '/backgrounds/ev_diary.png', title: 'Livro-caixa Desenterrado', label: 'O motivo: Desvios da família', top: '80%', left: '72%', rotation: '-4deg' },
+    { id: 'mirror_msg', type: 'note', text: 'O jardim esconde a verdade', top: '35%', left: '80%', rotation: '5deg' },
+    { id: 'mud', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Pegadas Duplas', label: 'Fugiram pelo portão', top: '85%', left: '15%', rotation: '2deg' },
   ];
 
-  const totalClues = 5;
+  const totalClues = 19;
   const cluesFound = discoveredClues.length;
   const progress = Math.round((cluesFound / totalClues) * 100);
 
