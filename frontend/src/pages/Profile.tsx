@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Upload, UserPlus, X } from 'lucide-react';
+import { ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Upload, UserPlus, X, Medal, Shield, Search, Star } from 'lucide-react';
 import { getProfile, updateProfile, authValidate, authLogout } from '../services/api';
 import Loading from '../components/Loading';
 
@@ -13,8 +13,15 @@ interface ProfileData {
   photo: string | null;
   hasGeneratedPortrait: boolean;
   hasProfile: boolean;
-  portraitGenerations?: number;
-  portraitGenerationsRemaining?: number;
+  photoUpdatedAt?: string | null;
+  portraitGenerations: number;
+  portraitGenerationsRemaining: number;
+  stats?: {
+    hostedRoomsCount: number;
+    playedRoomsCount: number;
+    theoriesCount: number;
+    correctTheoriesCount: number;
+  };
 }
 
 const Profile: React.FC = () => {
@@ -308,7 +315,39 @@ const Profile: React.FC = () => {
       <section className="profile-section" style={{ marginTop: 32 }}>
         <span className="eyebrow">Marcas de campo</span>
         <h2>Conquistas</h2>
-        <p style={{ color: 'var(--muted)', fontSize: '13px', padding: '24px 0' }}>Nenhuma conquista desbloqueada ainda. Complete investigações para ganhar marcas de campo.</p>
+        {profile?.stats ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginTop: '16px' }}>
+            {[
+              { id: 'first_case', title: 'Batismo de Fogo', desc: 'Concluiu o 1º caso.', unlocked: profile.stats.playedRoomsCount >= 1, Icon: Search },
+              { id: 'veteran', title: 'Investigador Sênior', desc: 'Concluiu 5 casos.', unlocked: profile.stats.playedRoomsCount >= 5, Icon: Medal },
+              { id: 'host', title: 'Chefe de Polícia', desc: 'Criou uma sala concluída.', unlocked: profile.stats.hostedRoomsCount >= 1, Icon: Shield },
+              { id: 'sherlock', title: 'Elementar', desc: 'Formulou 1 teoria correta.', unlocked: profile.stats.correctTheoriesCount >= 1, Icon: Star },
+            ].map(achievement => (
+              <div key={achievement.id} style={{
+                background: achievement.unlocked ? 'linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.02) 100%)' : 'rgba(255,255,255,0.02)',
+                border: `1px solid ${achievement.unlocked ? 'rgba(212,175,55,0.3)' : 'rgba(255,255,255,0.05)'}`,
+                borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '8px',
+                opacity: achievement.unlocked ? 1 : 0.5,
+                transition: 'all 0.3s ease'
+              }}>
+                <div style={{
+                  width: '48px', height: '48px', borderRadius: '50%',
+                  background: achievement.unlocked ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.05)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: achievement.unlocked ? 'var(--accent-gold)' : 'rgba(255,255,255,0.3)'
+                }}>
+                  <achievement.Icon size={24} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: achievement.unlocked ? '#fff' : 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>{achievement.title}</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.4 }}>{achievement.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: 'var(--muted)', fontSize: '13px', padding: '24px 0' }}>Carregando histórico do detetive...</p>
+        )}
       </section>
 
       {photoViewer && profile?.photo && (

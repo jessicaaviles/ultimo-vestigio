@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 const MAX_PORTRAIT_GENERATIONS = 3;
 
-const publicProfile = (user: any) => ({
+const publicProfile = (user: any, stats?: any) => ({
   id: user.id,
   displayName: user.default_display_name || 'Investigador',
   bio: user.bio || '',
@@ -17,13 +17,42 @@ const publicProfile = (user: any) => ({
   photoUpdatedAt: user.profile_photo_updated_at,
   portraitGenerations: user.portrait_generations ?? 0,
   portraitGenerationsRemaining: Math.max(0, MAX_PORTRAIT_GENERATIONS - (user.portrait_generations ?? 0)),
+  stats: stats || { hostedRoomsCount: 0, playedRoomsCount: 0, theoriesCount: 0, correctTheoriesCount: 0 }
 });
 
 export const getProfile = async (req: Request, res: Response) => {
   const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
   const user = await prisma.anonymous_users.findUnique({ where: { id: userId } });
   if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Profile not found' });
-  res.json({ success: true, data: publicProfile(user) });
+  
+  // Calculate Stats
+  const hostedRoomsCount = await prisma.rooms.count({ where: { host_user_id: userId, status: 'COMPLETED' } });
+  
+  const playedRooms = await prisma.room_players.findMany({ 
+    where: { anonymous_user_id: userId },
+    include: { room: true }
+  });
+  const playedRoomsCount = playedRooms.filter((rp: any) => rp.room.status === 'COMPLETED').length;
+
+  const theoriesCount = await prisma.theories.count({
+    where: { player: { anonymous_user_id: userId } }
+  });
+
+  const correctTheoriesCount = await prisma.theory_evaluations.count({
+    where: { 
+      theory: { player: { anonymous_user_id: userId } },
+      result: 'CORRECT'
+    }
+  });
+
+  const stats = {
+    hostedRoomsCount,
+    playedRoomsCount,
+    theoriesCount,
+    correctTheoriesCount
+  };
+
+  res.json({ success: true, data: publicProfile(user, stats) });
 };
 
 export const updateProfile = async (req: Request, res: Response) => {
