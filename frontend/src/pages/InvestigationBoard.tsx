@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Brain, CheckCircle2 } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
+import CaseResolutionModal from '../components/CaseResolutionModal';
 
 const InvestigationBoard: React.FC = () => {
   const { discoveredClues } = useInvestigation();
   const [activeTab, setActiveTab] = useState('mural');
+  const [showResolution, setShowResolution] = useState(false);
 
   // Hardcoded for the prototype to match the screenshot
   const cards = [
@@ -64,7 +66,7 @@ const InvestigationBoard: React.FC = () => {
           </div>
           {progress === 100 && (
             <button 
-              onClick={() => alert('Parabéns! Você resolveu o caso do protótipo!')}
+              onClick={() => setShowResolution(true)}
               style={{ background: 'var(--olive)', border: 'none', color: '#13191C', padding: '12px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: 600, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(197,168,128,0.3)' }}
             >
               <CheckCircle2 size={24} />
@@ -166,6 +168,9 @@ const InvestigationBoard: React.FC = () => {
         </div>
       </div>
 
+      {showResolution && (
+        <CaseResolutionModal onClose={() => setShowResolution(false)} />
+      )}
     </div>
   );
 };
