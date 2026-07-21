@@ -23,11 +23,18 @@ const SceneExplorer: React.FC = () => {
     navigate(`/evidence/${id}`);
   };
 
-  const foundImages = [
-    '/backgrounds/ev_letter.png',
-    '/backgrounds/ev_key_7.png',
-    '/backgrounds/ev_photo.png',
-  ];
+  // Mapeamento de imagens para cada pista
+  const clueImages: Record<string, string> = {
+    window: '/backgrounds/ev_photo.png',
+    armchair: '/backgrounds/ev_letter.png',
+    table: '/backgrounds/ev_letter.png',
+    fireplace: '/backgrounds/ev_photo.png',
+    blood: '/backgrounds/ev_key_7.png',
+  };
+
+  const foundClues = discoveredClues
+    .filter(id => hotspots.some(h => h.id === id))
+    .map(id => ({ id, url: clueImages[id] || '/backgrounds/ev_letter.png' }));
 
   return (
     <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflowX: 'hidden', paddingBottom: '96px' }}>
@@ -67,7 +74,7 @@ const SceneExplorer: React.FC = () => {
             
             <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '4px' }}>Pistas Encontradas</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-              <span style={{ color: '#F8F9FA', fontSize: '24px', fontWeight: 400 }}>{discoveredClues.length}</span>
+              <span style={{ color: '#F8F9FA', fontSize: '24px', fontWeight: 400 }}>{foundClues.length}</span>
               <span style={{ color: '#8E989F', fontSize: '14px' }}>/ {totalClues}</span>
             </div>
           </div>
@@ -120,8 +127,17 @@ const SceneExplorer: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
             {/* Found images carousel */}
             <div style={{ display: 'flex', gap: '8px' }}>
-              {foundImages.map((img, i) => (
-                <div key={i} style={{ width: '56px', height: '56px', borderRadius: '8px', border: '1px solid rgba(197, 168, 128, 0.3)', backgroundImage: `url(${img})`, backgroundSize: 'cover', opacity: 0.8 }} />
+              {foundClues.map((img) => (
+                <div 
+                  key={img.id} 
+                  onClick={() => navigate(`/evidence/${img.id}`)}
+                  style={{ 
+                    width: '56px', height: '56px', borderRadius: '8px', 
+                    border: '1px solid rgba(197, 168, 128, 0.3)', 
+                    backgroundImage: `url(${img.url})`, backgroundSize: 'cover', 
+                    opacity: 0.8, cursor: 'pointer', transition: 'all 0.2s ease',
+                  }} 
+                />
               ))}
             </div>
             
