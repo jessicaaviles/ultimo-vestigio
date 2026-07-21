@@ -11,11 +11,11 @@ const SceneExplorer: React.FC = () => {
   // Hardcoded for 'sala-de-estar'
   const totalClues = 5; // To match map 
   const hotspots = [
-    { id: 'window', label: 'Janela', subLabel: 'Entreaberta', top: '35%', left: '15%' },
-    { id: 'armchair', label: 'Poltrona', subLabel: 'Revirada', top: '48%', left: '38%' },
-    { id: 'table', label: 'Anotações', subLabel: 'Rasgadas', top: '56%', left: '55%' },
-    { id: 'fireplace', label: 'Lareira', subLabel: 'Apagada', top: '42%', left: '85%' },
-    { id: 'blood', label: 'Mancha de Sangue', subLabel: 'Recente', top: '65%', left: '78%', requiresUv: true },
+    { id: 'window', label: 'Janela', subLabel: 'Entreaberta', top: '30%', left: '15%' },
+    { id: 'armchair', label: 'Poltrona', subLabel: 'Revirada', top: '60%', left: '25%' },
+    { id: 'table', label: 'Anotações', subLabel: 'Rasgadas', top: '48%', left: '38%' },
+    { id: 'fireplace', label: 'Lareira', subLabel: 'Apagada', top: '40%', left: '80%' },
+    { id: 'blood', label: 'Mancha de Sangue', subLabel: 'Recente', top: '65%', left: '75%', requiresUv: true },
   ];
 
   const handleHotspotClick = (id: string) => {
@@ -124,23 +124,7 @@ const SceneExplorer: React.FC = () => {
         {/* Bottom controls */}
         <div style={{ padding: '0 24px', marginTop: 'auto', marginBottom: '24px' }}>
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-            {/* Found images carousel */}
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {foundClues.map((img) => (
-                <div 
-                  key={img.id} 
-                  onClick={() => navigate(`/evidence/${img.id}`)}
-                  style={{ 
-                    width: '56px', height: '56px', borderRadius: '8px', 
-                    border: '1px solid rgba(197, 168, 128, 0.3)', 
-                    backgroundImage: `url(${img.url})`, backgroundSize: 'cover', 
-                    opacity: 0.8, cursor: 'pointer', transition: 'all 0.2s ease',
-                  }} 
-                />
-              ))}
-            </div>
-            
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', marginBottom: '24px' }}>
             {/* UV Button */}
             <button 
               onClick={() => setUvLight(!uvLight)}
