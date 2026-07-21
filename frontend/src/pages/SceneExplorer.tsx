@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flashlight, ChevronDown, ThumbsUp, ThumbsDown, Brain } from 'lucide-react';
+import { ChevronDown, ThumbsUp, ThumbsDown, Brain } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
 const SceneExplorer: React.FC = () => {
@@ -53,28 +53,10 @@ const SceneExplorer: React.FC = () => {
 
       <div style={{ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100vh' }}>
         
-        {/* Header Topo */}
-        <header style={{ padding: '100px 24px 16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ color: '#C5A880', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Cena do Crime</div>
-          <button 
-            onClick={() => setUvLight(!uvLight)}
-            style={{ 
-              width: '40px', height: '40px', borderRadius: '50%', 
-              border: `1px solid ${uvLight ? 'rgba(168, 85, 247, 0.5)' : 'rgba(255,255,255,0.1)'}`, 
-              background: uvLight ? 'rgba(168, 85, 247, 0.2)' : 'transparent',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', 
-              color: uvLight ? '#D8B4FE' : '#F8F9FA', 
-              backdropFilter: 'blur(10px)', cursor: 'pointer', transition: 'all 0.3s ease',
-              boxShadow: uvLight ? '0 0 15px rgba(168, 85, 247, 0.3)' : 'none'
-            }}
-          >
-            <Flashlight size={18} />
-          </button>
-        </header>
-
         {/* Informações Superiores e Minimapa */}
-        <div style={{ display: 'flex', padding: '0 24px', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', padding: '0 24px', marginTop: '100px', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
+            <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>Cena do Crime</span>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '0 0 8px 0', color: '#F8F9FA', fontWeight: 400 }}>Sala de Estar</h1>
             <p style={{ color: '#8E989F', fontSize: '13px', margin: '0 0 24px 0', maxWidth: '200px', lineHeight: 1.4 }}>
               Explore a cena. Cada detalhe pode ser uma pista.
