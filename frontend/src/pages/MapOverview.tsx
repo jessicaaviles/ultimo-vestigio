@@ -116,7 +116,7 @@ const MapOverview: React.FC = () => {
                         navigate(`/scene/${loc.id}`);
                       }} 
                       style={{ 
-                        background: '#C5A880', border: 'none', color: '#0A0D10', padding: '8px 16px', borderRadius: '20px', 
+                        background: '#C4A77F', border: 'none', color: '#0A0D10', padding: '8px 16px', borderRadius: '20px', 
                         fontSize: '11px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', width: '100%', justifyContent: 'center',
                         textTransform: 'uppercase', letterSpacing: '1px', boxShadow: '0 4px 12px rgba(197, 168, 128, 0.2)'
                       }}
