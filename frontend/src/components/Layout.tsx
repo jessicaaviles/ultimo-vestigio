@@ -53,10 +53,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const isImmersive = ['/map', '/scene', '/board', '/case-files', '/evidence'].some(p => location.pathname.includes(p));
+
   return <div className="app-shell">
     <header className="topbar" style={{
       position: scrolled || location.pathname !== '/' ? 'fixed' : 'absolute',
-      ...(scrolled ? { background: 'rgba(20,27,31,0.72) !important' as any, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' } : {}),
+      ...((scrolled || isImmersive) ? { background: 'rgba(10,13,16,0.65)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderBottom: isImmersive ? '1px solid rgba(255,255,255,0.05)' : 'none' } : {}),
     } as React.CSSProperties}>
       {location.pathname !== '/' ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -102,7 +104,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </div>
     </header>
-    <main className={`app-content ${['/map', '/scene', '/board', '/case-files', '/evidence'].some(p => location.pathname.includes(p)) ? 'immersive' : ''}`}>{children}</main>
+    <main className={`app-content ${isImmersive ? 'immersive' : ''}`}>{children}</main>
     <nav className="bottom-nav" aria-label="Navegação principal"><div className="bottom-nav-inner">
       {navItems.map(({ label, route, icon: Icon, badge }) => (
         <button
