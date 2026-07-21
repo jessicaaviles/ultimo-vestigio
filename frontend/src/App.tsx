@@ -60,11 +60,11 @@ function App() {
               <Route path="/room/:roomId/feedback" element={<Layout><ProtectedRoute><Feedback /></ProtectedRoute></Layout>} />
               
               {/* Immersive Redesign Prototypes */}
-              <Route path="/map/:caseId" element={<Layout><ProtectedRoute><MapOverview /></ProtectedRoute></Layout>} />
-              <Route path="/scene/:sceneId" element={<Layout><ProtectedRoute><SceneExplorer /></ProtectedRoute></Layout>} />
-              <Route path="/board/:caseId" element={<Layout><ProtectedRoute><InvestigationBoard /></ProtectedRoute></Layout>} />
-              <Route path="/case-files/:caseId" element={<Layout><ProtectedRoute><CaseFiles /></ProtectedRoute></Layout>} />
-              <Route path="/evidence/:evidenceId" element={<Layout><ProtectedRoute><EvidenceAnalysis /></ProtectedRoute></Layout>} />
+              <Route path="/map/:caseId" element={<ProtectedRoute><MapOverview /></ProtectedRoute>} />
+              <Route path="/scene/:sceneId" element={<ProtectedRoute><SceneExplorer /></ProtectedRoute>} />
+              <Route path="/board/:caseId" element={<ProtectedRoute><InvestigationBoard /></ProtectedRoute>} />
+              <Route path="/case-files/:caseId" element={<ProtectedRoute><CaseFiles /></ProtectedRoute>} />
+              <Route path="/evidence/:evidenceId" element={<ProtectedRoute><EvidenceAnalysis /></ProtectedRoute>} />
             </Routes>
           </InvestigationProvider>
         </BrowserRouter>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Brain, ArrowLeft, Bookmark, MoreHorizontal, Search, Fingerprint, Clock, Key } from 'lucide-react';
+import { Brain, ArrowLeft, Search, Fingerprint, Clock, Key } from 'lucide-react';
 import { analyzeEvidenceApi } from '../services/aiApi';
 
 const EvidenceAnalysis: React.FC = () => {
@@ -57,14 +57,6 @@ const EvidenceAnalysis: React.FC = () => {
         <button onClick={() => navigate(-1)} style={{ background: 'transparent', border: 'none', color: '#F8F9FA', cursor: 'pointer', padding: 0 }}>
           <ArrowLeft size={24} />
         </button>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA', backdropFilter: 'blur(10px)' }}>
-            <Bookmark size={20} />
-          </div>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA', backdropFilter: 'blur(10px)' }}>
-            <MoreHorizontal size={20} />
-          </div>
-        </div>
       </header>
 
       {/* Título da Evidência */}

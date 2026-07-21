@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Filter, MoreHorizontal, Brain } from 'lucide-react';
+import { ArrowLeft, Brain, CheckCircle2 } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
 const InvestigationBoard: React.FC = () => {
   const navigate = useNavigate();
-  const {  } = useInvestigation();
+  const { discoveredClues } = useInvestigation();
   const [activeTab, setActiveTab] = useState('mural');
 
   // Hardcoded for the prototype to match the screenshot
@@ -18,6 +18,10 @@ const InvestigationBoard: React.FC = () => {
     { id: 'helena', type: 'person', image: '/backgrounds/equipe-investigadores.png', title: 'Helena', label: 'Amiga próxima', top: '65%', left: '38%', rotation: '3deg' },
     { id: 'diary', type: 'item', image: '/backgrounds/ev_diary.png', title: 'Diário de Elisa', label: 'Última anotação: 11/05', top: '55%', left: '72%', rotation: '-4deg' },
   ];
+
+  const totalClues = 5;
+  const cluesFound = discoveredClues.length;
+  const progress = Math.round((cluesFound / totalClues) * 100);
 
   const renderPin = () => (
     <div style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#991b1b', boxShadow: '2px 2px 4px rgba(0,0,0,0.5)', zIndex: 10, border: '2px solid #7f1d1d' }}>
@@ -55,23 +59,26 @@ const InvestigationBoard: React.FC = () => {
           <button onClick={() => navigate(-1)} style={{ background: 'transparent', border: 'none', color: '#F8F9FA', cursor: 'pointer', padding: 0 }}>
             <ArrowLeft size={24} />
           </button>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA', backdropFilter: 'blur(10px)' }}>
-              <Filter size={18} />
-            </div>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA', backdropFilter: 'blur(10px)' }}>
-              <MoreHorizontal size={20} />
-            </div>
-          </div>
         </header>
 
         {/* Título do Caso */}
-        <div style={{ padding: '0 24px', marginTop: '8px' }}>
-          <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Investigação</span>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>O Segredo de<br/>Blackwell House</h1>
-          <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', maxWidth: '80%', lineHeight: 1.5 }}>
-            Conecte pistas, descubra relações e revele a verdade.
-          </p>
+        <div style={{ padding: '0 24px', marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Investigação</span>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>O Segredo de<br/>Blackwell House</h1>
+            <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', maxWidth: '80%', lineHeight: 1.5 }}>
+              Conecte pistas, descubra relações e revele a verdade.
+            </p>
+          </div>
+          {progress === 100 && (
+            <button 
+              onClick={() => alert('Parabéns! Você resolveu o caso do protótipo!')}
+              style={{ background: 'var(--olive)', border: 'none', color: '#13191C', padding: '12px 16px', borderRadius: '12px', fontSize: '12px', fontWeight: 600, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(197,168,128,0.3)' }}
+            >
+              <CheckCircle2 size={24} />
+              Resolver
+            </button>
+          )}
         </div>
 
         {/* Tabs */}
@@ -96,37 +103,49 @@ const InvestigationBoard: React.FC = () => {
       <div style={{ flex: 1, position: 'relative', backgroundImage: 'url(/backgrounds/corkboard_texture.png)', backgroundSize: 'cover', backgroundAttachment: 'fixed', zIndex: 2, overflow: 'hidden' }}>
         
         {/* Overlay escuro sobre a cortiça */}
-        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(20, 15, 10, 0.7)' }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(20, 15, 10, 0.8)' }} />
 
-        {/* SVG Strings layer */}
-        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }}>
-          <filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.5"/></filter>
-          <line x1="28%" y1="20%" x2="45%" y2="25%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-          <line x1="75%" y1="25%" x2="55%" y2="52%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-          <line x1="25%" y1="38%" x2="45%" y2="55%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-          <line x1="15%" y1="65%" x2="35%" y2="58%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-          <line x1="80%" y1="65%" x2="65%" y2="58%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-          <line x1="50%" y1="75%" x2="50%" y2="65%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-        </svg>
+        {activeTab === 'mural' ? (
+          <>
+            {/* SVG Strings layer */}
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }}>
+              <filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.5"/></filter>
+              <line x1="28%" y1="20%" x2="45%" y2="25%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+              <line x1="75%" y1="25%" x2="55%" y2="52%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+              <line x1="25%" y1="38%" x2="45%" y2="55%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+              <line x1="15%" y1="65%" x2="35%" y2="58%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+              <line x1="80%" y1="65%" x2="65%" y2="58%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+              <line x1="50%" y1="75%" x2="50%" y2="65%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+            </svg>
 
-        {/* Cards */}
-        {cards.map((card) => (
-          <div key={card.id} style={{ position: 'absolute', top: card.top, left: card.left, transform: `rotate(${card.rotation})`, zIndex: 2, width: '90px' }}>
-            {card.type === 'note' ? (
-              <div style={{ backgroundColor: '#d4c790', padding: '12px 10px', boxShadow: '2px 4px 10px rgba(0,0,0,0.5)', fontFamily: '"Kalam", cursive', fontSize: '10px', color: '#1a1a1a', lineHeight: 1.4, position: 'relative' }}>
-                {renderTape()}
-                {card.text}
+            {/* Cards */}
+            {cards.map((card) => (
+              <div key={card.id} style={{ position: 'absolute', top: card.top, left: card.left, transform: `rotate(${card.rotation})`, zIndex: 2, width: '90px' }}>
+                {card.type === 'note' ? (
+                  <div style={{ backgroundColor: '#d4c790', padding: '12px 10px', boxShadow: '2px 4px 10px rgba(0,0,0,0.5)', fontFamily: '"Kalam", cursive', fontSize: '10px', color: '#1a1a1a', lineHeight: 1.4, position: 'relative' }}>
+                    {renderTape()}
+                    {card.text}
+                  </div>
+                ) : (
+                  <div style={{ backgroundColor: '#e5e5e5', padding: '6px 6px 16px 6px', boxShadow: '4px 6px 12px rgba(0,0,0,0.6)', position: 'relative', borderRadius: '2px' }}>
+                    {renderPin()}
+                    <div style={{ width: '100%', height: '80px', backgroundImage: `url(${card.image})`, backgroundSize: 'cover', backgroundPosition: 'center', marginBottom: '8px', filter: 'sepia(0.3)' }} />
+                    <div style={{ fontFamily: '"Kalam", cursive', fontSize: '11px', color: '#1a1a1a', textAlign: 'center', lineHeight: 1 }}>{card.title}</div>
+                    {card.label && renderLabel(card.label)}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div style={{ backgroundColor: '#e5e5e5', padding: '6px 6px 16px 6px', boxShadow: '4px 6px 12px rgba(0,0,0,0.6)', position: 'relative', borderRadius: '2px' }}>
-                {renderPin()}
-                <div style={{ width: '100%', height: '80px', backgroundImage: `url(${card.image})`, backgroundSize: 'cover', backgroundPosition: 'center', marginBottom: '8px', filter: 'sepia(0.3)' }} />
-                <div style={{ fontFamily: '"Kalam", cursive', fontSize: '11px', color: '#1a1a1a', textAlign: 'center', lineHeight: 1 }}>{card.title}</div>
-                {card.label && renderLabel(card.label)}
-              </div>
-            )}
+            ))}
+          </>
+        ) : (
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, padding: '24px', textAlign: 'center' }}>
+            <div>
+              <div style={{ color: '#C5A880', fontSize: '48px', marginBottom: '16px', opacity: 0.5 }}>?</div>
+              <h3 style={{ color: '#F8F9FA', fontSize: '18px', marginBottom: '8px' }}>Conteúdo em construção</h3>
+              <p style={{ color: '#8E989F', fontSize: '13px' }}>A aba "{activeTab}" será implementada na próxima versão do sistema.</p>
+            </div>
           </div>
-        ))}
+        )}
 
         {/* Controls Overlay Bottom */}
         <div style={{ position: 'absolute', bottom: '24px', left: '24px', right: '24px', zIndex: 5, display: 'flex', gap: '12px' }}>
@@ -143,11 +162,11 @@ const InvestigationBoard: React.FC = () => {
           </div>
 
           <div style={{ background: 'rgba(19,25,28,0.9)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', flex: 1, backdropFilter: 'blur(10px)' }}>
-            <div style={{ color: '#C5A880', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '8px' }}>Conexões feitas</div>
+            <div style={{ color: '#C5A880', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '8px' }}>Pistas Encontradas</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ color: '#F8F9FA', fontSize: '16px', fontWeight: 600 }}>7 <span style={{ color: '#8E989F', fontSize: '12px' }}>/ 12</span></span>
+              <span style={{ color: '#F8F9FA', fontSize: '16px', fontWeight: 600 }}>{cluesFound} <span style={{ color: '#8E989F', fontSize: '12px' }}>/ {totalClues}</span></span>
               <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', flex: 1, overflow: 'hidden' }}>
-                <div style={{ width: '58%', height: '100%', background: '#C5A880' }} />
+                <div style={{ width: `${progress}%`, height: '100%', background: '#C5A880', transition: 'width 0.3s ease' }} />
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Flashlight, MoreHorizontal, ChevronDown, ThumbsUp, ThumbsDown, Brain } from 'lucide-react';
+import { ArrowLeft, Flashlight, ChevronDown, ThumbsUp, ThumbsDown, Brain } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
 const SceneExplorer: React.FC = () => {
@@ -52,13 +52,8 @@ const SceneExplorer: React.FC = () => {
             <ArrowLeft size={24} />
           </button>
           <div style={{ color: '#C5A880', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Cena do Crime</div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA', backdropFilter: 'blur(10px)' }}>
-              <Flashlight size={18} />
-            </div>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA', backdropFilter: 'blur(10px)' }}>
-              <MoreHorizontal size={20} />
-            </div>
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA', backdropFilter: 'blur(10px)' }}>
+            <Flashlight size={18} />
           </div>
         </header>
 
