@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Flashlight, ChevronDown, ThumbsUp, ThumbsDown, Brain } from 'lucide-react';
+import { Flashlight, ChevronDown, ThumbsUp, ThumbsDown, Brain } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
 const SceneExplorer: React.FC = () => {
