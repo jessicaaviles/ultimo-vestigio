@@ -12,11 +12,11 @@ const SceneExplorer: React.FC = () => {
   // Hardcoded for 'sala-de-estar'
   const totalClues = 5; // To match map 
   const hotspots = [
-    { id: 'window', label: 'Janela', subLabel: 'Entreaberta', top: '30%', left: '15%' },
-    { id: 'armchair', label: 'Poltrona', subLabel: 'Revirada', top: '75%', left: '85%' },
-    { id: 'table', label: 'Anotações', subLabel: 'Rasgadas', top: '48%', left: '38%' },
-    { id: 'fireplace', label: 'Lareira', subLabel: 'Apagada', top: '40%', left: '80%' },
-    { id: 'blood', label: 'Mancha de Sangue', subLabel: 'Recente', top: '90%', left: '75%', requiresUv: true },
+    { id: 'window', label: 'Janela', subLabel: 'Sem arrombamento', top: '30%', left: '15%' },
+    { id: 'armchair', label: 'Poltrona', subLabel: 'Cena montada', top: '75%', left: '85%' },
+    { id: 'table', label: 'Carta Anônima', subLabel: 'Caligrafia familiar', top: '48%', left: '38%' },
+    { id: 'fireplace', label: 'Restos na Lareira', subLabel: 'Passagem aérea', top: '40%', left: '80%' },
+    { id: 'blood', label: 'Sangue Artificial', subLabel: 'Sem respingos', top: '90%', left: '75%', requiresUv: true },
   ];
 
   const handleHotspotClick = (id: string) => {

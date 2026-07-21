@@ -9,15 +9,80 @@ const EvidenceAnalysis: React.FC = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [aiReport, setAiReport] = useState<any>(null);
 
-  const allEvidences = [
-    { id: 'fireplace', title: 'Carta Anônima', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_letter.png', desc: 'Uma carta parcialmente queimada encontrada entre as cinzas da lareira. A caligrafia é apressada e o papel tem um leve cheiro de perfume amadeirado.' },
-    { id: 'armchair', title: 'Chave do quarto 7', type: 'Item Físico', date: '13 Mai', image: '/backgrounds/ev_key_7.png', desc: 'Uma chave pesada e de estilo antigo. O número 7 está gravado no metal, que apresenta estranhas marcas de arranhões recentes, sugerindo que foi usada com pressa ou força.' },
-    { id: 'window', title: 'Foto da Família', type: 'Foto', date: '13 Mai', image: '/backgrounds/ev_photo.png', desc: 'Fotografia desbotada da família Blackwell em um porta-retratos quebrado. O rosto de um dos membros foi rasgado de forma violenta e intencional.' },
-    { id: 'table', title: 'Diário de Elisa', type: 'Documento', date: '14 Mai', image: '/backgrounds/ev_diary.png', desc: 'Diário encadernado em couro com várias páginas brutalmente arrancadas. As últimas anotações legíveis falam freneticamente sobre "sussurros nas paredes".' },
-    { id: 'blood', title: 'Mancha de Sangue', type: 'Vestígio', date: '15 Mai', image: '/backgrounds/ev_blood.png', desc: 'Uma poça parcialmente limpa e escondida sob o tapete perto da poltrona. A coloração e textura indicam que o sangue foi derramado há menos de 48 horas.' },
-  ];
+  const mockDatabase: Record<string, any> = {
+    'window': {
+      id: 'window',
+      title: 'Janela Entreaberta',
+      type: 'Cena do Crime',
+      imageUrl: '/backgrounds/ev_photo.png',
+      description: 'A janela principal da sala de estar foi encontrada escancarada, com o vento noturno soprando as cortinas.',
+      notes: [
+        'A trava da janela está perfeitamente intacta, sem sinais de arrombamento externo.',
+        'Quem quer que tenha aberto a janela, fez isso por dentro, e com muita calma.',
+        'Curiosamente, não há pegadas de lama ou sujeira no tapete persa logo abaixo.'
+      ],
+      conclusion: 'A cena sugere que a fuga ou invasão foi encenada de dentro para fora.',
+      tags: ['Inconsistência', 'Encenação']
+    },
+    'armchair': {
+      id: 'armchair',
+      title: 'Poltrona Revirada',
+      type: 'Cena do Crime',
+      imageUrl: '/backgrounds/ev_letter.png',
+      description: 'Uma pesada poltrona de mogno está tombada no chão da sala de estar.',
+      notes: [
+        'A poltrona sugere uma luta brutal no local.',
+        'No entanto, a mesinha de centro de vidro ao lado dela e os vasos caros estão perfeitamente intactos.',
+        'Uma briga real e imprevisível quase certamente teria quebrado os objetos frágeis próximos.'
+      ],
+      conclusion: 'Assim como a janela, a poltrona parece ter sido derrubada intencionalmente para simular um confronto.',
+      tags: ['Inconsistência', 'Cena Montada']
+    },
+    'table': {
+      id: 'table',
+      title: 'Carta Anônima',
+      type: 'Documento',
+      imageUrl: '/backgrounds/ev_letter.png',
+      description: 'Uma nota rabiscada deixada sobre a mesa de centro. Diz: "Vocês pensam que sabem a verdade. Mas a casa guarda o que vocês preferem esquecer. Pagará pelo que fez a Elisa."',
+      notes: [
+        'A caligrafia agressiva tenta imitar a letra cursiva característica do Sr. Tomás Blackwell.',
+        'A tinta é de uma caneta-tinteiro edição limitada francesa (Montblanc Rouge).',
+        'Clara Mendes é conhecida por colecionar e escrever exclusivamente com canetas-tinteiro europeias.'
+      ],
+      conclusion: 'A carta não foi uma ameaça externa. Clara escreveu a nota para incriminar a família antes de sumir.',
+      tags: ['Premeditação', 'Falsificação', 'Vingança']
+    },
+    'fireplace': {
+      id: 'fireplace',
+      title: 'Restos na Lareira',
+      type: 'Vestígio',
+      imageUrl: '/backgrounds/ev_photo.png',
+      description: 'Cinzas frias na lareira contêm um fragmento de papel parcialmente preservado.',
+      notes: [
+        'O fogo foi apagado antes de consumir tudo.',
+        'O fragmento mostra o logo da "Aerolíneas Del Sur".',
+        'É parte de uma passagem só de ida para Buenos Aires, comprada no nome de "C.M." para a manhã seguinte ao crime.'
+      ],
+      conclusion: 'Por que alguém que foi sequestrado teria comprado uma passagem internacional de fuga antecipadamente?',
+      tags: ['Fuga', 'Premeditação']
+    },
+    'blood': {
+      id: 'blood',
+      title: 'Mancha de Sangue',
+      type: 'Vestígio Biológico',
+      imageUrl: '/backgrounds/ev_key_7.png',
+      description: 'Uma grande mancha de sangue no tapete, quase invisível a olho nu na escuridão, mas brilhante sob a luz UV.',
+      notes: [
+        'O padrão espirrado é muito artificial, concentrado em um único círculo perfeito.',
+        'Não há respingos satélites, típicos de sangramento por ferimento ou impacto.',
+        'Análise laboratorial revelou altíssima concentração de anticoagulantes sintéticos (usados em sangue cenográfico ou de transfusão).'
+      ],
+      conclusion: 'O sangue foi derramado deliberadamente de um recipiente. Ninguém foi ferido aqui.',
+      tags: ['Fraude Biológica', 'Pista Falsa']
+    }
+  };
 
-  const mockEvidence = allEvidences.find(e => e.id === evidenceId) || allEvidences[1];
+  const mockEvidence = mockDatabase[evidenceId as string] || mockDatabase['armchair'];
 
   const handleAnalyze = async () => {
     setAnalyzing(true);
