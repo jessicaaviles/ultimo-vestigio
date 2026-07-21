@@ -44,7 +44,7 @@ const MapOverview: React.FC = () => {
         {/* Barra de Progresso Global */}
         <div style={{ padding: '0 24px' }}>
           <div style={{ 
-            background: 'rgba(255,255,255,0.02)', 
+            background: 'rgba(10, 13, 16, 0.6)', 
             border: '1px solid rgba(255,255,255,0.05)', 
             borderRadius: '16px', 
             padding: '16px',
