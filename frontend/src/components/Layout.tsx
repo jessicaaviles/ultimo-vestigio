@@ -58,7 +58,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return <div className="app-shell">
     <header className="topbar" style={{
       position: scrolled || location.pathname !== '/' ? 'fixed' : 'absolute',
-      ...((scrolled || isImmersive) ? { background: 'rgba(10,13,16,0.55)', backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)', borderBottom: isImmersive ? '1px solid rgba(255,255,255,0.05)' : 'none' } : {}),
+      ...((scrolled || isImmersive) ? { background: 'rgba(10,13,16,0.1)', backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)', borderBottom: isImmersive ? '1px solid rgba(255,255,255,0.05)' : 'none' } : {}),
     } as React.CSSProperties}>
       {location.pathname !== '/' ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
