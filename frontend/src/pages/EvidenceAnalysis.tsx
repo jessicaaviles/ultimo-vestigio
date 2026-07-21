@@ -30,7 +30,7 @@ const EvidenceAnalysis: React.FC = () => {
       title: 'Poltrona Revirada',
       type: 'Cena do Crime',
       date: '12 Mai',
-      image: '/backgrounds/ev_letter.png',
+      image: '/backgrounds/scene_living_room.png',
       desc: 'Uma pesada poltrona de mogno está tombada no chão da sala de estar.',
       notes: [
         'A poltrona sugere uma luta brutal no local.',
@@ -60,7 +60,7 @@ const EvidenceAnalysis: React.FC = () => {
       title: 'Restos na Lareira',
       type: 'Vestígio',
       date: '12 Mai',
-      image: '/backgrounds/ev_photo.png',
+      image: '/backgrounds/ev_diary.png',
       desc: 'Cinzas frias na lareira contêm um fragmento de papel parcialmente preservado.',
       notes: [
         'O fogo foi apagado antes de consumir tudo.',
@@ -75,7 +75,7 @@ const EvidenceAnalysis: React.FC = () => {
       title: 'Mancha de Sangue',
       type: 'Vestígio Biológico',
       date: '12 Mai',
-      image: '/backgrounds/ev_key_7.png',
+      image: '/backgrounds/ev_blood.png',
       desc: 'Uma grande mancha de sangue no tapete, quase invisível a olho nu na escuridão, mas brilhante sob a luz UV.',
       notes: [
         'O padrão espirrado é muito artificial, concentrado em um único círculo perfeito.',
