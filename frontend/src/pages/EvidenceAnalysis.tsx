@@ -10,11 +10,11 @@ const EvidenceAnalysis: React.FC = () => {
   const [aiReport, setAiReport] = useState<any>(null);
 
   const allEvidences = [
-    { id: 'fireplace', title: 'Carta Anônima', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_letter.png', desc: 'Carta escrita à mão encontrada na lareira' },
-    { id: 'armchair', title: 'Chave do quarto 7', type: 'Item Físico', date: '13 Mai', image: '/backgrounds/ev_key_7.png', desc: 'Chave antiga do quarto' },
-    { id: 'window', title: 'Foto da Família', type: 'Foto', date: '13 Mai', image: '/backgrounds/ev_photo.png', desc: 'Fotografia antiga revelando conexões passadas' },
-    { id: 'table', title: 'Diário de Elisa', type: 'Documento', date: '14 Mai', image: '/backgrounds/ev_diary.png', desc: 'Diário com anotações suspeitas' },
-    { id: 'blood', title: 'Mancha de Sangue', type: 'Vestígio', date: '15 Mai', image: '/backgrounds/ev_blood.png', desc: 'Amostra de sangue encontrada escondida' },
+    { id: 'fireplace', title: 'Carta Anônima', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_letter.png', desc: 'Uma carta parcialmente queimada encontrada entre as cinzas da lareira. A caligrafia é apressada e o papel tem um leve cheiro de perfume amadeirado.' },
+    { id: 'armchair', title: 'Chave do quarto 7', type: 'Item Físico', date: '13 Mai', image: '/backgrounds/ev_key_7.png', desc: 'Uma chave pesada e de estilo antigo. O número 7 está gravado no metal, que apresenta estranhas marcas de arranhões recentes, sugerindo que foi usada com pressa ou força.' },
+    { id: 'window', title: 'Foto da Família', type: 'Foto', date: '13 Mai', image: '/backgrounds/ev_photo.png', desc: 'Fotografia desbotada da família Blackwell em um porta-retratos quebrado. O rosto de um dos membros foi rasgado de forma violenta e intencional.' },
+    { id: 'table', title: 'Diário de Elisa', type: 'Documento', date: '14 Mai', image: '/backgrounds/ev_diary.png', desc: 'Diário encadernado em couro com várias páginas brutalmente arrancadas. As últimas anotações legíveis falam freneticamente sobre "sussurros nas paredes".' },
+    { id: 'blood', title: 'Mancha de Sangue', type: 'Vestígio', date: '15 Mai', image: '/backgrounds/ev_blood.png', desc: 'Uma poça parcialmente limpa e escondida sob o tapete perto da poltrona. A coloração e textura indicam que o sangue foi derramado há menos de 48 horas.' },
   ];
 
   const mockEvidence = allEvidences.find(e => e.id === evidenceId) || allEvidences[1];
@@ -64,7 +64,10 @@ const EvidenceAnalysis: React.FC = () => {
       <div style={{ padding: '0 24px', marginTop: '30vh', position: 'relative', zIndex: 2 }}>
         <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Análise de Evidências</span>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400 }}>{mockEvidence.title}</h1>
-        <p style={{ color: '#8E989F', fontSize: '13px', margin: '0 0 16px 0' }}>Analisada pela IA em {mockEvidence.date} às 14:32</p>
+        <p style={{ color: '#8E989F', fontSize: '13px', margin: '0 0 16px 0' }}>Encontrada em {mockEvidence.date} às 14:32</p>
+        <p style={{ color: '#E8EAED', fontSize: '14px', lineHeight: 1.5, margin: '0 0 24px 0', fontStyle: 'italic', borderLeft: '2px solid rgba(197, 168, 128, 0.5)', paddingLeft: '12px' }}>
+          "{mockEvidence.desc}"
+        </p>
         <button 
           onClick={!aiReport ? handleAnalyze : undefined}
           disabled={analyzing}
