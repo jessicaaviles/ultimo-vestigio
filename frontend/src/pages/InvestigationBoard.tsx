@@ -10,12 +10,12 @@ const InvestigationBoard: React.FC = () => {
 
   // Cards de evidência para o novo roteiro
   const cards = [
-    { id: 'clara', type: 'person', image: '/backgrounds/equipe-investigadores.png', title: 'Clara Mendes', label: 'Desaparecida... ou foragida?', top: '10%', left: '15%', rotation: '-5deg' },
+    { id: 'clara', type: 'person', image: '/backgrounds/clara_portrait.png', title: 'Clara Mendes', label: 'Desaparecida... ou foragida?', top: '10%', left: '15%', rotation: '-5deg' },
     { id: 'letter', type: 'note', text: 'Carta anônima\n\nA caligrafia é do Sr. Tomás, mas a tinta é da caneta que Clara usa.', top: '12%', left: '40%', rotation: '2deg' },
-    { id: 'tomas', type: 'person', image: '/backgrounds/mapa-da-investigacao.png', title: 'Sr. Tomás Blackwell', label: 'O alvo da armação', top: '15%', left: '70%', rotation: '4deg' },
+    { id: 'tomas', type: 'person', image: '/backgrounds/tomas_portrait.png', title: 'Sr. Tomás Blackwell', label: 'O alvo da armação', top: '15%', left: '70%', rotation: '4deg' },
     { id: 'house', type: 'location', image: '/backgrounds/map_blackwell.png', title: 'Blackwell House', top: '45%', left: '35%', rotation: '-2deg' },
     { id: 'flight', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Passagem p/ Buenos Aires', label: 'Comprada por C.M.', top: '55%', left: '5%', rotation: '-8deg' },
-    { id: 'helena', type: 'person', image: '/backgrounds/lobby.png', title: 'Helena', label: 'Enganada por Clara?', top: '65%', left: '38%', rotation: '3deg' },
+    { id: 'helena', type: 'person', image: '/backgrounds/helena_portrait.png', title: 'Helena', label: 'Enganada por Clara?', top: '65%', left: '38%', rotation: '3deg' },
     { id: 'diary', type: 'item', image: '/backgrounds/ev_diary.png', title: 'Diário de Elisa', label: 'O verdadeiro motivo.', top: '55%', left: '72%', rotation: '-4deg' },
   ];
 
