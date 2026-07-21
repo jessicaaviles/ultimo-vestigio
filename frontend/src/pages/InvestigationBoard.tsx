@@ -13,7 +13,7 @@ const InvestigationBoard: React.FC = () => {
     { id: 'clara', type: 'person', image: '/backgrounds/clara_portrait.png', title: 'Clara Mendes', label: 'Desaparecida... ou foragida?', top: '10%', left: '15%', rotation: '-5deg' },
     { id: 'letter', type: 'note', text: 'Carta anônima\n\nA caligrafia é do Sr. Tomás, mas a tinta é da caneta que Clara usa.', top: '12%', left: '40%', rotation: '2deg' },
     { id: 'tomas', type: 'person', image: '/backgrounds/tomas_portrait.png', title: 'Sr. Tomás Blackwell', label: 'O alvo da armação', top: '15%', left: '70%', rotation: '4deg' },
-    { id: 'house', type: 'location', image: '/backgrounds/map_blackwell.png', title: 'Blackwell House', top: '45%', left: '35%', rotation: '-2deg' },
+    { id: 'house', type: 'location', image: '/backgrounds/map_blackwell.png', title: 'Mansão Blackwell', top: '45%', left: '35%', rotation: '-2deg' },
     { id: 'flight', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Passagem p/ Buenos Aires', label: 'Comprada por C.M.', top: '55%', left: '5%', rotation: '-8deg' },
     { id: 'helena', type: 'person', image: '/backgrounds/helena_portrait.png', title: 'Helena', label: 'Enganada por Clara?', top: '65%', left: '38%', rotation: '3deg' },
     { id: 'diary', type: 'item', image: '/backgrounds/ev_diary.png', title: 'Diário de Elisa', label: 'O verdadeiro motivo.', top: '55%', left: '72%', rotation: '-4deg' },
@@ -59,7 +59,7 @@ const InvestigationBoard: React.FC = () => {
         <div style={{ padding: '0 24px', marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
             <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Investigação</span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>O Segredo de<br/>Blackwell House</h1>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>O Segredo da<br/>Mansão Blackwell</h1>
             <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', maxWidth: '80%', lineHeight: 1.5 }}>
               Conecte pistas, descubra relações e revele a verdade.
             </p>

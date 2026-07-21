@@ -58,7 +58,7 @@ const Cases: React.FC = () => {
         // Injetar caso do protótipo imersivo para demonstração
         const blackwellCase = {
           slug: 'blackwell-house',
-          title: 'O Segredo de Blackwell House',
+          title: 'O Segredo da Mansão Blackwell',
           synopsis: 'Explore os locais, encontre pistas e descubra o que realmente aconteceu.',
           type: 'Mistério',
           duration: '60 min',
@@ -74,7 +74,7 @@ const Cases: React.FC = () => {
         // Se a API não retornar nada, pelo menos mostre o caso de demonstração
         setCases([{
           slug: 'blackwell-house',
-          title: 'O Segredo de Blackwell House',
+          title: 'O Segredo da Mansão Blackwell',
           synopsis: 'Explore os locais, encontre pistas e descubra o que realmente aconteceu.',
           type: 'Mistério',
           duration: '60 min',
@@ -93,7 +93,7 @@ const Cases: React.FC = () => {
       // Fallback para exibir o protótipo mesmo com erro na API
       setCases([{
         slug: 'blackwell-house',
-        title: 'O Segredo de Blackwell House',
+        title: 'O Segredo da Mansão Blackwell',
         synopsis: 'Explore os locais, encontre pistas e descubra o que realmente aconteceu.',
         type: 'Mistério',
         duration: '60 min',

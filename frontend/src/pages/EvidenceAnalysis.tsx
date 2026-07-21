@@ -107,7 +107,7 @@ const EvidenceAnalysis: React.FC = () => {
           findings: [
             { icon: <Fingerprint size={16} />, title: "Impressões digitais parciais", desc: "Possível correspondência com Rafael Blackwell" },
             { icon: <Clock size={16} />, title: "Uso recente", desc: "Resíduos de óleo e microarranhões indicam uso nas últimas 24h" },
-            { icon: <Key size={16} />, title: "Pertence à Blackwell House", desc: "Compatível com as fechaduras dos quartos do segundo andar" }
+            { icon: <Key size={16} />, title: "Pertence à Mansão Blackwell", desc: "Compatível com as fechaduras dos quartos do segundo andar" }
           ]
         });
       } finally {
@@ -184,7 +184,7 @@ const EvidenceAnalysis: React.FC = () => {
                     <Search size={14} /> Resumo da Análise
                   </div>
                   <p style={{ color: '#E8EAED', fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
-                    {aiReport ? aiReport.summary : 'Solicite a análise da IA para revelar as características ocultas desta evidência. A inteligência artificial examinará marcas, resíduos e cruzará dados com o banco de informações da Blackwell House.'}
+                    {aiReport ? aiReport.summary : 'Solicite a análise da IA para revelar as características ocultas desta evidência. A inteligência artificial examinará marcas, resíduos e cruzará dados com o banco de informações da Mansão Blackwell.'}
                   </p>
                 </div>
                 
