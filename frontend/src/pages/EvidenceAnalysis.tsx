@@ -61,23 +61,33 @@ const EvidenceAnalysis: React.FC = () => {
       </header>
 
       {/* Título da Evidência */}
-      <div style={{ position: 'relative', zIndex: 2, padding: '0 24px', marginTop: '20px' }}>
-        <span style={{ color: '#C5A880', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Análise de Evidências</span>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '36px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400 }}>{mockEvidence.title}</h1>
-        <p style={{ color: '#8E989F', fontSize: '13px', margin: 0 }}>Encontrada em {mockEvidence.date} às 14:32</p>
-        
-        <button 
-          onClick={!aiReport ? handleAnalyze : undefined}
-          disabled={analyzing}
-          style={{ 
-            marginTop: '16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 168, 128, 0.3)', color: '#C5A880', 
-            padding: '8px 16px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px',
-            cursor: analyzing ? 'not-allowed' : 'pointer', opacity: analyzing ? 0.7 : 1, textTransform: 'uppercase', letterSpacing: '1px'
-          }}
-        >
-          <Brain size={14} /> 
-          {analyzing ? 'Analisando amostras...' : aiReport ? 'Análise Concluída' : 'Solicitar Análise da IA'}
-        </button>
+      <div style={{ padding: '0 24px', marginTop: '160px', position: 'relative', zIndex: 2 }}>
+        <div style={{ 
+          display: 'inline-block',
+          background: 'rgba(10, 13, 16, 0.65)', 
+          backdropFilter: 'blur(10px)', 
+          WebkitBackdropFilter: 'blur(10px)', 
+          padding: '20px 24px', 
+          borderRadius: '16px',
+          border: '1px solid rgba(255,255,255,0.05)',
+          marginLeft: '-12px'
+        }}>
+          <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Análise de Evidências</span>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400 }}>{mockEvidence.title}</h1>
+          <p style={{ color: '#8E989F', fontSize: '13px', margin: '0 0 16px 0' }}>Analisada pela IA em {mockEvidence.date} às 14:32</p>
+          <button 
+            onClick={!aiReport ? handleAnalyze : undefined}
+            disabled={analyzing}
+            style={{ 
+              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 168, 128, 0.3)', color: '#C5A880', 
+              padding: '8px 16px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px',
+              cursor: analyzing ? 'not-allowed' : 'pointer', opacity: analyzing ? 0.7 : 1, textTransform: 'uppercase', letterSpacing: '1px'
+            }}
+          >
+            <Brain size={14} /> 
+            {analyzing ? 'Analisando amostras...' : aiReport ? 'Análise Concluída' : 'Solicitar Análise da IA'}
+          </button>
+        </div>
       </div>
 
       <div style={{ position: 'relative', zIndex: 2, flex: 1, marginTop: '40px' }}>
