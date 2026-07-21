@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Brain, CheckCircle2 } from 'lucide-react';
+import { Brain, CheckCircle2 } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
 const InvestigationBoard: React.FC = () => {
-  const navigate = useNavigate();
   const { discoveredClues } = useInvestigation();
   const [activeTab, setActiveTab] = useState('mural');
 
@@ -55,12 +53,6 @@ const InvestigationBoard: React.FC = () => {
 
       {/* Header Topo */}
       <div style={{ position: 'relative', zIndex: 2 }}>
-        <header style={{ padding: '48px 24px 24px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button onClick={() => navigate(-1)} style={{ background: 'transparent', border: 'none', color: '#F8F9FA', cursor: 'pointer', padding: 0 }}>
-            <ArrowLeft size={24} />
-          </button>
-        </header>
-
         {/* Título do Caso */}
         <div style={{ padding: '0 24px', marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>

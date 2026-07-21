@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Filter } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
 const CaseFiles: React.FC = () => {
@@ -20,21 +19,6 @@ const CaseFiles: React.FC = () => {
   return (
     <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '96px' }}>
       
-      {/* Header */}
-      <header style={{ padding: '48px 24px 24px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <button onClick={() => navigate(-1)} style={{ background: 'transparent', border: 'none', color: '#F8F9FA', cursor: 'pointer', padding: 0 }}>
-          <ArrowLeft size={24} />
-        </button>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA' }}>
-            <Search size={18} />
-          </div>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F8F9FA' }}>
-            <Filter size={18} />
-          </div>
-        </div>
-      </header>
-
       <div style={{ padding: '24px' }}>
         <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Inventário</span>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '4px 0 24px 0', color: '#F8F9FA', fontWeight: 400 }}>Arquivos do Caso</h1>

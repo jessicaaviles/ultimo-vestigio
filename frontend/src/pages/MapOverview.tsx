@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, ArrowRight, Lock } from 'lucide-react';
+import { Search, ArrowRight, Lock } from 'lucide-react';
 
 
 const MapOverview: React.FC = () => {
@@ -32,12 +32,6 @@ const MapOverview: React.FC = () => {
 
       {/* Header Topo */}
       <div style={{ position: 'relative', zIndex: 2 }}>
-        <header style={{ padding: '48px 24px 24px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button onClick={() => navigate(-1)} style={{ background: 'transparent', border: 'none', color: '#F8F9FA', cursor: 'pointer', padding: 0 }}>
-            <ArrowLeft size={24} />
-          </button>
-        </header>
-
         {/* Título do Mapa */}
         <div style={{ padding: '0 24px', marginTop: '8px' }}>
           <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Planta Baixa</span>

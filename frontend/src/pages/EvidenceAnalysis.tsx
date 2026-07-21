@@ -1,195 +1,152 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Brain, ArrowLeft, Search, Fingerprint, Clock, Key } from 'lucide-react';
+import { Brain, Search, Fingerprint, Clock, Key } from 'lucide-react';
 import { analyzeEvidenceApi } from '../services/aiApi';
 
 const EvidenceAnalysis: React.FC = () => {
   const { evidenceId } = useParams();
-  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('visao-geral');
   const [analyzing, setAnalyzing] = useState(false);
   const [aiReport, setAiReport] = useState<any>(null);
-  const [aiError, setAiError] = useState('');
-  const [activeTab, setActiveTab] = useState('visao-geral');
 
-  const allEvidences = [
-    { id: 'fireplace', type: 'Documento', title: 'Carta Anônima', content: 'Vocês pensam que sabem a verdade...', date: '12/05', image: '/backgrounds/ev_letter.png' },
-    { id: 'armchair', type: 'Item', title: 'Chave do quarto 7', content: 'Uma chave de metal dourada.', date: '12/05', image: '/backgrounds/ev_key_7.png' },
-    { id: 'window', type: 'Foto', title: 'Foto da Família', content: 'Retrato antigo rasgado.', date: '13/05', image: '/backgrounds/ev_photo.png' },
-    { id: 'table', type: 'Documento', title: 'Diário de Elisa', content: 'Anotações perturbadoras.', date: '14/05', image: '/backgrounds/ev_diary.png' },
-    { id: 'blood', type: 'Vestígio', title: 'Mancha de Sangue', content: 'Traços orgânicos escuros.', date: '15/05', image: '/backgrounds/ev_blood.png' },
-  ];
-
-  const mockEvidence = allEvidences.find(e => e.id === evidenceId) || allEvidences[0];
+  const mockEvidence = {
+    id: evidenceId || 'key-7',
+    title: 'Chave do quarto 7',
+    image: '/backgrounds/ev_key_7.png',
+    date: '12 Mai',
+  };
 
   const handleAnalyze = async () => {
     setAnalyzing(true);
-    setAiError('');
-    try {
-      const result = await analyzeEvidenceApi({
-        evidenceId: mockEvidence.id,
-        title: mockEvidence.title,
-        desc: mockEvidence.content,
-        type: mockEvidence.type
-      });
-      setAiReport({ summary: result, confidence: 78 });
-    } catch (err) {
-      setAiError('Falha no link de dados forenses.');
-    } finally {
-      setAnalyzing(false);
-    }
+    setTimeout(async () => {
+      try {
+        const result = await analyzeEvidenceApi({ evidenceId: mockEvidence.id, roomId: 'local' });
+        setAiReport(result);
+      } catch (err) {
+        setAiReport({
+          summary: "A chave foi encontrada na sala de estar, próxima ao corpo de Helena. Há marcas de desgaste compatíveis com uso recente. Impressões digitais parciais identificadas.",
+          relevance: 78,
+          findings: [
+            { icon: <Fingerprint size={16} />, title: "Impressões digitais parciais", desc: "Possível correspondência com Rafael Blackwell" },
+            { icon: <Clock size={16} />, title: "Uso recente", desc: "Resíduos de óleo e microarranhões indicam uso nas últimas 24h" },
+            { icon: <Key size={16} />, title: "Pertence à Blackwell House", desc: "Compatível com as fechaduras dos quartos do segundo andar" }
+          ]
+        });
+      } finally {
+        setAnalyzing(false);
+      }
+    }, 2000);
   };
 
   return (
-    <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflowX: 'hidden' }}>
+    <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflowX: 'hidden', paddingBottom: '96px' }}>
       
       {/* Imagem da Evidência (Background) */}
       <div style={{ 
-        position: 'absolute', top: 0, left: 0, width: '100%', height: '50vh',
+        position: 'absolute', top: 0, left: 0, width: '100%', height: '40vh',
         backgroundImage: `url(${mockEvidence.image})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0
       }} />
       {/* Fade para mesclar com o conteúdo e máscara 10% */}
       <div style={{
-        position: 'absolute', top: 0, left: 0, width: '100%', height: '50vh',
+        position: 'absolute', top: 0, left: 0, width: '100%', height: '40vh',
         background: 'linear-gradient(180deg, rgba(10,13,16,0.1) 0%, rgba(10,13,16,0.1) 50%, rgba(10,13,16,0.95) 90%, #0A0D10 100%)', zIndex: 1
       }} />
 
-      {/* Header */}
-      <header style={{ position: 'relative', zIndex: 2, padding: '48px 24px 24px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <button onClick={() => navigate(-1)} style={{ background: 'transparent', border: 'none', color: '#F8F9FA', cursor: 'pointer', padding: 0 }}>
-          <ArrowLeft size={24} />
+      {/* Título da Evidência (Abaixo da Imagem, sem Box Transparente) */}
+      <div style={{ padding: '0 24px', marginTop: '30vh', position: 'relative', zIndex: 2 }}>
+        <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Análise de Evidências</span>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400 }}>{mockEvidence.title}</h1>
+        <p style={{ color: '#8E989F', fontSize: '13px', margin: '0 0 16px 0' }}>Analisada pela IA em {mockEvidence.date} às 14:32</p>
+        <button 
+          onClick={!aiReport ? handleAnalyze : undefined}
+          disabled={analyzing}
+          style={{ 
+            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 168, 128, 0.3)', color: '#C5A880', 
+            padding: '8px 16px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px',
+            cursor: analyzing ? 'not-allowed' : 'pointer', opacity: analyzing ? 0.7 : 1, textTransform: 'uppercase', letterSpacing: '1px'
+          }}
+        >
+          <Brain size={14} /> 
+          {analyzing ? 'Analisando amostras...' : aiReport ? 'Análise Concluída' : 'Solicitar Análise da IA'}
         </button>
-      </header>
-
-      {/* Título da Evidência (Abaixo da Imagem) */}
-      <div style={{ padding: '0 24px', marginTop: '38vh', position: 'relative', zIndex: 2 }}>
-        <div style={{ 
-          background: 'rgba(10, 13, 16, 0.4)', 
-          backdropFilter: 'blur(12px)', 
-          WebkitBackdropFilter: 'blur(12px)', 
-          padding: '24px', 
-          borderRadius: '16px',
-          border: '1px solid rgba(255,255,255,0.05)',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
-        }}>
-          <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Análise de Evidências</span>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400 }}>{mockEvidence.title}</h1>
-          <p style={{ color: '#8E989F', fontSize: '13px', margin: '0 0 16px 0' }}>Analisada pela IA em {mockEvidence.date} às 14:32</p>
-          <button 
-            onClick={!aiReport ? handleAnalyze : undefined}
-            disabled={analyzing}
-            style={{ 
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(197, 168, 128, 0.3)', color: '#C5A880', 
-              padding: '8px 16px', borderRadius: '20px', fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px',
-              cursor: analyzing ? 'not-allowed' : 'pointer', opacity: analyzing ? 0.7 : 1, textTransform: 'uppercase', letterSpacing: '1px'
-            }}
-          >
-            <Brain size={14} /> 
-            {analyzing ? 'Analisando amostras...' : aiReport ? 'Análise Concluída' : 'Solicitar Análise da IA'}
-          </button>
-        </div>
       </div>
 
       <div style={{ position: 'relative', zIndex: 2, flex: 1, marginTop: '40px' }}>
-        {/* Tabs */}
-        <div style={{ display: 'flex', overflowX: 'auto', padding: '0 24px', gap: '24px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '24px', WebkitOverflowScrolling: 'touch' }}>
-          {['visão geral', 'análise da ia', 'conexões', 'detalhes técnicos'].map((tab) => (
-            <button 
-              key={tab} 
-              onClick={() => setActiveTab(tab)}
-              style={{ 
-                background: 'none', border: 'none', padding: '0 0 16px 0', color: activeTab === tab ? '#C5A880' : '#8E989F',
-                fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', whiteSpace: 'nowrap',
-                borderBottom: activeTab === tab ? '2px solid #C5A880' : '2px solid transparent',
-              }}
-            >
-              {tab}
-            </button>
-          ))}
+        
+        {/* Navigation Tabs */}
+        <div style={{ display: 'flex', overflowX: 'auto', padding: '0 24px', gap: '24px', borderBottom: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }}>
+          {['visão geral', 'análise da ia', 'conexões', 'detalhes técnicos'].map((tab) => {
+            const tabId = tab.replace(/ /g, '-').replace('ã', 'a').replace('á', 'a').replace('é', 'e');
+            return (
+              <button 
+                key={tabId} 
+                onClick={() => setActiveTab(tabId)}
+                style={{ 
+                  background: 'none', border: 'none', padding: '0 0 16px 0', color: activeTab === tabId ? '#C5A880' : '#8E989F',
+                  fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', whiteSpace: 'nowrap',
+                  borderBottom: activeTab === tabId ? '2px solid #C5A880' : '2px solid transparent',
+                }}
+              >
+                {tab}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Content */}
-        <div style={{ padding: '0 24px 100px 24px' }}>
-          
-          {aiError && (
-            <div style={{ color: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(239,68,68,0.2)', marginBottom: '24px', fontSize: '13px' }}>
-              {aiError}
+        {/* Tab Content */}
+        <div style={{ padding: '24px' }}>
+          {activeTab === 'visao-geral' && (
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#C5A880', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+                    <Search size={14} /> Resumo da Análise
+                  </div>
+                  <p style={{ color: '#E8EAED', fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
+                    {aiReport ? aiReport.summary : 'Solicite a análise da IA para revelar as características ocultas desta evidência. A inteligência artificial examinará marcas, resíduos e cruzará dados com o banco de informações da Blackwell House.'}
+                  </p>
+                </div>
+                
+                {aiReport && (
+                  <div style={{ width: '64px', height: '64px', borderRadius: '50%', border: '2px solid rgba(197, 168, 128, 0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginLeft: '24px', flexShrink: 0 }}>
+                    <span style={{ color: '#F8F9FA', fontSize: '18px', fontWeight: 700 }}>{aiReport.relevance}%</span>
+                    <span style={{ color: '#C5A880', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Relevância</span>
+                  </div>
+                )}
+              </div>
+
+              {aiReport && (
+                <>
+                  <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '24px 0' }} />
+                  <div style={{ color: '#C5A880', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Brain size={14} /> O que a IA identificou
+                  </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {aiReport.findings.map((finding: any, idx: number) => (
+                      <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8E989F' }}>
+                          {finding.icon}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ color: '#F8F9FA', fontSize: '13px', fontWeight: 600, marginBottom: '4px' }}>{finding.title}</div>
+                          <div style={{ color: '#8E989F', fontSize: '12px' }}>{finding.desc}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
 
-          {aiReport && activeTab === 'visão geral' && (
-            <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-              
-              {/* Resumo da Análise */}
-              <div style={{ backgroundColor: '#13191C', borderRadius: '16px', padding: '24px', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#C5A880', marginBottom: '16px', fontSize: '12px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>
-                  <Brain size={16} /> Resumo da Análise
-                </div>
-                
-                <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                  <div style={{ color: '#F8F9FA', fontSize: '14px', lineHeight: 1.6, flex: 1 }}>
-                    {aiReport.summary.substring(0, 150)}...
-                  </div>
-                  
-                  {/* Círculo de relevância */}
-                  <div style={{ position: 'relative', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', border: '4px solid rgba(197,168,128,0.2)', borderTopColor: '#C5A880' }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ color: '#F8F9FA', fontSize: '20px', fontWeight: 600 }}>78%</div>
-                      <div style={{ color: '#8E989F', fontSize: '9px', textTransform: 'uppercase' }}>Relevância</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* O que a IA Identificou */}
-              <div style={{ backgroundColor: '#13191C', borderRadius: '16px', padding: '24px', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#C5A880', marginBottom: '24px', fontSize: '12px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>
-                  <Search size={16} /> O que a IA identificou
-                </div>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8E989F' }}><Fingerprint size={20} /></div>
-                    <div>
-                      <div style={{ color: '#F8F9FA', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Impressões digitais parciais</div>
-                      <div style={{ color: '#8E989F', fontSize: '12px' }}>Possível correspondência com Rafael Blackwell</div>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8E989F' }}><Clock size={20} /></div>
-                    <div>
-                      <div style={{ color: '#F8F9FA', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Uso recente</div>
-                      <div style={{ color: '#8E989F', fontSize: '12px' }}>Resíduos de óleo indicam uso nas últimas 24h</div>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8E989F' }}><Key size={20} /></div>
-                    <div>
-                      <div style={{ color: '#F8F9FA', fontSize: '14px', fontWeight: 600, marginBottom: '4px' }}>Pertence à Blackwell House</div>
-                      <div style={{ color: '#8E989F', fontSize: '12px' }}>Compatível com fechaduras do segundo andar</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Hipótese */}
-              <div style={{ marginBottom: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#C5A880', marginBottom: '12px', fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>
-                  <Brain size={14} /> Hipótese da IA
-                </div>
-                <div style={{ background: 'transparent', color: '#F8F9FA', fontSize: '13px', fontStyle: 'italic', lineHeight: 1.6 }}>
-                  "{aiReport.summary}"
-                </div>
-              </div>
-              
-            </div>
-          )}
-
-          {!aiReport && !analyzing && (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: '#8E989F' }}>
-              <p style={{ fontSize: '14px' }}>Nenhum dado forense extraído ainda.</p>
-              <p style={{ fontSize: '12px', opacity: 0.7 }}>Clique em "Solicitar Análise da IA" no topo para investigar esta pista.</p>
+          {activeTab !== 'visao-geral' && (
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '48px 24px', textAlign: 'center' }}>
+              <div style={{ color: '#C5A880', fontSize: '48px', marginBottom: '16px', opacity: 0.5 }}>?</div>
+              <h3 style={{ color: '#F8F9FA', fontSize: '18px', marginBottom: '8px' }}>Conteúdo Indisponível</h3>
+              <p style={{ color: '#8E989F', fontSize: '13px' }}>
+                Os dados da guia "{activeTab.replace('-', ' ')}" estão bloqueados nesta fase da investigação. Continue coletando pistas para liberar mais informações.
+              </p>
             </div>
           )}
 

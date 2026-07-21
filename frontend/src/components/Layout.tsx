@@ -102,7 +102,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </div>
     </header>
-    <main className="app-content">{children}</main>
+    <main className={`app-content ${['/map', '/scene', '/board', '/case-files', '/evidence'].some(p => location.pathname.includes(p)) ? 'immersive' : ''}`}>{children}</main>
     <nav className="bottom-nav" aria-label="Navegação principal"><div className="bottom-nav-inner">
       {navItems.map(({ label, route, icon: Icon, badge }) => (
         <button

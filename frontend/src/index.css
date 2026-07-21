@@ -133,3 +133,6 @@ img.fill, .img-fill, .fill-width {
   40% { opacity: 1; transform: scale(1.2); }
 }
 
+
+.app-content.immersive { padding: 0 !important; max-width: none !important; margin: 0 !important; }
+.app-content.immersive > div { padding-bottom: 0px !important; }
