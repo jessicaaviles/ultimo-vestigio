@@ -21,7 +21,7 @@ const InvestigationBoard: React.FC = () => {
     { id: 'mud', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Pegadas Duplas', label: 'Fugiram pelo portão', top: '85%', left: '15%', rotation: '2deg' },
   ];
 
-  const totalClues = 19;
+  const totalClues = 12;
   const cluesFound = discoveredClues.length;
   const progress = Math.round((cluesFound / totalClues) * 100);
 

@@ -16,30 +16,25 @@ const SceneExplorer: React.FC = () => {
     living_room: {
       title: 'Sala de Estar', subtitle: 'Cena do Crime', bg: '/backgrounds/scene_living_room.png',
       hotspots: [
-        { id: 'window', label: 'Janela', subLabel: 'Sem arrombamento', top: '30%', left: '15%' },
-        { id: 'armchair', label: 'Poltrona', subLabel: 'Cena montada', top: '75%', left: '85%' },
-        { id: 'table', label: 'Carta Anônima', subLabel: 'Caligrafia familiar', top: '48%', left: '38%' },
         { id: 'fireplace', label: 'Restos na Lareira', subLabel: 'Passagem aérea', top: '40%', left: '80%' },
         { id: 'blood', label: 'Sangue Artificial', subLabel: 'Sem respingos', top: '90%', left: '75%', requiresUv: true },
+        { id: 'wine_glass', label: 'Taça Quebrada', subLabel: 'Briga ou acidente?', top: '75%', left: '25%' },
       ]
     },
     library: {
       title: 'Biblioteca', subtitle: 'Escritório de Tomás', bg: '/backgrounds/scene_library.png',
       hotspots: [
-        { id: 'bookshelf', label: 'Estante', subLabel: 'Livro deslocado', top: '35%', left: '20%' },
-        { id: 'safe', label: 'Cofre Oculto', subLabel: 'Trancado', top: '50%', left: '22%' },
         { id: 'desk_letter', label: 'Carta de Helena', subLabel: 'Aviso urgente', top: '65%', left: '55%' },
-        { id: 'whiskey', label: 'Copo de Uísque', subLabel: 'Marca de batom', top: '70%', left: '45%' },
-        { id: 'uv_handprint', label: 'Marcas de Mão', subLabel: 'Luta recente', top: '45%', left: '75%', requiresUv: true },
+        { id: 'safe', label: 'Cofre Oculto', subLabel: 'Trancado e vazio?', top: '50%', left: '22%' },
+        { id: 'cigar', label: 'Charuto Apagado', subLabel: 'Visita recente', top: '70%', left: '45%' },
       ]
     },
     bedroom: {
       title: 'Quarto Principal', subtitle: 'Aposentos de Clara', bg: '/backgrounds/scene_bedroom.png',
       hotspots: [
-        { id: 'bed', label: 'Cama', subLabel: 'Bagunçada', top: '60%', left: '40%' },
-        { id: 'nightstand', label: 'Criado-mudo', subLabel: 'Chave antiga', top: '55%', left: '25%' },
-        { id: 'suitcase', label: 'Mala', subLabel: 'Feita às pressas', top: '80%', left: '60%' },
         { id: 'mirror_msg', label: 'Mensagem no Espelho', subLabel: 'Escrita em segredo', top: '35%', left: '70%', requiresUv: true },
+        { id: 'suitcase', label: 'Mala', subLabel: 'Roupas de frio intenso', top: '80%', left: '60%' },
+        { id: 'pills', label: 'Remédios', subLabel: 'Para ansiedade', top: '55%', left: '25%' },
       ]
     },
     garden: {
@@ -47,9 +42,7 @@ const SceneExplorer: React.FC = () => {
       hotspots: [
         { id: 'fountain', label: 'Fonte de Pedra', subLabel: 'Livro-caixa queimado', top: '70%', left: '30%' },
         { id: 'mud', label: 'Pegadas na Lama', subLabel: 'Duas pessoas', top: '85%', left: '65%' },
-        { id: 'shovel', label: 'Pá', subLabel: 'Terra recente', top: '75%', left: '15%' },
-        { id: 'gate', label: 'Portão', subLabel: 'Deixado aberto', top: '40%', left: '80%' },
-        { id: 'uv_drops', label: 'Gotas', subLabel: 'Tinta da caneta', top: '80%', left: '50%', requiresUv: true },
+        { id: 'animal_bones', label: 'Ossos Pequenos', subLabel: 'Cachorro ou humano?', top: '75%', left: '15%' },
       ]
     }
   };
@@ -64,10 +57,10 @@ const SceneExplorer: React.FC = () => {
   };
 
   const clueImages: Record<string, string> = {
-    window: '/backgrounds/ev_photo.png', armchair: '/backgrounds/ev_letter.png', table: '/backgrounds/ev_letter.png', fireplace: '/backgrounds/ev_photo.png', blood: '/backgrounds/ev_key_7.png',
-    bookshelf: '/backgrounds/ev_diary.png', safe: '/backgrounds/ev_photo.png', desk_letter: '/backgrounds/ev_letter.png', whiskey: '/backgrounds/ev_photo.png', uv_handprint: '/backgrounds/ev_photo.png',
-    bed: '/backgrounds/ev_photo.png', nightstand: '/backgrounds/ev_key_7.png', suitcase: '/backgrounds/ev_photo.png', mirror_msg: '/backgrounds/ev_letter.png',
-    fountain: '/backgrounds/ev_diary.png', mud: '/backgrounds/ev_photo.png', shovel: '/backgrounds/ev_photo.png', gate: '/backgrounds/ev_photo.png', uv_drops: '/backgrounds/ev_letter.png'
+    fireplace: '/backgrounds/ev_photo.png', blood: '/backgrounds/ev_key_7.png', wine_glass: '/backgrounds/ev_photo.png',
+    desk_letter: '/backgrounds/ev_letter.png', safe: '/backgrounds/ev_photo.png', cigar: '/backgrounds/ev_photo.png',
+    mirror_msg: '/backgrounds/ev_letter.png', suitcase: '/backgrounds/ev_photo.png', pills: '/backgrounds/ev_photo.png',
+    fountain: '/backgrounds/ev_diary.png', mud: '/backgrounds/ev_photo.png', animal_bones: '/backgrounds/ev_photo.png'
   };
 
   const foundClues = discoveredClues

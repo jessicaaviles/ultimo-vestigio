@@ -13,13 +13,13 @@ const MapOverview: React.FC = () => {
   const gardenUnlocked = discoveredClues.includes('mirror_msg');
 
   const locations = [
-    { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '55%', left: '45%', pistas: 5 },
-    { id: 'library', title: 'Biblioteca', status: libraryUnlocked ? 'investigating' : 'locked', top: '40%', left: '70%', pistas: 5 },
-    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '30%', left: '30%', pistas: 4 },
-    { id: 'garden', title: 'Jardins', status: gardenUnlocked ? 'investigating' : 'locked', top: '75%', left: '20%', pistas: 5 }
+    { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '55%', left: '45%', pistas: 3 },
+    { id: 'library', title: 'Biblioteca', status: libraryUnlocked ? 'investigating' : 'locked', top: '40%', left: '70%', pistas: 3 },
+    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '30%', left: '30%', pistas: 3 },
+    { id: 'garden', title: 'Jardins', status: gardenUnlocked ? 'investigating' : 'locked', top: '75%', left: '20%', pistas: 3 }
   ];
 
-  const totalPossibleClues = 19;
+  const totalPossibleClues = 12;
   const progressPercent = Math.round((discoveredClues.length / totalPossibleClues) * 100);
 
   return (
