@@ -70,17 +70,27 @@ const SceneExplorer: React.FC = () => {
           </div>
 
           {/* Mini-map mock */}
-          <div style={{ width: '120px', height: '120px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '12px', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', color: '#8E989F', fontSize: '10px' }}>
+          <button 
+            onClick={() => navigate('/map/blackwell')}
+            style={{ 
+              width: '120px', height: '120px', background: 'rgba(255,255,255,0.03)', 
+              border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '12px', 
+              display: 'flex', flexDirection: 'column', cursor: 'pointer', textAlign: 'left',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', color: '#8E989F', fontSize: '10px', width: '100%' }}>
               Térreo <ChevronDown size={12} />
             </div>
-            <div style={{ flex: 1, border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', position: 'relative' }}>
+            <div style={{ flex: 1, border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', position: 'relative', width: '100%' }}>
               {/* Box da sala */}
               <div style={{ position: 'absolute', top: '30%', left: '20%', width: '30%', height: '30%', border: '1px solid #C5A880', background: 'rgba(197,168,128,0.2)' }}>
                 <div style={{ width: '4px', height: '4px', background: '#C5A880', borderRadius: '50%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
               </div>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Hotspots */}
