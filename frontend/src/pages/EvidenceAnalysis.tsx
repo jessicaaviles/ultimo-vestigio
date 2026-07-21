@@ -9,14 +9,15 @@ const EvidenceAnalysis: React.FC = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [aiReport, setAiReport] = useState<any>(null);
 
-  const mockEvidence = {
-    id: evidenceId || 'key-7',
-    title: 'Chave do quarto 7',
-    image: '/backgrounds/ev_key_7.png',
-    date: '12 Mai',
-    type: 'physical',
-    desc: 'Chave antiga do quarto'
-  };
+  const allEvidences = [
+    { id: 'fireplace', title: 'Carta Anônima', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_letter.png', desc: 'Carta escrita à mão encontrada na lareira' },
+    { id: 'armchair', title: 'Chave do quarto 7', type: 'Item Físico', date: '13 Mai', image: '/backgrounds/ev_key_7.png', desc: 'Chave antiga do quarto' },
+    { id: 'window', title: 'Foto da Família', type: 'Foto', date: '13 Mai', image: '/backgrounds/ev_photo.png', desc: 'Fotografia antiga revelando conexões passadas' },
+    { id: 'table', title: 'Diário de Elisa', type: 'Documento', date: '14 Mai', image: '/backgrounds/ev_diary.png', desc: 'Diário com anotações suspeitas' },
+    { id: 'blood', title: 'Mancha de Sangue', type: 'Vestígio', date: '15 Mai', image: '/backgrounds/ev_blood.png', desc: 'Amostra de sangue encontrada escondida' },
+  ];
+
+  const mockEvidence = allEvidences.find(e => e.id === evidenceId) || allEvidences[1];
 
   const handleAnalyze = async () => {
     setAnalyzing(true);
