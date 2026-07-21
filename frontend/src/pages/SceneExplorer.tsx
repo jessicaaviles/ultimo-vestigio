@@ -135,7 +135,7 @@ const SceneExplorer: React.FC = () => {
                 onClick={() => handleHotspotClick(hotspot.id)}
               >
                 <div style={{ 
-                  width: '24px', height: '24px', borderRadius: '50%', 
+                  width: '24px', height: '24px', minWidth: '24px', flexShrink: 0, borderRadius: '50%', 
                   border: `1px solid ${hotspot.requiresUv && uvLight ? 'rgba(168, 85, 247, 0.8)' : 'rgba(197, 168, 128, 0.5)'}`, 
                   background: hotspot.requiresUv && uvLight ? 'rgba(168, 85, 247, 0.2)' : 'rgba(10,13,16,0.6)', 
                   display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)',
