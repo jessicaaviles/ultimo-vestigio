@@ -77,7 +77,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Fraude Biológica', 'Pista Falsa']
     },
     'wine_glass': {
-      id: 'wine_glass', title: 'Taça Quebrada', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_photo.png',
+      id: 'wine_glass', title: 'Taça Quebrada', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_glass.png',
       desc: 'Cacos de uma taça de vinho espalhados pelo chão.',
       notes: [
         'Não há sangue ou tecido nos cacos.',
@@ -97,7 +97,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Cúmplice', 'Aviso']
     },
     'safe': {
-      id: 'safe', title: 'Cofre Oculto', type: 'Local', date: '12 Mai', image: '/backgrounds/ev_photo.png',
+      id: 'safe', title: 'Cofre Oculto', type: 'Local', date: '12 Mai', image: '/backgrounds/ev_safe.png',
       desc: 'Um cofre atrás de um quadro na biblioteca.',
       notes: [
         'Está trancado.',
@@ -107,7 +107,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Distração']
     },
     'cigar': {
-      id: 'cigar', title: 'Charuto Apagado', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_photo.png',
+      id: 'cigar', title: 'Charuto Apagado', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_cigar.png',
       desc: 'Um charuto pela metade no cinzeiro da biblioteca.',
       notes: [
         'Tomás não fuma charutos.',
@@ -117,7 +117,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Pista Falsa']
     },
     'mirror_msg': {
-      id: 'mirror_msg', title: 'Mensagem no Espelho', type: 'Pista Oculta', date: '12 Mai', image: '/backgrounds/ev_letter.png',
+      id: 'mirror_msg', title: 'Mensagem no Espelho', type: 'Pista Oculta', date: '12 Mai', image: '/backgrounds/ev_mirror.png',
       desc: 'Sob luz UV, palavras rabiscadas aparecem no espelho do quarto.',
       notes: [
         'A mensagem diz: "O jardim esconde a verdade".',
@@ -127,7 +127,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Segredo', 'Guia']
     },
     'suitcase': {
-      id: 'suitcase', title: 'Mala Semi-Pronta', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_photo.png',
+      id: 'suitcase', title: 'Mala Semi-Pronta', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_suitcase.png',
       desc: 'Uma mala no chão do quarto, cheia de roupas pesadas de inverno.',
       notes: [
         'Roupas térmicas e casacos grossos.',
@@ -137,7 +137,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Pista Falsa', 'Fuga']
     },
     'pills': {
-      id: 'pills', title: 'Vidro de Remédios', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_photo.png',
+      id: 'pills', title: 'Vidro de Remédios', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_pills.png',
       desc: 'Um frasco de calmantes fortes na mesa de cabeceira.',
       notes: [
         'Prescritos para Clara Mendes.',
@@ -157,7 +157,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Motivo', 'Chantagem', 'Prova']
     },
     'mud': {
-      id: 'mud', title: 'Pegadas Duplas', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_photo.png',
+      id: 'mud', title: 'Pegadas Duplas', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_mud.png',
       desc: 'Na lama perto do portão, duas trilhas de passos se afastam da casa.',
       notes: [
         'Um par de sapatos de salto alto (tamanho de Clara).',
@@ -167,7 +167,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Fuga', 'Cúmplices']
     },
     'animal_bones': {
-      id: 'animal_bones', title: 'Ossos Pequenos', type: 'Vestígio Biológico', date: '12 Mai', image: '/backgrounds/ev_photo.png',
+      id: 'animal_bones', title: 'Ossos Pequenos', type: 'Vestígio Biológico', date: '12 Mai', image: '/backgrounds/ev_bones.png',
       desc: 'Alguns ossos desenterrados perto do portão.',
       notes: [
         'Estrutura óssea incompatível com humanos.',

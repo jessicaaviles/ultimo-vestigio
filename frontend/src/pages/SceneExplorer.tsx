@@ -57,10 +57,18 @@ const SceneExplorer: React.FC = () => {
   };
 
   const clueImages: Record<string, string> = {
-    fireplace: '/backgrounds/ev_photo.png', blood: '/backgrounds/ev_blood.png', wine_glass: '/backgrounds/ev_photo.png',
-    desk_letter: '/backgrounds/ev_letter.png', safe: '/backgrounds/ev_photo.png', cigar: '/backgrounds/ev_photo.png',
-    mirror_msg: '/backgrounds/ev_letter.png', suitcase: '/backgrounds/ev_photo.png', pills: '/backgrounds/ev_photo.png',
-    fountain: '/backgrounds/ev_diary.png', mud: '/backgrounds/ev_photo.png', animal_bones: '/backgrounds/ev_photo.png'
+    fireplace: '/backgrounds/ev_photo.png',
+    blood: '/backgrounds/ev_blood.png',
+    wine_glass: '/backgrounds/ev_glass.png',
+    desk_letter: '/backgrounds/ev_letter.png',
+    safe: '/backgrounds/ev_safe.png',
+    cigar: '/backgrounds/ev_cigar.png',
+    mirror_msg: '/backgrounds/ev_mirror.png',
+    suitcase: '/backgrounds/ev_suitcase.png',
+    pills: '/backgrounds/ev_pills.png',
+    fountain: '/backgrounds/ev_diary.png',
+    mud: '/backgrounds/ev_mud.png',
+    animal_bones: '/backgrounds/ev_bones.png'
   };
 
   const foundClues = discoveredClues

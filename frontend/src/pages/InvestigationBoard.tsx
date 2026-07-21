@@ -18,7 +18,7 @@ const InvestigationBoard: React.FC = () => {
     { id: 'helena', type: 'person', image: '/backgrounds/helena_portrait.png', title: 'Helena', label: 'Ajudou na fuga', top: '65%', left: '38%', rotation: '3deg' },
     { id: 'ledger', type: 'item', image: '/backgrounds/ev_diary.png', title: 'Livro-caixa Desenterrado', label: 'O motivo: Desvios da família', top: '80%', left: '72%', rotation: '-4deg' },
     { id: 'mirror_msg', type: 'note', text: 'O jardim esconde a verdade', top: '35%', left: '80%', rotation: '5deg' },
-    { id: 'mud', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Pegadas Duplas', label: 'Fugiram pelo portão', top: '85%', left: '15%', rotation: '2deg' },
+    { id: 'mud', type: 'item', image: '/backgrounds/ev_mud.png', title: 'Pegadas Duplas', label: 'Fugiram pelo portão', top: '85%', left: '15%', rotation: '2deg' },
   ];
 
   const totalClues = 12;
