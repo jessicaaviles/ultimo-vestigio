@@ -12,7 +12,7 @@ const Game: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [theoryAnswers, setTheoryAnswers] = useState<any>({ what_happened: '', who: '', how: '', why: '' });
+  const [theoryText, setTheoryText] = useState('');
   const [trueSolution, setTrueSolution] = useState<string | null>(null);
   const [gameResult, setGameResult] = useState<any>(null);
   const [activeVote, setActiveVote] = useState<any>(null);
@@ -259,7 +259,11 @@ const Game: React.FC = () => {
   const handleHint = () => { const hintIndex = hints.length + 1; socket?.emit('use_hint', { roomId, userId, hintIndex, idempotencyKey: `${roomId}:${userId}:hint:${hintIndex}` }); };
   const requestClarification = (questionId: string) => socket?.emit('request_clarification', { roomId, userId, questionId });
   const contestAnswer = (questionId: string) => socket?.emit('contest_answer', { roomId, userId, questionId, reason: 'possible_contradiction' });
-  const handleSubmitTheory = (e: React.FormEvent) => { e.preventDefault(); socket?.emit('submit_theory', { roomId, userId: localStorage.getItem('userId'), answers: theoryAnswers }); };
+  const handleSubmitTheory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!theoryText.trim()) return;
+    socket?.emit('submit_theory', { roomId, userId: localStorage.getItem('userId'), answers: { theory: theoryText } });
+  };
   const handleFinishGame = () => { setLoading(true); socket?.emit('finish_game', { roomId, userId: localStorage.getItem('userId') }); };
 
   const userId = localStorage.getItem('userId');
@@ -544,15 +548,20 @@ const Game: React.FC = () => {
                   <div style={{ marginTop: '12px', color: 'var(--accent-gold)', fontSize: '13px' }}>{theories.length} de {players.length} teorias submetidas.</div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmitTheory} style={{ display: 'flex', flexDirection: 'column', gap: '12px', ...cardStyle } as any}>
-                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: 0 }}>Preencha os campos abaixo com o que você descobriu.</p>
-                  {['what_happened', 'who', 'how', 'why'].map((key) => (
-                    <label key={key} style={{ fontSize: '11px', color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {key === 'what_happened' ? 'O que aconteceu?' : key === 'who' ? 'Quem foi o responsável?' : key === 'how' ? 'Como foi feito?' : 'Qual foi o motivo?'}
-                      <input required type="text" value={(theoryAnswers as any)[key]} onChange={e => setTheoryAnswers({...theoryAnswers, [key]: e.target.value})} style={{ padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '14px' }} />
-                    </label>
-                  ))}
-                  <button type="submit" style={{ padding: '14px', background: 'var(--accent-gold)', color: '#000', fontWeight: 700, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}>Enviar Minha Teoria</button>
+                <form onSubmit={handleSubmitTheory} style={{ display: 'flex', flexDirection: 'column', gap: '16px', ...cardStyle } as any}>
+                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', margin: 0 }}>Descreva detalhadamente a sua conclusão para o caso.</p>
+                  <label style={{ fontSize: '11px', color: 'var(--accent-gold)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    Qual é a sua teoria?
+                    <textarea 
+                      required 
+                      rows={5}
+                      value={theoryText} 
+                      onChange={e => setTheoryText(e.target.value)} 
+                      placeholder="Ex: O zelador armou uma armadilha para o..."
+                      style={{ padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(0,0,0,0.3)', color: '#fff', fontSize: '15px', resize: 'vertical', fontFamily: 'inherit' }} 
+                    />
+                  </label>
+                  <button type="submit" style={{ padding: '14px', background: 'var(--accent-gold)', color: '#000', fontWeight: 700, border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '15px' }}>Enviar Minha Teoria</button>
                 </form>
               )}
             </div>
@@ -565,14 +574,12 @@ const Game: React.FC = () => {
               {theories.map((t: any, idx: number) => {
                 const author = players.find((p: any) => p.id === t.player_id);
                 const answers = JSON.parse(t.answers);
+                const text = answers.theory || (answers.what_happened ? `${answers.what_happened}. ${answers.who}. ${answers.how}. ${answers.why}` : 'Teoria em branco');
                 return (
                   <div key={idx} style={{ ...cardStyle }}>
                     <div style={{ fontWeight: 700, color: 'var(--accent-gold)', marginBottom: '8px', fontSize: '13px' }}>Investigador: {author?.display_name}</div>
-                    <div style={{ fontSize: '13px', lineHeight: 1.5, color: 'rgba(255,255,255,0.8)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <div><strong>O que:</strong> {answers.what_happened}</div>
-                      <div><strong>Quem:</strong> {answers.who}</div>
-                      <div><strong>Como:</strong> {answers.how}</div>
-                      <div><strong>Motivo:</strong> {answers.why}</div>
+                    <div style={{ fontSize: '14px', lineHeight: 1.6, color: 'rgba(255,255,255,0.9)', fontStyle: 'italic' }}>
+                      "{text}"
                     </div>
                   </div>
                 );

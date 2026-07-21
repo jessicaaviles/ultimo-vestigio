@@ -164,15 +164,12 @@ Solução Real do Caso (Fatos absolutos):
 "${trueSolutionText}"
 
 Teoria submetida pelos jogadores:
-- O que aconteceu: "${theoryAnswers.what_happened || ''}"
-- Quem: "${theoryAnswers.who || ''}"
-- Como: "${theoryAnswers.how || ''}"
-- Por que: "${theoryAnswers.why || ''}"
+"${theoryAnswers.theory || Object.values(theoryAnswers).join(' ')}"
 
 Instruções ESTRITAS:
-1. Avalie cada uma das 4 dimensões de 0 a 100.
-2. Seja MUITO tolerante a sinônimos, palavras diferentes ou explicações mais curtas. Se o cerne da resposta bater com a solução real, dê 100. Não penalize por falta de nomes específicos se a intenção e o papel da pessoa na trama estiverem corretos.
-3. O 'score' geral deve ser a média exata das 4 dimensões.
+1. Avalie a teoria descrita pelos jogadores dando uma nota geral (score) de 0 a 100 com base em quão próxima ela está da Solução Real.
+2. Seja MUITO tolerante a sinônimos, palavras diferentes ou explicações mais curtas. Se o cerne da resposta bater com a solução real, dê 100. Não penalize por falta de nomes específicos se a intenção e a lógica estiverem corretas.
+3. Para preencher as 'dimensionResults', simplesmente repita a mesma nota geral em todos os campos.
 4. Gere um 'feedback' curto (max 2 frases) em português do Brasil, num tom de detetive sênior. Se a nota for >= 75, confirme o sucesso. Se for menor, aponte de forma misteriosa onde eles erraram.`;
 
     const response = await ai.models.generateContent({
