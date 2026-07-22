@@ -14,7 +14,7 @@ const SceneExplorer: React.FC = () => {
   
   const sceneConfig: Record<string, any> = {
     living_room: {
-      title: 'Sala de Estar', subtitle: 'Cena do Crime', bg: '/backgrounds/scene_living_room.png?v=8',
+      title: 'Sala de Estar', subtitle: 'Cena do Crime', bg: '/backgrounds/scene_living_room.png?v=9',
       hotspots: [
         { id: 'fireplace', label: 'Restos na Lareira', subLabel: 'Passagem aérea', top: '40%', left: '80%' },
         { id: 'blood', label: 'Sangue Artificial', subLabel: 'Sem respingos', top: '90%', left: '75%', requiresUv: true },
@@ -22,7 +22,7 @@ const SceneExplorer: React.FC = () => {
       ]
     },
     library: {
-      title: 'Biblioteca', subtitle: 'Escritório de Tomás', bg: '/backgrounds/scene_library.png?v=8',
+      title: 'Biblioteca', subtitle: 'Escritório de Tomás', bg: '/backgrounds/scene_library.png?v=9',
       hotspots: [
         { id: 'desk_letter', label: 'Carta de Helena', subLabel: 'Aviso urgente', top: '65%', left: '55%' },
         { id: 'safe', label: 'Cofre Oculto', subLabel: 'Trancado e vazio?', top: '50%', left: '22%' },
@@ -30,7 +30,7 @@ const SceneExplorer: React.FC = () => {
       ]
     },
     bedroom: {
-      title: 'Quarto Principal', subtitle: 'Aposentos de Clara', bg: '/backgrounds/scene_bedroom.png?v=8',
+      title: 'Quarto Principal', subtitle: 'Aposentos de Clara', bg: '/backgrounds/scene_bedroom.png?v=9',
       hotspots: [
         { id: 'mirror_msg', label: 'Mensagem no Espelho', subLabel: 'Escrita em segredo', top: '35%', left: '70%', requiresUv: true },
         { id: 'suitcase', label: 'Mala', subLabel: 'Roupas de frio intenso', top: '80%', left: '60%' },
@@ -38,7 +38,7 @@ const SceneExplorer: React.FC = () => {
       ]
     },
     garden: {
-      title: 'Jardins', subtitle: 'Área Externa', bg: '/backgrounds/scene_garden.png?v=8',
+      title: 'Jardins', subtitle: 'Área Externa', bg: '/backgrounds/scene_garden.png?v=9',
       hotspots: [
         { id: 'fountain', label: 'Fonte de Pedra', subLabel: 'Livro-caixa queimado', top: '70%', left: '30%' },
         { id: 'mud', label: 'Pegadas na Lama', subLabel: 'Duas pessoas', top: '85%', left: '65%' },

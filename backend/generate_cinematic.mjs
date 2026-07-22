@@ -2,24 +2,24 @@ import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import path from 'path';
 
-const STYLE_PREFIX = `Dark cinematic noir aesthetic, photorealistic, high-detail, film-quality rendering. Low-key lighting, deep shadows, warm golden highlights. Color palette: desaturated cool shadows (deep teals, navy, charcoal) with selective warm tones (amber, rust, gold). Atmospheric haze, fog. No text or graphic overlays. 16:9 aspect ratio.`;
+const STYLE_PREFIX = `Cinematic mystery game background, photorealistic, high-detail, film-quality rendering. Moody low-key lighting but with clear visibility of objects, deep shadows, warm golden spotlights illuminating key items. Color palette: desaturated cool shadows (deep teals, navy) with selective warm tones (amber, gold). Atmospheric haze. No text overlays. 16:9 aspect ratio.`;
 
 const ROOMS = [
   {
     id: 'scene_living_room',
-    prompt: `${STYLE_PREFIX} A luxurious old living room at night, dimly lit by a fireplace. In the fireplace, faint burned paper remnants glow. On the dark carpet, a subtle blood stain is barely visible. Near an armchair, shards of a broken wine glass are scattered on the floor.`,
+    prompt: `${STYLE_PREFIX} A luxurious old living room at night. CRITICAL VISUAL ELEMENTS THAT MUST BE CLEARLY VISIBLE AND ILLUMINATED: 1. Burned paper remnants glowing inside the fireplace. 2. A distinct bright red blood stain on the carpet. 3. Shattered pieces of a broken wine glass catching the light on the floor near an armchair.`,
   },
   {
     id: 'scene_library',
-    prompt: `${STYLE_PREFIX} A classic dark library with tall bookshelves. On the main desk, an opened letter with a red seal lies under a book. A small wall safe is visible behind a slightly displaced painting. In a crystal ashtray on the desk, a half-smoked premium cigar rests.`,
+    prompt: `${STYLE_PREFIX} A classic dark library with tall bookshelves. CRITICAL VISUAL ELEMENTS THAT MUST BE CLEARLY VISIBLE AND ILLUMINATED: 1. An opened letter with a bright red wax seal prominently placed on the main desk. 2. An open wall safe clearly visible behind a crooked painting on the wall. 3. A half-smoked premium cigar resting in a glass ashtray on the desk.`,
   },
   {
     id: 'scene_bedroom',
-    prompt: `${STYLE_PREFIX} A grand master bedroom with an unmade canopy bed. On the vanity, an antique mirror reflects a faint message written on its surface. A open leather suitcase filled with heavy winter coats sits on the floor. On the nightstand, a spilled bottle of pills lies on its side.`,
+    prompt: `${STYLE_PREFIX} A grand master bedroom with an unmade canopy bed. CRITICAL VISUAL ELEMENTS THAT MUST BE CLEARLY VISIBLE AND ILLUMINATED: 1. A glowing handwritten message clearly visible on the surface of the vanity mirror. 2. A large open vintage leather suitcase sitting on the floor. 3. A bright bottle of pills spilled openly on the nightstand.`,
   },
   {
     id: 'scene_garden',
-    prompt: `${STYLE_PREFIX} A dark misty garden at night with an old stone fountain. Near the fountain base, a charred ledger book with leather binding lies half-buried. On the muddy path, two sets of footprints lead away from the house. Scattered bones with a small collar lie near the iron gate.`,
+    prompt: `${STYLE_PREFIX} A misty garden at night with an old stone fountain. CRITICAL VISUAL ELEMENTS THAT MUST BE CLEARLY VISIBLE AND ILLUMINATED: 1. A charred ledger book sitting explicitly on the edge of the fountain. 2. Clear muddy footprints on the path. 3. Scattered white animal bones catching the moonlight near an iron gate.`,
   },
 ];
 
