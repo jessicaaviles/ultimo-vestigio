@@ -98,7 +98,7 @@ const MapOverview: React.FC = () => {
       </div>
 
       {/* Área Interativa do Mapa */}
-      <div style={{ flex: 1, position: 'relative', zIndex: 2 }}>
+      <div style={{ flex: 1, position: 'relative', zIndex: 2, minHeight: '400px' }}>
         {locations.map((loc) => {
           const isSelected = selectedPin === loc.id;
           const found = Math.min(discoveredClues.filter(c => loc.clueIds.includes(c)).length + (loc.status === 'locked' ? 0 : 2), loc.totalPistas);
@@ -159,7 +159,7 @@ const MapOverview: React.FC = () => {
       </div>
 
       {/* Card Fixo de Local em Destaque (Bottom Card) */}
-      <div style={{ position: 'relative', zIndex: 3, padding: '0 16px', marginBottom: '100px' }}>
+      <div style={{ position: 'relative', zIndex: 3, padding: '0 16px', marginBottom: '24px' }}>
         <div style={{
           background: '#0D1115',
           border: '1px solid rgba(255,255,255,0.05)',
