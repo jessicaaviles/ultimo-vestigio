@@ -34,7 +34,7 @@ const MapOverview: React.FC = () => {
       {/* Background Completo (Planta Baixa) */}
       <div style={{ 
         position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-        backgroundImage: 'url(/backgrounds/map_blackwell.png)', backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0,
+        backgroundImage: 'url(/backgrounds/map_blackwell.png?v=12)', backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0,
         opacity: 0.8
       }} />
 
