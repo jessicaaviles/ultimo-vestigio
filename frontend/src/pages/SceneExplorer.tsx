@@ -86,18 +86,18 @@ const SceneExplorer: React.FC = () => {
   };
 
   const clueImages: Record<string, string> = {
-    fireplace: '/backgrounds/ev_matches.png?v=7',
-    blood: '/backgrounds/ev_receipt.png?v=7',
-    wine_glass: '/backgrounds/ev_glass.png?v=7',
-    desk_letter: '/backgrounds/ev_ledger.png?v=7',
-    safe: '/backgrounds/ev_safe.png?v=7',
-    cigar: '/backgrounds/ev_cigar.png?v=7',
-    mirror_msg: '/backgrounds/ev_mirror.png?v=7',
-    suitcase: '/backgrounds/ev_suitcase.png?v=7',
-    pills: '/backgrounds/ev_pills.png?v=7',
-    fountain: '/backgrounds/ev_fountain.png?v=7',
-    mud: '/backgrounds/ev_mud.png?v=7',
-    animal_bones: '/backgrounds/ev_bones.png?v=7'
+    fireplace: '/backgrounds/ev_matches.png?v=11',
+    blood: '/backgrounds/ev_receipt.png?v=11',
+    wine_glass: '/backgrounds/ev_glass.png?v=11',
+    desk_letter: '/backgrounds/ev_ledger.png?v=11',
+    safe: '/backgrounds/ev_safe.png?v=11',
+    cigar: '/backgrounds/ev_cigar.png?v=11',
+    mirror_msg: '/backgrounds/ev_mirror.png?v=11',
+    suitcase: '/backgrounds/ev_suitcase.png?v=11',
+    pills: '/backgrounds/ev_pills.png?v=11',
+    fountain: '/backgrounds/ev_fountain.png?v=11',
+    mud: '/backgrounds/ev_mud.png?v=11',
+    animal_bones: '/backgrounds/ev_bones.png?v=11'
   };
 
   const foundClues = discoveredClues

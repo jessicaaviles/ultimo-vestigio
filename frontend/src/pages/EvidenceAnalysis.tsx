@@ -56,7 +56,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Premeditação', 'Falsificação', 'Vingança']
     },
     'fireplace': {
-      id: 'fireplace', title: 'Restos na Lareira', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_matches.png?v=7',
+      id: 'fireplace', title: 'Restos na Lareira', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_matches.png?v=11',
       desc: 'Cinzas frias na lareira contêm um fragmento de papel parcialmente preservado.',
       notes: [
         'O fogo foi apagado antes de consumir tudo.',
@@ -67,7 +67,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Fuga', 'Premeditação']
     },
     'blood': {
-      id: 'blood', title: 'Sangue Artificial', type: 'Vestígio Biológico', date: '12 Mai', image: '/backgrounds/ev_receipt.png?v=7',
+      id: 'blood', title: 'Sangue Artificial', type: 'Vestígio Biológico', date: '12 Mai', image: '/backgrounds/ev_receipt.png?v=11',
       desc: 'Uma grande mancha de sangue no tapete, quase invisível a olho nu na escuridão, mas brilhante sob a luz UV.',
       notes: [
         'O padrão espirrado é muito artificial.',
@@ -77,7 +77,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Fraude Biológica', 'Pista Falsa']
     },
     'wine_glass': {
-      id: 'wine_glass', title: 'Taça Quebrada', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_glass.png?v=7',
+      id: 'wine_glass', title: 'Taça Quebrada', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_glass.png?v=11',
       desc: 'Cacos de uma taça de vinho espalhados pelo chão.',
       notes: [
         'Não há sangue ou tecido nos cacos.',
@@ -87,7 +87,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Pista Falsa']
     },
     'desk_letter': {
-      id: 'desk_letter', title: 'Carta de Helena', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_ledger.png?v=7',
+      id: 'desk_letter', title: 'Carta de Helena', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_ledger.png?v=11',
       desc: 'Uma carta escondida debaixo de alguns livros na escrivaninha da biblioteca.',
       notes: [
         'Endereçada a Clara. Diz: "Ele descobriu. Você precisa sair da casa hoje à noite."',
@@ -97,7 +97,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Cúmplice', 'Aviso']
     },
     'safe': {
-      id: 'safe', title: 'Cofre Oculto', type: 'Local', date: '12 Mai', image: '/backgrounds/ev_safe.png?v=7',
+      id: 'safe', title: 'Cofre Oculto', type: 'Local', date: '12 Mai', image: '/backgrounds/ev_safe.png?v=11',
       desc: 'Um cofre atrás de um quadro na biblioteca.',
       notes: [
         'Está trancado.',
@@ -107,7 +107,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Distração']
     },
     'cigar': {
-      id: 'cigar', title: 'Charuto Apagado', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_cigar.png?v=7',
+      id: 'cigar', title: 'Charuto Apagado', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_cigar.png?v=11',
       desc: 'Um charuto pela metade no cinzeiro da biblioteca.',
       notes: [
         'Tomás não fuma charutos.',
@@ -117,7 +117,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Pista Falsa']
     },
     'mirror_msg': {
-      id: 'mirror_msg', title: 'Mensagem no Espelho', type: 'Pista Oculta', date: '12 Mai', image: '/backgrounds/ev_mirror.png?v=7',
+      id: 'mirror_msg', title: 'Mensagem no Espelho', type: 'Pista Oculta', date: '12 Mai', image: '/backgrounds/ev_mirror.png?v=11',
       desc: 'Sob luz UV, palavras rabiscadas aparecem no espelho do quarto.',
       notes: [
         'A mensagem diz: "O jardim esconde a verdade".',
@@ -127,7 +127,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Segredo', 'Guia']
     },
     'suitcase': {
-      id: 'suitcase', title: 'Mala Semi-Pronta', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_suitcase.png?v=7',
+      id: 'suitcase', title: 'Mala Semi-Pronta', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_suitcase.png?v=11',
       desc: 'Uma mala no chão do quarto, cheia de roupas pesadas de inverno.',
       notes: [
         'Roupas térmicas e casacos grossos.',
@@ -137,7 +137,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Pista Falsa', 'Fuga']
     },
     'pills': {
-      id: 'pills', title: 'Vidro de Remédios', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_pills.png?v=7',
+      id: 'pills', title: 'Vidro de Remédios', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_pills.png?v=11',
       desc: 'Um frasco de calmantes fortes na mesa de cabeceira.',
       notes: [
         'Prescritos para Clara Mendes.',
@@ -147,7 +147,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Pista Falsa']
     },
     'fountain': {
-      id: 'fountain', title: 'Livro-caixa Desenterrado', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_fountain.png?v=7',
+      id: 'fountain', title: 'Livro-caixa Desenterrado', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_fountain.png?v=11',
       desc: 'Um livro contábil meio queimado, escondido na fonte de pedra.',
       notes: [
         'Mostra desvios milionários feitos por Tomás Blackwell.',
@@ -157,7 +157,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Motivo', 'Chantagem', 'Prova']
     },
     'mud': {
-      id: 'mud', title: 'Pegadas Duplas', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_mud.png?v=7',
+      id: 'mud', title: 'Pegadas Duplas', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_mud.png?v=11',
       desc: 'Na lama perto do portão, duas trilhas de passos se afastam da casa.',
       notes: [
         'Um par de sapatos de salto alto (tamanho de Clara).',
@@ -167,7 +167,7 @@ const EvidenceAnalysis: React.FC = () => {
       tags: ['Fuga', 'Cúmplices']
     },
     'animal_bones': {
-      id: 'animal_bones', title: 'Ossos Pequenos', type: 'Vestígio Biológico', date: '12 Mai', image: '/backgrounds/ev_bones.png?v=7',
+      id: 'animal_bones', title: 'Ossos Pequenos', type: 'Vestígio Biológico', date: '12 Mai', image: '/backgrounds/ev_bones.png?v=11',
       desc: 'Alguns ossos desenterrados perto do portão.',
       notes: [
         'Estrutura óssea incompatível com humanos.',
