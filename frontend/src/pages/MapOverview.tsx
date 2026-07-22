@@ -46,47 +46,53 @@ const MapOverview: React.FC = () => {
         background: 'linear-gradient(0deg, #0A0D10 0%, #0A0D10 20%, rgba(10,13,16,0.5) 60%, rgba(10,13,16,0) 100%)', zIndex: 1
       }} />
 
-      {/* Header Topo - Mantido igual */}
+      {/* Header Topo - Reformulado */}
       <div style={{ position: 'relative', zIndex: 2 }}>
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '0 24px', marginTop: '100px' }}>
-          <div>
+          
+          {/* Coluna Esquerda: Título e Texto */}
+          <div style={{ flex: 1, paddingRight: '16px' }}>
             <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Planta Baixa</span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>Mansão Blackwell</h1>
-            <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', maxWidth: '80%', lineHeight: 1.5 }}>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1, wordWrap: 'break-word' }}>
+              Mansão<br/>Blackwell
+            </h1>
+            <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', lineHeight: 1.5 }}>
               Selecione um cômodo para investigar.
             </p>
           </div>
           
-          <button 
-            onClick={() => navigate('/board/blackwell')}
-            style={{ 
-              background: 'rgba(197, 168, 128, 0.1)', border: '1px solid rgba(197, 168, 128, 0.3)', 
-              color: '#C5A880', padding: '12px 16px', borderRadius: '12px', cursor: 'pointer',
-              backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.5)', transition: 'all 0.2s ease'
-            }}
-          >
-            <LayoutGrid size={20} />
-            <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Quadro</span>
-          </button>
-        </div>
+          {/* Coluna Direita: Ações e Progresso */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end', width: '80px', flexShrink: 0 }}>
+            
+            {/* Botão do Quadro de Cortiça */}
+            <button 
+              onClick={() => navigate('/board/blackwell')}
+              style={{ 
+                background: 'rgba(197, 168, 128, 0.1)', border: '1px solid rgba(197, 168, 128, 0.3)', 
+                color: '#C5A880', padding: '12px 0', borderRadius: '12px', cursor: 'pointer',
+                backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.5)', transition: 'all 0.2s ease', width: '100%'
+              }}
+            >
+              <LayoutGrid size={20} />
+              <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Quadro</span>
+            </button>
 
-        <div style={{ padding: '0 24px' }}>
-          <div style={{ 
-            background: 'rgba(10, 13, 16, 0.6)', 
-            border: '1px solid rgba(255,255,255,0.05)', 
-            borderRadius: '16px', 
-            padding: '16px',
-            backdropFilter: 'blur(4px)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ color: '#8E989F', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>Exploração da Mansão</span>
-              <span style={{ color: '#C5A880', fontSize: '11px', fontWeight: 600 }}>{progressPercent}%</span>
+            {/* Box de Progresso Menor */}
+            <div style={{ 
+              background: 'rgba(197, 168, 128, 0.1)', border: '1px solid rgba(197, 168, 128, 0.3)', 
+              padding: '12px 10px', borderRadius: '12px',
+              backdropFilter: 'blur(4px)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.5)', width: '100%', boxSizing: 'border-box'
+            }}>
+              <span style={{ color: '#C5A880', fontSize: '14px', fontWeight: 700 }}>{progressPercent}%</span>
+              <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                <div style={{ width: `${progressPercent}%`, height: '100%', background: '#C5A880' }} />
+              </div>
+              <span style={{ fontSize: '7px', color: '#8E989F', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Pistas</span>
             </div>
-            <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
-              <div style={{ width: `${progressPercent}%`, height: '100%', background: '#C5A880', borderRadius: '2px' }} />
-            </div>
+
           </div>
         </div>
       </div>
