@@ -9,7 +9,6 @@ const MapOverview: React.FC = () => {
 
   const { discoveredClues } = useInvestigation();
   const libraryUnlocked = discoveredClues.includes('fireplace');
-  const bedroomUnlocked = discoveredClues.includes('desk_letter');
   const gardenUnlocked = discoveredClues.includes('mirror_msg');
 
   const locations = [
