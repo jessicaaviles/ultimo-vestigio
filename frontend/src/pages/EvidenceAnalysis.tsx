@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Brain, Search, Fingerprint, Clock, Key, ChevronRight, Share2, Plus, Sparkles, Fullscreen, MessageSquare, ArrowLeft } from 'lucide-react';
 
@@ -270,11 +270,20 @@ const EvidenceAnalysis: React.FC = () => {
 
   const mockEvidence = mockDatabase[evidenceId as string] || mockDatabase['table'] || defaultMock;
 
+  useEffect(() => {
+    if (localStorage.getItem(`analyzed_${evidenceId}`)) {
+      setAiReport(mockEvidence);
+    } else {
+      setAiReport(null);
+    }
+  }, [evidenceId, mockEvidence]);
+
   const handleAnalyze = () => {
     setAnalyzing(true);
     setTimeout(() => {
       setAiReport(mockEvidence);
       setAnalyzing(false);
+      localStorage.setItem(`analyzed_${evidenceId}`, 'true');
       setActiveTab('Análise da IA');
     }, 1500);
   };
@@ -330,6 +339,14 @@ const EvidenceAnalysis: React.FC = () => {
           
           {activeTab === 'Detalhes' && (
             <>
+              {/* Descrição Principal */}
+              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
+                <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Descrição</div>
+                <p style={{ color: '#E8EAED', fontSize: '15px', lineHeight: 1.6, margin: 0 }}>
+                  {mockEvidence.desc}
+                </p>
+              </div>
+
               {/* Transcrição */}
               {mockEvidence.transcription && (
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
