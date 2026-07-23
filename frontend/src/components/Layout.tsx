@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FolderOpen, Users, MessageCircle, UserRound, Menu, X } from 'lucide-react';
+import { Home, FolderOpen, Users, MessageCircle, UserRound, Menu, X, Copy, LogOut, Plus, LogIn } from 'lucide-react';
 import { useNotifications } from '../contexts/NotificationsContext';
+import { useSocket } from '../contexts/useSocket';
+import { createRoom, joinRoom } from '../services/api';
 
 interface LayoutProps { children: React.ReactNode; }
 
@@ -23,11 +25,125 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { label: 'PERFIL', route: 'profile', icon: UserRound, badge: false },
   ];
 
+  const socket = useSocket();
+  const lobbyRef = useRef<HTMLDivElement>(null);
+  const [lobbyOpen, setLobbyOpen] = useState(false);
+  const [roomId, setRoomId] = useState<string | null>(() => localStorage.getItem('currentRoomId'));
+  const [roomCode, setRoomCode] = useState<string | null>(() => localStorage.getItem('currentRoomCode'));
+  const [players, setPlayers] = useState<any[]>([]);
+  const [joinCodeInput, setJoinCodeInput] = useState('');
+  const [loadingLobby, setLoadingLobby] = useState(false);
+  const [lobbyError, setLobbyError] = useState('');
+
+  // Sincronizar roomId a partir da URL se existir (ex: /room/:roomId/game)
+  useEffect(() => {
+    const urlMatch = location.pathname.match(/\/room\/([^/]+)/);
+    if (urlMatch && urlMatch[1] !== roomId) {
+      setRoomId(urlMatch[1]);
+      localStorage.setItem('currentRoomId', urlMatch[1]);
+    }
+  }, [location.pathname, roomId]);
+
+  // Socket listener para atualizar o estado da sala
+  useEffect(() => {
+    if (!socket || !roomId) return;
+    
+    const userId = localStorage.getItem('userId');
+    socket.emit('join_room', { roomId, userId });
+
+    const handleRoomUpdate = (data: any) => {
+      setPlayers(data.players || []);
+      if (data.public_code) {
+        setRoomCode(data.public_code);
+        localStorage.setItem('currentRoomCode', data.public_code);
+      }
+    };
+
+    socket.on('room_state_updated', handleRoomUpdate);
+
+    return () => {
+      socket.off('room_state_updated', handleRoomUpdate);
+    };
+  }, [socket, roomId]);
+
+  // Click outside para fechar o dropdown do lobby
+  useEffect(() => {
+    if (!lobbyOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (lobbyRef.current && !lobbyRef.current.contains(e.target as Node)) {
+        setLobbyOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [lobbyOpen]);
+
+  const handleCreateRoom = async () => {
+    setLoadingLobby(true);
+    setLobbyError('');
+    try {
+      const userId = localStorage.getItem('userId') || 'anon_user';
+      const userName = localStorage.getItem('userName') || 'Investigador';
+      const caseId = 'blackwell'; // Caso padrão
+      
+      const res = await createRoom(caseId, userId, userName);
+      if (res.success && res.data) {
+        setRoomId(res.data.id);
+        setRoomCode(res.data.public_code);
+        localStorage.setItem('currentRoomId', res.data.id);
+        localStorage.setItem('currentRoomCode', res.data.public_code);
+      } else {
+        setLobbyError(res.message || 'Erro ao criar sala.');
+      }
+    } catch (e) {
+      setLobbyError('Erro de conexão com o servidor.');
+    } finally {
+      setLoadingLobby(false);
+    }
+  };
+
+  const handleJoinRoom = async () => {
+    if (!joinCodeInput.trim()) return;
+    setLoadingLobby(true);
+    setLobbyError('');
+    try {
+      const userId = localStorage.getItem('userId') || 'anon_user';
+      const userName = localStorage.getItem('userName') || 'Investigador';
+      
+      const res = await joinRoom(joinCodeInput.toUpperCase(), userId, userName);
+      if (res.success && res.data) {
+        setRoomId(res.data.id);
+        setRoomCode(res.data.public_code);
+        localStorage.setItem('currentRoomId', res.data.id);
+        localStorage.setItem('currentRoomCode', res.data.public_code);
+        setJoinCodeInput('');
+      } else {
+        setLobbyError(res.message || 'Código de sala inválido.');
+      }
+    } catch (e) {
+      setLobbyError('Erro ao conectar na sala.');
+    } finally {
+      setLoadingLobby(false);
+    }
+  };
+
+  const handleLeaveRoom = () => {
+    setRoomId(null);
+    setRoomCode(null);
+    setPlayers([]);
+    localStorage.removeItem('currentRoomId');
+    localStorage.removeItem('currentRoomCode');
+    // Se estiver em uma rota de sala específica (/room/.../game), navegar para a home
+    if (location.pathname.includes('/room/')) {
+      navigate('/');
+    }
+  };
+
   const handleNav = (route: string) => {
     if (route === '/') return navigate('/');
     if (route === 'map') return navigate('/cases');
-    const match = location.pathname.match(/\/room\/([^/]+)/);
-    navigate(match && route !== 'cases' && route !== 'profile' ? `/room/${match[1]}/${route}` : `/${route}`);
+    const activeRoomId = roomId || localStorage.getItem('currentRoomId');
+    navigate(activeRoomId && route !== 'cases' && route !== 'profile' ? `/room/${activeRoomId}/${route}` : `/${route}`);
   };
 
   useEffect(() => {
@@ -76,6 +192,203 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       ) : (
         <div style={{ width: '68px' }} />
       )}
+      
+      {/* Cooperative Lobby Widget */}
+      <div className="lobby-wrapper" ref={lobbyRef} style={{ position: 'relative', marginRight: '8px' }}>
+        <button
+          onClick={() => setLobbyOpen(!lobbyOpen)}
+          style={{
+            background: roomId ? 'rgba(197, 168, 128, 0.15)' : 'rgba(255,255,255,0.03)',
+            border: roomId ? '1px solid rgba(197, 168, 128, 0.4)' : '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '10px',
+            padding: '8px 12px',
+            color: roomId ? '#C5A880' : '#8E989F',
+            fontSize: '11px',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            height: '38px',
+            boxSizing: 'border-box'
+          }}
+        >
+          <Users size={16} />
+          <span className="lobby-btn-text" style={{ display: 'inline' }}>
+            {roomId ? `Sala: ${roomCode}` : 'Jogar em Grupo'}
+          </span>
+        </button>
+
+        {lobbyOpen && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 12px)',
+              right: 0,
+              width: '280px',
+              background: 'rgba(15, 20, 23, 0.95)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(197, 168, 128, 0.2)',
+              borderRadius: '14px',
+              padding: '16px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+              zIndex: 100,
+              color: '#F8F9FA'
+            }}
+          >
+            {!roomId ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: '#C5A880', textTransform: 'uppercase', letterSpacing: '1px' }}>Investigar em Grupo</div>
+                <p style={{ fontSize: '11px', color: '#8E989F', margin: 0, lineHeight: 1.4 }}>
+                  Crie uma sala ou digite o código de acesso para sincronizar pistas e discutir o caso com seus parceiros.
+                </p>
+                
+                <button
+                  onClick={handleCreateRoom}
+                  disabled={loadingLobby}
+                  style={{
+                    background: 'linear-gradient(90deg, #A88B63 0%, #C5A880 100%)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '10px',
+                    color: '#0A0D10',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <Plus size={14} /> {loadingLobby ? 'Criando...' : 'Criar Nova Sala'}
+                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
+                  <span style={{ fontSize: '10px', color: '#4A5568' }}>OU</span>
+                  <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.05)' }}></div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <input
+                    type="text"
+                    placeholder="CÓDIGO"
+                    value={joinCodeInput}
+                    onChange={(e) => setJoinCodeInput(e.target.value)}
+                    maxLength={6}
+                    style={{
+                      flex: 1,
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      color: '#F8F9FA',
+                      fontSize: '12px',
+                      textTransform: 'uppercase',
+                      textAlign: 'center',
+                      letterSpacing: '2px'
+                    }}
+                  />
+                  <button
+                    onClick={handleJoinRoom}
+                    disabled={loadingLobby || !joinCodeInput.trim()}
+                    style={{
+                      background: 'rgba(255,255,255,0.08)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '8px',
+                      padding: '8px 12px',
+                      color: '#F8F9FA',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <LogIn size={14} />
+                  </button>
+                </div>
+
+                {lobbyError && (
+                  <div style={{ color: '#E53E3E', fontSize: '10px', marginTop: '4px', textAlign: 'center' }}>
+                    {lobbyError}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#8E989F', textTransform: 'uppercase', letterSpacing: '1px' }}>Sua Sala</div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#C5A880', letterSpacing: '1px', marginTop: '2px' }}>{roomCode}</div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(roomCode || '');
+                    }}
+                    style={{
+                      background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '6px',
+                      padding: '6px',
+                      color: '#F8F9FA',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title="Copiar Código"
+                  >
+                    <Copy size={12} />
+                  </button>
+                </div>
+
+                <div style={{ maxHeight: '120px', overflowY: 'auto', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
+                  <div style={{ fontSize: '10px', color: '#8E989F', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Investigadores Conectados ({players.length})</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {players.map((p: any, idx: number) => {
+                      const isMe = p.anonymous_user_id === localStorage.getItem('userId');
+                      return (
+                        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: p.connection_status === 'CONNECTED' ? '#48BB78' : '#A0AEC0' }} />
+                          <span style={{ color: '#E2E8F0', fontWeight: isMe ? 600 : 400 }}>
+                            {p.display_name || p.user?.default_display_name || 'Investigador'} {isMe && '(Você)'}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleLeaveRoom}
+                  style={{
+                    background: 'rgba(229, 62, 62, 0.1)',
+                    border: '1px solid rgba(229, 62, 62, 0.2)',
+                    borderRadius: '8px',
+                    padding: '8px',
+                    color: '#E53E3E',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    marginTop: '4px'
+                  }}
+                >
+                  <LogOut size={12} /> Sair da Sala
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       <div className="menu-wrapper" ref={menuRef}>
         <button
           className={`menu-button${menuOpen ? ' menu-button--active' : ''}`}
