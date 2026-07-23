@@ -1,4 +1,4 @@
-const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const rawApiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001/api';
 export const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl.replace(/\/$/, '')}/api`;
 
 export const listCases = async (userId?: string | null) => {
