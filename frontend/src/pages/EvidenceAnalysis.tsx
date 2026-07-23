@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Brain, Search, Fingerprint, Clock, Key, ChevronRight, Share2, Plus, Sparkles, Fullscreen, MessageSquare, ArrowLeft } from 'lucide-react';
 
