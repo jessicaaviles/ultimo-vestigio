@@ -448,6 +448,8 @@ const EvidenceAnalysis: React.FC = () => {
                 </div>
               </>
               )}
+            </div>
+          )}
 
             {activeTab === 'Conexões' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -495,7 +497,6 @@ const EvidenceAnalysis: React.FC = () => {
             
           </div>
         </div>
-      )}
 
       {/* Sticky Bottom Bar */}
       <div style={{ 
