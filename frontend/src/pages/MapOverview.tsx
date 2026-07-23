@@ -13,10 +13,10 @@ const MapOverview: React.FC = () => {
   const gardenUnlocked = discoveredClues.includes('mirror_msg');
 
   const locations = [
-    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '38%', left: '50%', lineDirection: 'down', totalPistas: 3, clueIds: ['mirror_msg', 'suitcase', 'pills'], image: '/backgrounds/scene_bedroom_landscape.png?v=11', desc: 'Aposentos de Clara. Um cômodo cheio de segredos bem guardados.' },
-    { id: 'library', title: 'Biblioteca', status: libraryUnlocked ? 'investigating' : 'locked', top: '48%', left: '68%', lineDirection: 'left', totalPistas: 3, clueIds: ['desk_letter', 'safe', 'cigar'], image: '/backgrounds/scene_library_landscape.png?v=11', desc: 'O escritório particular e santuário de Tomás.' },
-    { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '55%', left: '42%', lineDirection: 'right', totalPistas: 3, clueIds: ['fireplace', 'blood', 'wine_glass'], image: '/backgrounds/scene_living_room_landscape.png?v=11', desc: 'Principal ponto de encontro da família. Foi aqui que Clara Mendes foi vista pela última vez.' },
-    { id: 'garden', title: 'Jardim', status: gardenUnlocked ? 'investigating' : 'locked', top: '65%', left: '58%', lineDirection: 'up', totalPistas: 3, clueIds: ['fountain', 'mud', 'animal_bones'], image: '/backgrounds/scene_garden_landscape.png?v=11', desc: 'Os vastos jardins da mansão contêm mais segredos do que parecem.' }
+    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '40%', left: '48%', lineDirection: 'down', totalPistas: 3, clueIds: ['mirror_msg', 'suitcase', 'pills'], image: '/backgrounds/scene_bedroom_landscape.png?v=11', desc: 'Aposentos de Clara. Um cômodo cheio de segredos bem guardados.' },
+    { id: 'library', title: 'Biblioteca', status: libraryUnlocked ? 'investigating' : 'locked', top: '45%', left: '68%', lineDirection: 'left', totalPistas: 3, clueIds: ['desk_letter', 'safe', 'cigar'], image: '/backgrounds/scene_library_landscape.png?v=11', desc: 'O escritório particular e santuário de Tomás.' },
+    { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '50%', left: '38%', lineDirection: 'right', totalPistas: 3, clueIds: ['fireplace', 'blood', 'wine_glass'], image: '/backgrounds/scene_living_room_landscape.png?v=11', desc: 'Principal ponto de encontro da família. Foi aqui que Clara Mendes foi vista pela última vez.' },
+    { id: 'garden', title: 'Jardim', status: gardenUnlocked ? 'investigating' : 'locked', top: '60%', left: '55%', lineDirection: 'up', totalPistas: 3, clueIds: ['fountain', 'mud', 'animal_bones'], image: '/backgrounds/scene_garden_landscape.png?v=11', desc: 'Os vastos jardins da mansão contêm mais segredos do que parecem.' }
   ];
 
   const totalPossibleClues = 12;
@@ -27,7 +27,7 @@ const MapOverview: React.FC = () => {
   const mockedFoundPistas = Math.min(foundPistasInSelected + (selectedLocation.status === 'locked' ? 0 : 2), selectedLocation.totalPistas); // Just for visual similarity to mockup
 
   return (
-    <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', overflowX: 'hidden', paddingBottom: '96px' }}>
+    <div style={{ backgroundColor: '#0A0D10', position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', overflow: 'hidden' }}>
       
       {/* Background Completo (Planta Baixa) */}
       <div style={{ 
@@ -97,8 +97,8 @@ const MapOverview: React.FC = () => {
         </div>
       </div>
 
-      {/* Área Interativa do Mapa */}
-      <div style={{ flex: 1, position: 'relative', zIndex: 2, minHeight: '400px' }}>
+      {/* Camada Absoluta para os Pinos (alinhamento perfeito com o background) */}
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2, pointerEvents: 'none' }}>
         {locations.map((loc) => {
           const isSelected = selectedPin === loc.id;
           const found = Math.min(discoveredClues.filter(c => loc.clueIds.includes(c)).length + (loc.status === 'locked' ? 0 : 2), loc.totalPistas);
@@ -120,7 +120,8 @@ const MapOverview: React.FC = () => {
                 background: 'transparent', border: 'none', padding: 0, margin: 0,
                 transform, 
                 cursor: 'pointer', display: 'flex', flexDirection: flexDir, alignItems: 'center', 
-                zIndex: isSelected ? 10 : 1
+                zIndex: isSelected ? 10 : 1,
+                pointerEvents: 'auto'
               }}
             >
               {/* Glassmorphic Box */}
