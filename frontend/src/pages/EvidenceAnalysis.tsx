@@ -32,24 +32,220 @@ const EvidenceAnalysis: React.FC = () => {
 
   // Mock Database Enriquecido
   const mockDatabase: Record<string, any> = {
+    'window': {
+      id: 'window', title: 'Janela Entreaberta', type: 'Cena do Crime', date: '12 Mai', image: '/backgrounds/scene_living_room.png',
+      desc: 'A janela principal da sala de estar foi encontrada escancarada, com o vento noturno soprando as cortinas.',
+      aiAnalysis: 'A trava da janela está perfeitamente intacta, sem sinais de arrombamento externo. Quem quer que tenha aberto a janela, fez isso por dentro, e com muita calma. Curiosamente, não há pegadas de lama ou sujeira no tapete persa logo abaixo.',
+      hypothesis: 'A cena sugere que a fuga ou invasão foi encenada de dentro para fora. Houve premeditação.',
+      relevance: 35,
+      findings: [
+        { icon: <Search size={16} />, title: "Trava Intacta", desc: "Sem ranhuras típicas de arrombamento." },
+        { icon: <Fingerprint size={16} />, title: "Falta de vestígios", desc: "Ausência de pegadas indica que ninguém entrou por aqui." }
+      ],
+      connections: [
+        { type: "Local", name: "Jardim Frontal", subtitle: "Abaixo da janela", image: "https://images.unsplash.com/photo-1558904541-efa843a96f09?q=80&w=200&auto=format&fit=crop" }
+      ],
+      discussion: []
+    },
+    'armchair': {
+      id: 'armchair', title: 'Poltrona Revirada', type: 'Cena do Crime', date: '12 Mai', image: '/backgrounds/scene_living_room.png',
+      desc: 'Uma pesada poltrona de mogno está tombada no chão da sala de estar.',
+      aiAnalysis: 'A poltrona sugere uma luta brutal no local. No entanto, a mesinha de centro de vidro ao lado dela e os vasos caros estão perfeitamente intactos. Uma briga real e imprevisível quase certamente teria quebrado os objetos frágeis próximos.',
+      hypothesis: 'Assim como a janela, a poltrona parece ter sido derrubada intencionalmente para simular um confronto.',
+      relevance: 30,
+      findings: [
+        { icon: <Search size={16} />, title: "Padrão de Queda", desc: "Força calculada, não caótica." },
+        { icon: <Search size={16} />, title: "Objetos Intactos", desc: "Vidros a centímetros de distância não foram afetados." }
+      ],
+      connections: [
+        { type: "Pista Relacionada", name: "Janela Entreaberta", subtitle: "Parte da mesma encenação", image: "/backgrounds/scene_living_room.png" }
+      ],
+      discussion: []
+    },
     'table': {
       id: 'table', title: 'Carta Anônima', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_letter.png',
-      desc: 'Uma nota rabiscada deixada sobre a mesa de centro. Diz: "Vocês pensam que sabem a verdade. Mas a casa guarda o que vocês preferem esquecer."',
-      transcription: "Vocês pensam que sabem a verdade.\nMas a casa guarda o que vocês\npreferem esquecer.\nO passado sempre encontra uma forma\nde voltar.",
-      aiAnalysis: "O papel parece antigo, mas as tintas usadas não correspondem ao período. A escrita indica alguém que conhece bem a rotina da família.",
-      hypothesis: "Há uma forte possibilidade de que o suspeito tenha forjado a carta para desviar a atenção. Recomendamos investigar o álibi de Tomás Blackwell no período da manhã.",
+      desc: 'Uma nota rabiscada deixada sobre a mesa de centro.',
+      transcription: "Vocês pensam que sabem a verdade.\nMas a casa guarda o que vocês\npreferem esquecer.\nPagará pelo que fez a Elisa.",
+      aiAnalysis: "A caligrafia agressiva tenta imitar a letra cursiva característica do Sr. Tomás Blackwell. A tinta é de uma caneta-tinteiro edição limitada francesa (Montblanc Rouge). Clara Mendes é conhecida por colecionar e escrever exclusivamente com canetas-tinteiro europeias.",
+      hypothesis: "A carta não foi uma ameaça externa. Clara escreveu a nota para incriminar a família antes de sumir.",
       relevance: 82,
       findings: [
         { icon: <Sparkles size={16} />, title: "Análise Grafotécnica", desc: "A caligrafia tenta imitar a letra de Tomás." },
-        { icon: <Clock size={16} />, title: "Tinta fresca", desc: "Escrita nas últimas 12 horas." }
+        { icon: <Clock size={16} />, title: "Tinta Montblanc Rouge", desc: "Tinta de luxo, ligada a Clara Mendes." }
       ],
       connections: [
-        { type: "Objeto", name: "Chave do quarto 7", subtitle: "Pode ter sido deixada como mensagem.", image: "https://images.unsplash.com/photo-1582139329536-e7284fece509?q=80&w=200&auto=format&fit=crop" },
-        { type: "Suspeito", name: "Sr. Tomás Blackwell", subtitle: "Tinha acesso à sala de estar.", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop" }
+        { type: "Suspeito", name: "Clara Mendes", subtitle: "Possui canetas Montblanc", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
+        { type: "Suspeito", name: "Tomás Blackwell", subtitle: "Assinatura falsificada", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop" }
       ],
       discussion: [
         { user: "Helena", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop", message: "A caligrafia parece masculina. Concordam?", time: "Hoje às 09:41" }
       ]
+    },
+    'fireplace': {
+      id: 'fireplace', title: 'Restos na Lareira', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_matches.png?v=11',
+      desc: 'Cinzas frias na lareira contêm um fragmento de papel parcialmente preservado.',
+      aiAnalysis: 'O fogo foi apagado antes de consumir tudo. O fragmento mostra o logo da "Aerolíneas Del Sur". É parte de uma passagem só de ida para Buenos Aires, comprada no nome de "C.M." para a manhã seguinte ao crime.',
+      hypothesis: 'A vítima planejava uma viagem, possivelmente uma fuga premeditada.',
+      relevance: 95,
+      findings: [
+        { icon: <Search size={16} />, title: "Passagem Aérea", desc: "Aerolíneas Del Sur para Buenos Aires." },
+        { icon: <Clock size={16} />, title: "Fogo Interrompido", desc: "Tentativa falha de destruição de provas." }
+      ],
+      connections: [
+        { type: "Suspeito", name: "Clara Mendes", subtitle: "Iniciais 'C.M.'", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" }
+      ],
+      discussion: []
+    },
+    'blood': {
+      id: 'blood', title: 'Sangue Artificial', type: 'Vestígio Biológico', date: '12 Mai', image: '/backgrounds/ev_receipt.png?v=11',
+      desc: 'Uma grande mancha de sangue no tapete, brilhante sob a luz UV.',
+      aiAnalysis: 'O padrão espirrado é muito artificial. Análise revelou altíssima concentração de anticoagulantes sintéticos (usados em sangue cenográfico).',
+      hypothesis: 'O sangue foi derramado deliberadamente para forjar uma agressão. Ninguém foi ferido aqui.',
+      relevance: 25,
+      findings: [
+        { icon: <Sparkles size={16} />, title: "Composição Química", desc: "Anticoagulantes sintéticos." },
+        { icon: <Fingerprint size={16} />, title: "Padrão de Dispersão", desc: "Derramado, não espirrado de uma ferida." }
+      ],
+      connections: [],
+      discussion: []
+    },
+    'wine_glass': {
+      id: 'wine_glass', title: 'Taça Quebrada', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_glass.png?v=11',
+      desc: 'Cacos de uma taça de vinho espalhados pelo chão.',
+      aiAnalysis: 'Não há sangue ou tecido nos cacos. O padrão de estilhaçamento indica queda livre acidental.',
+      hypothesis: 'Um acidente irrelevante para o caso. O mordomo relatou ter derrubado uma bandeja.',
+      relevance: 10,
+      findings: [
+        { icon: <Search size={16} />, title: "Limpo", desc: "Sem traços biológicos." }
+      ],
+      connections: [],
+      discussion: []
+    },
+    'desk_letter': {
+      id: 'desk_letter', title: 'Carta de Helena', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_ledger.png?v=11',
+      desc: 'Uma carta escondida debaixo de alguns livros na escrivaninha da biblioteca.',
+      transcription: "Ele descobriu.\nVocê precisa sair da casa hoje à noite.\n- H",
+      aiAnalysis: 'Endereçada a Clara. A caligrafia é apressada, indicando forte estresse emocional no momento da escrita. A assinatura "H" bate perfeitamente com a grafia de Helena.',
+      hypothesis: 'Helena estava ajudando Clara a fugir e atuava como cúmplice interna.',
+      relevance: 88,
+      findings: [
+        { icon: <Sparkles size={16} />, title: "Grafologia", desc: "Escrita sob estresse. Autoria de Helena." }
+      ],
+      connections: [
+        { type: "Vítima", name: "Helena", subtitle: "Autora do aviso", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
+        { type: "Suspeito", name: "Clara Mendes", subtitle: "Destinatária", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" }
+      ],
+      discussion: []
+    },
+    'safe': {
+      id: 'safe', title: 'Cofre Oculto', type: 'Local', date: '12 Mai', image: '/backgrounds/ev_safe.png?v=11',
+      desc: 'Um cofre atrás de um quadro na biblioteca.',
+      aiAnalysis: 'Está trancado. As dobradiças estão oxidadas. Marcas de poeira consistentes indicam que não é aberto há pelo menos três anos.',
+      hypothesis: 'Vazio ou irrelevante. Uma distração para a investigação.',
+      relevance: 15,
+      findings: [
+        { icon: <Clock size={16} />, title: "Inativo", desc: "Poeira intocada por anos." }
+      ],
+      connections: [],
+      discussion: []
+    },
+    'cigar': {
+      id: 'cigar', title: 'Charuto Apagado', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_cigar.png?v=11',
+      desc: 'Um charuto pela metade no cinzeiro da biblioteca.',
+      aiAnalysis: 'Restos de cinza indicam uma marca cubana barata. Tomás Blackwell não fuma charutos. O ressecamento das folhas sugere que foi deixado aí há mais de uma semana.',
+      hypothesis: 'Deixado por um visitante dias atrás. Sem relação direta com o incidente principal.',
+      relevance: 20,
+      findings: [
+        { icon: <Search size={16} />, title: "Idade", desc: "Abandonado há mais de 7 dias." }
+      ],
+      connections: [],
+      discussion: []
+    },
+    'mirror_msg': {
+      id: 'mirror_msg', title: 'Mensagem no Espelho', type: 'Pista Oculta', date: '12 Mai', image: '/backgrounds/ev_mirror.png?v=11',
+      desc: 'Sob luz UV, palavras rabiscadas aparecem no espelho do quarto.',
+      transcription: "O jardim esconde a verdade",
+      aiAnalysis: 'Escrita com tinta invisível à base de reagentes cítricos. A altura da escrita é compatível com uma pessoa de 1.65m.',
+      hypothesis: 'Um recado deixado propositalmente por Clara ou Helena para quem viesse investigar, guiando-os para fora da casa.',
+      relevance: 90,
+      findings: [
+        { icon: <Sparkles size={16} />, title: "Tinta Invisível", desc: "Reagente natural (limão/ácido)." }
+      ],
+      connections: [
+        { type: "Local", name: "Jardim Frontal", subtitle: "Local mencionado", image: "https://images.unsplash.com/photo-1558904541-efa843a96f09?q=80&w=200&auto=format&fit=crop" }
+      ],
+      discussion: []
+    },
+    'suitcase': {
+      id: 'suitcase', title: 'Mala Semi-Pronta', type: 'Objeto', date: '12 Mai', image: '/backgrounds/ev_suitcase.png?v=11',
+      desc: 'Uma mala no chão do quarto, cheia de roupas pesadas de inverno.',
+      aiAnalysis: 'Contém roupas térmicas e casacos grossos de neve. No entanto, a passagem secreta de Clara é para Buenos Aires, que está no pico do verão sul-americano. As roupas possuem etiquetas não cortadas.',
+      hypothesis: 'Foi preparada deliberadamente para enganar investigadores sobre o destino real da fuga.',
+      relevance: 45,
+      findings: [
+        { icon: <Search size={16} />, title: "Roupas Novas", desc: "Etiquetas ainda presas." },
+        { icon: <Search size={16} />, title: "Inconsistência Climática", desc: "Incompatível com o destino da passagem." }
+      ],
+      connections: [
+        { type: "Pista Relacionada", name: "Restos na Lareira", subtitle: "Contradição de destino", image: "/backgrounds/ev_matches.png" }
+      ],
+      discussion: []
+    },
+    'pills': {
+      id: 'pills', title: 'Vidro de Remédios', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_pills.png?v=11',
+      desc: 'Um frasco de calmantes fortes na mesa de cabeceira.',
+      aiAnalysis: 'Prescritos legalmente para Clara Mendes. O frasco está quase cheio e não há traços de dosagem letal nos arredores. O lote é recente.',
+      hypothesis: 'Apenas medicação de rotina, sem relevância letal para o caso.',
+      relevance: 18,
+      findings: [
+        { icon: <Search size={16} />, title: "Receita Válida", desc: "No nome de Clara Mendes." }
+      ],
+      connections: [],
+      discussion: []
+    },
+    'fountain': {
+      id: 'fountain', title: 'Livro-caixa Desenterrado', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_fountain.png?v=11',
+      desc: 'Um livro contábil meio queimado, escondido na fonte de pedra do jardim.',
+      aiAnalysis: 'As páginas recuperadas mostram tabelas de transações offshore milionárias. Há anotações nas margens com a letra confirmada de Clara Mendes que dizem: "É o suficiente para destruí-lo".',
+      hypothesis: 'Este é o motivo central. Clara descobriu os esquemas de lavagem de dinheiro de Tomás Blackwell e o chantageou antes de arquitetar sua fuga.',
+      relevance: 99,
+      findings: [
+        { icon: <Search size={16} />, title: "Fraude Financeira", desc: "Contas offshore em paraísos fiscais." },
+        { icon: <Sparkles size={16} />, title: "Chantagem", desc: "Anotações marginais incriminadoras." }
+      ],
+      connections: [
+        { type: "Suspeito", name: "Tomás Blackwell", subtitle: "Titular das contas", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop" },
+        { type: "Suspeito", name: "Clara Mendes", subtitle: "Chantagista", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" }
+      ],
+      discussion: []
+    },
+    'mud': {
+      id: 'mud', title: 'Pegadas Duplas', type: 'Vestígio', date: '12 Mai', image: '/backgrounds/ev_mud.png?v=11',
+      desc: 'Na lama perto do portão, duas trilhas de passos se afastam da casa.',
+      aiAnalysis: 'Os moldes indicam um par de sapatos de salto alto (tamanho 37, correspondente a Clara) e um par de botas rasteiras (tamanho 35, correspondente a Helena). O ritmo da passada é cadenciado e sem corrida.',
+      hypothesis: 'Clara e Helena saíram caminhando juntas pelos fundos. Confirmando a cumplicidade na fuga.',
+      relevance: 92,
+      findings: [
+        { icon: <Fingerprint size={16} />, title: "Sapatos Múltiplos", desc: "Saltos e botas identificados." },
+        { icon: <Search size={16} />, title: "Caminhada Calma", desc: "Sem sinais de pânico ou corrida." }
+      ],
+      connections: [
+        { type: "Suspeito", name: "Clara Mendes", subtitle: "Saltos (Tamanho 37)", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
+        { type: "Vítima", name: "Helena", subtitle: "Botas (Tamanho 35)", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" }
+      ],
+      discussion: []
+    },
+    'animal_bones': {
+      id: 'animal_bones', title: 'Ossos Pequenos', type: 'Vestígio Biológico', date: '12 Mai', image: '/backgrounds/ev_bones.png?v=11',
+      desc: 'Alguns ossos desenterrados perto do portão.',
+      aiAnalysis: 'A estrutura óssea é incompatível com humanos e muito porosa, indicando anos de soterramento. Fragmentos de uma coleira de couro velho gravada com o nome "Buster" foram achados junto.',
+      hypothesis: 'São apenas os restos do antigo cachorro da família, enterrado há mais de uma década. Totalmente irrelevante.',
+      relevance: 5,
+      findings: [
+        { icon: <Search size={16} />, title: "Não-Humano", desc: "Morfologia canina." }
+      ],
+      connections: [],
+      discussion: []
     }
   };
 
