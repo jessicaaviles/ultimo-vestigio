@@ -13,10 +13,10 @@ const MapOverview: React.FC = () => {
   const gardenUnlocked = discoveredClues.includes('mirror_msg');
 
   const locations = [
-    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '35%', left: '40%', totalPistas: 3, clueIds: ['mirror_msg', 'suitcase', 'pills'], image: '/backgrounds/scene_bedroom_landscape.png?v=11', desc: 'Aposentos de Clara. Um cômodo cheio de segredos bem guardados.' },
-    { id: 'library', title: 'Biblioteca', status: libraryUnlocked ? 'investigating' : 'locked', top: '45%', left: '75%', totalPistas: 3, clueIds: ['desk_letter', 'safe', 'cigar'], image: '/backgrounds/scene_library_landscape.png?v=11', desc: 'O escritório particular e santuário de Tomás.' },
-    { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '55%', left: '25%', totalPistas: 3, clueIds: ['fireplace', 'blood', 'wine_glass'], image: '/backgrounds/scene_living_room_landscape.png?v=11', desc: 'Principal ponto de encontro da família. Foi aqui que Clara Mendes foi vista pela última vez.' },
-    { id: 'garden', title: 'Jardim', status: gardenUnlocked ? 'investigating' : 'locked', top: '75%', left: '50%', totalPistas: 3, clueIds: ['fountain', 'mud', 'animal_bones'], image: '/backgrounds/scene_garden_landscape.png?v=11', desc: 'Os vastos jardins da mansão contêm mais segredos do que parecem.' }
+    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '25%', left: '45%', lineDirection: 'right', totalPistas: 3, clueIds: ['mirror_msg', 'suitcase', 'pills'], image: '/backgrounds/scene_bedroom_landscape.png?v=11', desc: 'Aposentos de Clara. Um cômodo cheio de segredos bem guardados.' },
+    { id: 'library', title: 'Biblioteca', status: libraryUnlocked ? 'investigating' : 'locked', top: '35%', left: '70%', lineDirection: 'down', totalPistas: 3, clueIds: ['desk_letter', 'safe', 'cigar'], image: '/backgrounds/scene_library_landscape.png?v=11', desc: 'O escritório particular e santuário de Tomás.' },
+    { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '55%', left: '30%', lineDirection: 'up', totalPistas: 3, clueIds: ['fireplace', 'blood', 'wine_glass'], image: '/backgrounds/scene_living_room_landscape.png?v=11', desc: 'Principal ponto de encontro da família. Foi aqui que Clara Mendes foi vista pela última vez.' },
+    { id: 'garden', title: 'Jardim', status: gardenUnlocked ? 'investigating' : 'locked', top: '70%', left: '60%', lineDirection: 'left', totalPistas: 3, clueIds: ['fountain', 'mud', 'animal_bones'], image: '/backgrounds/scene_garden_landscape.png?v=11', desc: 'Os vastos jardins da mansão contêm mais segredos do que parecem.' }
   ];
 
   const totalPossibleClues = 12;
@@ -103,6 +103,14 @@ const MapOverview: React.FC = () => {
           const isSelected = selectedPin === loc.id;
           const found = Math.min(discoveredClues.filter(c => loc.clueIds.includes(c)).length + (loc.status === 'locked' ? 0 : 2), loc.totalPistas);
           
+          let transform = 'translate(-50%, -100%)';
+          let flexDir: any = 'column';
+          if (loc.lineDirection === 'up') { transform = 'translate(-50%, 0%)'; flexDir = 'column-reverse'; }
+          if (loc.lineDirection === 'left') { transform = 'translate(0%, -50%)'; flexDir = 'row-reverse'; }
+          if (loc.lineDirection === 'right') { transform = 'translate(-100%, -50%)'; flexDir = 'row'; }
+
+          const isVertical = loc.lineDirection === 'up' || loc.lineDirection === 'down' || !loc.lineDirection;
+
           return (
             <button
               key={loc.id}
@@ -110,8 +118,8 @@ const MapOverview: React.FC = () => {
               style={{
                 position: 'absolute', top: loc.top, left: loc.left,
                 background: 'transparent', border: 'none', padding: 0, margin: 0,
-                transform: 'translate(-50%, -100%)', // Shift up so the ring points to the exact coordinate
-                cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', 
+                transform, 
+                cursor: 'pointer', display: 'flex', flexDirection: flexDir, alignItems: 'center', 
                 zIndex: isSelected ? 10 : 1
               }}
             >
@@ -124,15 +132,16 @@ const MapOverview: React.FC = () => {
                 padding: '8px 12px',
                 display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                transition: 'border 0.3s ease'
+                transition: 'border 0.3s ease',
+                whiteSpace: 'nowrap'
               }}>
                 <span style={{ color: '#F8F9FA', fontSize: '13px', fontWeight: 500, fontFamily: 'var(--font-serif)' }}>{loc.title}</span>
                 <span style={{ color: '#8E989F', fontSize: '10px' }}>{found}/{loc.totalPistas} pistas</span>
               </div>
               
-              {/* Vertical Line */}
+              {/* Line */}
               <div style={{
-                width: '1px', height: '30px', 
+                width: isVertical ? '1px' : '30px', height: isVertical ? '30px' : '1px', 
                 background: isSelected ? 'rgba(197, 168, 128, 0.8)' : 'rgba(197, 168, 128, 0.4)',
                 transition: 'background 0.3s ease'
               }} />
@@ -145,7 +154,8 @@ const MapOverview: React.FC = () => {
                 border: `2px solid ${isSelected ? '#C5A880' : 'rgba(197,168,128,0.5)'}`,
                 boxShadow: isSelected ? '0 0 10px rgba(197,168,128,0.5)' : 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                flexShrink: 0
               }}>
                 <div style={{
                   width: '8px', height: '8px',
@@ -159,7 +169,7 @@ const MapOverview: React.FC = () => {
       </div>
 
       {/* Card Fixo de Local em Destaque (Bottom Card) */}
-      <div style={{ position: 'relative', zIndex: 3, padding: '0 16px', marginBottom: '24px' }}>
+      <div style={{ position: 'relative', zIndex: 3, padding: '0 16px', marginBottom: '80px' }}>
         <div style={{
           background: '#0D1115',
           border: '1px solid rgba(255,255,255,0.05)',
