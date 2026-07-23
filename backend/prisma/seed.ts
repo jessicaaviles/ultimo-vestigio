@@ -233,6 +233,36 @@ async function main() {
   ];
   for (const [fact_key, statement, visibility] of factsRetrato) await prisma.case_facts.upsert({ where: { case_version_id_fact_key: { case_version_id: versionRetrato.id, fact_key } }, update: {}, create: { case_version_id: versionRetrato.id, fact_key, statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true } });
 
+  // 8. Caso: Mansão Blackwell (blackwell)
+  const caseBlackwell = await prisma.cases.upsert({
+    where: { slug: 'blackwell' },
+    update: { status: 'PUBLISHED' },
+    create: {
+      slug: 'blackwell',
+      title: 'Mansão Blackwell',
+      short_synopsis: 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell.',
+      case_type: 'Investigação', difficulty: 'Médio', estimated_duration_minutes: 30, min_players: 2, max_players: 6, tension_level: 2, status: 'PUBLISHED'
+    }
+  });
+  const versionBlackwell = await prisma.case_versions.upsert({
+    where: { case_id_version_number: { case_id: caseBlackwell.id, version_number: '1.0' } },
+    update: {},
+    create: {
+      case_id: caseBlackwell.id, version_number: '1.0',
+      opening: 'Clara Mendes foi vista pela última vez na sala de estar. Pistas se espalham pela mansão aguardando análise para desvendar o mistério.',
+      master_style: JSON.stringify({ tone: 'investigative', maxSentences: 2 }), scoring_rules: JSON.stringify({ baseScore: 1000, penaltyPerHint: 100 }),
+      solution_summary_encrypted: sealSecret('Clara Mendes simulou o próprio sequestro com ajuda de Helena para incriminar Tomás pelos desvios financeiros.'),
+      full_solution_encrypted: sealSecret('Clara forjou a própria morte/sequestro usando sangue artificial na poltrona e fugiu pelo portão com Helena, deixando pistas falsas para incriminar o Sr. Tomás pelos desvios de fundos documentados no livro-caixa.'),
+      chronology_encrypted: sealSecret(JSON.stringify([])), publication_status: 'PUBLISHED', published_at: new Date()
+    }
+  });
+  const factsBlackwell = [
+    ['fake_blood', 'O sangue na poltrona da sala de estar era artificial.', 'ANSWER'],
+    ['escape_garden', 'Clara e Helena fugiram juntas pelos jardins da mansão.', 'ANSWER'],
+    ['financial_motive', 'O livro-caixa desenterrado no jardim prova que Tomás desviava fundos.', 'ANSWER']
+  ];
+  for (const [fact_key, statement, visibility] of factsBlackwell) await prisma.case_facts.upsert({ where: { case_version_id_fact_key: { case_version_id: versionBlackwell.id, fact_key } }, update: {}, create: { case_version_id: versionBlackwell.id, fact_key, statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true } });
+
   console.log('Seed dos casos oficiais concluído!');
 }
 

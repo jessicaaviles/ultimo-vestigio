@@ -45,6 +45,13 @@ const CASES_MAP: Record<string, { title: string; synopsis: string; players: stri
     players: '2-6 Jogadores',
     duration: '~12 min',
     image: '/capa_carta_anonima.png'
+  },
+  'blackwell': {
+    title: 'Mansão Blackwell',
+    synopsis: 'Investigue o sumiço misterioso de Clara Mendes na secular Mansão Blackwell e desvende o mistério.',
+    players: '2-6 Jogadores',
+    duration: '~30 min',
+    image: '/backgrounds/mapa-da-investigacao.png'
   }
 };
 

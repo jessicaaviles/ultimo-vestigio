@@ -63,6 +63,14 @@ async function main() {
         'Os convidados ficaram momentaneamente cegos, criando a oportunidade perfeita.',
         'O clarão veio de um equipamento escondido pelo garçom, que roubou a joia na confusão.'
       ]
+    },
+    {
+      slug: 'blackwell',
+      hints: [
+        'O sangue na poltrona da sala de estar era artificial.',
+        'Clara e Helena fugiram juntas pelos jardins da mansão.',
+        'O livro-caixa desenterrado no jardim prova que Tomás desviava fundos.'
+      ]
     }
   ];
 

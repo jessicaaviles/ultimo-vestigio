@@ -83,6 +83,10 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json({ limit: '7mb' }));
+app.use((req, res, next) => {
+  console.log(`[HTTP] ${req.method} ${req.url}`, req.body);
+  next();
+});
 app.use('/api', (req, res, next) => {
   const key = req.ip || 'unknown'; const now = Date.now(); const current = requestWindows.get(key);
   if (!current || now - current.startedAt > 60_000) requestWindows.set(key, { startedAt: now, count: 1 });

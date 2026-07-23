@@ -85,16 +85,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     try {
       const userId = localStorage.getItem('userId') || 'anon_user';
       const userName = localStorage.getItem('userName') || 'Investigador';
-      const caseId = 'o-presente-desaparecido'; // Caso padrão
+      const caseId = 'blackwell'; // Caso padrão
       
       const res = await createRoom(caseId, userId, userName);
-      if (res.success && res.data) {
-        setRoomId(res.data.id);
-        setRoomCode(res.data.public_code);
-        localStorage.setItem('currentRoomId', res.data.id);
-        localStorage.setItem('currentRoomCode', res.data.public_code);
+      if (res.success) {
+        setRoomId(res.roomId);
+        setRoomCode(res.publicCode);
+        localStorage.setItem('currentRoomId', res.roomId);
+        localStorage.setItem('currentRoomCode', res.publicCode);
       } else {
-        setLobbyError(res.message || 'Erro ao criar sala.');
+        setLobbyError(res.error || 'Erro ao criar sala.');
       }
     } catch (e) {
       setLobbyError('Erro de conexão com o servidor.');
@@ -113,13 +113,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       
       const res = await joinRoom(joinCodeInput.toUpperCase(), userId, userName);
       if (res.success && res.data) {
-        setRoomId(res.data.id);
-        setRoomCode(res.data.public_code);
-        localStorage.setItem('currentRoomId', res.data.id);
-        localStorage.setItem('currentRoomCode', res.data.public_code);
+        const cleanCode = joinCodeInput.toUpperCase();
+        setRoomId(res.data.roomId);
+        setRoomCode(cleanCode);
+        localStorage.setItem('currentRoomId', res.data.roomId);
+        localStorage.setItem('currentRoomCode', cleanCode);
         setJoinCodeInput('');
       } else {
-        setLobbyError(res.message || 'Código de sala inválido.');
+        setLobbyError(res.error || 'Código de sala inválido.');
       }
     } catch (e) {
       setLobbyError('Erro ao conectar na sala.');
