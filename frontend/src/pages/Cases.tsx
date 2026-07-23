@@ -361,7 +361,7 @@ const Cases: React.FC = () => {
                   letterSpacing: '1px'
                 }}
               >
-                Escolher este caso (Clássico)
+                Jogar (Modo clássico)
               </button>
               {selectedCase.slug === 'blackwell' && (
                 <button 
@@ -389,7 +389,7 @@ const Cases: React.FC = () => {
                     gap: '8px'
                   }}
                 >
-                  Modo Imersivo (Beta)
+                  Jogar (Modo imersivo)
                 </button>
               )}
               <button 
