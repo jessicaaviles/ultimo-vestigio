@@ -363,33 +363,35 @@ const Cases: React.FC = () => {
               >
                 Escolher este caso (Clássico)
               </button>
-              <button 
-                onClick={() => {
-                  if (!user || !user.email) {
-                    navigate(`/register?return=/map/${selectedCase.slug}`);
-                  } else {
-                    navigate(`/map/${selectedCase.slug}`);
-                  }
-                }}
-                style={{
-                  backgroundColor: 'rgba(212,175,55,0.1)',
-                  color: 'var(--accent-gold)',
-                  border: '1px solid var(--accent-gold)',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                Modo Imersivo (Beta)
-              </button>
+              {selectedCase.slug === 'blackwell' && (
+                <button 
+                  onClick={() => {
+                    if (!user || !user.email) {
+                      navigate(`/register?return=/map/${selectedCase.slug}`);
+                    } else {
+                      navigate(`/map/${selectedCase.slug}`);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: 'rgba(212,175,55,0.1)',
+                    color: 'var(--accent-gold)',
+                    border: '1px solid var(--accent-gold)',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  Modo Imersivo (Beta)
+                </button>
+              )}
               <button 
                 onClick={() => setSelectedCase(null)}
                 style={{
