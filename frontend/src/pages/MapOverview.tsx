@@ -13,10 +13,10 @@ const MapOverview: React.FC = () => {
   const gardenUnlocked = discoveredClues.includes('mirror_msg');
 
   const locations = [
-    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '40%', left: '48%', lineDirection: 'down', totalPistas: 3, clueIds: ['mirror_msg', 'suitcase', 'pills'], image: '/backgrounds/scene_bedroom_landscape.png?v=11', desc: 'Aposentos de Clara. Um cômodo cheio de segredos bem guardados.' },
+    { id: 'bedroom', title: 'Quarto Principal', status: bedroomUnlocked ? 'investigating' : 'locked', top: '32%', left: '48%', lineDirection: 'right', totalPistas: 3, clueIds: ['mirror_msg', 'suitcase', 'pills'], image: '/backgrounds/scene_bedroom_landscape.png?v=11', desc: 'Aposentos de Clara. Um cômodo cheio de segredos bem guardados.' },
     { id: 'library', title: 'Biblioteca', status: libraryUnlocked ? 'investigating' : 'locked', top: '45%', left: '68%', lineDirection: 'left', totalPistas: 3, clueIds: ['desk_letter', 'safe', 'cigar'], image: '/backgrounds/scene_library_landscape.png?v=11', desc: 'O escritório particular e santuário de Tomás.' },
-    { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '50%', left: '38%', lineDirection: 'right', totalPistas: 3, clueIds: ['fireplace', 'blood', 'wine_glass'], image: '/backgrounds/scene_living_room_landscape.png?v=11', desc: 'Principal ponto de encontro da família. Foi aqui que Clara Mendes foi vista pela última vez.' },
-    { id: 'garden', title: 'Jardim', status: gardenUnlocked ? 'investigating' : 'locked', top: '60%', left: '55%', lineDirection: 'up', totalPistas: 3, clueIds: ['fountain', 'mud', 'animal_bones'], image: '/backgrounds/scene_garden_landscape.png?v=11', desc: 'Os vastos jardins da mansão contêm mais segredos do que parecem.' }
+    { id: 'living_room', title: 'Sala de Estar', status: 'investigating', top: '60%', left: '35%', lineDirection: 'right', totalPistas: 3, clueIds: ['fireplace', 'blood', 'wine_glass'], image: '/backgrounds/scene_living_room_landscape.png?v=11', desc: 'Principal ponto de encontro da família. Foi aqui que Clara Mendes foi vista pela última vez.' },
+    { id: 'garden', title: 'Jardim', status: gardenUnlocked ? 'investigating' : 'locked', top: '70%', left: '60%', lineDirection: 'left', totalPistas: 3, clueIds: ['fountain', 'mud', 'animal_bones'], image: '/backgrounds/scene_garden_landscape.png?v=11', desc: 'Os vastos jardins da mansão contêm mais segredos do que parecem.' }
   ];
 
   const totalPossibleClues = 12;
