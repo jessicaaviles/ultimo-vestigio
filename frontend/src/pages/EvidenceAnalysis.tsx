@@ -107,68 +107,66 @@ const EvidenceAnalysis: React.FC = () => {
       {/* Título da Evidência */}
       <div style={{ padding: '0 24px', marginTop: '15vh', position: 'relative', zIndex: 2 }}>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '0 0 16px 0', color: '#F8F9FA', fontWeight: 400 }}>{mockEvidence.title}</h1>
-        
-        {!aiReport && (
-          <button 
-            onClick={handleAnalyze} disabled={analyzing}
-            style={{ 
-              background: 'linear-gradient(90deg, rgba(197, 168, 128, 0.1) 0%, rgba(197, 168, 128, 0.05) 100%)', border: '1px solid rgba(197, 168, 128, 0.3)', color: '#C5A880', 
-              padding: '12px 20px', borderRadius: '12px', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px',
-              cursor: analyzing ? 'not-allowed' : 'pointer', opacity: analyzing ? 0.7 : 1, width: '100%', justifyContent: 'center'
-            }}
-          >
-            <Brain size={16} /> 
-            {analyzing ? 'Analisando amostras...' : 'Solicitar Análise da IA'}
-          </button>
-        )}
       </div>
 
-      {aiReport && (
-        <div style={{ position: 'relative', zIndex: 2, flex: 1, marginTop: '24px' }}>
+      <div style={{ position: 'relative', zIndex: 2, flex: 1, marginTop: '24px' }}>
           
-          {/* Navigation Tabs */}
-          <div style={{ display: 'flex', overflowX: 'auto', padding: '0 24px', gap: '24px', borderBottom: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
-            {['Detalhes', 'Análise da IA', 'Conexões', 'Discussão'].map((tab) => (
-              <button 
-                key={tab} 
-                onClick={() => setActiveTab(tab)}
-                style={{ 
-                  background: 'none', border: 'none', padding: '0 0 16px 0', color: activeTab === tab ? '#C5A880' : '#8E989F',
-                  fontSize: '12px', fontWeight: activeTab === tab ? 600 : 500, textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', whiteSpace: 'nowrap',
-                  borderBottom: activeTab === tab ? '2px solid #C5A880' : '2px solid transparent',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+        {/* Navigation Tabs */}
+        <div style={{ display: 'flex', overflowX: 'auto', padding: '0 24px', gap: '24px', borderBottom: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}>
+          {['Detalhes', 'Análise da IA', 'Conexões', 'Discussão'].map((tab) => (
+            <button 
+              key={tab} 
+              onClick={() => setActiveTab(tab)}
+              style={{ 
+                background: 'none', border: 'none', padding: '0 0 16px 0', color: activeTab === tab ? '#C5A880' : '#8E989F',
+                fontSize: '12px', fontWeight: activeTab === tab ? 600 : 500, textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', whiteSpace: 'nowrap',
+                borderBottom: activeTab === tab ? '2px solid #C5A880' : '2px solid transparent',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
 
-          {/* Tab Content */}
-          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            
-            {activeTab === 'Detalhes' && (
-              <>
-                {/* Transcrição */}
-                {mockEvidence.transcription && (
-                  <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
-                    <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Transcrição</div>
-                    <div style={{ color: '#C5A880', fontSize: '40px', fontFamily: 'var(--font-serif)', lineHeight: 0.5, marginBottom: '16px', opacity: 0.5 }}>"</div>
-                    <p style={{ color: '#E8EAED', fontSize: '15px', fontFamily: 'monospace', lineHeight: 1.6, margin: '0 0 16px 0', whiteSpace: 'pre-line' }}>
-                      {mockEvidence.transcription}
-                    </p>
-                    <div style={{ color: '#C5A880', fontSize: '40px', fontFamily: 'var(--font-serif)', lineHeight: 0.5, marginBottom: '24px', opacity: 0.5 }}>"</div>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <button style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#F8F9FA', padding: '8px 16px', borderRadius: '8px', fontSize: '12px', display: 'flex', gap: '8px', alignItems: 'center', cursor: 'pointer' }}>
-                        <Fullscreen size={14} /> Ver original
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Análise da IA Resumo */}
+        {/* Tab Content */}
+        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          
+          {activeTab === 'Detalhes' && (
+            <>
+              {/* Transcrição */}
+              {mockEvidence.transcription && (
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
-                  <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Análise da IA</div>
+                  <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Transcrição</div>
+                  <div style={{ color: '#C5A880', fontSize: '40px', fontFamily: 'var(--font-serif)', lineHeight: 0.5, marginBottom: '16px', opacity: 0.5 }}>"</div>
+                  <p style={{ color: '#E8EAED', fontSize: '15px', fontFamily: 'monospace', lineHeight: 1.6, margin: '0 0 16px 0', whiteSpace: 'pre-line' }}>
+                    {mockEvidence.transcription}
+                  </p>
+                  <div style={{ color: '#C5A880', fontSize: '40px', fontFamily: 'var(--font-serif)', lineHeight: 0.5, marginBottom: '24px', opacity: 0.5 }}>"</div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <button style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#F8F9FA', padding: '8px 16px', borderRadius: '8px', fontSize: '12px', display: 'flex', gap: '8px', alignItems: 'center', cursor: 'pointer' }}>
+                      <Fullscreen size={14} /> Ver original
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Análise da IA Resumo */}
+              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
+                <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Análise da IA</div>
+                {!aiReport ? (
+                  <button 
+                    onClick={handleAnalyze} disabled={analyzing}
+                    style={{ 
+                      background: 'linear-gradient(90deg, rgba(197, 168, 128, 0.1) 0%, rgba(197, 168, 128, 0.05) 100%)', border: '1px solid rgba(197, 168, 128, 0.3)', color: '#C5A880', 
+                      padding: '12px 20px', borderRadius: '12px', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px',
+                      cursor: analyzing ? 'not-allowed' : 'pointer', opacity: analyzing ? 0.7 : 1, width: '100%', justifyContent: 'center'
+                    }}
+                  >
+                    <Brain size={16} /> 
+                    {analyzing ? 'Analisando amostras...' : 'Solicitar Análise da IA'}
+                  </button>
+                ) : (
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(197, 168, 128, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#C5A880', flexShrink: 0 }}>
                       <Sparkles size={20} />
@@ -178,13 +176,34 @@ const EvidenceAnalysis: React.FC = () => {
                     </p>
                     <ChevronRight size={16} color="#8E989F" />
                   </div>
-                </div>
-              </>
-            )}
+                )}
+              </div>
+            </>
+          )}
 
-            {activeTab === 'Análise da IA' && (
-              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+          {activeTab === 'Análise da IA' && (
+            <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
+              {!aiReport ? (
+                <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                  <Brain size={48} color="#C5A880" style={{ opacity: 0.5, marginBottom: '24px' }} />
+                  <h3 style={{ color: '#F8F9FA', fontSize: '18px', marginBottom: '8px', fontWeight: 400 }}>Análise Pendente</h3>
+                  <p style={{ color: '#8E989F', fontSize: '14px', marginBottom: '32px', lineHeight: 1.6 }}>
+                    A Inteligência Artificial ainda não examinou esta pista. Solicite a análise para revelar conexões ocultas, impressões digitais e hipóteses.
+                  </p>
+                  <button 
+                    onClick={handleAnalyze} disabled={analyzing}
+                    style={{ 
+                      background: 'linear-gradient(90deg, #A88B63 0%, #C5A880 100%)', border: 'none', color: '#0A0D10', 
+                      padding: '12px 24px', borderRadius: '12px', fontSize: '13px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '8px',
+                      cursor: analyzing ? 'not-allowed' : 'pointer', opacity: analyzing ? 0.7 : 1
+                    }}
+                  >
+                    <Sparkles size={16} /> 
+                    {analyzing ? 'Analisando...' : 'Iniciar Escaneamento'}
+                  </button>
+                </div>
+              ) : (
+                <>
                   <div style={{ flex: 1, paddingRight: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#C5A880', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
                       <Search size={14} /> Resumo da Análise
