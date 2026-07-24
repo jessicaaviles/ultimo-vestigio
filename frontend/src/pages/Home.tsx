@@ -161,7 +161,7 @@ const Home: React.FC = () => {
         {/* Estatísticas do Jogador */}
         <section className="home-section">
           <div className="home-section-heading">
-            <h3 className="section-title">Seu histórico na agência</h3>
+            <span className="eyebrow">Suas estatísticas</span>
           </div>
           
           {casesLoading || profileLoading ? (
