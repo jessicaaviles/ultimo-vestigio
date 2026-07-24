@@ -1129,26 +1129,42 @@ img.fill, .img-fill, .fill-width {
   padding: 18px 14px;
 }
 .home-stat-badge {
+  --badge-fill: linear-gradient(145deg, #343027, #151b1d 72%);
+  position: relative;
+  isolation: isolate;
   width: 58px;
   height: 64px;
   display: grid;
   place-items: center;
-  color: #14110a;
+  color: #e7c86f;
   clip-path: polygon(50% 0, 92% 24%, 92% 76%, 50% 100%, 8% 76%, 8% 24%);
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.2), 0 12px 24px rgba(0,0,0,0.25);
+  background: linear-gradient(145deg, #f2d98b 0%, #b89953 52%, #745720 100%);
+  filter: drop-shadow(0 10px 10px rgba(0,0,0,.3)) drop-shadow(0 0 7px rgba(184,153,83,.12));
+}
+.home-stat-badge::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  clip-path: inherit;
+  background: var(--badge-fill);
+  box-shadow: inset 0 0 0 1px rgba(242,213,139,.28), inset 0 8px 16px rgba(255,255,255,.035);
+}
+.home-stat-badge svg {
+  position: relative;
+  z-index: 1;
 }
 .home-stat-badge--gold {
-  background: linear-gradient(145deg, #f3d78a 0%, #b89953 55%, #765d26 100%);
+  --badge-fill: linear-gradient(145deg, #3e3825, #171b1b 72%);
 }
 .home-stat-badge--olive {
-  background: linear-gradient(145deg, #d7e0ad 0%, #84936b 58%, #44513e 100%);
+  --badge-fill: linear-gradient(145deg, #30372b, #161c1b 72%);
 }
 .home-stat-badge--blue {
-  background: linear-gradient(145deg, #b8ddd7 0%, #6ca49e 56%, #2f5554 100%);
+  --badge-fill: linear-gradient(145deg, #26393a, #151c1f 72%);
 }
 .home-stat-badge--wine {
-  background: linear-gradient(145deg, #e3a29a 0%, #b96e63 55%, #633932 100%);
+  --badge-fill: linear-gradient(145deg, #3b2d2c, #1b191b 72%);
 }
 .home-stat-level {
   color: var(--eyebrow-gold);
