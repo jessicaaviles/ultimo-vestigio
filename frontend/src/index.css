@@ -168,6 +168,17 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--serif); font-weight: 400; letter-spa
 .card-surface { border-radius: 16px; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
 
+button[style*="var(--accent-gold)"],
+button[style*="var(--gold)"],
+button[style*="#C5A880"],
+button[style*="#c5a880"],
+button[style*="#C4A77F"],
+button[style*="#c4a77f"],
+button[style*="#A88B63"],
+button[style*="#a88b63"] {
+  color: var(--ink) !important;
+}
+
 /* Shared polish for legacy inline screens. */
 .app-content > div[style*="#0F1417"], .app-content > div[style*="#13191C"] { background-color: transparent !important; }
 [style*="font-family: system-ui"] { font-family: var(--sans) !important; }
