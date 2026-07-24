@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowRight, Target, ArrowUpRight, Clock3, Users
@@ -25,47 +25,25 @@ interface FeaturedCase {
 
 type IdentityKind = 'guest' | 'local' | 'account';
 
-const defaultCases: FeaturedCase[] = [
-  {
-    title: 'O Segredo de Blackwell House',
-    subtitle: 'Mansão Blackwell · Exploração imersiva',
-    level: 'Médio',
-    image: '/capa_blackwell_house.png',
-    description: 'Clara Mendes desapareceu. Entre na mansão, conecte as pistas e descubra quem está mentindo.',
-    slug: 'blackwell',
-    duration: '30 min',
-    players: '1-6 jogadores'
-  },
-  {
-    title: 'O Quarto 7',
-    subtitle: 'Hotel Vesper · Mistério clássico',
-    level: 'Fácil',
-    image: '/capa_quarto_7.png',
-    description: 'Uma chave, uma câmera e a última noite de Helena Duarte.',
-    slug: 'o-quarto-7',
-    duration: '45 min',
-    players: '1-4 jogadores'
-  },
-  {
-    title: 'O Presente Desaparecido',
-    subtitle: 'Arquivo municipal · Linha do tempo',
-    level: 'Médio',
-    image: '/backgrounds/cena-do-crime.png',
-    description: 'Durante uma comemoração, um presente desaparece sem deixar rastros.',
-    slug: 'o-presente-desaparecido',
-    duration: '30 min',
-    players: '2-6 jogadores'
-  }
-];
+interface InvestigatorStats {
+  hostedRoomsCount: number;
+  playedRoomsCount: number;
+  theoriesCount: number;
+  correctTheoriesCount: number;
+}
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [registering, setRegistering] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [casesLoading, setCasesLoading] = useState(true);
+  const [casesError, setCasesError] = useState(false);
   const [displayName, setDisplayName] = useState<string>('Investigador');
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [profileStats, setProfileStats] = useState<InvestigatorStats | null>(null);
   const [identityKind, setIdentityKind] = useState<IdentityKind>('guest');
-  const [solvedCount, setSolvedCount] = useState<number>(0);
-  const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>(defaultCases);
+  const [solvedCount, setSolvedCount] = useState<number | null>(null);
+  const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>([]);
   
   const activeRoomId = localStorage.getItem('currentRoomId');
   const hasActiveCase = !!activeRoomId;
@@ -79,6 +57,7 @@ const Home: React.FC = () => {
     const applyProfile = (profile: any, kind: IdentityKind) => {
       const profileName = profile?.displayName;
       setProfilePhoto(profile?.photo || null);
+      setProfileStats(profile?.stats || null);
       if (profileName) {
         setDisplayName(profileName);
         localStorage.setItem('userName', profileName);
@@ -95,7 +74,8 @@ const Home: React.FC = () => {
         .then((res) => {
           if (res.success) applyProfile(res.data, 'account');
         })
-        .catch(() => undefined);
+        .catch(() => undefined)
+        .finally(() => setProfileLoading(false));
       return;
     }
 
@@ -110,7 +90,8 @@ const Home: React.FC = () => {
           const hasLocalProfile = Boolean(res.data?.hasProfile);
           applyProfile(res.data, hasLocalProfile ? 'local' : 'guest');
         })
-        .catch(() => undefined);
+        .catch(() => undefined)
+        .finally(() => setProfileLoading(false));
       return;
     }
 
@@ -118,6 +99,7 @@ const Home: React.FC = () => {
     setProfilePhoto(null);
     setIdentityKind('guest');
     localStorage.removeItem('userName');
+    setProfileLoading(false);
 
     if (!deviceToken || !userId) {
       setRegistering(true);
@@ -138,33 +120,44 @@ const Home: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => {
+  const loadCases = useCallback(async () => {
+    setCasesLoading(true);
+    setCasesError(false);
     const userId = localStorage.getItem('userId');
-    listCases(userId)
-      .then((res: any) => {
-        if (res.solvedSlugs) {
-          setSolvedCount(res.solvedSlugs.length);
-        }
-        
-        if (res.success && res.data?.length) {
-          const mapped: FeaturedCase[] = res.data.slice(0, 3).map((item: any) => {
-            const img = item.cover_image_data || fallbackImages[item.slug] || '/backgrounds/mapa-da-investigacao.png';
-            return {
-              title: item.title,
-              subtitle: item.slug === 'blackwell' ? 'Modo Imersivo · Protótipo 3D' : (item.slug === 'o-quarto-7' ? 'Hotel Vesper · Mistério Clássico' : 'Arquivo Municipal · Dedução'),
-              level: item.difficulty || 'Fácil',
-              image: img,
-              description: item.short_synopsis || item.synopsis || 'Analise todas as evidências e encontre a verdade.',
-              slug: item.slug,
-              duration: item.slug === 'blackwell' ? '30 min' : '45 min',
-              players: '1-6 Jogadores'
-            };
-          });
-          setFeaturedCases(mapped);
-        }
-      })
-      .catch(() => undefined);
+    try {
+      const res: any = await listCases(userId);
+      if (!res.success || !Array.isArray(res.data)) throw new Error('Invalid cases response');
+
+      setSolvedCount(Array.isArray(res.solvedSlugs) ? res.solvedSlugs.length : 0);
+      setFeaturedCases(res.data.slice(0, 3).map((item: any) => {
+        const minPlayers = Number(item.min_players) || 1;
+        const maxPlayers = Number(item.max_players) || minPlayers;
+        const players = minPlayers === maxPlayers
+          ? `${minPlayers} jogador${minPlayers > 1 ? 'es' : ''}`
+          : `${minPlayers}-${maxPlayers} jogadores`;
+        return {
+          title: item.title,
+          subtitle: item.case_type || 'Investigação',
+          level: item.difficulty || 'Não informada',
+          image: item.cover_image_data || fallbackImages[item.slug] || '/backgrounds/mapa-da-investigacao.png',
+          description: item.short_synopsis || item.synopsis || 'Sinopse não disponível.',
+          slug: item.slug,
+          duration: item.estimated_duration_minutes ? `${item.estimated_duration_minutes} min` : 'Não informada',
+          players
+        };
+      }));
+    } catch {
+      setSolvedCount(null);
+      setFeaturedCases([]);
+      setCasesError(true);
+    } finally {
+      setCasesLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadCases();
+  }, [loadCases]);
 
   const getInvestigatorRank = (count: number) => {
     if (count === 0) return 'Recruta Forense';
@@ -173,7 +166,13 @@ const Home: React.FC = () => {
     return 'Agente Especial';
   };
 
-  const rank = getInvestigatorRank(solvedCount);
+  const rank = solvedCount === null ? null : getInvestigatorRank(solvedCount);
+  const totalPlayed = profileStats?.playedRoomsCount ?? 0;
+  const theoriesCount = profileStats?.theoriesCount ?? 0;
+  const theoryAccuracy = theoriesCount > 0
+    ? Math.round(((profileStats?.correctTheoriesCount ?? 0) / theoriesCount) * 100)
+    : null;
+  const hasInvestigationHistory = (solvedCount ?? 0) > 0 || totalPlayed > 0 || theoriesCount > 0;
   const identityLabel = {
     guest: 'Visitante',
     local: 'Perfil local neste dispositivo',
@@ -192,25 +191,36 @@ const Home: React.FC = () => {
       <div className="home-content-wrapper">
         
         {/* Cabeçalho do Perfil */}
-        <header className="home-profile-header">
-          <div className="avatar-container" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-            <img
-              src={profilePhoto || '/backgrounds/helena_portrait.png'}
-              alt={`Retrato de ${displayName}`}
-              className="avatar-img"
-              onError={(event) => {
-                event.currentTarget.onerror = null;
-                event.currentTarget.src = '/backgrounds/helena_portrait.png';
-              }}
-            />
-            <div className="level-badge">{solvedCount * 2 + 1}</div>
-          </div>
-          <div className="profile-info">
-            <h1 className="profile-name">{displayName}</h1>
-            <span className="profile-role">{rank}</span>
-            <span className={`profile-session profile-session--${identityKind}`}>{identityLabel}</span>
-          </div>
-        </header>
+        {profileLoading ? (
+          <header className="home-profile-header home-profile-header--loading" aria-label="Carregando perfil" aria-busy="true">
+            <span className="home-skeleton home-profile-skeleton-avatar" />
+            <span className="home-profile-skeleton-copy">
+              <span className="home-skeleton home-profile-skeleton-name" />
+              <span className="home-skeleton home-profile-skeleton-line" />
+              <span className="home-skeleton home-profile-skeleton-line home-profile-skeleton-line--short" />
+            </span>
+          </header>
+        ) : (
+          <header className="home-profile-header">
+            <button className="avatar-container" onClick={() => navigate('/profile')} aria-label="Abrir perfil">
+              <img
+                src={profilePhoto || '/backgrounds/helena_portrait.png'}
+                alt={`Retrato de ${displayName}`}
+                className="avatar-img"
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = '/backgrounds/helena_portrait.png';
+                }}
+              />
+              {solvedCount !== null && <span className="level-badge">{solvedCount * 2 + 1}</span>}
+            </button>
+            <div className="profile-info">
+              <h1 className="profile-name">{displayName}</h1>
+              {rank && <span className="profile-role">{rank}</span>}
+              <span className={`profile-session profile-session--${identityKind}`}>{identityLabel}</span>
+            </div>
+          </header>
+        )}
 
         {registering && (
           <div style={{ marginBottom: '20px' }}>
@@ -252,7 +262,16 @@ const Home: React.FC = () => {
             <h3 className="section-title">Seu histórico na agência</h3>
           </div>
           
-          {solvedCount === 0 ? (
+          {casesLoading || profileLoading ? (
+            <div className="home-loading-panel" aria-busy="true">
+              <Loading message="Consultando seu histórico..." fullPage={false} />
+            </div>
+          ) : casesError ? (
+            <div className="home-data-state" role="status">
+              <p>Seu histórico não pôde ser consultado agora.</p>
+              <button className="btn-secondary" onClick={loadCases}>Tentar novamente</button>
+            </div>
+          ) : !hasInvestigationHistory ? (
             <div className="home-empty-stats">
               <div className="home-empty-stats-icon">
                 <Target size={32} />
@@ -271,20 +290,24 @@ const Home: React.FC = () => {
             <div className="home-stats-grid">
               <div className="home-stat-box">
                 <div className="home-stat-value">{solvedCount}</div>
-                <div className="home-stat-label">Casos Resolvidos</div>
+                <div className="home-stat-label">Casos resolvidos</div>
               </div>
-              <div className="home-stat-box">
-                <div className="home-stat-value">94%</div>
-                <div className="home-stat-label">Precisão Teórica</div>
-              </div>
-              <div className="home-stat-box">
-                <div className="home-stat-value">{solvedCount * 2.5}h</div>
-                <div className="home-stat-label">Tempo em Campo</div>
-              </div>
-              <div className="home-stat-box">
-                <div className="home-stat-value">01</div>
-                <div className="home-stat-label">Temporada Ativa</div>
-              </div>
+              {profileStats && (
+                <>
+                  <div className="home-stat-box">
+                    <div className="home-stat-value">{totalPlayed}</div>
+                    <div className="home-stat-label">Investigações jogadas</div>
+                  </div>
+                  <div className="home-stat-box">
+                    <div className="home-stat-value">{theoriesCount}</div>
+                    <div className="home-stat-label">Teorias registradas</div>
+                  </div>
+                  <div className="home-stat-box">
+                    <div className="home-stat-value">{theoryAccuracy === null ? '—' : `${theoryAccuracy}%`}</div>
+                    <div className="home-stat-label">Precisão das teorias</div>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </section>
@@ -305,32 +328,47 @@ const Home: React.FC = () => {
             </button>
           </div>
 
-          <div className="featured-carousel">
-            {featuredCases.map((item, index) => (
-              <button key={item.slug} className="featured-card" onClick={() => navigate('/cases')} aria-label={`Abrir caso ${item.title}`}>
-                <div className="featured-card-image" style={{ backgroundImage: `url("${item.image}")` }}>
-                  <div className="featured-card-overlay">
-                    <span className="featured-card-number">0{index + 1}</span>
-                    <span className="badge-difficulty badge-easy" style={{ background: 'rgba(0,0,0,0.5)', color: 'var(--paper)', border: '1px solid rgba(255,255,255,0.2)' }}>
-                      {item.level}
+          {casesLoading ? (
+            <div className="home-loading-panel home-loading-panel--cases" aria-busy="true">
+              <Loading message="Consultando o arquivo de casos..." fullPage={false} />
+            </div>
+          ) : casesError ? (
+            <div className="home-data-state" role="alert">
+              <p>Não foi possível carregar as investigações.</p>
+              <button className="btn-secondary" onClick={loadCases}>Tentar novamente</button>
+            </div>
+          ) : featuredCases.length === 0 ? (
+            <div className="home-data-state">
+              <p>Nenhuma investigação está disponível neste momento.</p>
+            </div>
+          ) : (
+            <div className="featured-carousel">
+              {featuredCases.map((item, index) => (
+                <button key={item.slug} className="featured-card" onClick={() => navigate('/cases')} aria-label={`Abrir caso ${item.title}`}>
+                  <div className="featured-card-image" style={{ backgroundImage: `url("${item.image}")` }}>
+                    <div className="featured-card-overlay">
+                      <span className="featured-card-number">0{index + 1}</span>
+                      <span className="badge-difficulty badge-easy" style={{ background: 'rgba(0,0,0,0.5)', color: 'var(--paper)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                        {item.level}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="featured-card-content">
+                    <h3 className="featured-card-title">{item.title}</h3>
+                    <span className="featured-card-subtitle">{item.subtitle}</span>
+                    <p className="featured-card-desc">{item.description}</p>
+                    <div className="featured-card-meta">
+                      <span><Clock3 size={14} /> {item.duration}</span>
+                      <span><Users size={14} /> {item.players}</span>
+                    </div>
+                    <span className="featured-card-action">
+                      Ver dossiê <ArrowRight size={15} />
                     </span>
                   </div>
-                </div>
-                <div className="featured-card-content">
-                  <h3 className="featured-card-title">{item.title}</h3>
-                  <span className="featured-card-subtitle">{item.subtitle}</span>
-                  <p className="featured-card-desc">{item.description}</p>
-                  <div className="featured-card-meta">
-                    <span><Clock3 size={14} /> {item.duration}</span>
-                    <span><Users size={14} /> {item.players}</span>
-                  </div>
-                  <span className="featured-card-action">
-                    Ver dossiê <ArrowRight size={15} />
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
+                </button>
+              ))}
+            </div>
+          )}
         </section>
 
       </div>
