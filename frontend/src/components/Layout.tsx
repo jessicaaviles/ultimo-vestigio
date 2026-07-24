@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, FolderOpen, Users, MessageCircle, UserRound, Menu, X, Copy, LogOut, Plus, LogIn } from 'lucide-react';
 import { useNotifications } from '../contexts/NotificationsContext';
 import { useSocket } from '../contexts/useSocket';
+import { useAuth } from '../contexts/AuthContext';
 import { createRoom, joinRoom } from '../services/api';
 
 interface LayoutProps { children: React.ReactNode; }
@@ -14,6 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { notifications, hasAny } = useNotifications();
+  const { user: authUser, loading: authLoading } = useAuth();
 
   const isActive = (path: string) => path === '/' ? location.pathname === '/' : path === 'map' ? location.pathname.includes('/cases') : location.pathname.includes(path);
 
@@ -208,6 +210,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
 
   const isImmersive = location.pathname === '/' || ['/map', '/scene', '/board', '/case-files', '/evidence'].some(p => location.pathname.includes(p));
+  const isHome = location.pathname === '/';
+  const homeIdentityLabel = authUser?.email
+    ? 'Conta sincronizada'
+    : authUser?.hasProfile
+      ? 'Perfil local'
+      : 'Visitante';
 
   return <div className="app-shell">
     <header className="topbar" style={{
@@ -216,8 +224,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       backdropFilter: isImmersive || scrolled ? 'blur(4px)' : 'none',
       WebkitBackdropFilter: isImmersive || scrolled ? 'blur(4px)' : 'none'
     }}>
-      {location.pathname !== '/' ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {!isHome ? (
+        <div className="topbar-brand">
           <button aria-label="Ir para início" onClick={() => navigate('/')} style={{ background: 'none', border: 0 }}>
             <img className="topbar-logo" src="/monograma-ultimo-vestigio.png" alt="Último Vestígio" />
           </button>
@@ -227,12 +235,38 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </button>
           )}
         </div>
+      ) : authLoading ? (
+        <div className="home-header-profile home-header-profile--loading" aria-label="Carregando perfil" aria-busy="true">
+          <span className="home-header-profile-avatar home-header-profile-avatar--loading" />
+          <span className="home-header-profile-copy">
+            <span className="home-header-profile-name home-header-profile-name--loading" />
+            <span className="home-header-profile-status home-header-profile-status--loading" />
+          </span>
+        </div>
       ) : (
-        <div style={{ width: '68px' }} />
+        <button className="home-header-profile" onClick={() => navigate('/profile')} aria-label="Abrir perfil">
+          <span className="home-header-profile-avatar">
+            <img
+              src={authUser?.photo || '/backgrounds/helena_portrait.png'}
+              alt=""
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = '/backgrounds/helena_portrait.png';
+              }}
+            />
+          </span>
+          <span className="home-header-profile-copy">
+            <strong className="home-header-profile-name">{authUser?.displayName || 'Investigador'}</strong>
+            <span className={`home-header-profile-status${authUser?.email ? ' home-header-profile-status--account' : ''}`}>
+              {homeIdentityLabel}
+            </span>
+          </span>
+        </button>
       )}
-      
-      {/* Cooperative Lobby Widget */}
-      {isImmersive && (
+
+      <div className="topbar-actions">
+        {/* Cooperative Lobby Widget */}
+        {isImmersive && (
         <div className="lobby-wrapper" ref={lobbyRef} style={{ position: 'relative', marginRight: '8px' }}>
           <button
             onClick={() => setLobbyOpen(!lobbyOpen)}
@@ -427,9 +461,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </div>
           )}
         </div>
-      )}
+        )}
 
-      <div className="menu-wrapper" ref={menuRef}>
+        <div className="menu-wrapper" ref={menuRef}>
         <button
           className={`menu-button${menuOpen ? ' menu-button--active' : ''}`}
           aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
@@ -456,6 +490,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/tutorial'); }}>
             Como funciona
           </button>
+        </div>
         </div>
       </div>
     </header>

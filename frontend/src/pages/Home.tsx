@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { registerAnonymousUser, listCases, getProfile } from '../services/api';
 import Loading from '../components/Loading';
+import { useAuth } from '../contexts/AuthContext';
 
 const fallbackImages: Record<string, string> = {
   'blackwell': '/backgrounds/map_blackwell.png',
@@ -23,8 +24,6 @@ interface FeaturedCase {
   players: string;
 }
 
-type IdentityKind = 'guest' | 'local' | 'account';
-
 interface InvestigatorStats {
   hostedRoomsCount: number;
   playedRoomsCount: number;
@@ -34,14 +33,11 @@ interface InvestigatorStats {
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [registering, setRegistering] = useState(false);
+  const { refresh } = useAuth();
   const [profileLoading, setProfileLoading] = useState(true);
   const [casesLoading, setCasesLoading] = useState(true);
   const [casesError, setCasesError] = useState(false);
-  const [displayName, setDisplayName] = useState<string>('Investigador');
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [profileStats, setProfileStats] = useState<InvestigatorStats | null>(null);
-  const [identityKind, setIdentityKind] = useState<IdentityKind>('guest');
   const [solvedCount, setSolvedCount] = useState<number | null>(null);
   const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>([]);
   
@@ -49,76 +45,34 @@ const Home: React.FC = () => {
   const hasActiveCase = !!activeRoomId;
 
   useEffect(() => {
-    const authToken = localStorage.getItem('authToken');
     const deviceToken = localStorage.getItem('deviceToken');
     const userId = localStorage.getItem('userId');
-    const savedName = localStorage.getItem('userName');
 
-    const applyProfile = (profile: any, kind: IdentityKind) => {
-      const profileName = profile?.displayName;
-      setProfilePhoto(profile?.photo || null);
-      setProfileStats(profile?.stats || null);
-      if (profileName) {
-        setDisplayName(profileName);
-        localStorage.setItem('userName', profileName);
-      } else {
-        setDisplayName('Investigador');
-      }
-      setIdentityKind(kind);
-    };
-
-    if (authToken && userId) {
-      setIdentityKind('account');
-      if (savedName) setDisplayName(savedName);
+    if (userId) {
       getProfile(userId)
         .then((res) => {
-          if (res.success) applyProfile(res.data, 'account');
+          if (res.success) setProfileStats(res.data?.stats || null);
         })
         .catch(() => undefined)
         .finally(() => setProfileLoading(false));
       return;
     }
 
-    if (deviceToken && userId) {
-      if (savedName) {
-        setDisplayName(savedName);
-        setIdentityKind('local');
-      }
-      getProfile(userId)
-        .then((res) => {
-          if (!res.success) return;
-          const hasLocalProfile = Boolean(res.data?.hasProfile);
-          applyProfile(res.data, hasLocalProfile ? 'local' : 'guest');
-        })
-        .catch(() => undefined)
-        .finally(() => setProfileLoading(false));
-      return;
-    }
-
-    setDisplayName('Investigador');
-    setProfilePhoto(null);
-    setIdentityKind('guest');
     localStorage.removeItem('userName');
     setProfileLoading(false);
 
     if (!deviceToken || !userId) {
-      setRegistering(true);
       registerAnonymousUser()
         .then((res) => {
           if (res.success) {
             localStorage.setItem('deviceToken', res.data.deviceToken);
             localStorage.setItem('userId', res.data.userId);
-            if (res.data.displayName) {
-              setDisplayName(res.data.displayName);
-              setIdentityKind('local');
-              localStorage.setItem('userName', res.data.displayName);
-            }
+            void refresh();
           }
         })
-        .catch(() => undefined)
-        .finally(() => setRegistering(false));
+        .catch(() => undefined);
     }
-  }, []);
+  }, [refresh]);
 
   const loadCases = useCallback(async () => {
     setCasesLoading(true);
@@ -159,25 +113,12 @@ const Home: React.FC = () => {
     loadCases();
   }, [loadCases]);
 
-  const getInvestigatorRank = (count: number) => {
-    if (count === 0) return 'Recruta Forense';
-    if (count === 1) return 'Detetive de Campo';
-    if (count === 2) return 'Perito Criminal';
-    return 'Agente Especial';
-  };
-
-  const rank = solvedCount === null ? null : getInvestigatorRank(solvedCount);
   const totalPlayed = profileStats?.playedRoomsCount ?? 0;
   const theoriesCount = profileStats?.theoriesCount ?? 0;
   const theoryAccuracy = theoriesCount > 0
     ? Math.round(((profileStats?.correctTheoriesCount ?? 0) / theoriesCount) * 100)
     : null;
   const hasInvestigationHistory = (solvedCount ?? 0) > 0 || totalPlayed > 0 || theoriesCount > 0;
-  const identityLabel = {
-    guest: 'Visitante',
-    local: 'Perfil local neste dispositivo',
-    account: 'Conta sincronizada'
-  }[identityKind];
 
   return (
     <div className="home-immersive-container">
@@ -189,45 +130,6 @@ const Home: React.FC = () => {
       />
       
       <div className="home-content-wrapper">
-        
-        {/* Cabeçalho do Perfil */}
-        {profileLoading ? (
-          <header className="home-profile-header home-profile-header--loading" aria-label="Carregando perfil" aria-busy="true">
-            <span className="home-skeleton home-profile-skeleton-avatar" />
-            <span className="home-profile-skeleton-copy">
-              <span className="home-skeleton home-profile-skeleton-name" />
-              <span className="home-skeleton home-profile-skeleton-line" />
-              <span className="home-skeleton home-profile-skeleton-line home-profile-skeleton-line--short" />
-            </span>
-          </header>
-        ) : (
-          <header className="home-profile-header">
-            <button className="avatar-container" onClick={() => navigate('/profile')} aria-label="Abrir perfil">
-              <img
-                src={profilePhoto || '/backgrounds/helena_portrait.png'}
-                alt={`Retrato de ${displayName}`}
-                className="avatar-img"
-                onError={(event) => {
-                  event.currentTarget.onerror = null;
-                  event.currentTarget.src = '/backgrounds/helena_portrait.png';
-                }}
-              />
-              {solvedCount !== null && <span className="level-badge">{solvedCount * 2 + 1}</span>}
-            </button>
-            <div className="profile-info">
-              <h1 className="profile-name">{displayName}</h1>
-              {rank && <span className="profile-role">{rank}</span>}
-              <span className={`profile-session profile-session--${identityKind}`}>{identityLabel}</span>
-            </div>
-          </header>
-        )}
-
-        {registering && (
-          <div style={{ marginBottom: '20px' }}>
-            <Loading small message="Conectando aos servidores..." />
-          </div>
-        )}
-
         {/* Hero: Caso Fixo */}
         <section className="home-hero-section">
           <img

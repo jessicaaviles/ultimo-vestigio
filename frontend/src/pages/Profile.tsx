@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Upload, UserPlus, X, Medal, Shield, Search, Star } from 'lucide-react';
 import { getProfile, updateProfile, authValidate, authLogout } from '../services/api';
 import Loading from '../components/Loading';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ProfileData {
   id: string;
@@ -26,6 +27,7 @@ interface ProfileData {
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { refresh } = useAuth();
   const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem('authToken'));
   const [authEmail, setAuthEmail] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -132,6 +134,7 @@ const Profile: React.FC = () => {
       setPhotoData('');
       setPreview('');
       setEditing(false);
+      await refresh();
       const genStatus = (response as any).portraitStatus;
       if (hasPhoto && genStatus === 'READY') setStatus('Perfil salvo! Retrato gerado com sucesso.');
       else if (hasPhoto && genStatus === 'UNAVAILABLE') setStatus('Perfil salvo, mas o retrato não pôde ser gerado no momento.');
@@ -172,6 +175,7 @@ const Profile: React.FC = () => {
           setActive(response.data.active);
           setPhotoData('');
           setPreview('');
+          await refresh();
           const genStatus = (response as any).portraitStatus;
           if (genStatus === 'READY') setStatus('Retrato gerado com sucesso!');
           else if (genStatus === 'UNAVAILABLE') setStatus('Não foi possível gerar o retrato no momento.');
