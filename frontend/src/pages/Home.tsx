@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowRight, Target, ArrowUpRight, Clock3, Users
+  ArrowRight, Target, ArrowUpRight, Clock3, Users, Trophy, FileText, Crosshair
 } from 'lucide-react';
 import { registerAnonymousUser, listCases, getProfile } from '../services/api';
 import Loading from '../components/Loading';
@@ -119,6 +119,40 @@ const Home: React.FC = () => {
     ? Math.round(((profileStats?.correctTheoriesCount ?? 0) / theoriesCount) * 100)
     : null;
   const hasInvestigationHistory = (solvedCount ?? 0) > 0 || totalPlayed > 0 || theoriesCount > 0;
+  const homeStatCards = [
+    {
+      label: 'Casos resolvidos',
+      value: solvedCount ?? 0,
+      detail: `${Math.min(5, Math.max(0, solvedCount ?? 0))} / 5 marcos`,
+      level: (solvedCount ?? 0) > 0 ? `LV.${Math.min(5, Math.max(1, solvedCount ?? 0))}` : 'LV.0',
+      Icon: Trophy,
+      tone: 'gold'
+    },
+    {
+      label: 'Investigações jogadas',
+      value: totalPlayed,
+      detail: `${Math.min(10, totalPlayed)} / 10 sessões`,
+      level: totalPlayed > 0 ? `LV.${Math.min(5, Math.ceil(totalPlayed / 2))}` : 'LV.0',
+      Icon: Users,
+      tone: 'olive'
+    },
+    {
+      label: 'Teorias registradas',
+      value: theoriesCount,
+      detail: `${Math.min(12, theoriesCount)} / 12 teorias`,
+      level: theoriesCount > 0 ? `LV.${Math.min(5, Math.ceil(theoriesCount / 3))}` : 'LV.0',
+      Icon: FileText,
+      tone: 'blue'
+    },
+    {
+      label: 'Precisão das teorias',
+      value: theoryAccuracy === null ? '—' : `${theoryAccuracy}%`,
+      detail: theoriesCount > 0 ? `${profileStats?.correctTheoriesCount ?? 0} acertos` : 'Sem teorias',
+      level: theoryAccuracy === null ? 'Sem dados' : theoryAccuracy >= 80 ? 'Perícia alta' : theoryAccuracy >= 50 ? 'Em evolução' : 'Calibrando',
+      Icon: Crosshair,
+      tone: 'wine'
+    },
+  ];
 
   return (
     <div className="home-immersive-container">
@@ -190,26 +224,17 @@ const Home: React.FC = () => {
             </div>
           ) : (
             <div className="home-stats-grid">
-              <div className="home-stat-box">
-                <div className="home-stat-value">{solvedCount}</div>
-                <div className="home-stat-label">Casos resolvidos</div>
-              </div>
-              {profileStats && (
-                <>
-                  <div className="home-stat-box">
-                    <div className="home-stat-value">{totalPlayed}</div>
-                    <div className="home-stat-label">Investigações jogadas</div>
+              {homeStatCards.map(({ label, value, detail, level, Icon, tone }) => (
+                <div className="home-stat-box home-stat-box--badge" key={label}>
+                  <div className={`home-stat-badge home-stat-badge--${tone}`} aria-hidden="true">
+                    <Icon size={23} strokeWidth={1.8} />
                   </div>
-                  <div className="home-stat-box">
-                    <div className="home-stat-value">{theoriesCount}</div>
-                    <div className="home-stat-label">Teorias registradas</div>
-                  </div>
-                  <div className="home-stat-box">
-                    <div className="home-stat-value">{theoryAccuracy === null ? '—' : `${theoryAccuracy}%`}</div>
-                    <div className="home-stat-label">Precisão das teorias</div>
-                  </div>
-                </>
-              )}
+                  <div className="home-stat-level">{level}</div>
+                  <div className="home-stat-value">{value}</div>
+                  <div className="home-stat-label">{label}</div>
+                  <div className="home-stat-detail">{detail}</div>
+                </div>
+              ))}
             </div>
           )}
         </section>

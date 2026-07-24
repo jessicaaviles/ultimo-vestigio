@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Upload, UserPlus, X, Medal, Shield, Search, Star } from 'lucide-react';
+import { ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Upload, UserPlus, X, Medal, Shield, Search, Star, Trophy, Lock, FileText, Crosshair } from 'lucide-react';
 import { getProfile, updateProfile, authValidate, authLogout } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
@@ -201,6 +201,72 @@ const Profile: React.FC = () => {
   };
 
   const image = preview || profile?.photo;
+  const stats = profile?.stats;
+  const playedRoomsCount = stats?.playedRoomsCount ?? 0;
+  const hostedRoomsCount = stats?.hostedRoomsCount ?? 0;
+  const theoriesCount = stats?.theoriesCount ?? 0;
+  const correctTheoriesCount = stats?.correctTheoriesCount ?? 0;
+  const theoryAccuracy = theoriesCount > 0 ? Math.round((correctTheoriesCount / theoriesCount) * 100) : null;
+  const achievementItems = [
+    {
+      id: 'first_case',
+      title: 'Primeiro caso',
+      desc: 'Complete sua primeira investigação.',
+      unlocked: playedRoomsCount >= 1,
+      progress: `${Math.min(playedRoomsCount, 1)} / 1`,
+      points: 50,
+      Icon: Search,
+    },
+    {
+      id: 'veteran',
+      title: 'Investigador consistente',
+      desc: 'Participe de 5 investigações.',
+      unlocked: playedRoomsCount >= 5,
+      progress: `${Math.min(playedRoomsCount, 5)} / 5`,
+      points: 150,
+      Icon: Medal,
+    },
+    {
+      id: 'host',
+      title: 'Criação de sala',
+      desc: 'Crie uma sala concluída.',
+      unlocked: hostedRoomsCount >= 1,
+      progress: `${Math.min(hostedRoomsCount, 1)} / 1`,
+      points: 80,
+      Icon: Shield,
+    },
+    {
+      id: 'theorist',
+      title: 'Teoria em campo',
+      desc: 'Registre sua primeira teoria.',
+      unlocked: theoriesCount >= 1,
+      progress: `${Math.min(theoriesCount, 1)} / 1`,
+      points: 60,
+      Icon: FileText,
+    },
+    {
+      id: 'deduction',
+      title: 'Dedução correta',
+      desc: 'Acerte uma teoria final.',
+      unlocked: correctTheoriesCount >= 1,
+      progress: `${Math.min(correctTheoriesCount, 1)} / 1`,
+      points: 120,
+      Icon: Star,
+    },
+    {
+      id: 'precision',
+      title: 'Precisão de elite',
+      desc: 'Alcance 80% de precisão com 3 teorias.',
+      unlocked: theoriesCount >= 3 && (theoryAccuracy ?? 0) >= 80,
+      progress: `${Math.min(theoriesCount, 3)} / 3`,
+      points: 200,
+      Icon: Crosshair,
+    },
+  ];
+  const unlockedAchievements = achievementItems.filter((achievement) => achievement.unlocked).length;
+  const totalAchievementPoints = achievementItems
+    .filter((achievement) => achievement.unlocked)
+    .reduce((total, achievement) => total + achievement.points, 0);
 
   if (!authToken) {
     return (
@@ -293,12 +359,12 @@ const Profile: React.FC = () => {
       <div className="profile-stats">
         <div>
           <span>Investigações</span>
-          <strong>0</strong>
-          <small>concluídas</small>
+          <strong>{playedRoomsCount}</strong>
+          <small>jogadas</small>
         </div>
         <div>
           <span>Precisão</span>
-          <strong>—</strong>
+          <strong>{theoryAccuracy === null ? '—' : `${theoryAccuracy}%`}</strong>
           <small>das teorias</small>
         </div>
       </div>
@@ -321,34 +387,45 @@ const Profile: React.FC = () => {
         <span className="eyebrow">Marcas de campo</span>
         <h2>Conquistas</h2>
         {profile?.stats ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px', marginTop: '16px' }}>
-            {[
-              { id: 'first_case', title: 'Batismo de Fogo', desc: 'Concluiu o 1º caso.', unlocked: profile.stats.playedRoomsCount >= 1, Icon: Search },
-              { id: 'veteran', title: 'Investigador Sênior', desc: 'Concluiu 5 casos.', unlocked: profile.stats.playedRoomsCount >= 5, Icon: Medal },
-              { id: 'host', title: 'Chefe de Polícia', desc: 'Criou uma sala concluída.', unlocked: profile.stats.hostedRoomsCount >= 1, Icon: Shield },
-              { id: 'sherlock', title: 'Elementar', desc: 'Formulou 1 teoria correta.', unlocked: profile.stats.correctTheoriesCount >= 1, Icon: Star },
-            ].map(achievement => (
-              <div key={achievement.id} style={{
-                background: achievement.unlocked ? 'linear-gradient(135deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.02) 100%)' : 'rgba(255,255,255,0.02)',
-                border: `1px solid ${achievement.unlocked ? 'rgba(212,175,55,0.3)' : 'rgba(255,255,255,0.05)'}`,
-                borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '8px',
-                opacity: achievement.unlocked ? 1 : 0.5,
-                transition: 'all 0.3s ease'
-              }}>
-                <div style={{
-                  width: '48px', height: '48px', borderRadius: '50%',
-                  background: achievement.unlocked ? 'rgba(212,175,55,0.2)' : 'rgba(255,255,255,0.05)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: achievement.unlocked ? 'var(--accent-gold)' : 'rgba(255,255,255,0.3)'
-                }}>
-                  <achievement.Icon size={24} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: achievement.unlocked ? '#fff' : 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>{achievement.title}</div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{achievement.desc}</div>
-                </div>
+          <div className="profile-achievement-panel">
+            <div className="profile-achievement-summary">
+              <div>
+                <Trophy size={20} />
+                <strong>{unlockedAchievements}</strong>
+                <span>desbloqueadas</span>
               </div>
-            ))}
+              <div>
+                <Medal size={20} />
+                <strong>{totalAchievementPoints}</strong>
+                <span>pontos</span>
+              </div>
+              <div>
+                <Crosshair size={20} />
+                <strong>{theoryAccuracy === null ? '—' : `${theoryAccuracy}%`}</strong>
+                <span>precisão</span>
+              </div>
+            </div>
+
+            <div className="profile-achievement-list">
+              {achievementItems.map((achievement) => (
+                <article
+                  key={achievement.id}
+                  className={`profile-achievement-card${achievement.unlocked ? ' profile-achievement-card--unlocked' : ''}`}
+                >
+                  <div className="profile-achievement-medal" aria-hidden="true">
+                    {achievement.unlocked ? <achievement.Icon size={24} /> : <Lock size={20} />}
+                  </div>
+                  <div className="profile-achievement-copy">
+                    <div>
+                      <h3>{achievement.title}</h3>
+                      <span>{achievement.unlocked ? 'Desbloqueada' : achievement.progress}</span>
+                    </div>
+                    <p>{achievement.desc}</p>
+                  </div>
+                  <div className="profile-achievement-points">+{achievement.points}</div>
+                </article>
+              ))}
+            </div>
           </div>
         ) : (
           <p style={{ color: 'var(--muted)', fontSize: '13px', padding: '24px 0' }}>Carregando histórico do detetive...</p>

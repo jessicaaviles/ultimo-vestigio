@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Mic, Square, Volume2 } from 'lucide-react';
+import { Award, BadgeCheck, Mic, Square, Star, Trophy, TrendingUp, Volume2 } from 'lucide-react';
 import { useSocket } from '../contexts/useSocket';
 import Loading from '../components/Loading';
 import FinalTheoryForm from '../components/FinalTheoryForm';
@@ -338,6 +338,18 @@ const Game: React.FC = () => {
     borderRadius: '12px',
     padding: '16px'
   };
+  const playerResults = (gameResult?.evaluations || []).map((ev: any) => {
+    const author = players.find((p: any) => p.id === ev.playerId);
+    const score = Math.round(Number(ev.score) || 0);
+    return {
+      ...ev,
+      authorName: author?.display_name || 'Investigador',
+      score,
+      xp: Math.max(25, Math.round(score * 2)),
+      badge: score >= 90 ? 'Mestre da dedução' : score >= 70 ? 'Boa leitura' : 'Em evolução',
+    };
+  });
+  const teamXp = gameResult ? Math.max(50, Math.round((Number(gameResult.groupScore) || 0) * 2.5)) : 0;
 
   return (
     <div className="immersive-page is-fixed-height" style={{
@@ -579,8 +591,11 @@ const Game: React.FC = () => {
           )}
 
           {status === 'GAME_OVER' && gameResult && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'center', paddingTop: '40px' }}>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '36px', color: 'var(--accent-gold)', margin: 0 }}>Caso Encerrado</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'center', paddingTop: '28px' }}>
+              <div>
+                <div style={{ ...labelStyle, color: 'var(--eyebrow-gold)' }}>Fim da investigação</div>
+                <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '40px', color: '#fff', margin: 0, lineHeight: 1.05 }}>Caso Encerrado</h2>
+              </div>
               
               {trueSolution && (
                 <div style={{ ...cardStyle, textAlign: 'left', borderColor: 'rgba(132,147,107,0.5)', background: 'rgba(132,147,107,0.12)' }}>
@@ -595,16 +610,47 @@ const Game: React.FC = () => {
                   {Math.round(gameResult.groupScore)}<span style={{ fontSize: '28px', color: 'rgba(255,255,255,0.5)' }}>%</span>
                 </div>
               </div>
+
+              <div className="game-rewards-grid" aria-label="Recompensas da investigação">
+                <div className="game-reward-card">
+                  <TrendingUp size={20} />
+                  <strong>+{teamXp}</strong>
+                  <span>XP estimado</span>
+                </div>
+                <div className="game-reward-card">
+                  <Award size={20} />
+                  <strong>+1</strong>
+                  <span>caso concluído</span>
+                </div>
+                <div className="game-reward-card">
+                  <Trophy size={20} />
+                  <strong>{Math.round(gameResult.groupScore) >= 80 ? '+1' : '0'}</strong>
+                  <span>desempenho alto</span>
+                </div>
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', textAlign: 'left' }}>
-                {gameResult.evaluations.map((ev: any, idx: number) => {
-                  const author = players.find((p: any) => p.id === ev.playerId);
+                <div style={{ ...labelStyle, marginBottom: 0 }}>Resultados por investigador</div>
+                {playerResults.map((ev: any, idx: number) => {
                   return (
-                    <div key={idx} style={{ ...cardStyle, borderLeft: '3px solid rgba(132,147,107,0.5)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                        <div style={{ fontWeight: 700, fontSize: '16px' }}>{author?.display_name}</div>
-                        <div style={{ color: 'var(--accent-gold)', fontWeight: 700, fontSize: '18px' }}>{ev.score}%</div>
+                    <div key={idx} className="game-player-result">
+                      <div className="game-player-result-medal" aria-hidden="true">
+                        <BadgeCheck size={21} />
                       </div>
-                      <div style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.6)', fontSize: '13px', lineHeight: 1.5 }}>"{ev.feedback}"</div>
+                      <div className="game-player-result-main">
+                        <div className="game-player-result-header">
+                          <div>
+                            <strong>{ev.authorName}</strong>
+                            <span>{ev.badge}</span>
+                          </div>
+                          <div className="game-player-result-score">{ev.score}%</div>
+                        </div>
+                        <div className="game-player-result-stats">
+                          <span><Star size={13} /> +{ev.xp} XP estimado</span>
+                          <span><Award size={13} /> {ev.score >= 70 ? 'Boa dedução' : 'Em análise'}</span>
+                        </div>
+                        <p>"{ev.feedback}"</p>
+                      </div>
                     </div>
                   );
                 })}
