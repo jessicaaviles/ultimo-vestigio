@@ -59,7 +59,9 @@ const Home: React.FC = () => {
       title: item.title,
       subtitle: item.case_type || 'Investigação',
       level: item.difficulty || 'Não informada',
-      image: item.cover_image_data || fallbackImages[item.slug] || '/backgrounds/mapa-da-investigacao.png',
+      image: item.slug === 'blackwell'
+        ? fallbackImages.blackwell
+        : item.cover_image_data || fallbackImages[item.slug] || '/backgrounds/mapa-da-investigacao.png',
       description: item.short_synopsis || item.synopsis || 'Sinopse não disponível.',
       slug: item.slug,
       duration: item.estimated_duration_minutes ? `${item.estimated_duration_minutes} min` : 'Não informada',
