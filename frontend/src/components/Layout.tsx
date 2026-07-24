@@ -207,7 +207,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return () => window.removeEventListener('clue_discovered_notification', handleNotification);
   }, []);
 
-  const isImmersive = ['/map', '/scene', '/board', '/case-files', '/evidence'].some(p => location.pathname.includes(p));
+  const isImmersive = location.pathname === '/' || ['/map', '/scene', '/board', '/case-files', '/evidence'].some(p => location.pathname.includes(p));
 
   return <div className="app-shell">
     <header className="topbar" style={{
