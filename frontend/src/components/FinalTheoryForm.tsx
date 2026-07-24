@@ -41,7 +41,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
         <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: 1.6, margin: '0 0 24px' }}>Sua teoria final foi assinada e arquivada. O destino dos envolvidos agora depende dos seus colegas.</p>
         <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', display: 'inline-block' }}>
           <div style={{ color: '#C5A880', fontSize: '14px', fontWeight: 600 }}>{theories.length} de {players.length} investigadores</div>
-          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginTop: '4px' }}>já enviaram seus relatórios.</div>
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginTop: '4px' }}>já enviaram seus relatórios.</div>
         </div>
       </div>
     );
@@ -68,7 +68,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <PenTool size={14} /> 1. O que aconteceu?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>Descreva a natureza do crime (ex: homicídio, encenação de morte, roubo).</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Descreva a natureza do crime (ex: homicídio, encenação de morte, roubo).</p>
           <textarea 
             required rows={2} value={what} onChange={e => setWhat(e.target.value)} 
             placeholder="Qual é o evento principal que estamos investigando?"
@@ -81,7 +81,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Skull size={14} /> 2. Quem é o culpado?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>Indique os nomes dos responsáveis diretos e de possíveis cúmplices.</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Indique os nomes dos responsáveis diretos e de possíveis cúmplices.</p>
           <input 
             required type="text" value={who} onChange={e => setWho(e.target.value)} 
             placeholder="Nome do(s) perpetrador(es)"
@@ -94,7 +94,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Target size={14} /> 3. Como o plano foi executado?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>Explique os métodos, ferramentas e a cronologia básica do evento.</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Explique os métodos, ferramentas e a cronologia básica do evento.</p>
           <textarea 
             required rows={3} value={how} onChange={e => setHow(e.target.value)} 
             placeholder="Qual foi o modus operandi?"
@@ -107,7 +107,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <AlertTriangle size={14} /> 4. Por que eles fizeram isso?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>Descreva a motivação (dinheiro, vingança, ocultar um segredo).</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Descreva a motivação (dinheiro, vingança, ocultar um segredo).</p>
           <textarea 
             required rows={3} value={why} onChange={e => setWhy(e.target.value)} 
             placeholder="Qual era o motivo?"

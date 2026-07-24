@@ -345,7 +345,7 @@ const Profile: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 600, color: achievement.unlocked ? '#fff' : 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>{achievement.title}</div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.4 }}>{achievement.desc}</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{achievement.desc}</div>
                 </div>
               </div>
             ))}

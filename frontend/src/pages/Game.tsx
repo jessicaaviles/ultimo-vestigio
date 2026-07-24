@@ -488,11 +488,11 @@ const Game: React.FC = () => {
                   <div className="answer-row" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', lineHeight: 1.6, display: 'flex', alignItems: 'flex-start' }}>
                     <span style={{ color: 'var(--accent-gold)', fontWeight: 700, marginRight: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', flexShrink: 0 }}>Mestre:</span>
                     <span className="answer-text">{item.answer?.rendered_text || item.responseText}</span>
-                    <button onClick={() => speakAnswer(item.answer?.rendered_text || item.responseText)} style={{ flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '6px', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', fontSize: '14px' }} title="Ouvir resposta"><Volume2 size={14} /></button>
+                    <button onClick={() => speakAnswer(item.answer?.rendered_text || item.responseText)} style={{ flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '6px', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', fontSize: '14px' }} title="Ouvir resposta"><Volume2 size={14} /></button>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <button onClick={() => requestClarification(item.question?.id)} disabled={!item.question?.id || item.clarification} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Esclarecer</button>
-                    <button onClick={() => contestAnswer(item.question?.id)} disabled={!item.question?.id || item.contestation} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Contestar</button>
+                    <button onClick={() => requestClarification(item.question?.id)} disabled={!item.question?.id || item.clarification} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Esclarecer</button>
+                    <button onClick={() => contestAnswer(item.question?.id)} disabled={!item.question?.id || item.contestation} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Contestar</button>
                   </div>
                   {item.clarification && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Esclarecimento: {item.clarification}</div>}
                   {item.contestation && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Revisão: {item.contestation}</div>}
@@ -508,14 +508,14 @@ const Game: React.FC = () => {
                       <span key={i} style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent-gold)', display: 'inline-block', animation: `pulse-dot 1.2s ease-in-out ${i * 0.2}s infinite` }} />
                     ))}
                   </span>
-                  <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontStyle: 'italic' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontStyle: 'italic' }}>
                     {players.find((p: any) => p.anonymous_user_id === typingPlayer)?.display_name || 'Alguém'} está digitando...
                   </span>
                 </div>
               )}
 
               {!history.length && !loading && !processingUser && (
-                <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px', textAlign: 'center', fontStyle: 'italic', marginTop: '60px' }}>Faça sua primeira pergunta para iniciar a investigação.</p>
+                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', textAlign: 'center', fontStyle: 'italic', marginTop: '60px' }}>Faça sua primeira pergunta para iniciar a investigação.</p>
               )}
               {(loading || processingUser) && (
                 <div style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.5)', display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
@@ -530,7 +530,7 @@ const Game: React.FC = () => {
                       }} />
                     ))}
                   </span>
-                  <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', fontStyle: 'italic' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', fontStyle: 'italic' }}>
                     {processingUser && processingUser !== userId 
                       ? `${players.find((p: any) => p.anonymous_user_id === processingUser)?.display_name || 'Alguém'} fez uma pergunta e o mestre está processando...` 
                       : 'consultando os arquivos...'}
@@ -720,7 +720,7 @@ const Game: React.FC = () => {
                       </div>
                       {hints.map((hint) => (
                         <div key={hint.hintIndex} style={{ ...cardStyle, borderColor: 'rgba(132,147,107,0.4)', background: 'rgba(132,147,107,0.08)', padding: '12px' }}>
-                          <div style={{ ...labelStyle, color: '#84936b', marginBottom: '8px', fontSize: '11px' }}>Pista {hint.hintIndex}</div>
+                          <div style={{ ...labelStyle, color: 'var(--olive-light)', marginBottom: '8px', fontSize: '11px' }}>Pista {hint.hintIndex}</div>
                           <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.9)', lineHeight: 1.5 }}>{hint.content}</p>
                           <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '8px', textAlign: 'right', fontStyle: 'italic' }}>−{hint.penalty} pontos</div>
                         </div>
