@@ -876,10 +876,18 @@ img.fill, .img-fill, .fill-width {
 /* Featured Cases Carousel */
 .featured-carousel {
   display: flex;
-  gap: 20px;
   overflow-x: auto;
   padding-bottom: 20px;
   scroll-snap-type: x mandatory;
+  margin-left: -24px;
+  margin-right: -24px;
+  width: calc(100% + 48px);
+  scroll-padding: 0 24px;
+}
+.featured-carousel::before,
+.featured-carousel::after {
+  content: '';
+  flex: 0 0 24px;
 }
 .featured-carousel::-webkit-scrollbar {
   height: 6px;
@@ -906,6 +914,9 @@ img.fill, .img-fill, .fill-width {
   flex-direction: column;
   transition: all 0.3s ease;
   cursor: pointer;
+}
+.featured-card + .featured-card {
+  margin-left: 20px;
 }
 .featured-card:hover {
   border-color: rgba(197, 168, 128, 0.4);
