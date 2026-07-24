@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowRight, Users, Play, Target, Clock, ArrowUpRight
+  ArrowRight, Target, ArrowUpRight
 } from 'lucide-react';
 import { registerAnonymousUser, listCases, getProfile } from '../services/api';
 import Loading from '../components/Loading';
