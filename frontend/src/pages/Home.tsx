@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowRight, Target, ArrowUpRight
+  ArrowRight, Target, ArrowUpRight, Clock3, Users
 } from 'lucide-react';
 import { registerAnonymousUser, listCases, getProfile } from '../services/api';
 import Loading from '../components/Loading';
@@ -23,12 +23,45 @@ interface FeaturedCase {
   players: string;
 }
 
+const defaultCases: FeaturedCase[] = [
+  {
+    title: 'O Segredo de Blackwell House',
+    subtitle: 'Mansão Blackwell · Exploração imersiva',
+    level: 'Médio',
+    image: '/capa_blackwell_house.png',
+    description: 'Clara Mendes desapareceu. Entre na mansão, conecte as pistas e descubra quem está mentindo.',
+    slug: 'blackwell',
+    duration: '30 min',
+    players: '1-6 jogadores'
+  },
+  {
+    title: 'O Quarto 7',
+    subtitle: 'Hotel Vesper · Mistério clássico',
+    level: 'Fácil',
+    image: '/capa_quarto_7.png',
+    description: 'Uma chave, uma câmera e a última noite de Helena Duarte.',
+    slug: 'o-quarto-7',
+    duration: '45 min',
+    players: '1-4 jogadores'
+  },
+  {
+    title: 'O Presente Desaparecido',
+    subtitle: 'Arquivo municipal · Linha do tempo',
+    level: 'Médio',
+    image: '/backgrounds/cena-do-crime.png',
+    description: 'Durante uma comemoração, um presente desaparece sem deixar rastros.',
+    slug: 'o-presente-desaparecido',
+    duration: '30 min',
+    players: '2-6 jogadores'
+  }
+];
+
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [registering, setRegistering] = useState(false);
   const [displayName, setDisplayName] = useState<string>('Investigador');
   const [solvedCount, setSolvedCount] = useState<number>(0);
-  const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>([]);
+  const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>(defaultCases);
   
   const activeRoomId = localStorage.getItem('currentRoomId');
   const hasActiveCase = !!activeRoomId;
@@ -94,12 +127,7 @@ const Home: React.FC = () => {
           setFeaturedCases(mapped);
         }
       })
-      .catch(() => {
-        setFeaturedCases([
-          { title: 'O Quarto 7', subtitle: 'Hotel Vesper · Mistério Clássico', level: 'Fácil', image: '/capa_quarto_7.png', description: 'Uma chave, uma câmera e a última noite de Helena Duarte.', slug: 'o-quarto-7', duration: '45 min', players: '1-4 Jogadores' },
-          { title: 'O Presente Desaparecido', subtitle: 'Arquivo · Linha do Tempo', level: 'Médio', image: '/backgrounds/cena-do-crime.png', description: 'Durante uma comemoração, um presente desaparece misteriosamente.', slug: 'o-presente-desaparecido', duration: '30 min', players: '2-6 Jogadores' }
-        ]);
-      });
+      .catch(() => undefined);
   }, []);
 
   const getInvestigatorRank = (count: number) => {
@@ -125,7 +153,7 @@ const Home: React.FC = () => {
         {/* Cabeçalho do Perfil */}
         <header className="home-profile-header">
           <div className="avatar-container" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-            <img src="/helena_portrait.png" alt="Avatar" className="avatar-img" onError={(e) => { e.currentTarget.src = 'https://ui-avatars.com/api/?name=' + displayName + '&background=1f2a30&color=d1bb86'; }} />
+            <img src="/backgrounds/helena_portrait.png" alt="" className="avatar-img" />
             <div className="level-badge">{solvedCount * 2 + 1}</div>
           </div>
           <div className="profile-info">
@@ -147,11 +175,16 @@ const Home: React.FC = () => {
             alt="Último Vestígio"
             className="home-hero-brand"
           />
-          <span className="hero-tag">CASO ATIVO</span>
+          <span className="hero-tag">{hasActiveCase ? 'CASO ATIVO' : 'CASO EM DESTAQUE'}</span>
           <h2 className="home-hero-title">O Segredo de Blackwell House</h2>
           <p className="home-hero-subtitle">
             Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell. Analise todas as evidências e encontre a verdade.
           </p>
+          <div className="home-hero-details" aria-label="Detalhes do caso">
+            <span><Clock3 size={15} /> Cerca de 30 min</span>
+            <span><Users size={15} /> 1 a 6 investigadores</span>
+            <span className="home-hero-difficulty">Dificuldade média</span>
+          </div>
           <button 
             className="btn-pill"
             onClick={() => navigate(hasActiveCase ? `/room/${activeRoomId}/game` : '/cases')}
@@ -164,24 +197,24 @@ const Home: React.FC = () => {
         </section>
 
         {/* Estatísticas do Jogador */}
-        <section>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 className="section-title" style={{ margin: 0 }}>Estatísticas Oficiais</h3>
+        <section className="home-section">
+          <div className="home-section-heading">
+            <h3 className="section-title">Seu histórico na agência</h3>
           </div>
           
           {solvedCount === 0 ? (
-            <div className="home-stat-box" style={{ marginBottom: '40px', padding: '30px 20px', flexDirection: 'row', gap: '20px', textAlign: 'left', alignItems: 'center' }}>
-              <div style={{ background: 'rgba(197, 168, 128, 0.1)', padding: '16px', borderRadius: '50%', color: 'var(--gold-soft)' }}>
+            <div className="home-empty-stats">
+              <div className="home-empty-stats-icon">
                 <Target size={32} />
               </div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{ color: 'var(--paper)', fontSize: '18px', fontFamily: 'var(--font-serif)', margin: '0 0 8px 0' }}>Seu registro está limpo</h4>
-                <p style={{ color: 'var(--muted)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
-                  Você acaba de ser admitido na agência. Complete casos para subir de patente e registrar suas estatísticas forenses aqui.
+              <div className="home-empty-stats-copy">
+                <h4>Seu primeiro caso espera por você</h4>
+                <p>
+                  Conclua uma investigação para registrar sua precisão, tempo em campo e subir de patente na agência.
                 </p>
               </div>
-              <button className="btn-secondary" onClick={() => navigate('/cases')} style={{ borderRadius: '8px', minHeight: '40px', padding: '0 16px', fontSize: '12px' }}>
-                Começar
+              <button className="btn-secondary home-empty-stats-action" onClick={() => navigate('/cases')}>
+                Escolher caso
               </button>
             </div>
           ) : (
@@ -207,25 +240,24 @@ const Home: React.FC = () => {
         </section>
 
         {/* Investigações em Destaque (Carrossel) */}
-        <section>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
+        <section className="home-section home-featured-section">
+          <div className="home-featured-heading">
             <div>
-              <span className="mission-label" style={{ marginBottom: '4px' }}>Arquivo Municipal</span>
-              <h2 style={{ fontSize: '24px', fontFamily: 'var(--font-serif)', color: 'var(--paper)', margin: 0 }}>
-                Investigações em destaque
-              </h2>
+              <span className="mission-label">Arquivo municipal</span>
+              <h2>Escolha sua próxima investigação</h2>
+              <p>Casos com diferentes ritmos, cenários e níveis de desafio.</p>
             </div>
             <button 
+              className="home-view-all"
               onClick={() => navigate('/cases')}
-              style={{ background: 'transparent', border: 'none', color: 'var(--gold-soft)', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', textTransform: 'uppercase' }}
             >
-              Ver Todas <ArrowUpRight size={14} />
+              Ver todos <ArrowUpRight size={15} />
             </button>
           </div>
 
           <div className="featured-carousel">
             {featuredCases.map((item, index) => (
-              <div key={item.slug} className="featured-card" onClick={() => navigate('/cases')}>
+              <button key={item.slug} className="featured-card" onClick={() => navigate('/cases')} aria-label={`Abrir caso ${item.title}`}>
                 <div className="featured-card-image" style={{ backgroundImage: `url("${item.image}")` }}>
                   <div className="featured-card-overlay">
                     <span className="featured-card-number">0{index + 1}</span>
@@ -238,8 +270,15 @@ const Home: React.FC = () => {
                   <h3 className="featured-card-title">{item.title}</h3>
                   <span className="featured-card-subtitle">{item.subtitle}</span>
                   <p className="featured-card-desc">{item.description}</p>
+                  <div className="featured-card-meta">
+                    <span><Clock3 size={14} /> {item.duration}</span>
+                    <span><Users size={14} /> {item.players}</span>
+                  </div>
+                  <span className="featured-card-action">
+                    Ver dossiê <ArrowRight size={15} />
+                  </span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </section>
