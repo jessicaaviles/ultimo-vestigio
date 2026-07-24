@@ -1093,6 +1093,9 @@ img.fill, .img-fill, .fill-width {
 .home-section {
   margin-bottom: 48px;
 }
+.home-featured-section {
+  padding-bottom: 24px;
+}
 .home-section-heading {
   display: flex;
   align-items: center;
