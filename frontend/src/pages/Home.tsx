@@ -142,6 +142,11 @@ const Home: React.FC = () => {
 
         {/* Hero: Caso Fixo */}
         <section className="home-hero-section">
+          <img
+            src="/logo-sfundo.png"
+            alt="Último Vestígio"
+            className="home-hero-brand"
+          />
           <span className="hero-tag">CASO ATIVO</span>
           <h2 className="home-hero-title">O Segredo de Blackwell House</h2>
           <p className="home-hero-subtitle">

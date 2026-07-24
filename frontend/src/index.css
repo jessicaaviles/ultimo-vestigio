@@ -468,6 +468,15 @@ img.fill, .img-fill, .fill-width {
 .home-hero-section {
   margin-bottom: 40px;
 }
+.home-hero-brand {
+  display: block;
+  width: min(360px, 78vw);
+  max-height: 150px;
+  object-fit: contain;
+  object-position: left center;
+  margin: 0 0 14px -8px;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,0.55));
+}
 .hero-tag {
   color: var(--gold-soft);
   font-size: 11px;
