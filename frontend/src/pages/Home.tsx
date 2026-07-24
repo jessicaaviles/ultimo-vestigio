@@ -62,6 +62,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const [registering, setRegistering] = useState(false);
   const [displayName, setDisplayName] = useState<string>('Investigador');
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [identityKind, setIdentityKind] = useState<IdentityKind>('guest');
   const [solvedCount, setSolvedCount] = useState<number>(0);
   const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>(defaultCases);
@@ -77,6 +78,7 @@ const Home: React.FC = () => {
 
     const applyProfile = (profile: any, kind: IdentityKind) => {
       const profileName = profile?.displayName;
+      setProfilePhoto(profile?.photo || null);
       if (profileName) {
         setDisplayName(profileName);
         localStorage.setItem('userName', profileName);
@@ -113,6 +115,7 @@ const Home: React.FC = () => {
     }
 
     setDisplayName('Investigador');
+    setProfilePhoto(null);
     setIdentityKind('guest');
     localStorage.removeItem('userName');
 
@@ -191,7 +194,15 @@ const Home: React.FC = () => {
         {/* Cabeçalho do Perfil */}
         <header className="home-profile-header">
           <div className="avatar-container" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-            <img src="/backgrounds/helena_portrait.png" alt="" className="avatar-img" />
+            <img
+              src={profilePhoto || '/backgrounds/helena_portrait.png'}
+              alt={`Retrato de ${displayName}`}
+              className="avatar-img"
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = '/backgrounds/helena_portrait.png';
+              }}
+            />
             <div className="level-badge">{solvedCount * 2 + 1}</div>
           </div>
           <div className="profile-info">
