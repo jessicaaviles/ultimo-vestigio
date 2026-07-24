@@ -93,6 +93,7 @@ const Profile: React.FC = () => {
     if (authToken) await authLogout(authToken);
     localStorage.removeItem('authToken');
     localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
     setAuthToken(null);
     setProfile(null);
     setStatus('Você saiu da sua conta.');

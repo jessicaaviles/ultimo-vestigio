@@ -23,6 +23,8 @@ interface FeaturedCase {
   players: string;
 }
 
+type IdentityKind = 'guest' | 'local' | 'account';
+
 const defaultCases: FeaturedCase[] = [
   {
     title: 'O Segredo de Blackwell House',
@@ -60,6 +62,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const [registering, setRegistering] = useState(false);
   const [displayName, setDisplayName] = useState<string>('Investigador');
+  const [identityKind, setIdentityKind] = useState<IdentityKind>('guest');
   const [solvedCount, setSolvedCount] = useState<number>(0);
   const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>(defaultCases);
   
@@ -67,15 +70,53 @@ const Home: React.FC = () => {
   const hasActiveCase = !!activeRoomId;
 
   useEffect(() => {
-    const token = localStorage.getItem('deviceToken');
+    const authToken = localStorage.getItem('authToken');
+    const deviceToken = localStorage.getItem('deviceToken');
     const userId = localStorage.getItem('userId');
     const savedName = localStorage.getItem('userName');
-    
-    if (savedName) {
-      setDisplayName(savedName);
+
+    const applyProfile = (profile: any, kind: IdentityKind) => {
+      const profileName = profile?.displayName;
+      if (profileName) {
+        setDisplayName(profileName);
+        localStorage.setItem('userName', profileName);
+      } else {
+        setDisplayName('Investigador');
+      }
+      setIdentityKind(kind);
+    };
+
+    if (authToken && userId) {
+      setIdentityKind('account');
+      if (savedName) setDisplayName(savedName);
+      getProfile(userId)
+        .then((res) => {
+          if (res.success) applyProfile(res.data, 'account');
+        })
+        .catch(() => undefined);
+      return;
     }
 
-    if (!token || !userId) {
+    if (deviceToken && userId) {
+      if (savedName) {
+        setDisplayName(savedName);
+        setIdentityKind('local');
+      }
+      getProfile(userId)
+        .then((res) => {
+          if (!res.success) return;
+          const hasLocalProfile = Boolean(res.data?.hasProfile);
+          applyProfile(res.data, hasLocalProfile ? 'local' : 'guest');
+        })
+        .catch(() => undefined);
+      return;
+    }
+
+    setDisplayName('Investigador');
+    setIdentityKind('guest');
+    localStorage.removeItem('userName');
+
+    if (!deviceToken || !userId) {
       setRegistering(true);
       registerAnonymousUser()
         .then((res) => {
@@ -84,21 +125,13 @@ const Home: React.FC = () => {
             localStorage.setItem('userId', res.data.userId);
             if (res.data.displayName) {
               setDisplayName(res.data.displayName);
+              setIdentityKind('local');
               localStorage.setItem('userName', res.data.displayName);
             }
           }
         })
         .catch(() => undefined)
         .finally(() => setRegistering(false));
-    } else {
-      getProfile(userId)
-        .then((res) => {
-          if (res.success && res.data?.display_name) {
-            setDisplayName(res.data.display_name);
-            localStorage.setItem('userName', res.data.display_name);
-          }
-        })
-        .catch(() => undefined);
     }
   }, []);
 
@@ -138,6 +171,11 @@ const Home: React.FC = () => {
   };
 
   const rank = getInvestigatorRank(solvedCount);
+  const identityLabel = {
+    guest: 'Visitante',
+    local: 'Perfil local neste dispositivo',
+    account: 'Conta sincronizada'
+  }[identityKind];
 
   return (
     <div className="home-immersive-container">
@@ -159,6 +197,7 @@ const Home: React.FC = () => {
           <div className="profile-info">
             <h1 className="profile-name">{displayName}</h1>
             <span className="profile-role">{rank}</span>
+            <span className={`profile-session profile-session--${identityKind}`}>{identityLabel}</span>
           </div>
         </header>
 

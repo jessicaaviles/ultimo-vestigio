@@ -463,6 +463,33 @@ img.fill, .img-fill, .fill-width {
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+.profile-session {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  color: rgba(242,238,229,.58);
+  font-size: 9px;
+  letter-spacing: .5px;
+}
+.profile-session::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: rgba(242,238,229,.35);
+}
+.profile-session--local::before {
+  background: var(--gold-soft);
+}
+.profile-session--account {
+  color: rgba(242,238,229,.72);
+}
+.profile-session--account::before {
+  background: #78a889;
+  box-shadow: 0 0 8px rgba(120,168,137,.55);
+}
 
 /* Hero Section */
 .home-hero-section {

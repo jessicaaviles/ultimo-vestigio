@@ -76,9 +76,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => { resolveUser(); }, [resolveUser]);
 
   const logout = useCallback(async () => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('authToken');
     if (token) await authLogout(token).catch(() => {});
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
     setUser(null);
   }, []);
 
