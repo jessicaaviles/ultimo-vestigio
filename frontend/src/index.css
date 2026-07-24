@@ -971,6 +971,7 @@ img.fill, .img-fill, .fill-width {
   background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 40%, rgba(0,0,0,0.8) 100%);
   padding: 16px;
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
 }
 .featured-card-number {
@@ -978,6 +979,23 @@ img.fill, .img-fill, .fill-width {
   color: var(--paper);
   font-weight: 600;
   letter-spacing: 1px;
+}
+.featured-card-tag {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  height: fit-content;
+  min-height: 0;
+  padding: 3px 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  background: rgba(0,0,0,0.5);
+  color: var(--paper);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 .featured-card-content {
   padding: 20px;

@@ -218,7 +218,7 @@ const Home: React.FC = () => {
         <section className="home-section home-featured-section">
           <div className="home-featured-heading">
             <div>
-              <span className="mission-label">Arquivo municipal</span>
+              <span className="mission-label">Casos disponíveis</span>
               <h2>Escolha sua próxima investigação</h2>
               <p>Casos com diferentes ritmos, cenários e níveis de desafio.</p>
             </div>
@@ -250,7 +250,7 @@ const Home: React.FC = () => {
                   <div className="featured-card-image" style={{ backgroundImage: `url("${item.image}")` }}>
                     <div className="featured-card-overlay">
                       <span className="featured-card-number">0{index + 1}</span>
-                      <span className="badge-difficulty badge-easy" style={{ background: 'rgba(0,0,0,0.5)', color: 'var(--paper)', border: '1px solid rgba(255,255,255,0.2)' }}>
+                      <span className="featured-card-tag">
                         {item.level}
                       </span>
                     </div>
