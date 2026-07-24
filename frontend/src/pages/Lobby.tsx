@@ -120,7 +120,7 @@ const Lobby: React.FC = () => {
 
         {/* Cabeçalho */}
         <div>
-          <span style={{ display: 'block', color: 'var(--gold-soft)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
+          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
             Sala de Briefing
           </span>
           <h2 style={{ fontSize: '28px', marginBottom: '4px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>
@@ -138,7 +138,7 @@ const Lobby: React.FC = () => {
             border: '1px solid rgba(184,153,83,.3)',
             backdropFilter: 'blur(10px)'
           }}>
-            <div style={{ fontSize: '9px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '4px' }}>Código da sala</div>
+            <div style={{ fontSize: '9px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '4px' }}>Código da sala</div>
             <div style={{ fontFamily: 'var(--font-sans)', fontSize: '20px', fontWeight: 700, letterSpacing: '6px', color: 'var(--gold-soft)' }}>
               {roomData.public_code}
             </div>
@@ -165,7 +165,7 @@ const Lobby: React.FC = () => {
 
         {/* Equipe */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          <div style={{ fontSize: '9px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>
+          <div style={{ fontSize: '9px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>
             Equipe ({players.length}/{roomData.max_players})
           </div>
           <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, minHeight: 0 }}>

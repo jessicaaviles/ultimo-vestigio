@@ -30,14 +30,14 @@ const RecoveryCode: React.FC = () => {
 
         {/* Cabeçalho */}
         <div>
-          <span style={{ display: 'block', color: 'var(--gold-soft)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>Apenas para o anfitrião</span>
+          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>Apenas para o anfitrião</span>
           <h2 style={{ fontSize: '30px', marginBottom: '6px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>Código de recuperação</h2>
           <p style={{ color: '#8E989F', fontSize: '13px', maxWidth: '85%', fontWeight: 300 }}>Guarde este código. Ele permite recuperar o controle da sala. Não compartilhe.</p>
         </div>
 
         {/* Código de recuperação */}
         <div>
-          <label style={{ display: 'block', marginBottom: '10px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '10px', fontWeight: 600 }}>Código de recuperação</label>
+          <label style={{ display: 'block', marginBottom: '10px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '10px', fontWeight: 600 }}>Código de recuperação</label>
           <div style={{
             width: '100%', padding: '14px', borderRadius: '8px',
             fontSize: '22px', letterSpacing: '8px', textAlign: 'center',
@@ -52,7 +52,7 @@ const RecoveryCode: React.FC = () => {
 
         {/* Convite da equipe */}
         <div>
-          <label style={{ display: 'block', marginBottom: '10px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '10px', fontWeight: 600 }}>Convite da equipe</label>
+          <label style={{ display: 'block', marginBottom: '10px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '10px', fontWeight: 600 }}>Convite da equipe</label>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
             padding: '14px 16px', borderRadius: '8px',

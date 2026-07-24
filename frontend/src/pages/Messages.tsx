@@ -153,7 +153,7 @@ const Messages: React.FC = () => {
       {!activeChat ? (
         <div style={{ padding: 0, display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <header>
-            <span style={{ color: '#C5A880', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
+            <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
               CANAL SEGURO
             </span>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '4px 0 8px 0' }}>
@@ -218,7 +218,7 @@ const Messages: React.FC = () => {
                     <h3 style={{ fontSize: '15px', fontWeight: 500, margin: 0 }}>{chat.name}</h3>
                     <span style={{ fontSize: '10px', color: '#8E989F' }}>{chat.time}</span>
                   </div>
-                  <div style={{ fontSize: '11px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
                     {chat.role}
                   </div>
                   <p style={{
@@ -265,7 +265,7 @@ const Messages: React.FC = () => {
             </button>
             <div>
               <h3 style={{ fontSize: '16px', fontWeight: 500, margin: 0 }}>{activeChat.name}</h3>
-              <span style={{ fontSize: '11px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <span style={{ fontSize: '11px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 {activeChat.role}
               </span>
             </div>

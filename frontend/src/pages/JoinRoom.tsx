@@ -84,7 +84,7 @@ const JoinRoom: React.FC = () => {
         <form onSubmit={handleJoin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {error && <div role="alert" style={{ color: '#d79b8e', border: '1px solid rgba(215,155,142,.4)', padding: '12px', borderRadius: '8px' }}>{error}</div>}
           <div>
-            <label style={{ display: 'block', marginBottom: '10px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '10px', fontWeight: 600 }}>
+            <label style={{ display: 'block', marginBottom: '10px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '10px', fontWeight: 600 }}>
               Código de Acesso
             </label>
             <input 
@@ -112,7 +112,7 @@ const JoinRoom: React.FC = () => {
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '10px', color: '#C5A880', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '10px', fontWeight: 600 }}>
+            <label style={{ display: 'block', marginBottom: '10px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '10px', fontWeight: 600 }}>
               Identificação (Nome)
             </label>
             <input 

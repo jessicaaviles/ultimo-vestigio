@@ -123,13 +123,13 @@ const SceneExplorer: React.FC = () => {
         {/* Informações Superiores e Minimapa */}
         <div style={{ display: 'flex', padding: '0 24px', marginTop: '100px', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>{scene.subtitle}</span>
+            <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, display: 'block', marginBottom: '8px' }}>{scene.subtitle}</span>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '0 0 8px 0', color: '#F8F9FA', fontWeight: 400 }}>{scene.title}</h1>
             <p style={{ color: '#8E989F', fontSize: '13px', margin: '0 0 24px 0', maxWidth: '200px', lineHeight: 1.4 }}>
               Explore a cena. Cada detalhe pode ser uma pista.
             </p>
             
-            <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '4px' }}>Pistas Encontradas</div>
+            <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '4px' }}>Pistas Encontradas</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
               <span style={{ color: '#F8F9FA', fontSize: '24px', fontWeight: 400 }}>{foundClues.length}</span>
               <span style={{ color: '#8E989F', fontSize: '14px' }}>/ {totalClues}</span>
@@ -196,7 +196,7 @@ const SceneExplorer: React.FC = () => {
               <Brain size={20} />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '6px' }}>Dica da IA</div>
+              <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '6px' }}>Dica da IA</div>
               <p style={{ color: '#F8F9FA', fontSize: '13px', margin: '0 0 8px 0', lineHeight: 1.5 }}>
                 Análise comportamental: As pistas (Carta e Chave) estão posicionadas de forma quase teatral, sugerindo uma cena montada.
               </p>

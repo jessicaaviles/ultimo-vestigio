@@ -312,7 +312,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
               {!roomId ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 600, color: '#C5A880', textTransform: 'uppercase', letterSpacing: '1px' }}>Investigar em Grupo</div>
+                  <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '1px' }}>Investigar em Grupo</div>
                   <p style={{ fontSize: '11px', color: '#8E989F', margin: 0, lineHeight: 1.4 }}>
                     Crie uma sala ou digite o código de acesso para sincronizar pistas e discutir o caso com seus parceiros.
                   </p>
@@ -395,7 +395,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
-                      <div style={{ fontSize: '10px', color: '#8E989F', textTransform: 'uppercase', letterSpacing: '1px' }}>Sua Sala</div>
+                      <div style={{ fontSize: '10px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '1px' }}>Sua Sala</div>
                       <div style={{ fontSize: '16px', fontWeight: 700, color: '#C5A880', letterSpacing: '1px', marginTop: '2px' }}>{roomCode}</div>
                     </div>
                     <button
@@ -420,7 +420,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </div>
 
                   <div style={{ maxHeight: '120px', overflowY: 'auto', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
-                    <div style={{ fontSize: '10px', color: '#8E989F', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Investigadores Conectados ({players.length})</div>
+                    <div style={{ fontSize: '10px', color: 'var(--eyebrow-gold)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Investigadores Conectados ({players.length})</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {players.map((p: any, idx: number) => {
                         const isMe = p.anonymous_user_id === localStorage.getItem('userId');

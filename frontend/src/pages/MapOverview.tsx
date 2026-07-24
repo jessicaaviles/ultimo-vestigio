@@ -53,7 +53,7 @@ const MapOverview: React.FC = () => {
           
           {/* Coluna Esquerda: Título e Texto */}
           <div style={{ flex: 1, paddingRight: '16px' }}>
-            <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Planta Baixa</span>
+            <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Planta Baixa</span>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1, wordWrap: 'break-word' }}>
               Mansão<br/>Blackwell
             </h1>
@@ -90,7 +90,7 @@ const MapOverview: React.FC = () => {
               <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
                 <div style={{ width: `${progressPercent}%`, height: '100%', background: '#C5A880' }} />
               </div>
-              <span style={{ fontSize: '7px', color: '#8E989F', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Pistas</span>
+              <span style={{ fontSize: '7px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Pistas</span>
             </div>
 
           </div>
@@ -196,7 +196,7 @@ const MapOverview: React.FC = () => {
             
             {/* Título e Descrição */}
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <span style={{ color: '#8E989F', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Local em Destaque</span>
+              <span style={{ color: 'var(--eyebrow-gold)', fontSize: '9px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Local em Destaque</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                 <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', margin: 0, color: '#F8F9FA', fontWeight: 400 }}>{selectedLocation.title}</h2>
                 <ChevronRight size={16} color="#8E989F" />

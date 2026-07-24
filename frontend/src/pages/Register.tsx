@@ -108,15 +108,15 @@ const Register: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <label style={{ color: 'var(--gold-soft)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          <label style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Nome de investigador
             <input className="input-field" type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={32} placeholder="Como você quer ser chamado?" required />
           </label>
-          <label style={{ color: 'var(--gold-soft)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          <label style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Email
             <input className="input-field" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
           </label>
-          <label style={{ color: 'var(--gold-soft)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
+          <label style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Senha
             <input className="input-field" type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
           </label>

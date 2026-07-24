@@ -124,7 +124,7 @@ const Cases: React.FC = () => {
     }}>
       {/* Header da Página */}
       <div style={{ marginBottom: '32px' }}>
-        <span style={{ color: '#C5A880', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
+        <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
           ARQUIVO MUNICIPAL
         </span>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '4px 0 8px 0' }}>
@@ -170,7 +170,7 @@ const Cases: React.FC = () => {
                 padding: '4px 10px',
                 borderRadius: '4px',
                 fontSize: '9px',
-                color: '#C5A880',
+                color: 'var(--eyebrow-gold)',
                 fontWeight: 600,
                 letterSpacing: '0.8px',
                 textTransform: 'uppercase'
@@ -277,11 +277,11 @@ const Cases: React.FC = () => {
             {/* Título e Sinopse */}
             <div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ color: '#C5A880', fontSize: '10px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>
+                <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>
                   {selectedCase.type}
                 </span>
                 <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.2)' }}></span>
-                <span style={{ color: '#8E989F', fontSize: '10px', textTransform: 'uppercase' }}>
+                <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase' }}>
                   {selectedCase.difficulty}
                 </span>
                 {solvedCases.includes(selectedCase.slug) && (
@@ -321,19 +321,19 @@ const Cases: React.FC = () => {
               border: '1px solid rgba(255, 255, 255, 0.02)'
             }}>
               <div>
-                <span style={{ fontSize: '9px', color: '#8E989F', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Duração</span>
+                <span style={{ fontSize: '9px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Duração</span>
                 <div style={{ fontSize: '14px', fontWeight: 500, marginTop: '2px' }}>{selectedCase.duration}</div>
               </div>
               <div>
-                <span style={{ fontSize: '9px', color: '#8E989F', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tensão</span>
+                <span style={{ fontSize: '9px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tensão</span>
                 <div style={{ fontSize: '14px', fontWeight: 500, marginTop: '2px' }}>{selectedCase.tension}/5</div>
               </div>
               <div>
-                <span style={{ fontSize: '9px', color: '#8E989F', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Jogadores</span>
+                <span style={{ fontSize: '9px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Jogadores</span>
                 <div style={{ fontSize: '14px', fontWeight: 500, marginTop: '2px' }}>{selectedCase.players}</div>
               </div>
               <div>
-                <span style={{ fontSize: '9px', color: '#8E989F', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Nível Editorial</span>
+                <span style={{ fontSize: '9px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Nível Editorial</span>
                 <div style={{ fontSize: '14px', fontWeight: 500, marginTop: '2px', color: '#C5A880' }}>Premium</div>
               </div>
             </div>

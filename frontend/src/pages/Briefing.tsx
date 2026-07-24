@@ -57,7 +57,7 @@ const Briefing: React.FC = () => {
 
         {/* Cabeçalho */}
         <div>
-          <span style={{ display: 'block', color: 'var(--gold-soft)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
+          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
             Apresentação do caso
           </span>
           <h2 style={{ fontSize: '28px', marginBottom: '6px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>
@@ -75,7 +75,7 @@ const Briefing: React.FC = () => {
           border: '1px solid rgba(255,255,255,0.08)',
           backdropFilter: 'blur(10px)'
         }}>
-          <span style={{ display: 'block', color: 'var(--gold-soft)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
+          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
             Ponto de partida
           </span>
           <p style={{ color: '#8E989F', fontSize: '12px', lineHeight: 1.5, margin: 0 }}>
@@ -86,7 +86,7 @@ const Briefing: React.FC = () => {
         {/* Ordem de investigação */}
         {players.length > 0 && (
           <div>
-            <span style={{ display: 'block', color: 'var(--gold-soft)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '8px' }}>
               Ordem de investigação
             </span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>

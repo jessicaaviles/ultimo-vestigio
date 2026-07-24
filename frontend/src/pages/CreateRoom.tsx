@@ -142,7 +142,7 @@ const CreateRoom: React.FC = () => {
         <p style={{ color: '#8E989F', fontSize: '14px', marginBottom: '32px', maxWidth: '85%', fontWeight: 300 }}>Um novo caso o aguarda. Escolha quem participará desta investigação.</p>
 
         <div style={{ padding: '24px 0', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '32px' }}>
-          <h5 style={{ color: '#C5A880', letterSpacing: '2px', fontSize: '10px', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 600 }}>
+          <h5 style={{ color: 'var(--eyebrow-gold)', letterSpacing: '2px', fontSize: '10px', textTransform: 'uppercase', marginBottom: '8px', fontWeight: 600 }}>
             CASO SELECIONADO
           </h5>
           <h3 style={{ marginBottom: '12px', fontSize: '24px', fontFamily: 'var(--font-serif)', fontWeight: 400 }}>{caseInfo.title}</h3>

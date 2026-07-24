@@ -65,7 +65,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
         
         {/* O Quê */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ color: '#C5A880', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <PenTool size={14} /> 1. O que aconteceu?
           </label>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>Descreva a natureza do crime (ex: homicídio, encenação de morte, roubo).</p>
@@ -78,7 +78,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
 
         {/* Quem */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ color: '#C5A880', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Skull size={14} /> 2. Quem é o culpado?
           </label>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>Indique os nomes dos responsáveis diretos e de possíveis cúmplices.</p>
@@ -91,7 +91,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
 
         {/* Como */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ color: '#C5A880', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Target size={14} /> 3. Como o plano foi executado?
           </label>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>Explique os métodos, ferramentas e a cronologia básica do evento.</p>
@@ -104,7 +104,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
 
         {/* Por quê */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ color: '#C5A880', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <AlertTriangle size={14} /> 4. Por que eles fizeram isso?
           </label>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', margin: '0 0 8px 0' }}>Descreva a motivação (dinheiro, vingança, ocultar um segredo).</p>

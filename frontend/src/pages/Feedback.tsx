@@ -32,7 +32,7 @@ const Feedback: React.FC = () => {
     margin: '0'
   };
 
-  const labelStyle = { display: 'block', color: 'var(--gold-soft)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '12px' } as any;
+  const labelStyle = { display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '12px' } as any;
 
   return (
     <div style={{

@@ -60,7 +60,7 @@ const InvestigationBoard: React.FC = () => {
         {/* Título do Caso */}
         <div style={{ padding: '0 24px', marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <span style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Investigação</span>
+            <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Investigação</span>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>O Segredo da<br/>Mansão Blackwell</h1>
             <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', maxWidth: '80%', lineHeight: 1.5 }}>
               Conecte pistas, descubra relações e revele a verdade.
@@ -158,7 +158,7 @@ const InvestigationBoard: React.FC = () => {
           </div>
 
           <div style={{ background: 'rgba(19,25,28,0.9)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', flex: 1, backdropFilter: 'blur(10px)' }}>
-            <div style={{ color: '#C5A880', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '8px' }}>Pistas Encontradas</div>
+            <div style={{ color: 'var(--eyebrow-gold)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '8px' }}>Pistas Encontradas</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span style={{ color: '#F8F9FA', fontSize: '16px', fontWeight: 600 }}>{cluesFound} <span style={{ color: '#8E989F', fontSize: '12px' }}>/ {totalClues}</span></span>
               <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', flex: 1, overflow: 'hidden' }}>

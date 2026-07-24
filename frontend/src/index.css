@@ -12,6 +12,7 @@
   --muted: #a9aaa0;
   --gold: #b89953;
   --gold-soft: #d1bb86;
+  --eyebrow-gold: var(--accent-gold);
   --line: rgba(242, 238, 229, .14);
   --sans: 'DM Sans', sans-serif;
   --serif: 'Playfair Display', serif;
@@ -151,7 +152,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--serif); font-weight: 400; letter-spa
 .nav-item.active { color: var(--gold-soft); }
 .nav-item:hover { color: var(--paper); }
 
-.eyebrow { display: block; color: var(--gold-soft); font-size: 10px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; margin-bottom: 6px; }
+.eyebrow { display: block; color: var(--eyebrow-gold); font-size: 10px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; margin-bottom: 6px; }
 .eyebrow + h1, .eyebrow + h2 { margin-top: 0; }
 .page-header { padding: 32px 0 28px; max-width: 700px; }
 .page-header h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.06; margin: 8px 0 12px; }
@@ -530,7 +531,7 @@ img.fill, .img-fill, .fill-width {
   filter: drop-shadow(0 12px 24px rgba(0,0,0,0.55));
 }
 .hero-tag {
-  color: var(--gold-soft);
+  color: var(--eyebrow-gold);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -626,7 +627,7 @@ img.fill, .img-fill, .fill-width {
   z-index: 2;
 }
 .mission-label {
-  color: var(--gold-soft);
+  color: var(--eyebrow-gold);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -773,7 +774,7 @@ img.fill, .img-fill, .fill-width {
   z-index: 2;
 }
 .mission-label {
-  color: var(--gold-soft);
+  color: var(--eyebrow-gold);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1.5px;

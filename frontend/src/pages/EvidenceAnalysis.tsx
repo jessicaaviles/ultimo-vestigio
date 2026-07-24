@@ -18,7 +18,7 @@ const CircularProgress = ({ percentage }: { percentage: number }) => {
       </svg>
       <div style={{ textAlign: 'center' }}>
         <div style={{ color: '#F8F9FA', fontSize: '18px', fontWeight: 700, lineHeight: 1 }}>{percentage}%</div>
-        <div style={{ color: '#8E989F', fontSize: '7px', textTransform: 'uppercase', marginTop: '4px', letterSpacing: '0.5px' }}>Relevância<br/>Alta</div>
+        <div style={{ color: 'var(--eyebrow-gold)', fontSize: '7px', textTransform: 'uppercase', marginTop: '4px', letterSpacing: '0.5px' }}>Relevância<br/>Alta</div>
       </div>
     </div>
   );
@@ -392,7 +392,7 @@ const EvidenceAnalysis: React.FC = () => {
             <>
               {/* Descrição Principal */}
               <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
-                <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Descrição</div>
+                <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Descrição</div>
                 <p style={{ color: '#E8EAED', fontSize: '15px', lineHeight: 1.6, margin: 0 }}>
                   {mockEvidence.desc}
                 </p>
@@ -401,7 +401,7 @@ const EvidenceAnalysis: React.FC = () => {
               {/* Transcrição */}
               {mockEvidence.transcription && (
                 <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
-                  <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Transcrição</div>
+                  <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Transcrição</div>
                   <div style={{ color: '#C5A880', fontSize: '40px', fontFamily: 'var(--font-serif)', lineHeight: 0.5, marginBottom: '16px', opacity: 0.5 }}>"</div>
                   <p style={{ color: '#E8EAED', fontSize: '15px', fontFamily: 'monospace', lineHeight: 1.6, margin: '0 0 16px 0', whiteSpace: 'pre-line' }}>
                     {mockEvidence.transcription}
@@ -417,7 +417,7 @@ const EvidenceAnalysis: React.FC = () => {
 
               {/* Análise da IA Resumo */}
               <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
-                <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Análise da IA</div>
+                <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '16px' }}>Análise da IA</div>
                 {!aiReport ? (
                   <form onSubmit={handleSubmitQuestion} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <input 
@@ -492,7 +492,7 @@ const EvidenceAnalysis: React.FC = () => {
                 <>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
                     <div style={{ flex: 1, paddingRight: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#C5A880', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--eyebrow-gold)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
                       <Search size={14} /> Resumo da Análise
                     </div>
                     <p style={{ color: '#E8EAED', fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
@@ -504,7 +504,7 @@ const EvidenceAnalysis: React.FC = () => {
 
                 <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '24px 0' }} />
                 
-                <div style={{ color: '#C5A880', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Brain size={14} /> O que a IA identificou
                 </div>
                 
@@ -525,7 +525,7 @@ const EvidenceAnalysis: React.FC = () => {
 
                 <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '24px 0' }} />
                 
-                <div style={{ color: '#C5A880', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Sparkles size={14} /> Hipótese da IA
                 </div>
                 <p style={{ color: '#E8EAED', fontSize: '14px', lineHeight: 1.6, fontStyle: 'italic', margin: '0 0 24px 0' }}>
@@ -549,7 +549,7 @@ const EvidenceAnalysis: React.FC = () => {
                       <img src={conn.image} alt={conn.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ color: '#8E989F', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>{conn.type}</div>
+                      <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>{conn.type}</div>
                       <div style={{ color: '#F8F9FA', fontSize: '15px', fontWeight: 600, marginBottom: '4px' }}>{conn.name}</div>
                       <div style={{ color: '#8E989F', fontSize: '13px' }}>{conn.subtitle}</div>
                     </div>
@@ -561,7 +561,7 @@ const EvidenceAnalysis: React.FC = () => {
 
             {activeTab === 'Discussão' && (
               <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
-                <div style={{ color: '#C5A880', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '24px' }}>Discussão da Equipe</div>
+                <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '24px' }}>Discussão da Equipe</div>
                 {mockEvidence.discussion.map((disc: any, idx: number) => (
                   <div key={idx} style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                     <img src={disc.avatar} alt={disc.user} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
