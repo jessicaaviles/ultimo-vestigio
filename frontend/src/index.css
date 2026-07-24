@@ -668,6 +668,201 @@ img.fill, .img-fill, .fill-width {
   border-radius: 50%;
   display: flex;
   align-items: center;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+.home-hero-title {
+  color: var(--paper);
+  font-family: var(--font-serif);
+  font-size: clamp(32px, 7vw, 52px);
+  line-height: 1.1;
+  margin: 0 0 8px 0;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+}
+.home-hero-subtitle {
+  color: rgba(255,255,255,0.8);
+  font-size: 14px;
+  max-width: 400px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.btn-pill {
+  background: var(--olive);
+  color: var(--paper);
+  border: none;
+  border-radius: 30px;
+  padding: 12px 14px 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+.btn-pill:hover {
+  background: var(--olive-light);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+.btn-pill-icon {
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-pill:hover .btn-pill-icon {
+  background: rgba(0,0,0,0.1);
+}
+
+/* Missão da Semana */
+.weekly-mission-card {
+  background: linear-gradient(135deg, rgba(20, 27, 31, 0.9) 0%, rgba(10, 13, 16, 0.95) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+.weekly-mission-content {
+  position: relative;
+  z-index: 2;
+}
+.mission-label {
+  color: var(--gold-soft);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+.mission-title {
+  color: var(--paper);
+  font-size: 18px;
+  font-family: var(--font-serif);
+  margin-bottom: 10px;
+}
+.mission-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.06);
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.mission-image {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 180px;
+  background-size: cover;
+  background-position: center;
+  mask-image: linear-gradient(to right, transparent, black);
+  -webkit-mask-image: linear-gradient(to right, transparent, black);
+}
+
+/* Modos de Jogo Grid */
+.section-title {
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  font-family: var(--font-sans);
+}
+.game-modes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+@media (min-width: 640px) {
+  .game-modes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.game-mode-card {
+  position: relative;
+  height: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-size: cover;
+  background-position: center;
+}
+.game-mode-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(197, 168, 128, 0.4);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+}
+.mode-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(15,20,23,0.1) 0%, rgba(15,20,23,0.7) 60%, rgba(15,20,23,0.95) 100%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.mode-icon-top {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(197, 168, 128, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold-soft);
+  background: rgba(15, 20, 23, 0.4);
+  backdrop-filter: blur(4px);
+}
+.mode-info {
+  display: flex;
+  flex-direction: column;
+}
+.mode-title {
+  color: var(--paper);
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+  font-family: var(--font-sans);
+}
+.mode-desc {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 24px;
+}
+.mode-action-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
   justify-content: center;
   color: var(--paper);
   transition: all 0.2s ease;
@@ -676,4 +871,129 @@ img.fill, .img-fill, .fill-width {
   background: var(--olive);
   border-color: var(--olive);
   color: var(--paper);
+}
+
+/* Featured Cases Carousel */
+.featured-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+  scroll-snap-type: x mandatory;
+}
+.featured-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.featured-carousel::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+}
+.featured-carousel::-webkit-scrollbar-thumb {
+  background: var(--gold-soft);
+  border-radius: 4px;
+}
+
+.featured-card {
+  min-width: 300px;
+  max-width: 340px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  background: rgba(31, 42, 48, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.featured-card:hover {
+  border-color: rgba(197, 168, 128, 0.4);
+  transform: translateY(-4px);
+}
+.featured-card-image {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.featured-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 40%, rgba(0,0,0,0.8) 100%);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+.featured-card-number {
+  font-size: 11px;
+  color: var(--paper);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.featured-card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.featured-card-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  color: var(--paper);
+  margin-bottom: 4px;
+}
+.featured-card-subtitle {
+  font-size: 10px;
+  color: var(--gold-soft);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.featured-card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Stats Section */
+.home-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+@media (min-width: 640px) {
+  .home-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.home-stat-box {
+  background: linear-gradient(135deg, rgba(20, 27, 31, 0.8) 0%, rgba(15, 20, 23, 0.95) 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+.home-stat-box:hover {
+  border-color: rgba(197, 168, 128, 0.3);
+  background: linear-gradient(135deg, rgba(25, 33, 38, 0.9) 0%, rgba(20, 27, 31, 1) 100%);
+}
+.home-stat-value {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  color: var(--gold-soft);
+  margin-bottom: 4px;
+}
+.home-stat-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
