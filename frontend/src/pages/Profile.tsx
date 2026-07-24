@@ -214,7 +214,10 @@ const Profile: React.FC = () => {
       desc: 'Complete sua primeira investigação.',
       unlocked: playedRoomsCount >= 1,
       progress: `${Math.min(playedRoomsCount, 1)} / 1`,
+      progressPercent: Math.min(playedRoomsCount, 1) * 100,
       points: 50,
+      tier: 'bronze',
+      tierLabel: 'Bronze',
       Icon: Search,
     },
     {
@@ -223,7 +226,10 @@ const Profile: React.FC = () => {
       desc: 'Participe de 5 investigações.',
       unlocked: playedRoomsCount >= 5,
       progress: `${Math.min(playedRoomsCount, 5)} / 5`,
+      progressPercent: Math.min(playedRoomsCount / 5, 1) * 100,
       points: 150,
+      tier: 'silver',
+      tierLabel: 'Prata',
       Icon: Medal,
     },
     {
@@ -232,7 +238,10 @@ const Profile: React.FC = () => {
       desc: 'Crie uma sala concluída.',
       unlocked: hostedRoomsCount >= 1,
       progress: `${Math.min(hostedRoomsCount, 1)} / 1`,
+      progressPercent: Math.min(hostedRoomsCount, 1) * 100,
       points: 80,
+      tier: 'bronze',
+      tierLabel: 'Bronze',
       Icon: Shield,
     },
     {
@@ -241,7 +250,10 @@ const Profile: React.FC = () => {
       desc: 'Registre sua primeira teoria.',
       unlocked: theoriesCount >= 1,
       progress: `${Math.min(theoriesCount, 1)} / 1`,
+      progressPercent: Math.min(theoriesCount, 1) * 100,
       points: 60,
+      tier: 'bronze',
+      tierLabel: 'Bronze',
       Icon: FileText,
     },
     {
@@ -250,7 +262,10 @@ const Profile: React.FC = () => {
       desc: 'Acerte uma teoria final.',
       unlocked: correctTheoriesCount >= 1,
       progress: `${Math.min(correctTheoriesCount, 1)} / 1`,
+      progressPercent: Math.min(correctTheoriesCount, 1) * 100,
       points: 120,
+      tier: 'silver',
+      tierLabel: 'Prata',
       Icon: Star,
     },
     {
@@ -258,8 +273,11 @@ const Profile: React.FC = () => {
       title: 'Precisão de elite',
       desc: 'Alcance 80% de precisão com 3 teorias.',
       unlocked: theoriesCount >= 3 && (theoryAccuracy ?? 0) >= 80,
-      progress: `${Math.min(theoriesCount, 3)} / 3`,
+      progress: `${Math.min(theoriesCount, 3)} / 3 teorias`,
+      progressPercent: Math.min(theoriesCount / 3, (theoryAccuracy ?? 0) / 80, 1) * 100,
       points: 200,
+      tier: 'gold',
+      tierLabel: 'Ouro',
       Icon: Crosshair,
     },
   ];
@@ -267,6 +285,7 @@ const Profile: React.FC = () => {
   const totalAchievementPoints = achievementItems
     .filter((achievement) => achievement.unlocked)
     .reduce((total, achievement) => total + achievement.points, 0);
+  const achievementCompletion = Math.round((unlockedAchievements / achievementItems.length) * 100);
 
   if (!authToken) {
     return (
@@ -389,17 +408,30 @@ const Profile: React.FC = () => {
         {profile?.stats ? (
           <div className="profile-achievement-panel">
             <div className="profile-achievement-summary">
-              <div>
+              <div className="profile-achievement-overview">
+                <div
+                  className="profile-achievement-ring"
+                  style={{ '--achievement-progress': `${achievementCompletion * 3.6}deg` } as React.CSSProperties}
+                  aria-label={`${achievementCompletion}% das conquistas desbloqueadas`}
+                >
+                  <span>{achievementCompletion}%</span>
+                </div>
+                <div>
+                  <strong>{unlockedAchievements} de {achievementItems.length}</strong>
+                  <span>jornada concluída</span>
+                </div>
+              </div>
+              <div className="profile-achievement-summary-stat">
                 <Trophy size={20} />
                 <strong>{unlockedAchievements}</strong>
                 <span>desbloqueadas</span>
               </div>
-              <div>
+              <div className="profile-achievement-summary-stat">
                 <Medal size={20} />
                 <strong>{totalAchievementPoints}</strong>
                 <span>pontos</span>
               </div>
-              <div>
+              <div className="profile-achievement-summary-stat">
                 <Crosshair size={20} />
                 <strong>{theoryAccuracy === null ? '—' : `${theoryAccuracy}%`}</strong>
                 <span>precisão</span>
@@ -410,19 +442,40 @@ const Profile: React.FC = () => {
               {achievementItems.map((achievement) => (
                 <article
                   key={achievement.id}
-                  className={`profile-achievement-card${achievement.unlocked ? ' profile-achievement-card--unlocked' : ''}`}
+                  className={`profile-achievement-card profile-achievement-card--${achievement.tier}${achievement.unlocked ? ' profile-achievement-card--unlocked' : ''}`}
                 >
-                  <div className="profile-achievement-medal" aria-hidden="true">
-                    {achievement.unlocked ? <achievement.Icon size={24} /> : <Lock size={20} />}
+                  <div className="profile-achievement-medal-wrap" aria-hidden="true">
+                    <div className="profile-achievement-medal">
+                      <achievement.Icon size={29} strokeWidth={1.45} />
+                    </div>
+                    {!achievement.unlocked && (
+                      <span className="profile-achievement-lock"><Lock size={11} strokeWidth={2.4} /></span>
+                    )}
                   </div>
                   <div className="profile-achievement-copy">
-                    <div>
+                    <div className="profile-achievement-heading">
+                      <span className="profile-achievement-tier">{achievement.tierLabel}</span>
+                      <span className="profile-achievement-points">+{achievement.points} pts</span>
+                    </div>
+                    <div className="profile-achievement-title-row">
                       <h3>{achievement.title}</h3>
-                      <span>{achievement.unlocked ? 'Desbloqueada' : achievement.progress}</span>
+                      {achievement.unlocked && <Check size={16} aria-label="Conquista desbloqueada" />}
                     </div>
                     <p>{achievement.desc}</p>
+                    <div className="profile-achievement-progress-row">
+                      <div
+                        className="profile-achievement-progress"
+                        role="progressbar"
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={Math.round(achievement.progressPercent)}
+                        aria-label={`Progresso de ${achievement.title}`}
+                      >
+                        <span style={{ width: `${achievement.progressPercent}%` }} />
+                      </div>
+                      <span>{achievement.unlocked ? 'Conquistada' : achievement.progress}</span>
+                    </div>
                   </div>
-                  <div className="profile-achievement-points">+{achievement.points}</div>
                 </article>
               ))}
             </div>
