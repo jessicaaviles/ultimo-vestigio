@@ -541,6 +541,28 @@ img.fill, .img-fill, .fill-width {
   margin: 0 0 10px -6px;
   filter: drop-shadow(0 12px 24px rgba(0,0,0,0.55));
 }
+.home-hero-loading {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 580px);
+  min-height: 194px;
+  align-content: start;
+}
+.home-hero-loading span {
+  display: block;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(242,238,229,.08), rgba(242,238,229,.16), rgba(242,238,229,.08));
+  background-size: 220% 100%;
+  animation: home-hero-loading 1.3s ease-in-out infinite;
+}
+.home-hero-loading span:nth-child(1) { width: 112px; height: 11px; }
+.home-hero-loading span:nth-child(2) { width: min(88%, 470px); height: 52px; }
+.home-hero-loading span:nth-child(3) { width: min(100%, 560px); height: 42px; }
+.home-hero-loading span:nth-child(4) { width: 180px; height: 44px; margin-top: 8px; border-radius: 24px; }
+@keyframes home-hero-loading {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0 0; }
+}
 .hero-tag {
   color: var(--eyebrow-gold);
   font-size: 11px;

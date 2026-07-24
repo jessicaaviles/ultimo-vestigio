@@ -24,6 +24,12 @@ interface FeaturedCase {
   players: string;
 }
 
+interface ActiveInvestigation {
+  roomId: string;
+  status: string;
+  case: FeaturedCase;
+}
+
 interface InvestigatorStats {
   hostedRoomsCount: number;
   playedRoomsCount: number;
@@ -33,16 +39,33 @@ interface InvestigatorStats {
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { refresh } = useAuth();
+  const { refresh, user } = useAuth();
   const [profileLoading, setProfileLoading] = useState(true);
   const [casesLoading, setCasesLoading] = useState(true);
   const [casesError, setCasesError] = useState(false);
   const [profileStats, setProfileStats] = useState<InvestigatorStats | null>(null);
   const [solvedCount, setSolvedCount] = useState<number | null>(null);
   const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>([]);
+  const [activeInvestigation, setActiveInvestigation] = useState<ActiveInvestigation | null>(null);
   
-  const activeRoomId = localStorage.getItem('currentRoomId');
-  const hasActiveCase = !!activeRoomId;
+  const mapCase = useCallback((item: any): FeaturedCase => {
+    const minPlayers = Number(item.min_players) || 1;
+    const maxPlayers = Number(item.max_players) || minPlayers;
+    const players = minPlayers === maxPlayers
+      ? `${minPlayers} jogador${minPlayers > 1 ? 'es' : ''}`
+      : `${minPlayers}-${maxPlayers} jogadores`;
+
+    return {
+      title: item.title,
+      subtitle: item.case_type || 'Investigação',
+      level: item.difficulty || 'Não informada',
+      image: item.cover_image_data || fallbackImages[item.slug] || '/backgrounds/mapa-da-investigacao.png',
+      description: item.short_synopsis || item.synopsis || 'Sinopse não disponível.',
+      slug: item.slug,
+      duration: item.estimated_duration_minutes ? `${item.estimated_duration_minutes} min` : 'Não informada',
+      players
+    };
+  }, []);
 
   useEffect(() => {
     const deviceToken = localStorage.getItem('deviceToken');
@@ -77,37 +100,45 @@ const Home: React.FC = () => {
   const loadCases = useCallback(async () => {
     setCasesLoading(true);
     setCasesError(false);
-    const userId = localStorage.getItem('userId');
+    const userId = user?.userId || localStorage.getItem('userId');
     try {
       const res: any = await listCases(userId);
       if (!res.success || !Array.isArray(res.data)) throw new Error('Invalid cases response');
 
-      setSolvedCount(Array.isArray(res.solvedSlugs) ? res.solvedSlugs.length : 0);
-      setFeaturedCases(res.data.slice(0, 3).map((item: any) => {
-        const minPlayers = Number(item.min_players) || 1;
-        const maxPlayers = Number(item.max_players) || minPlayers;
-        const players = minPlayers === maxPlayers
-          ? `${minPlayers} jogador${minPlayers > 1 ? 'es' : ''}`
-          : `${minPlayers}-${maxPlayers} jogadores`;
-        return {
-          title: item.title,
-          subtitle: item.case_type || 'Investigação',
-          level: item.difficulty || 'Não informada',
-          image: item.cover_image_data || fallbackImages[item.slug] || '/backgrounds/mapa-da-investigacao.png',
-          description: item.short_synopsis || item.synopsis || 'Sinopse não disponível.',
-          slug: item.slug,
-          duration: item.estimated_duration_minutes ? `${item.estimated_duration_minutes} min` : 'Não informada',
-          players
-        };
-      }));
+      const solvedSlugs = Array.isArray(res.solvedSlugs) ? res.solvedSlugs : [];
+      const active = res.activeRoom?.roomId && res.activeRoom?.case
+        ? {
+            roomId: String(res.activeRoom.roomId),
+            status: String(res.activeRoom.status || 'IN_PROGRESS'),
+            case: mapCase(res.activeRoom.case)
+          }
+        : null;
+
+      setSolvedCount(solvedSlugs.length);
+      setActiveInvestigation(active);
+      setFeaturedCases(
+        res.data
+          .filter((item: any) => !solvedSlugs.includes(item.slug) && item.slug !== active?.case.slug)
+          .slice(0, 3)
+          .map(mapCase)
+      );
+
+      localStorage.setItem('solvedCases', JSON.stringify(solvedSlugs));
+      if (active) {
+        localStorage.setItem('currentRoomId', active.roomId);
+      } else if (userId) {
+        localStorage.removeItem('currentRoomId');
+        localStorage.removeItem('currentRoomCode');
+      }
     } catch {
       setSolvedCount(null);
       setFeaturedCases([]);
+      setActiveInvestigation(null);
       setCasesError(true);
     } finally {
       setCasesLoading(false);
     }
-  }, []);
+  }, [mapCase, user?.userId]);
 
   useEffect(() => {
     loadCases();
@@ -119,6 +150,13 @@ const Home: React.FC = () => {
     ? Math.round(((profileStats?.correctTheoriesCount ?? 0) / theoriesCount) * 100)
     : null;
   const hasInvestigationHistory = (solvedCount ?? 0) > 0 || totalPlayed > 0 || theoriesCount > 0;
+  const heroCase = activeInvestigation?.case;
+  const heroImage = heroCase?.image || '/backgrounds/map_blackwell.png';
+  const activeDestination = activeInvestigation?.status === 'LOBBY'
+    ? `/room/${activeInvestigation.roomId}/lobby`
+    : activeInvestigation
+      ? `/room/${activeInvestigation.roomId}/game`
+      : '/cases';
   const homeStatCards = [
     {
       label: 'Casos resolvidos',
@@ -157,39 +195,50 @@ const Home: React.FC = () => {
   return (
     <div className="home-immersive-container">
       
-      {/* Imagem de Fundo Estática para evitar conflitos de carregamento */}
+      {/* Fundo do caso ativo; Blackwell permanece como fallback */}
       <div 
         className="home-bg" 
-        style={{ backgroundImage: `url("/backgrounds/map_blackwell.png")` }}
+        style={{ backgroundImage: `url("${heroImage}")` }}
       />
       
       <div className="home-content-wrapper">
-        {/* Hero: Caso Fixo */}
-        <section className="home-hero-section">
+        {/* Hero: investigação ativa ou caso Blackwell como fallback */}
+        <section className="home-hero-section" aria-busy={casesLoading}>
           <img
             src="/logo-sem-fundo.png"
             alt="Último Vestígio"
             className="home-hero-brand"
           />
-          <span className="hero-tag">{hasActiveCase ? 'CASO ATIVO' : 'CASO EM DESTAQUE'}</span>
-          <h2 className="home-hero-title">O Segredo de Blackwell House</h2>
-          <p className="home-hero-subtitle">
-            Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell. Analise todas as evidências e encontre a verdade.
-          </p>
-          <div className="home-hero-details" aria-label="Detalhes do caso">
-            <span><Clock3 size={15} /> Cerca de 30 min</span>
-            <span><Users size={15} /> 1 a 6 investigadores</span>
-            <span className="home-hero-difficulty">Dificuldade média</span>
-          </div>
-          <button 
-            className="btn-pill"
-            onClick={() => navigate(hasActiveCase ? `/room/${activeRoomId}/game` : '/cases')}
-          >
-            {hasActiveCase ? 'Continuar investigação' : 'Explorar casos'}
-            <div className="btn-pill-icon">
-              <ArrowRight size={16} strokeWidth={2.5} />
+          {casesLoading ? (
+            <div className="home-hero-loading" aria-label="Carregando investigação em destaque">
+              <span />
+              <span />
+              <span />
+              <span />
             </div>
-          </button>
+          ) : (
+            <>
+              <span className="hero-tag">{activeInvestigation ? 'CASO EM ANDAMENTO' : 'CASO EM DESTAQUE'}</span>
+              <h2 className="home-hero-title">{heroCase?.title || 'O Segredo de Blackwell House'}</h2>
+              <p className="home-hero-subtitle">
+                {heroCase?.description || 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell. Analise todas as evidências e encontre a verdade.'}
+              </p>
+              <div className="home-hero-details" aria-label="Detalhes do caso">
+                <span><Clock3 size={15} /> {heroCase ? heroCase.duration : 'Cerca de 30 min'}</span>
+                <span><Users size={15} /> {heroCase ? heroCase.players : '1 a 6 investigadores'}</span>
+                <span className="home-hero-difficulty">Dificuldade {heroCase?.level.toLocaleLowerCase('pt-BR') || 'média'}</span>
+              </div>
+              <button
+                className="btn-pill"
+                onClick={() => navigate(activeDestination)}
+              >
+                {activeInvestigation ? 'Continuar investigação' : 'Explorar casos'}
+                <div className="btn-pill-icon">
+                  <ArrowRight size={16} strokeWidth={2.5} />
+                </div>
+              </button>
+            </>
+          )}
         </section>
 
         {/* Estatísticas do Jogador */}
@@ -266,7 +315,11 @@ const Home: React.FC = () => {
             </div>
           ) : featuredCases.length === 0 ? (
             <div className="home-data-state">
-              <p>Nenhuma investigação está disponível neste momento.</p>
+              <p>
+                {activeInvestigation
+                  ? 'Sua próxima investigação aparecerá aqui quando o caso atual for concluído.'
+                  : 'Você já resolveu todos os casos disponíveis. Novas investigações aparecerão aqui.'}
+              </p>
             </div>
           ) : (
             <div className="featured-carousel">

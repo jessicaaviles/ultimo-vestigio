@@ -23,15 +23,47 @@ export const listCases = async (req: Request, res: Response) => {
     cases.sort((a, b) => Number(b.slug === 'o-guarda-chuva-molhado') - Number(a.slug === 'o-guarda-chuva-molhado'));
     
     let solvedSlugs: string[] = [];
+    let activeRoom: {
+      roomId: string;
+      status: string;
+      case: typeof cases[number];
+    } | null = null;
+
     if (userId) {
-      const solvedRooms = await prisma.room_players.findMany({
-        where: { anonymous_user_id: userId, room: { status: { in: ['COMPLETED', 'GAME_OVER'] } } },
-        include: { room: { include: { case_version: { include: { case_ref: true } } } } }
-      });
+      const [solvedRooms, activeRoomRecord] = await Promise.all([
+        prisma.room_players.findMany({
+          where: { anonymous_user_id: userId, room: { status: { in: ['COMPLETED', 'GAME_OVER'] } } },
+          include: { room: { include: { case_version: { include: { case_ref: true } } } } }
+        }),
+        prisma.rooms.findFirst({
+          where: {
+            status: { in: ['LOBBY', 'IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL'] },
+            deleted_at: null,
+            expires_at: { gt: new Date() },
+            players: {
+              some: {
+                anonymous_user_id: userId,
+                removed_at: null
+              }
+            }
+          },
+          include: { case_version: { include: { case_ref: true } } },
+          orderBy: { updated_at: 'desc' }
+        })
+      ]);
+
       solvedSlugs = Array.from(new Set(solvedRooms.map(rp => rp.room.case_version.case_ref.slug)));
+
+      if (activeRoomRecord) {
+        activeRoom = {
+          roomId: activeRoomRecord.id,
+          status: activeRoomRecord.status,
+          case: activeRoomRecord.case_version.case_ref
+        };
+      }
     }
 
-    res.json({ success: true, data: cases, solvedSlugs });
+    res.json({ success: true, data: cases, solvedSlugs, activeRoom });
   } catch (err) { 
     console.error(err);
     res.status(500).json({ success: false, error: 'Could not load cases' }); 
