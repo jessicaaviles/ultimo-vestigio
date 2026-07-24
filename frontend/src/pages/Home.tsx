@@ -143,7 +143,7 @@ const Home: React.FC = () => {
         {/* Hero: Caso Fixo */}
         <section className="home-hero-section">
           <img
-            src="/logo-sfundo.png"
+            src="/logo-sem-fundo.png"
             alt="Último Vestígio"
             className="home-hero-brand"
           />

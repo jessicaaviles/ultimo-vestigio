@@ -470,11 +470,11 @@ img.fill, .img-fill, .fill-width {
 }
 .home-hero-brand {
   display: block;
-  width: min(360px, 78vw);
-  max-height: 150px;
+  width: min(250px, 58vw);
+  max-height: 190px;
   object-fit: contain;
   object-position: left center;
-  margin: 0 0 14px -8px;
+  margin: 0 0 14px -6px;
   filter: drop-shadow(0 12px 24px rgba(0,0,0,0.55));
 }
 .hero-tag {
