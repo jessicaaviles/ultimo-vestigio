@@ -204,13 +204,12 @@
 .profile-achievement-summary-stat:last-child { border-right: 0; }
 .profile-achievement-summary-stat strong { color: var(--paper); font: 23px var(--serif); line-height: 1; }
 .profile-achievement-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.profile-achievement-card { position: relative; isolation: isolate; min-width: 0; display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 15px; align-items: center; min-height: 154px; padding: 17px; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; background: linear-gradient(145deg, rgba(34,43,46,.94), rgba(15,20,23,.86)); overflow: hidden; }
+.profile-achievement-card { --achievement-rgb: 184,153,83; --achievement-strong: #d8b967; --achievement-soft: rgba(184,153,83,.34); --medal-rim: linear-gradient(145deg, #f2d98b 0%, #b89953 48%, #745720 100%); --medal-fill: linear-gradient(145deg, #293438, #12191c); position: relative; isolation: isolate; min-width: 0; display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 15px; align-items: center; min-height: 154px; padding: 17px; border: 1px solid rgba(255,255,255,.1); border-radius: 8px; background: linear-gradient(145deg, rgba(34,43,46,.94), rgba(15,20,23,.86)); overflow: hidden; }
 .profile-achievement-card::after { content: ''; position: absolute; z-index: -1; width: 150px; height: 150px; left: -62px; top: -70px; border-radius: 50%; background: rgba(255,255,255,.035); }
 .profile-achievement-card:not(.profile-achievement-card--unlocked) { color: rgba(242,238,229,.68); }
-.profile-achievement-card--unlocked { border-color: rgba(184,153,83,.5); background: linear-gradient(145deg, rgba(89,73,39,.32), rgba(20,27,29,.96) 62%); box-shadow: inset 3px 0 0 rgba(184,153,83,.64), 0 14px 28px rgba(0,0,0,.14); }
+.profile-achievement-card--unlocked { border-color: rgba(var(--achievement-rgb),.52); background: linear-gradient(145deg, rgba(var(--achievement-rgb),.22), rgba(20,27,29,.96) 62%); box-shadow: inset 3px 0 0 rgba(var(--achievement-rgb),.68), 0 14px 28px rgba(0,0,0,.14); }
 .profile-achievement-medal-wrap { position: relative; width: 74px; aspect-ratio: .8660254; display: grid; place-items: center; }
 .profile-achievement-medal {
-  --medal-fill: linear-gradient(145deg, #293438, #12191c);
   position: relative;
   isolation: isolate;
   width: 70px;
@@ -219,7 +218,7 @@
   place-items: center;
   color: rgba(242,238,229,.38);
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-  background: linear-gradient(145deg, rgba(184,153,83,.48), rgba(98,79,39,.34));
+  background: var(--medal-rim);
   filter: drop-shadow(0 8px 9px rgba(0,0,0,.26));
 }
 .profile-achievement-medal::before {
@@ -229,42 +228,41 @@
   z-index: -1;
   clip-path: inherit;
   background: var(--medal-fill);
-  box-shadow: inset 0 0 0 1px rgba(242,213,139,.14);
+  box-shadow: inset 0 0 0 1px rgba(var(--achievement-rgb),.18);
 }
 .profile-achievement-medal::after {
   content: 'I';
   position: absolute;
   bottom: 10px;
-  color: rgba(242,238,229,.42);
+  color: rgba(var(--achievement-rgb),.72);
   font: 700 8px var(--sans);
 }
 .profile-achievement-medal svg { position: relative; z-index: 1; transform: translateY(-5px); }
 .profile-achievement-card--unlocked .profile-achievement-medal {
-  color: #e7c86f;
-  background: linear-gradient(145deg, #f2d98b 0%, #b89953 48%, #745720 100%);
-  filter: drop-shadow(0 9px 10px rgba(0,0,0,.34)) drop-shadow(0 0 8px rgba(184,153,83,.14));
+  color: var(--achievement-strong);
+  filter: drop-shadow(0 9px 10px rgba(0,0,0,.34)) drop-shadow(0 0 8px rgba(var(--achievement-rgb),.18));
 }
-.profile-achievement-card--unlocked .profile-achievement-medal::before { box-shadow: inset 0 0 0 1px rgba(242,213,139,.32), inset 0 9px 18px rgba(255,255,255,.035); }
-.profile-achievement-card--unlocked .profile-achievement-medal::after { color: rgba(231,200,111,.78); }
-.profile-achievement-card--bronze .profile-achievement-medal { --medal-fill: linear-gradient(145deg, #3a3028, #171a1b 70%); }
-.profile-achievement-card--silver .profile-achievement-medal { --medal-fill: linear-gradient(145deg, #303a3d, #171d1f 70%); }
+.profile-achievement-card--unlocked .profile-achievement-medal::before { box-shadow: inset 0 0 0 1px rgba(var(--achievement-rgb),.36), inset 0 9px 18px rgba(255,255,255,.04); }
+.profile-achievement-card--unlocked .profile-achievement-medal::after { color: var(--achievement-strong); }
+.profile-achievement-card--bronze { --achievement-rgb: 191,121,73; --achievement-strong: #d58f5f; --achievement-soft: rgba(191,121,73,.36); --medal-rim: linear-gradient(145deg, #ffd0a3 0%, #bf7949 48%, #6a3a25 100%); --medal-fill: linear-gradient(145deg, #3b2a23, #171918 70%); }
+.profile-achievement-card--silver { --achievement-rgb: 198,205,205; --achievement-strong: #d8dfdf; --achievement-soft: rgba(198,205,205,.34); --medal-rim: linear-gradient(145deg, #f4f6ef 0%, #c6cdcd 47%, #687174 100%); --medal-fill: linear-gradient(145deg, #313b3d, #171d1f 70%); }
 .profile-achievement-card--silver .profile-achievement-medal::after { content: 'II'; }
-.profile-achievement-card--gold .profile-achievement-medal { --medal-fill: linear-gradient(145deg, #3e3825, #191b18 70%); }
+.profile-achievement-card--gold { --achievement-rgb: 216,185,103; --achievement-strong: #e8cb72; --achievement-soft: rgba(216,185,103,.4); --medal-rim: linear-gradient(145deg, #fff0ae 0%, #d8b967 46%, #775923 100%); --medal-fill: linear-gradient(145deg, #3e3825, #191b18 70%); }
 .profile-achievement-card--gold .profile-achievement-medal::after { content: 'III'; }
 .profile-achievement-lock { position: absolute; right: 1px; bottom: 4px; width: 23px; height: 23px; display: grid; place-items: center; color: var(--paper); border: 2px solid #20292c; border-radius: 50%; background: #3b4649; box-shadow: 0 4px 10px rgba(0,0,0,.3); }
 .profile-achievement-copy { min-width: 0; display: grid; gap: 6px; }
 .profile-achievement-heading, .profile-achievement-title-row, .profile-achievement-progress-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.profile-achievement-tier { color: var(--eyebrow-gold); font-size: 9px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+.profile-achievement-tier { color: var(--achievement-strong); font-size: 9px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
 .profile-achievement-points { color: rgba(242,238,229,.76); font-size: 10px; font-weight: 800; white-space: nowrap; }
 .profile-achievement-copy h3 { margin: 0; color: var(--paper); font: 19px var(--serif) !important; line-height: 1.12; overflow-wrap: anywhere; }
 .profile-achievement-title-row svg { flex: 0 0 auto; color: var(--olive-light); }
 .profile-achievement-copy p { margin: 0; min-height: 34px; color: rgba(242,238,229,.7); font-size: 12px; line-height: 1.42; }
 .profile-achievement-progress-row { margin-top: 3px; }
 .profile-achievement-progress-row > span { flex: 0 0 auto; color: rgba(242,238,229,.72); font-size: 9px; font-weight: 800; text-transform: uppercase; white-space: nowrap; }
-.profile-achievement-card--unlocked .profile-achievement-progress-row > span { color: var(--olive-light); }
+.profile-achievement-card--unlocked .profile-achievement-progress-row > span { color: var(--achievement-strong); }
 .profile-achievement-progress { height: 4px; flex: 1; min-width: 32px; border-radius: 2px; background: rgba(255,255,255,.1); overflow: hidden; }
-.profile-achievement-progress > span { display: block; height: 100%; border-radius: inherit; background: rgba(242,238,229,.38); }
-.profile-achievement-card--unlocked .profile-achievement-progress > span { background: var(--eyebrow-gold); }
+.profile-achievement-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--achievement-soft); }
+.profile-achievement-card--unlocked .profile-achievement-progress > span { background: var(--achievement-strong); }
 .immersive-page.is-fixed-height { min-height: 0 !important; height: 100vh !important; overflow: hidden !important; }
 .immersive-page { min-height: 100vh; min-height: 100dvh; height: auto; border-radius: 0; padding-left: 0 !important; padding-right: 0 !important; }
 .immersive-page > div:last-child { min-height: calc(100vh - 88px); min-height: calc(100dvh - 88px); }
