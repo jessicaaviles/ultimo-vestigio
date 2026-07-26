@@ -1,4 +1,4 @@
-const CACHE = 'ultimo-vestigio-static-v4';
+const CACHE = 'ultimo-vestigio-static-v5';
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(['/','/manifest.webmanifest'])));
   self.skipWaiting();
@@ -23,6 +23,11 @@ self.addEventListener('fetch', (event) => {
   const isNavigation = event.request.mode === 'navigate' || 
                        (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html'));
   const isCriticalAsset = requestUrl.pathname.endsWith('.js') || requestUrl.pathname.endsWith('.css');
+
+  if (requestUrl.pathname.startsWith('/api/')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
 
   if (isNavigation) {
     // Network First para HTML / Navegação (garante que sempre baixa o index.html mais recente se online)

@@ -3,7 +3,7 @@ export const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl.rep
 
 export const listCases = async (userId?: string | null) => {
   const query = userId ? `?userId=${encodeURIComponent(userId)}` : '';
-  const res = await fetch(`${API_URL}/cases${query}`);
+  const res = await fetch(`${API_URL}/cases${query}`, { cache: 'no-store' });
   return res.json();
 };
 
@@ -49,7 +49,7 @@ export const submitFeedback = async (payload: {
 };
 
 export const getProfile = async (userId: string) => {
-  const res = await fetch(`${API_URL}/profiles/${encodeURIComponent(userId)}`);
+  const res = await fetch(`${API_URL}/profiles/${encodeURIComponent(userId)}`, { cache: 'no-store' });
   return res.json();
 };
 
