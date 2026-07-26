@@ -6,6 +6,22 @@ import { generateCaseImage } from '../services/caseImageGenerator';
 
 const prisma = new PrismaClient();
 
+const caseListSelect = {
+  id: true,
+  slug: true,
+  title: true,
+  short_synopsis: true,
+  case_type: true,
+  difficulty: true,
+  estimated_duration_minutes: true,
+  min_players: true,
+  max_players: true,
+  tension_level: true,
+  status: true,
+  created_at: true,
+  updated_at: true
+};
+
 // Helper to generate a 6 character code
 const generateRoomCode = () => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -23,7 +39,11 @@ export const listCases = async (req: Request, res: Response) => {
     res.set('Expires', '0');
 
     const userId = req.query.userId as string;
-    const cases = await prisma.cases.findMany({ where: { status: { in: ['PUBLISHED', 'published'] }, deleted_at: null }, orderBy: { created_at: 'asc' } });
+    const cases = await prisma.cases.findMany({
+      where: { status: { in: ['PUBLISHED', 'published'] }, deleted_at: null },
+      orderBy: { created_at: 'asc' },
+      select: caseListSelect
+    });
     cases.sort((a, b) => Number(b.slug === 'o-guarda-chuva-molhado') - Number(a.slug === 'o-guarda-chuva-molhado'));
     
     let solvedSlugs: string[] = [];
@@ -44,7 +64,17 @@ export const listCases = async (req: Request, res: Response) => {
               deleted_at: null
             }
           },
-          include: { room: { include: { case_version: { include: { case_ref: true } } } } }
+          select: {
+            room: {
+              select: {
+                case_version: {
+                  select: {
+                    case_ref: { select: { slug: true } }
+                  }
+                }
+              }
+            }
+          }
         }),
         prisma.rooms.findFirst({
           where: {
@@ -58,7 +88,15 @@ export const listCases = async (req: Request, res: Response) => {
               }
             }
           },
-          include: { case_version: { include: { case_ref: true } } },
+          select: {
+            id: true,
+            status: true,
+            case_version: {
+              select: {
+                case_ref: { select: caseListSelect }
+              }
+            }
+          },
           orderBy: { updated_at: 'desc' }
         })
       ]);

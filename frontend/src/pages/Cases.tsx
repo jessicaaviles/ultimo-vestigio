@@ -5,6 +5,7 @@ import { Clock3, Flame, UsersRound } from 'lucide-react';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
 import { hasAllProgressReset } from '../utils/progressReset';
+import { getCaseCoverImage } from '../utils/caseAssets';
 
 interface CaseItem {
   slug: string;
@@ -46,19 +47,7 @@ const Cases: React.FC = () => {
         localStorage.setItem('solvedCases', JSON.stringify(mergedSolved));
 
         const mapped = response.data.map((item: any) => {
-          const image = item.cover_image_data
-            ? item.cover_image_data
-            : item.slug === 'a-heranca-de-vidro'
-              ? '/capa_heranca_de_vidro.png'
-            : item.slug === 'o-quarto-7'
-              ? '/capa_quarto_7.png'
-            : item.slug === 'o-sino-das-tres-batidas'
-              ? '/capa_sino_tres_batidas.png'
-            : item.slug === 'a-fita-sem-rosto'
-              ? '/capa_fita_sem_rosto.png'
-            : item.slug === 'o-jardim-sem-pegadas'
-              ? '/capa_jardim_sem_pegadas.png'
-              : '/backgrounds/mapa-da-investigacao.png';
+          const image = getCaseCoverImage(item.slug, item.cover_image_data);
           return {
             slug: item.slug, title: item.title, synopsis: item.short_synopsis,
             type: item.case_type, duration: `${item.estimated_duration_minutes} min`,

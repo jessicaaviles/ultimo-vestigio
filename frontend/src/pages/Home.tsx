@@ -7,16 +7,7 @@ import { registerAnonymousUser, listCases, getProfile } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
 import { emptyProgressStats, hasAllProgressReset } from '../utils/progressReset';
-
-const fallbackImages: Record<string, string> = {
-  'blackwell': '/backgrounds/map_blackwell.png',
-  'a-heranca-de-vidro': '/capa_heranca_de_vidro.png',
-  'o-quarto-7': '/capa_quarto_7.png',
-  'o-presente-desaparecido': '/backgrounds/cena-do-crime.png',
-  'o-sino-das-tres-batidas': '/capa_sino_tres_batidas.png',
-  'a-fita-sem-rosto': '/capa_fita_sem_rosto.png',
-  'o-jardim-sem-pegadas': '/capa_jardim_sem_pegadas.png',
-};
+import { caseCoverImages, getCaseCoverImage } from '../utils/caseAssets';
 
 interface FeaturedCase {
   title: string;
@@ -64,9 +55,7 @@ const Home: React.FC = () => {
       title: item.title,
       subtitle: item.case_type || 'Investigação',
       level: item.difficulty || 'Não informada',
-      image: item.slug === 'blackwell'
-        ? fallbackImages.blackwell
-        : item.cover_image_data || fallbackImages[item.slug] || '/backgrounds/mapa-da-investigacao.png',
+      image: item.slug === 'blackwell' ? caseCoverImages.blackwell : getCaseCoverImage(item.slug, item.cover_image_data),
       description: item.short_synopsis || item.synopsis || 'Sinopse não disponível.',
       slug: item.slug,
       duration: item.estimated_duration_minutes ? `${item.estimated_duration_minutes} min` : 'Não informada',

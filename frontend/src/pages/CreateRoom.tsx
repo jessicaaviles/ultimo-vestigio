@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import * as apiService from '../services/api';
 import { Clock3, UsersRound } from 'lucide-react';
+import { getCaseCoverImage } from '../utils/caseAssets';
 
 type CaseInfo = {
   title: string;
@@ -22,7 +23,7 @@ const CreateRoom: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [timer, setTimer] = useState<number | null>(null);
-  const [coverImage, setCoverImage] = useState<string | null>((location.state as any)?.coverImage || null);
+  const [coverImage] = useState<string | null>((location.state as any)?.coverImage || null);
   const [caseInfo, setCaseInfo] = useState<CaseInfo>({
     title: 'Carregando caso...',
     synopsis: 'Buscando as informações oficiais deste caso.',
@@ -48,15 +49,12 @@ const CreateRoom: React.FC = () => {
         return;
       }
 
-      const image = selectedCase.cover_image_data
-        || (selectedCase.slug === 'o-quarto-7' ? '/capa_quarto_7.png' : '/backgrounds/mapa-da-investigacao.png');
-
       setCaseInfo({
         title: selectedCase.title,
         synopsis: selectedCase.short_synopsis,
         players: `${selectedCase.min_players}-${selectedCase.max_players} Jogadores`,
         duration: `~${selectedCase.estimated_duration_minutes} min`,
-        image,
+        image: getCaseCoverImage(selectedCase.slug, selectedCase.cover_image_data),
         available: true
       });
     }).catch(() => {
@@ -70,15 +68,6 @@ const CreateRoom: React.FC = () => {
       });
     });
   }, [selectedCaseId]);
-
-  useEffect(() => {
-    if (coverImage) return;
-    apiService.generateCaseImage(selectedCaseId).then((res: any) => {
-      if (res.success) setCoverImage(res.data.cover_image_data);
-    }).catch(() => {});
-  }, [selectedCaseId, coverImage]);
-
-
 
   const handleCreate = async () => {
     try {
