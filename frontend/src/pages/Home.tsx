@@ -348,7 +348,7 @@ const Home: React.FC = () => {
                       <span><Users size={14} /> {item.players}</span>
                     </div>
                     <span className="featured-card-action">
-                      Ver dossiê <ArrowRight size={15} />
+                      Jogar esse caso <ArrowRight size={15} />
                     </span>
                   </div>
                 </button>
