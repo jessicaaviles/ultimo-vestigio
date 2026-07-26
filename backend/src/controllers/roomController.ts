@@ -37,7 +37,7 @@ export const listCases = async (req: Request, res: Response) => {
         }),
         prisma.rooms.findFirst({
           where: {
-            status: { in: ['LOBBY', 'IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL'] },
+            status: { in: ['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL'] },
             deleted_at: null,
             expires_at: { gt: new Date() },
             players: {

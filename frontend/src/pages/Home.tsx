@@ -108,10 +108,12 @@ const Home: React.FC = () => {
       if (!res.success || !Array.isArray(res.data)) throw new Error('Invalid cases response');
 
       const solvedSlugs = Array.isArray(res.solvedSlugs) ? res.solvedSlugs : [];
-      const active = res.activeRoom?.roomId && res.activeRoom?.case
+      const activeStatus = String(res.activeRoom?.status || '');
+      const activeStatuses = new Set(['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
+      const active = res.activeRoom?.roomId && res.activeRoom?.case && activeStatuses.has(activeStatus)
         ? {
             roomId: String(res.activeRoom.roomId),
-            status: String(res.activeRoom.status || 'IN_PROGRESS'),
+            status: activeStatus,
             case: mapCase(res.activeRoom.case)
           }
         : null;

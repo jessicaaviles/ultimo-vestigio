@@ -55,10 +55,21 @@ export const InvestigationProvider: React.FC<{ children: ReactNode }> = ({ child
         return [...prev, data.locationId];
       });
     };
+    const clearRoomState = () => {
+      localStorage.removeItem('currentRoomId');
+      localStorage.removeItem('currentRoomCode');
+      setUnlockedLocations(['living_room']);
+      setUnlockedClues([]);
+    };
+    const handleRoomError = (err: string) => {
+      if (String(err).includes('Você não está nesta sala')) clearRoomState();
+    };
 
     socket.on('room_state_updated', handleRoomState);
     socket.on('clue_unlocked', handleClueUnlocked);
     socket.on('location_unlocked', handleLocationUnlocked);
+    socket.on('room_error', handleRoomError);
+    socket.on('left_room', clearRoomState);
 
     // Initial load request
     const roomId = localStorage.getItem('currentRoomId');
@@ -68,6 +79,8 @@ export const InvestigationProvider: React.FC<{ children: ReactNode }> = ({ child
       socket.off('room_state_updated', handleRoomState);
       socket.off('clue_unlocked', handleClueUnlocked);
       socket.off('location_unlocked', handleLocationUnlocked);
+      socket.off('room_error', handleRoomError);
+      socket.off('left_room', clearRoomState);
     };
   }, [socket]);
 
@@ -88,4 +101,3 @@ export const useInvestigation = () => {
   }
   return context;
 };
-

@@ -52,20 +52,39 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (!socket || !roomId) return;
     
     const userId = localStorage.getItem('userId');
+    const clearStaleRoom = () => {
+      setRoomId(null);
+      setRoomCode(null);
+      setPlayers([]);
+      localStorage.removeItem('currentRoomId');
+      localStorage.removeItem('currentRoomCode');
+    };
     socket.emit('join_room', { roomId, userId });
 
     const handleRoomUpdate = (data: any) => {
+      const stillInRoom = (data?.players || []).some((player: any) => player.anonymous_user_id === userId);
+      if (!stillInRoom) {
+        clearStaleRoom();
+        return;
+      }
       setPlayers(data.players || []);
       if (data.public_code) {
         setRoomCode(data.public_code);
         localStorage.setItem('currentRoomCode', data.public_code);
       }
     };
+    const handleRoomError = (err: string) => {
+      if (String(err).includes('Você não está nesta sala')) clearStaleRoom();
+    };
 
     socket.on('room_state_updated', handleRoomUpdate);
+    socket.on('room_error', handleRoomError);
+    socket.on('left_room', clearStaleRoom);
 
     return () => {
       socket.off('room_state_updated', handleRoomUpdate);
+      socket.off('room_error', handleRoomError);
+      socket.off('left_room', clearStaleRoom);
     };
   }, [socket, roomId]);
 
@@ -146,6 +165,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleNav = (route: string) => {
     if (route === '/') return navigate('/');
     if (route === 'map') return navigate('/cases');
+    if (route === 'lobby') return navigate('/lobby');
     if (route === 'messages') return navigate('/messages');
     const activeRoomId = roomId || localStorage.getItem('currentRoomId');
     navigate(activeRoomId && route !== 'cases' && route !== 'profile' ? `/room/${activeRoomId}/${route}` : `/${route}`);
