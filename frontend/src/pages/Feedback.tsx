@@ -1,6 +1,14 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { CheckCircle2, ChevronRight, FileText, FolderOpen, Share2, Sparkles, Trophy, Users } from 'lucide-react';
 import { submitFeedback } from '../services/api';
+
+const teamVotes = [
+  { name: 'Investigadora_27', vote: 'Renato Álvares', avatar: '/backgrounds/clara_portrait.png', me: true },
+  { name: 'Verdadeiro_42', vote: 'Renato Álvares', avatar: '/backgrounds/tomas_portrait.png' },
+  { name: 'Curiosa_89', vote: 'Renato Álvares', avatar: '/backgrounds/helena_portrait.png' },
+  { name: 'Analista_18', vote: 'Renato Álvares', avatar: '/backgrounds/ev_photo.png' },
+];
 
 const Feedback: React.FC = () => {
   const { roomId } = useParams();
@@ -12,131 +20,142 @@ const Feedback: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const displayName = localStorage.getItem('userName') || 'Investigadora_27';
+  const progress = 68;
+
+  const rewardXp = useMemo(() => {
+    if (!rating) return 250;
+    return 200 + rating * 25;
+  }, [rating]);
+
   const send = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!roomId || !rating) return setError('Escolha uma nota para continuar.');
     setLoading(true);
-    const response = await submitFeedback({ roomId, userId: localStorage.getItem('userId') || '', rating, fairSolution: fair, masterError: false, confusion: false, playAnother, recommendationScore: rating });
-    if (response.success) setSent(true); else setError(response.error || 'Não foi possível registrar o feedback.');
+    setError('');
+    const response = await submitFeedback({
+      roomId,
+      userId: localStorage.getItem('userId') || '',
+      rating,
+      fairSolution: fair,
+      masterError: false,
+      confusion: false,
+      playAnother,
+      recommendationScore: rating,
+    });
+    if (response.success) setSent(true);
+    else setError(response.error || 'Não foi possível registrar o feedback.');
     setLoading(false);
   };
 
-  const cardStyle = {
-    backgroundColor: 'rgba(15, 20, 23, 0.7)',
-    border: '1px solid rgba(184,153,83,.3)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: '12px',
-    padding: '24px',
-    width: '100%',
-    height: 'max-content',
-    margin: '0'
+  const shareProgress = async () => {
+    const text = `Concluí um capítulo em Último Vestígio com ${progress}% de progresso na investigação.`;
+    if (navigator.share) {
+      await navigator.share({ title: 'Último Vestígio', text }).catch(() => {});
+      return;
+    }
+    await navigator.clipboard?.writeText(text).catch(() => {});
   };
 
-  const labelStyle = { display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '12px' } as any;
-
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: 'var(--petrol)',
-      backgroundImage: `url(/backgrounds/equipe-investigadores.png)`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      position: 'fixed',
-      top: 0, left: 0, right: 0, bottom: 0,
-      zIndex: 0,
-      color: 'var(--paper)',
-      fontFamily: 'var(--sans)',
-      margin: 0,
-      padding: 0
-    }}>
-      {/* Overlay gradiente para escurecer o fundo igual nas outras páginas */}
-      <div style={{
-        position: 'absolute',
-        top: 0, left: 0, right: 0, bottom: 0,
-        background: 'linear-gradient(to bottom, rgba(15, 20, 23, 0.6) 0%, rgba(15, 20, 23, 0.95) 100%)',
-        zIndex: 0
-      }}></div>
+    <div className="chapter-complete-page">
+      <div className="chapter-complete-bg" aria-hidden="true" />
 
-      <div style={{ 
-        position: 'fixed', 
-        inset: 0, 
-        zIndex: 1, 
-        padding: '112px 24px 24px 24px', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        boxSizing: 'border-box'
-      }}>
+      <section className="chapter-complete-hero">
+        <span className="eyebrow">Fim do capítulo</span>
+        <div className="chapter-complete-badge"><FolderOpen size={18} /> Capítulo 01</div>
+        <h1>Capítulo concluído</h1>
+        <div className="chapter-complete-rule" aria-hidden="true"><span /></div>
+        <strong>Ótimo trabalho, investigador.</strong>
+        <p>Você e sua equipe avançaram na investigação.</p>
+      </section>
+
+      <section className="chapter-card chapter-progress-card">
+        <div>
+          <span className="chapter-card-label">Progresso da investigação</span>
+          <div className="chapter-progress-ring" style={{ '--progress': `${progress * 3.6}deg` } as React.CSSProperties}>
+            <span>{progress}%</span>
+          </div>
+        </div>
+        <div className="chapter-progress-stats">
+          <span><FolderOpen size={19} /> <strong>18/29</strong> pistas encontradas</span>
+          <span><Users size={19} /> <strong>4/6</strong> suspeitos identificados</span>
+          <span><FileText size={19} /> <strong>7/12</strong> teorias formuladas</span>
+        </div>
+        <div className="chapter-next">
+          <span className="chapter-card-label">Próximo capítulo</span>
+          <div className="chapter-next-image" />
+          <small>Capítulo 02</small>
+          <strong>A carta anônima</strong>
+          <em>Em breve</em>
+        </div>
+      </section>
+
+      <section className="chapter-card chapter-rewards">
+        <span className="chapter-card-label">Recompensas</span>
+        <div className="chapter-reward-grid">
+          <div><strong>+{rewardXp}</strong><span>XP experiência</span></div>
+          <div><strong>+1</strong><span>ponto de dedução</span></div>
+          <div><Sparkles size={32} /><span>nova pista desbloqueada</span></div>
+        </div>
+      </section>
+
+      <section className="chapter-card chapter-votes">
+        <div className="chapter-card-heading">
+          <span className="chapter-card-label">Votação da equipe</span>
+          <small>{teamVotes.length}/6 jogadores</small>
+        </div>
+        {teamVotes.map((player) => (
+          <div className="chapter-vote-row" key={player.name}>
+            <img src={player.avatar} alt="" />
+            <div>
+              <strong>{player.me ? displayName : player.name} {player.me && <mark>Você</mark>}</strong>
+              <span>Votou em: {player.vote}</span>
+            </div>
+            <CheckCircle2 size={22} />
+          </div>
+        ))}
+        <button className="chapter-link-button" onClick={() => navigate(`/room/${roomId}/game`)}>
+          Ver resultado da votação <ChevronRight size={17} />
+        </button>
+      </section>
+
+      <section className="chapter-card chapter-feedback-card">
         {sent ? (
-          <div style={{ ...cardStyle, textAlign: 'center', width: '100%', maxWidth: '400px', height: 'max-content' }}>
-            <div style={{ fontSize: '48px', marginBottom: '12px', color: 'var(--accent-gold)' }}>✓</div>
-            <span style={labelStyle}>Registro concluído</span>
-            <h2 style={{ fontSize: '24px', marginBottom: '12px', fontFamily: 'var(--font-serif)', fontWeight: 400, color: '#F8F9FA' }}>Obrigado por investigar.</h2>
-            <p style={{ color: '#8E989F', fontSize: '13px', lineHeight: 1.5, marginBottom: '24px' }}>Seu feedback ajuda a calibrar os próximos casos.</p>
-            <button 
-              onClick={() => navigate('/cases')}
-              style={{ width: '100%', padding: '14px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--accent-gold)', color: '#000', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}
-            >
-              Desvendar mais casos
-            </button>
+          <div className="chapter-feedback-sent">
+            <Trophy size={34} />
+            <span className="chapter-card-label">Registro concluído</span>
+            <h2>Obrigado por investigar.</h2>
+            <p>Seu feedback ajuda a calibrar os próximos casos.</p>
           </div>
         ) : (
-          <div style={{ ...cardStyle, width: '100%', maxWidth: '400px', height: 'max-content' }}>
-            <span style={labelStyle}>Pós-Investigação</span>
-            <h2 style={{ fontSize: '24px', marginBottom: '8px', fontFamily: 'var(--font-serif)', fontWeight: 400, color: '#F8F9FA' }}>Como foi a experiência?</h2>
-            <p style={{ color: '#8E989F', fontSize: '12px', lineHeight: 1.5, marginBottom: '24px' }}>Avalie o caso para ajudar a central a melhorar as próximas missões.</p>
-            
-            <form onSubmit={send} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <div style={{ ...labelStyle, marginBottom: '8px', color: 'rgba(255,255,255,0.5)' }}>Sua nota geral</div>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                  {[1, 2, 3, 4, 5].map(value => (
-                    <button 
-                      type="button" 
-                      key={value}
-                      onClick={() => setRating(value)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        fontSize: '32px',
-                        cursor: 'pointer',
-                        color: rating >= value ? 'var(--accent-gold)' : 'rgba(255,255,255,0.1)',
-                        transition: 'color 0.2s',
-                        padding: 0
-                      }}
-                    >
-                      ★
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'rgba(255,255,255,0.8)', fontSize: '14px', cursor: 'pointer' }}>
-                  <input type="checkbox" checked={fair} onChange={e => setFair(e.target.checked)} style={{ accentColor: 'var(--accent-gold)', width: '18px', height: '18px' }} />
-                  A solução me pareceu justa
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'rgba(255,255,255,0.8)', fontSize: '14px', cursor: 'pointer' }}>
-                  <input type="checkbox" checked={playAnother} onChange={e => setPlayAnother(e.target.checked)} style={{ accentColor: 'var(--accent-gold)', width: '18px', height: '18px' }} />
-                  Eu jogaria outro caso
-                </label>
-              </div>
-
-              {error && (
-                <div style={{ color: '#ff6b6b', fontSize: '13px', textAlign: 'center' }}>{error}</div>
-              )}
-
-              <button 
-                type="submit" 
-                disabled={loading || rating === 0}
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: 'none', backgroundColor: (loading || rating === 0) ? 'rgba(255,255,255,0.1)' : 'var(--accent-gold)', color: (loading || rating === 0) ? 'rgba(255,255,255,0.3)' : '#000', fontWeight: 700, fontSize: '14px', cursor: (loading || rating === 0) ? 'default' : 'pointer', marginTop: '8px', transition: 'all 0.2s' }}
-              >
-                {loading ? 'Enviando...' : 'Enviar Feedback'}
-              </button>
-            </form>
-          </div>
+          <form onSubmit={send}>
+            <span className="chapter-card-label">Relatório rápido</span>
+            <h2>Como foi a experiência?</h2>
+            <div className="chapter-rating" aria-label="Sua nota geral">
+              {[1, 2, 3, 4, 5].map((value) => (
+                <button type="button" key={value} onClick={() => setRating(value)} className={rating >= value ? 'is-active' : ''}>
+                  ★
+                </button>
+              ))}
+            </div>
+            <label><input type="checkbox" checked={fair} onChange={(e) => setFair(e.target.checked)} /> A solução me pareceu justa</label>
+            <label><input type="checkbox" checked={playAnother} onChange={(e) => setPlayAnother(e.target.checked)} /> Eu jogaria outro caso</label>
+            {error && <p className="chapter-feedback-error">{error}</p>}
+            <button type="submit" className="chapter-primary-action" disabled={loading || rating === 0}>
+              {loading ? 'Enviando...' : 'Enviar relatório'}
+            </button>
+          </form>
         )}
+      </section>
+
+      <div className="chapter-actions">
+        <button className="chapter-secondary-action" onClick={shareProgress}>
+          <Share2 size={17} /> Compartilhar progresso
+        </button>
+        <button className="chapter-primary-action" onClick={() => navigate('/cases')}>
+          Continuar investigando
+        </button>
       </div>
     </div>
   );
