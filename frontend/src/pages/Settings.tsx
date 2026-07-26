@@ -133,10 +133,6 @@ const Settings: React.FC = () => {
           <h1>Personalize sua experiência</h1>
           <p>Ajuste o jogo do seu jeito.</p>
         </div>
-        <div className="settings-hero-art" aria-hidden="true">
-          <img src="/capa_quarto_7.png" alt="" />
-          <img src="/backgrounds/ev_letter.png" alt="" />
-        </div>
       </section>
 
       <section className="settings-section">

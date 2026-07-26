@@ -230,16 +230,13 @@
 .profile-delete-modal p { margin: 12px 0 0; color: rgba(242,238,229,.76); font-size: 13px; line-height: 1.55; }
 .profile-delete-modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .profile-delete-modal-actions .btn-secondary, .profile-delete-modal-actions .btn-danger { width: 100%; min-height: 44px; padding: 0 14px; font-size: 11px; }
-.settings-page { max-width: 760px; margin: 0 auto; padding: 18px 0 calc(96px + env(safe-area-inset-bottom)); color: var(--paper); }
-.settings-hero { position: relative; min-height: 206px; display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 18px; align-items: center; overflow: hidden; margin: -10px -24px 24px; padding: 32px 24px 28px; background: radial-gradient(circle at 78% 18%, rgba(184,153,83,.18), transparent 34%), linear-gradient(135deg, rgba(10,13,16,.96), rgba(31,42,48,.72)); border-bottom: 1px solid rgba(242,238,229,.08); }
-.settings-hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(10,13,16,.98) 0%, rgba(10,13,16,.6) 54%, rgba(10,13,16,.18) 100%); }
-.settings-hero-copy, .settings-hero-art { position: relative; z-index: 1; }
-.settings-hero h1 { max-width: 370px; margin: 10px 0; font-size: clamp(37px, 8vw, 58px); line-height: .96; letter-spacing: 0; }
+.settings-page { max-width: 760px; margin: 0 auto; padding: 0 0 calc(96px + env(safe-area-inset-bottom)); color: var(--paper); }
+.settings-hero { position: relative; min-height: 292px; display: flex; align-items: flex-end; overflow: hidden; margin: -88px -24px 24px; padding: calc(108px + env(safe-area-inset-top)) 24px 34px; background: linear-gradient(180deg, rgba(10,13,16,.15) 0%, rgba(10,13,16,.52) 46%, rgba(31,42,48,.96) 100%), url('/backgrounds/equipe-investigadores.png') center top/cover; }
+.settings-hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 92px; pointer-events: none; background: linear-gradient(180deg, rgba(31,42,48,0) 0%, var(--petrol) 100%); }
+.settings-hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(10,13,16,.9) 0%, rgba(10,13,16,.42) 58%, rgba(10,13,16,.12) 100%); }
+.settings-hero-copy { position: relative; z-index: 1; }
+.settings-hero h1 { max-width: 390px; margin: 10px 0; font-size: clamp(39px, 8vw, 62px); line-height: .96; letter-spacing: 0; }
 .settings-hero p { margin: 0; color: rgba(242,238,229,.76); font-size: 14px; }
-.settings-hero-art { height: 150px; }
-.settings-hero-art img { position: absolute; width: 116px; height: 150px; object-fit: cover; border: 1px solid rgba(209,187,134,.3); box-shadow: 0 16px 45px rgba(0,0,0,.36); filter: saturate(.82) contrast(.92); }
-.settings-hero-art img:first-child { right: 76px; top: 6px; transform: rotate(-7deg); }
-.settings-hero-art img:last-child { right: 0; top: 24px; transform: rotate(9deg); }
 .settings-section { display: grid; gap: 10px; margin-top: 22px; }
 .settings-list, .settings-account-card { overflow: hidden; border: 1px solid rgba(242,238,229,.09); border-radius: 8px; background: rgba(10,13,16,.38); box-shadow: 0 14px 38px rgba(0,0,0,.16); }
 .settings-account-card { width: 100%; min-height: 82px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 14px; align-items: center; padding: 14px; color: var(--paper); text-align: left; }
@@ -477,12 +474,9 @@
   .profile-account-actions { grid-template-columns: 1fr; }
   .profile-delete-modal { padding: 20px; }
   .profile-delete-modal-actions { grid-template-columns: 1fr; }
-  .settings-page { padding-top: 4px; }
-  .settings-hero { grid-template-columns: 1fr 118px; min-height: 190px; }
-  .settings-hero h1 { max-width: 320px; }
-  .settings-hero-art { height: 118px; opacity: .82; }
-  .settings-hero-art img { width: 86px; height: 118px; }
-  .settings-hero-art img:first-child { right: 42px; }
+  .settings-page { padding-top: 0; }
+  .settings-hero { min-height: 276px; margin-top: -76px; padding-top: calc(100px + env(safe-area-inset-top)); background-position: center top; }
+  .settings-hero h1 { max-width: 330px; }
   .settings-row--slider { grid-template-columns: 28px minmax(0,1fr) 88px 38px; }
   .settings-row-value { max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
   .chapter-complete-page { margin-top: -76px; margin-bottom: calc(-104px - env(safe-area-inset-bottom)); padding: calc(90px + env(safe-area-inset-top)) 24px calc(92px + env(safe-area-inset-bottom)); }
