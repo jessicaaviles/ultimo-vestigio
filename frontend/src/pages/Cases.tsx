@@ -341,7 +341,8 @@ const Cases: React.FC = () => {
             {/* Botão de Escolha */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
               {selectedCase.slug === 'blackwell' ? (
-                <button 
+                <button
+                  className="case-play-button"
                   onClick={() => {
                     if (!user || !user.email) {
                       navigate(`/register?return=/map/${selectedCase.slug}`);
@@ -369,7 +370,7 @@ const Cases: React.FC = () => {
                   Jogar (Modo imersivo)
                 </button>
               ) : (
-                <button className="btn-primary"
+                <button className="btn-primary case-play-button"
                   onClick={() => {
                     if (!user || !user.email) {
                       navigate(`/register?return=/create?caseId=${selectedCase.slug}`);
