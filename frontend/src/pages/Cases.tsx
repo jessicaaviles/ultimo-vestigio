@@ -378,12 +378,12 @@ const Cases: React.FC = () => {
                     }
                   }}
                   style={{
-                    backgroundColor: 'var(--olive)',
-                    color: 'var(--paper)',
-                    border: 'none',
+                    backgroundColor: 'var(--accent-gold)',
+                    color: '#0A0D10',
+                    border: '1px solid rgba(245,214,129,0.55)',
                     padding: '16px',
                     borderRadius: '8px',
-                    fontWeight: 600,
+                    fontWeight: 800,
                     fontSize: '14px',
                     cursor: 'pointer',
                     textTransform: 'uppercase',
