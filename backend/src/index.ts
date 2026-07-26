@@ -562,7 +562,7 @@ io.on('connection', (socket) => {
       io.to(roomId).emit('question_processing', { userId });
 
       // 1. Processar Pergunta no Mestre IA (Gemini)
-      const aiResponse = await processQuestion(roomId, cleanQuestion, room.case_version_id);
+      let aiResponse = await processQuestion(roomId, cleanQuestion, room.case_version_id);
 
       // Classificações que pedem reformulação semântica
       if (['AMBIGUOUS', 'MULTI_PREMISE', 'BLOCKED'].includes(aiResponse.classification)) {
@@ -571,14 +571,15 @@ io.on('connection', (socket) => {
         return;
       }
 
-      // Falha TÉCNICA do Mestre IA (fallback_used=true) — não salvar, pedir nova tentativa
-      // ATENÇÃO: classification=UNKNOWN com fallback_used=false é resposta VÁLIDA do jogo
+      // Falha técnica do Mestre não deve bloquear o fluxo do jogo como reformulação.
+      // A pergunta é registrada com uma resposta segura, permitindo seguir o turno.
       if (aiResponse.fallback_used === true) {
-        socket.emit('question_needs_reformulation', {
-          classification: 'TECHNICAL_ERROR',
-          message: aiResponse.rendered_text
-        });
-        return;
+        aiResponse = {
+          ...aiResponse,
+          classification: 'UNKNOWN',
+          rendered_text: aiResponse.rendered_text || 'Desconhecido. O arquivo não confirma essa hipótese neste momento.',
+          fallback_used: false
+        };
       }
 
       let newTurnId = room.current_turn_id;
