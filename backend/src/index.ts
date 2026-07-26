@@ -26,6 +26,26 @@ const io = new Server(server, {
 const prisma = new PrismaClient();
 const requestWindows = new Map<string, { startedAt: number; count: number }>();
 
+const initialRoomSettings = (existingSettings?: string | null) => {
+  let parsed: any = {};
+  try { parsed = existingSettings ? JSON.parse(String(existingSettings)) : {}; } catch {}
+  return JSON.stringify({
+    turn_order_mode: parsed.turn_order_mode || 'random_fixed',
+    vote_rule: parsed.vote_rule || 'simple_majority',
+    turn_timer_seconds: [null, 30, 60, 90].includes(parsed.turn_timer_seconds) ? parsed.turn_timer_seconds : null,
+    hint_mode: parsed.hint_mode || 'progressive',
+    unlockedLocations: ['living_room'],
+    unlockedClues: [],
+    readReceipts: {},
+    boardItems: [],
+    connections: [],
+    groups: [],
+    timeline: [],
+    finalVotes: {},
+    version: 1
+  });
+};
+
 const roomState = async (roomId: string) => {
   const room = await prisma.rooms.findUnique({
     where: { id: roomId },
@@ -42,7 +62,8 @@ const roomState = async (roomId: string) => {
   
   const priorEvaluation = await prisma.theory_evaluations.findFirst({ where: { room_id: roomId }, orderBy: { attempt_number: 'desc' } });
   const currentAttemptNumber = priorEvaluation ? priorEvaluation.attempt_number + 1 : 1;
-  const activeTheories = room.theories.filter(t => t.attempt_number === currentAttemptNumber);
+  const activePlayerIds = new Set(room.players.map((player) => player.id));
+  const activeTheories = room.theories.filter(t => t.attempt_number === currentAttemptNumber && activePlayerIds.has(t.player_id));
 
   return {
     ...room,
@@ -226,14 +247,17 @@ io.on('connection', (socket) => {
     try {
       const room = await prisma.rooms.findUnique({
         where: { id: roomId },
-        include: { players: { where: { removed_at: null }, orderBy: { joined_at: 'asc' } } }
+        include: {
+          players: { where: { removed_at: null }, orderBy: [{ turn_order: 'asc' }, { joined_at: 'asc' }] },
+          turns: { where: { status: 'ACTIVE' } }
+        }
       });
       if (!room || room.deleted_at) {
         callback?.({ success: false, error: 'Sala não encontrada.' });
         return;
       }
-      if (room.status !== 'LOBBY') {
-        callback?.({ success: false, error: 'Só é possível sair de uma sala antes da investigação começar.' });
+      if (['GAME_OVER', 'COMPLETED', 'CANCELLED'].includes(room.status)) {
+        callback?.({ success: false, error: 'Esta sala já foi encerrada.' });
         return;
       }
 
@@ -245,6 +269,7 @@ io.on('connection', (socket) => {
 
       const now = new Date();
       const remainingPlayers = room.players.filter((item) => item.id !== player.id);
+      const activeTurn = room.turns.find((turn) => turn.id === room.current_turn_id);
       await prisma.$transaction(async (tx) => {
         await tx.room_players.update({
           where: { id: player.id },
@@ -263,15 +288,48 @@ io.on('connection', (socket) => {
           return;
         }
 
+        let nextTurnId = room.current_turn_id;
+        let nextRound = room.current_round;
+        if (room.status === 'IN_PROGRESS' && activeTurn?.player_id === player.id) {
+          await tx.turns.update({
+            where: { id: activeTurn.id },
+            data: { status: 'PASSED', passed_at: now }
+          });
+
+          const ordered = remainingPlayers
+            .filter((item) => item.turn_order !== null && item.turn_order !== undefined)
+            .sort((a, b) => (a.turn_order ?? 0) - (b.turn_order ?? 0));
+          const fallbackOrder = remainingPlayers.slice().sort((a, b) => a.joined_at.getTime() - b.joined_at.getTime());
+          const candidates = ordered.length ? ordered : fallbackOrder;
+          const currentOrder = activeTurn.order_index;
+          const nextPlayer = candidates.find((item) => (item.turn_order ?? 0) > currentOrder) || candidates[0];
+          const nextOrderIndex = nextPlayer.turn_order ?? 0;
+          nextRound = nextOrderIndex <= currentOrder ? activeTurn.round_number + 1 : activeTurn.round_number;
+          const newTurn = await tx.turns.create({
+            data: {
+              room_id: room.id,
+              player_id: nextPlayer.id,
+              round_number: nextRound,
+              order_index: nextOrderIndex,
+              status: 'ACTIVE',
+              started_at: now
+            }
+          });
+          nextTurnId = newTurn.id;
+        }
+
         if (room.host_user_id === String(userId)) {
           const successor = remainingPlayers[0];
-          await tx.rooms.update({ where: { id: room.id }, data: { host_user_id: successor.anonymous_user_id } });
+          await tx.rooms.update({ where: { id: room.id }, data: { host_user_id: successor.anonymous_user_id, current_turn_id: nextTurnId, current_round: nextRound } });
           await tx.room_players.update({ where: { id: successor.id }, data: { is_host: true, ready_status: 'READY' } });
           io.to(roomId).emit('host_transferred', { playerId: successor.id });
+        } else if (nextTurnId !== room.current_turn_id || nextRound !== room.current_round) {
+          await tx.rooms.update({ where: { id: room.id }, data: { current_turn_id: nextTurnId, current_round: nextRound } });
         }
       });
 
       socket.leave(roomId);
+      socket.emit('left_room', { roomId });
       await recordAnalytics('room_left', roomId, userId);
       await recordRoomEvent(roomId, 'room_left', { userId });
       if (remainingPlayers.length > 0) await emitRoomState(roomId);
@@ -279,6 +337,81 @@ io.on('connection', (socket) => {
     } catch (error) {
       console.error('Erro em leave_room:', error);
       callback?.({ success: false, error: 'Não foi possível sair da sala.' });
+    }
+  });
+
+  socket.on('reset_room_progress', async ({ roomId, userId }, callback?: (response: { success: boolean; error?: string }) => void) => {
+    try {
+      const room = await prisma.rooms.findUnique({
+        where: { id: roomId },
+        include: { players: { where: { removed_at: null } } }
+      });
+      if (!room || room.deleted_at) {
+        callback?.({ success: false, error: 'Sala não encontrada.' });
+        return;
+      }
+      if (room.host_user_id !== String(userId)) {
+        callback?.({ success: false, error: 'Apenas o anfitrião pode reiniciar o caso.' });
+        return;
+      }
+      if (!['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL'].includes(room.status)) {
+        callback?.({ success: false, error: 'Este caso ainda não foi iniciado.' });
+        return;
+      }
+
+      await prisma.$transaction(async (tx) => {
+        const votes = await tx.votes.findMany({ where: { room_id: roomId }, select: { id: true } });
+        const voteIds = votes.map((vote) => vote.id);
+        if (voteIds.length) {
+          await tx.vote_responses.deleteMany({ where: { vote_id: { in: voteIds } } });
+        }
+        await tx.votes.deleteMany({ where: { room_id: roomId } });
+        await tx.theory_evaluations.deleteMany({ where: { room_id: roomId } });
+        await tx.theories.deleteMany({ where: { room_id: roomId } });
+        await tx.hint_usages.deleteMany({ where: { room_id: roomId } });
+        await tx.game_results.deleteMany({ where: { room_id: roomId } });
+        await tx.master_answers.updateMany({ where: { question: { room_id: roomId } }, data: { corrected_answer_id: null } });
+        await tx.master_answers.deleteMany({ where: { question: { room_id: roomId } } });
+        await tx.question_interpretations.deleteMany({ where: { question: { room_id: roomId } } });
+        await tx.questions.updateMany({ where: { room_id: roomId }, data: { repeated_question_id: null } });
+        await tx.questions.deleteMany({ where: { room_id: roomId } });
+        await tx.turns.deleteMany({ where: { room_id: roomId } });
+        await tx.room_events.deleteMany({ where: { room_id: roomId } });
+        await tx.room_players.updateMany({
+          where: { room_id: roomId, removed_at: null },
+          data: {
+            turn_order: null,
+            ready_status: 'NOT_READY',
+            connection_status: 'CONNECTED',
+            last_seen_at: new Date()
+          }
+        });
+        await tx.room_players.updateMany({
+          where: { room_id: roomId, anonymous_user_id: room.host_user_id, removed_at: null },
+          data: { ready_status: 'READY', is_host: true }
+        });
+        await tx.rooms.update({
+          where: { id: roomId },
+          data: {
+            status: 'LOBBY',
+            current_round: 0,
+            current_turn_id: null,
+            settings: initialRoomSettings(room.settings),
+            completed_at: null,
+            cancelled_at: null,
+            last_activity_at: new Date()
+          }
+        });
+      });
+
+      await recordAnalytics('room_progress_reset', roomId, userId);
+      await recordRoomEvent(roomId, 'room_progress_reset', { userId });
+      io.to(roomId).emit('room_progress_reset', { roomId });
+      await emitRoomState(roomId);
+      callback?.({ success: true });
+    } catch (error) {
+      console.error('Erro em reset_room_progress:', error);
+      callback?.({ success: false, error: 'Não foi possível reiniciar o caso.' });
     }
   });
 
@@ -616,12 +749,12 @@ io.on('connection', (socket) => {
 
   socket.on('cast_vote', async ({ roomId, voteId, userId, optionId }) => {
     try {
-      const player = await prisma.room_players.findFirst({ where: { room_id: roomId, anonymous_user_id: userId } });
+      const player = await prisma.room_players.findFirst({ where: { room_id: roomId, anonymous_user_id: userId, removed_at: null } });
       const vote = await prisma.votes.findUnique({ where: { id: voteId }, include: { responses: true } });
       if (!player || !vote || vote.room_id !== roomId || vote.status !== 'OPEN') return;
       await prisma.vote_responses.upsert({ where: { vote_id_player_id: { vote_id: voteId, player_id: player.id } }, update: { option_id: String(optionId) }, create: { vote_id: voteId, player_id: player.id, option_id: String(optionId) } });
       const responses = await prisma.vote_responses.findMany({ where: { vote_id: voteId } });
-      const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: true } });
+      const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: { where: { removed_at: null } } } });
       const counts = responses.reduce<Record<string, number>>((all, response) => ({ ...all, [response.option_id]: (all[response.option_id] || 0) + 1 }), {});
       const activePlayersCount = room?.players.filter(p => p.connection_status === 'CONNECTED').length || 1;
       const majority = Math.floor(activePlayersCount / 2) + 1;
@@ -658,7 +791,7 @@ io.on('connection', (socket) => {
     try {
       const room = await prisma.rooms.findUnique({
         where: { id: roomId },
-        include: { players: true, case_version: true }
+        include: { players: { where: { removed_at: null } }, case_version: true }
       });
       if (!room || room.status !== 'SOLVING') return;
 
@@ -683,7 +816,8 @@ io.on('connection', (socket) => {
       });
 
       // Verificar se todos enviaram
-       const allTheories = await prisma.theories.findMany({ where: { room_id: roomId, attempt_number: attemptNumber } });
+       const activePlayerIds = room.players.map((activePlayer) => activePlayer.id);
+       const allTheories = await prisma.theories.findMany({ where: { room_id: roomId, attempt_number: attemptNumber, player_id: { in: activePlayerIds } } });
       
       if (allTheories.length >= room.players.length) {
         // Todos enviaram: revelar as teorias e abrir a votação oficial.

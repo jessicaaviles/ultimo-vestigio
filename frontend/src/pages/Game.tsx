@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Award, BadgeCheck, Mic, Square, Star, Trophy, TrendingUp, Volume2 } from 'lucide-react';
+import { Award, BadgeCheck, LogOut, Mic, RotateCcw, Square, Star, Trophy, TrendingUp, Volume2 } from 'lucide-react';
 import { useSocket } from '../contexts/useSocket';
 import Loading from '../components/Loading';
 import FinalTheoryForm from '../components/FinalTheoryForm';
@@ -38,6 +38,7 @@ const Game: React.FC = () => {
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [myVote, setMyVote] = useState<string | null>(null);
   const [voteTiedMessage, setVoteTiedMessage] = useState(false);
+  const [roomActionLoading, setRoomActionLoading] = useState<'leave' | 'reset' | null>(null);
   const typingTimeoutRef = useRef<any>(null);
   const recognitionRef = useRef<any>(null);
   const historyRef = useRef<HTMLDivElement>(null);
@@ -193,6 +194,22 @@ const Game: React.FC = () => {
       setProcessingUser(null);
       setLoading(false);
     });
+    socket.on('left_room', () => {
+      localStorage.removeItem('currentRoomId');
+      localStorage.removeItem('currentRoomCode');
+      navigate('/cases', { replace: true });
+    });
+    socket.on('room_progress_reset', () => {
+      setHistory([]);
+      setHints([]);
+      setActiveVote(null);
+      setGameResult(null);
+      setTrueSolution(null);
+      setEvaluationNotice(null);
+      setQuestion('');
+      setRoomActionLoading(null);
+      navigate(`/room/${roomId}/lobby`, { replace: true });
+    });
 
     return () => {
       socket.off('room_state_updated');
@@ -210,9 +227,11 @@ const Game: React.FC = () => {
       socket.off('player_typing');
       socket.off('question_processing');
       socket.off('question_processing_cancelled');
+      socket.off('left_room');
+      socket.off('room_progress_reset');
       socket.off('connect', handleConnect);
     };
-  }, [socket, roomId, autoSpeak, speakAnswer]);
+  }, [socket, roomId, autoSpeak, speakAnswer, navigate]);
 
   const loadingTimeoutRef = useRef<number | null>(null);
   const syncIntervalRef = useRef<number | null>(null);
@@ -269,6 +288,33 @@ const Game: React.FC = () => {
   const requestClarification = (questionId: string) => socket?.emit('request_clarification', { roomId, userId, questionId });
   const contestAnswer = (questionId: string) => socket?.emit('contest_answer', { roomId, userId, questionId, reason: 'possible_contradiction' });
   const handleFinishGame = () => { setLoading(true); socket?.emit('finish_game', { roomId, userId: localStorage.getItem('userId') }); };
+  const handleLeaveRoom = () => {
+    if (!socket || !roomId || !userId || roomActionLoading) return;
+    const confirmed = window.confirm('Sair desta sala? A investigação continuará para os outros jogadores, se houver.');
+    if (!confirmed) return;
+    setRoomActionLoading('leave');
+    socket.emit('leave_room', { roomId, userId }, (response: { success: boolean; error?: string }) => {
+      if (response?.success) {
+        localStorage.removeItem('currentRoomId');
+        localStorage.removeItem('currentRoomCode');
+        navigate('/cases', { replace: true });
+        return;
+      }
+      setErrorMessage(response?.error || 'Não foi possível sair da sala.');
+      setRoomActionLoading(null);
+    });
+  };
+  const handleResetProgress = () => {
+    if (!socket || !roomId || !userId || roomActionLoading) return;
+    const confirmed = window.confirm('Reiniciar este caso do zero? Perguntas, pistas, votos e teorias desta sala serão apagados.');
+    if (!confirmed) return;
+    setRoomActionLoading('reset');
+    socket.emit('reset_room_progress', { roomId, userId }, (response: { success: boolean; error?: string }) => {
+      if (response?.success) return;
+      setErrorMessage(response?.error || 'Não foi possível reiniciar o caso.');
+      setRoomActionLoading(null);
+    });
+  };
 
   const userId = localStorage.getItem('userId');
   const players = roomData?.players || [];
@@ -386,10 +432,15 @@ const Game: React.FC = () => {
                  status === 'PAUSED' ? '⏸ Pausada' : 'Fim de Jogo'}
               </div>
             </div>
-            {status === 'IN_PROGRESS' && (
+            {['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL'].includes(String(status)) && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '12px' }}>
-                <button onClick={handleStartSolving} style={{ padding: '8px 14px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}>Tentar Resolver</button>
-                {isHost && <button style={{ padding: '8px 14px', backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '12px' }} onClick={() => socket?.emit('pause_room', { roomId, userId })}>Pausar</button>}
+                {status === 'IN_PROGRESS' && (
+                  <button onClick={handleStartSolving} style={{ padding: '8px 14px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}>Tentar Resolver</button>
+                )}
+                {isHost && status === 'IN_PROGRESS' && <button style={{ padding: '8px 14px', backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '12px' }} onClick={() => socket?.emit('pause_room', { roomId, userId })}>Pausar</button>}
+                {isHost && status === 'PAUSED' && <button style={{ padding: '8px 14px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }} onClick={() => socket?.emit('resume_room', { roomId, userId })}>Retomar</button>}
+                {isHost && <button onClick={handleResetProgress} disabled={roomActionLoading !== null} style={{ padding: '8px 14px', backgroundColor: 'rgba(184,153,83,0.12)', color: 'var(--gold-soft)', border: '1px solid rgba(184,153,83,0.28)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}><RotateCcw size={13} /> {roomActionLoading === 'reset' ? 'Reiniciando...' : 'Reiniciar'}</button>}
+                <button onClick={handleLeaveRoom} disabled={roomActionLoading !== null} style={{ padding: '8px 14px', backgroundColor: 'rgba(115,43,35,0.2)', color: '#f7ddd8', border: '1px solid rgba(205,93,70,0.38)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}><LogOut size={13} /> {roomActionLoading === 'leave' ? 'Saindo...' : 'Sair'}</button>
               </div>
             )}
           </div>
