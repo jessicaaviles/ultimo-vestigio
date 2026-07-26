@@ -1,0 +1,250 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  Accessibility,
+  Bell,
+  CalendarDays,
+  ChevronRight,
+  FileText,
+  Globe2,
+  HelpCircle,
+  Info,
+  LogOut,
+  Mail,
+  Megaphone,
+  Mic2,
+  Moon,
+  Music2,
+  ShieldCheck,
+  Type,
+  Volume2,
+} from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+
+type SettingsState = {
+  language: string;
+  theme: string;
+  textSize: string;
+  accessibility: string;
+  music: number;
+  effects: number;
+  voices: number;
+  push: boolean;
+  invites: boolean;
+  updates: boolean;
+  weekly: boolean;
+};
+
+const STORAGE_KEY = 'uv_settings';
+
+const defaultSettings: SettingsState = {
+  language: 'Português (Brasil)',
+  theme: 'Escuro',
+  textSize: 'Médio',
+  accessibility: 'Padrão',
+  music: 70,
+  effects: 90,
+  voices: 60,
+  push: true,
+  invites: true,
+  updates: true,
+  weekly: false,
+};
+
+const cycle = <T,>(values: T[], current: T) => values[(values.indexOf(current) + 1) % values.length];
+
+const Settings: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const [settings, setSettings] = useState<SettingsState>(() => {
+    try {
+      return { ...defaultSettings, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') };
+    } catch {
+      return defaultSettings;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  }, [settings]);
+
+  const accountSubtitle = useMemo(() => {
+    const level = user?.hasProfile ? 'Nível 02' : 'Perfil local';
+    return user?.email ? `${level} · Conta sincronizada` : `${level} · Perfil neste dispositivo`;
+  }, [user]);
+
+  const update = <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
+    setSettings((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login', { replace: true });
+  };
+
+  const preferenceRows = [
+    {
+      icon: Globe2,
+      label: 'Idioma',
+      value: settings.language,
+      onClick: () => update('language', cycle(['Português (Brasil)', 'English'], settings.language)),
+    },
+    {
+      icon: Moon,
+      label: 'Tema',
+      value: settings.theme,
+      onClick: () => update('theme', cycle(['Escuro', 'Alto contraste'], settings.theme)),
+    },
+    {
+      icon: Type,
+      label: 'Tamanho do texto',
+      value: settings.textSize,
+      onClick: () => update('textSize', cycle(['Pequeno', 'Médio', 'Grande'], settings.textSize)),
+    },
+    {
+      icon: Accessibility,
+      label: 'Acessibilidade',
+      value: settings.accessibility,
+      helper: 'Contraste, movimento e legibilidade.',
+      onClick: () => update('accessibility', cycle(['Padrão', 'Contraste alto', 'Reduzir movimento'], settings.accessibility)),
+    },
+  ];
+
+  const audioRows = [
+    { icon: Music2, label: 'Música', key: 'music' as const },
+    { icon: Volume2, label: 'Efeitos sonoros', key: 'effects' as const },
+    { icon: Mic2, label: 'Voz dos personagens', key: 'voices' as const },
+  ];
+
+  const notificationRows = [
+    { icon: Bell, label: 'Notificações push', key: 'push' as const },
+    { icon: Mail, label: 'Convites de amigos', key: 'invites' as const },
+    { icon: Megaphone, label: 'Novidades e atualizações', key: 'updates' as const },
+    { icon: CalendarDays, label: 'Resumo semanal', key: 'weekly' as const },
+  ];
+
+  const aboutRows = [
+    { icon: HelpCircle, label: 'Ajuda e suporte', value: '', onClick: () => navigate('/tutorial') },
+    { icon: ShieldCheck, label: 'Política de privacidade', value: '' },
+    { icon: FileText, label: 'Termos de uso', value: '' },
+    { icon: Info, label: 'Versão do jogo', value: '1.0.2' },
+  ];
+
+  return (
+    <div className="settings-page">
+      <section className="settings-hero">
+        <div className="settings-hero-copy">
+          <span className="eyebrow">Configurações</span>
+          <h1>Personalize sua experiência</h1>
+          <p>Ajuste o jogo do seu jeito.</p>
+        </div>
+        <div className="settings-hero-art" aria-hidden="true">
+          <img src="/capa_quarto_7.png" alt="" />
+          <img src="/backgrounds/ev_letter.png" alt="" />
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <span className="eyebrow">Conta</span>
+        <button className="settings-account-card" onClick={() => navigate('/profile')}>
+          <span className="settings-account-avatar">
+            <img
+              src={user?.photo || '/backgrounds/helena_portrait.png'}
+              alt=""
+              onError={(event) => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = '/backgrounds/helena_portrait.png';
+              }}
+            />
+          </span>
+          <span className="settings-account-copy">
+            <strong>{user?.displayName || 'Investigador'}</strong>
+            <span>{accountSubtitle}</span>
+          </span>
+          <ChevronRight size={18} />
+        </button>
+      </section>
+
+      <section className="settings-section">
+        <span className="eyebrow">Preferências</span>
+        <div className="settings-list">
+          {preferenceRows.map(({ icon: Icon, label, value, helper, onClick }) => (
+            <button className="settings-row" key={label} onClick={onClick}>
+              <Icon size={20} strokeWidth={1.5} />
+              <span className="settings-row-copy">
+                <strong>{label}</strong>
+                {helper && <small>{helper}</small>}
+              </span>
+              <span className="settings-row-value">{value}</span>
+              <ChevronRight size={17} />
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <span className="eyebrow">Áudio</span>
+        <div className="settings-list">
+          {audioRows.map(({ icon: Icon, label, key }) => (
+            <label className="settings-row settings-row--slider" key={key}>
+              <Icon size={20} strokeWidth={1.5} />
+              <span className="settings-row-copy">
+                <strong>{label}</strong>
+              </span>
+              <input
+                aria-label={label}
+                type="range"
+                min={0}
+                max={100}
+                value={settings[key]}
+                onChange={(event) => update(key, Number(event.target.value))}
+              />
+              <span className="settings-row-percent">{settings[key]}%</span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <span className="eyebrow">Notificações</span>
+        <div className="settings-list">
+          {notificationRows.map(({ icon: Icon, label, key }) => (
+            <label className="settings-row settings-row--toggle" key={key}>
+              <Icon size={20} strokeWidth={1.5} />
+              <span className="settings-row-copy">
+                <strong>{label}</strong>
+              </span>
+              <input
+                type="checkbox"
+                checked={settings[key]}
+                onChange={(event) => update(key, event.target.checked)}
+              />
+              <span className="settings-switch" aria-hidden="true" />
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <span className="eyebrow">Sobre</span>
+        <div className="settings-list">
+          {aboutRows.map(({ icon: Icon, label, value, onClick }) => (
+            <button className="settings-row" key={label} onClick={onClick} disabled={!onClick}>
+              <Icon size={20} strokeWidth={1.5} />
+              <span className="settings-row-copy">
+                <strong>{label}</strong>
+              </span>
+              {value ? <span className="settings-row-value">{value}</span> : <ChevronRight size={17} />}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <button className="settings-logout" onClick={handleLogout}>
+        <LogOut size={17} /> Sair da conta
+      </button>
+    </div>
+  );
+};
+
+export default Settings;

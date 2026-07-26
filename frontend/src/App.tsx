@@ -12,6 +12,7 @@ import Game from './pages/Game';
 import Cases from './pages/Cases';
 import Messages from './pages/Messages';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import LobbyList from './pages/LobbyList';
@@ -51,6 +52,7 @@ function App() {
               <Route path="/cases" element={<Layout><Cases /></Layout>} />
               <Route path="/messages" element={<Layout><Messages /></Layout>} />
               <Route path="/profile" element={<Layout><ProtectedRoute><Profile /></ProtectedRoute></Layout>} />
+              <Route path="/settings" element={<Layout><ProtectedRoute><Settings /></ProtectedRoute></Layout>} />
               <Route path="/lobby" element={<Layout><ProtectedRoute><LobbyList /></ProtectedRoute></Layout>} />
               <Route path="/room/:roomId/lobby" element={<Layout><ProtectedRoute><Lobby /></ProtectedRoute></Layout>} />
               <Route path="/room/:roomCode" element={<Layout><ProtectedRoute><RoomEntry /></ProtectedRoute></Layout>} />

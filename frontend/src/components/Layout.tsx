@@ -503,6 +503,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>
             Meu perfil
           </button>
+          <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>
+            Configurações
+          </button>
           <button className="menu-dropdown-item menu-dropdown-item--with-badge" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/messages'); }}>
             Mensagens
             {notifications.messages > 0 && (
