@@ -140,6 +140,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         localStorage.setItem('currentRoomId', res.data.roomId);
         localStorage.setItem('currentRoomCode', cleanCode);
         setJoinCodeInput('');
+        const startedStatuses = new Set(['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
+        if (startedStatuses.has(String(res.data.status))) navigate(`/room/${res.data.roomId}/game`);
       } else {
         setLobbyError(res.error || 'Código de sala inválido.');
       }

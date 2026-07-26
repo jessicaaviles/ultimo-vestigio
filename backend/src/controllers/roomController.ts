@@ -239,30 +239,47 @@ export const joinRoom = async (req: Request, res: Response) => {
     if (!user || user.deleted_at) return res.status(401).json({ success: false, error: 'Invalid anonymous identity' });
 
     const room = await prisma.rooms.findUnique({
-      where: { public_code: cleanCode }
+      where: { public_code: cleanCode },
+      include: { players: { where: { removed_at: null }, select: { id: true, anonymous_user_id: true, turn_order: true } } }
     });
 
     if (!room) {
       return res.status(404).json({ success: false, error: 'Room not found' });
     }
 
-    if (room.status !== 'LOBBY') {
-      return res.status(400).json({ success: false, error: 'Game already started' });
+    const joinableStatuses = new Set(['LOBBY', 'IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
+    if (!joinableStatuses.has(room.status)) {
+      return res.status(400).json({ success: false, error: 'Esta sala já foi encerrada.' });
     }
     if (room.expires_at <= new Date()) {
       return res.status(410).json({ success: false, error: 'Room expired' });
     }
 
-    // Check player count
-    const playerCount = await prisma.room_players.count({
-      where: { room_id: room.id, removed_at: null }
-    });
-
-    if (playerCount >= room.max_players) {
+    const existingActivePlayer = room.players.find((item) => item.anonymous_user_id === userId);
+    if (!existingActivePlayer && room.players.length >= room.max_players) {
       return res.status(400).json({ success: false, error: 'Room is full' });
     }
 
-    // Upsert player
+    const isLobby = room.status === 'LOBBY';
+    const nextTurnOrder = isLobby
+      ? null
+      : Math.max(-1, ...room.players.map((item) => item.turn_order ?? -1)) + 1;
+    const existingPlayerRecord = await prisma.room_players.findUnique({
+      where: {
+        room_id_anonymous_user_id: {
+          room_id: room.id,
+          anonymous_user_id: userId
+        }
+      },
+      select: { turn_order: true, removed_at: true }
+    });
+    const shouldAssignTurnOrder = !isLobby && (
+      !existingPlayerRecord ||
+      Boolean(existingPlayerRecord.removed_at) ||
+      existingPlayerRecord.turn_order === null ||
+      existingPlayerRecord.turn_order === undefined
+    );
+
     const player = await prisma.room_players.upsert({
       where: {
         room_id_anonymous_user_id: {
@@ -273,7 +290,8 @@ export const joinRoom = async (req: Request, res: Response) => {
       update: {
         display_name: cleanName || user.default_display_name || 'Investigador',
         connection_status: 'CONNECTED',
-        ready_status: room.host_user_id === userId ? 'READY' : 'NOT_READY',
+        ready_status: isLobby && room.host_user_id !== userId ? 'NOT_READY' : 'READY',
+        ...(shouldAssignTurnOrder ? { turn_order: nextTurnOrder } : {}),
         removed_at: null,
         left_at: null,
         last_seen_at: new Date()
@@ -284,7 +302,8 @@ export const joinRoom = async (req: Request, res: Response) => {
         display_name: cleanName || user.default_display_name || 'Investigador',
         is_host: room.host_user_id === userId,
         connection_status: 'CONNECTED',
-        ready_status: 'NOT_READY'
+        ready_status: isLobby && room.host_user_id !== userId ? 'NOT_READY' : 'READY',
+        turn_order: nextTurnOrder
       }
     });
 
@@ -293,7 +312,8 @@ export const joinRoom = async (req: Request, res: Response) => {
       data: {
         roomId: room.id,
         playerId: player.id,
-        isHost: player.is_host
+        isHost: player.is_host,
+        status: room.status
       }
     });
     await prisma.analytics_events.create({ data: { event_name: 'room_joined', room_id: room.id, anonymous_hash: hashToken(userId), payload: '{}' } }).catch(() => undefined);
