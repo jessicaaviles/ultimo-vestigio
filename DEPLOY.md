@@ -11,7 +11,7 @@ Este documento detalha o processo de deploy do backend no **Railway** e do front
 
 ### Comandos
 - **Comando de Build:** `npm install && npm run build` (o script executa `prisma generate` para gerar o cliente para PostgreSQL e `tsc` para compilar o TypeScript).
-- **Comando de Start:** `npm run db:migrate && npm run start` (roda as migrações no banco de dados em produção e depois inicia a aplicação com `node dist/index.js`).
+- **Comando de Start:** `npm run db:migrate && npm run start` (roda as migrações, aplica os seeds idempotentes dos casos oficiais e depois inicia a aplicação com `node dist/index.js`).
 
 ### Variáveis de Ambiente no Railway
 Cadastre as seguintes variáveis no painel do seu serviço no Railway:
