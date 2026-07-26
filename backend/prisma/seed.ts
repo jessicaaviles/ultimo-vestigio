@@ -464,6 +464,239 @@ async function main() {
     });
   }
 
+  const classicHardCases = [
+    {
+      slug: 'o-sino-das-tres-batidas',
+      title: 'O Sino das Três Batidas',
+      synopsis: 'Um sino antigo toca três vezes durante uma reunião de conselho, mesmo trancado na torre. Minutos depois, o zelador é encontrado morto com a chave ainda no bolso.',
+      type: 'Caso Clássico',
+      difficulty: 'Difícil',
+      duration: 28,
+      tension: 4,
+      opening: 'Na antiga Escola São Brás, o conselho se reuniu para decidir a venda do prédio histórico. Às 21h, o sino da torre, desativado havia anos, tocou três vezes. O acesso à torre estava trancado, o zelador Elias caiu no pátio interno e a chave da torre estava no bolso dele.',
+      summary: 'Lúcia Ferraz matou Elias para impedir que ele revelasse a falsificação dos documentos da venda da escola. O sino não foi tocado por alguém na torre: foi acionado por um fio preso ao mecanismo e puxado do arquivo durante a reunião.',
+      solution: 'Lúcia Ferraz, presidente do conselho, falsificou documentos para vender a escola por baixo valor a uma empresa ligada a ela. Elias descobriu a fraude ao catalogar caixas antigas no arquivo e marcou uma conversa depois da reunião. Lúcia preparou o sino usando um fio de pesca passado pelo conduíte antigo entre o arquivo e a torre. Durante uma pausa, ela puxou o fio para criar distração e atrair Elias ao pátio. Elias não caiu da torre: foi empurrado da escada lateral do arquivo, onde encontrou a pasta da fraude. A chave no bolso era encenação, pois ninguém precisou entrar na torre. A prova central é a fibra transparente presa no badalo, a poeira intacta na porta da torre, a pasta de venda com assinatura copiada e o arranhão recente na janela do arquivo.',
+      chronology: [
+        { time: '19h40', event: 'Elias encontra a pasta com assinaturas copiadas no arquivo morto.' },
+        { time: '20h15', event: 'Lúcia percebe que Elias pretende falar com o conselho.' },
+        { time: '20h50', event: 'Lúcia passa o fio pelo conduíte antigo ligado à torre.' },
+        { time: '21h00', event: 'O sino toca três vezes sem ninguém entrar na torre.' },
+        { time: '21h04', event: 'Elias é atraído para a escada lateral do arquivo e empurrado.' }
+      ],
+      suspects: [
+        { id: 'lucia', name: 'Lúcia Ferraz', age: 52, role: 'Presidente do conselho', description: 'Defendia a venda imediata da escola e controlava os documentos da negociação.', clueCount: 5 },
+        { id: 'padre_miguel', name: 'Padre Miguel', age: 61, role: 'Ex-diretor', description: 'Era contra a venda e tinha acesso histórico à torre.', clueCount: 2 },
+        { id: 'otavio', name: 'Otávio Nunes', age: 44, role: 'Comprador interessado', description: 'Representava a empresa que compraria o prédio.', clueCount: 3 },
+        { id: 'marina', name: 'Marina Reis', age: 37, role: 'Professora', description: 'Organizou protestos contra a reunião do conselho.', clueCount: 2 },
+        { id: 'other', name: 'Outra pessoa', role: 'Fora da lista', description: 'Use esta opção se a equipe acredita que o responsável não está entre os suspeitos principais.', clueCount: 0, isOtherOption: true }
+      ],
+      facts: [
+        ['tower_dust_intact', 'A poeira na fechadura e no batente da torre estava intacta; ninguém abriu a porta naquela noite.', true],
+        ['transparent_line', 'Uma fibra transparente ficou presa no badalo do sino.', true],
+        ['archive_conduit', 'Um conduíte antigo liga o arquivo morto à torre do sino.', true],
+        ['forged_sale_docs', 'A pasta da venda continha assinaturas copiadas de atas antigas.', true],
+        ['lucia_controlled_docs', 'Lúcia era a responsável por guardar e apresentar os documentos da venda.', true],
+        ['elias_found_folder', 'Elias havia separado a pasta da fraude antes da reunião.', true],
+        ['side_stair_fall', 'As marcas de impacto indicam queda da escada lateral do arquivo, não da torre.', true],
+        ['key_staging', 'A chave no bolso de Elias não prova entrada na torre; ela estava ali para sustentar a falsa cena.', true],
+        ['protest_red_herring', 'Os protestos de Marina explicam barulho no portão, mas não o acionamento do sino.', false],
+        ['buyer_red_herring', 'Otávio se beneficiaria da venda, mas não teve acesso ao arquivo durante a reunião.', false]
+      ],
+      rules: [
+        ['bell_not_tower', ['Alguém entrou na torre?', 'O sino foi tocado de dentro da torre?', 'A poeira da torre foi mexida?'], ['tower_dust_intact', 'transparent_line'], 'NO'],
+        ['line_mechanism', ['O sino foi acionado por fio?', 'O conduíte liga o arquivo à torre?', 'Dava para tocar o sino à distância?'], ['transparent_line', 'archive_conduit'], 'YES'],
+        ['document_motive', ['O motivo era a venda da escola?', 'Havia documentos falsos?', 'Elias descobriu uma fraude?'], ['forged_sale_docs', 'elias_found_folder'], 'YES'],
+        ['lucia_responsible', ['Lúcia foi responsável?', 'Quem controlava os documentos?', 'Lúcia tinha motivo?'], ['lucia_controlled_docs', 'forged_sale_docs'], 'YES'],
+        ['fall_location', ['Elias caiu da torre?', 'O corpo veio da escada do arquivo?', 'A chave era encenação?'], ['side_stair_fall', 'key_staging'], 'YES']
+      ]
+    },
+    {
+      slug: 'a-fita-sem-rosto',
+      title: 'A Fita Sem Rosto',
+      synopsis: 'Uma câmera registra uma invasão ao laboratório, mas o invasor não tem rosto visível. O protótipo some enquanto todos pareciam estar em videoconferência.',
+      type: 'Caso Clássico',
+      difficulty: 'Difícil',
+      duration: 30,
+      tension: 4,
+      opening: 'No laboratório Nereida, um protótipo de bateria biológica desapareceu às 22h13. A câmera mostra uma figura de jaleco atravessando o corredor sem rosto identificável. Quatro pesquisadores estavam em videoconferência no mesmo horário, com áudio e imagem ativos.',
+      summary: 'Bruno Tavares roubou o protótipo usando uma gravação prévia na videoconferência e uma máscara reflexiva que apagou o rosto na câmera. O álibi dele era digital, não presencial.',
+      solution: 'Bruno Tavares, coordenador técnico, estava endividado e negociava o protótipo com uma empresa concorrente. Ele gravou alguns minutos de si mesmo em videoconferência, injetou o vídeo como câmera virtual e saiu pela escada de serviço. No corredor, usou uma máscara de filme reflexivo que estourou a exposição da câmera, apagando o rosto. O acesso ao cofre exigia cartão e senha temporária; Bruno gerava esses tokens para manutenção. A prova está no atraso de milissegundos repetido na fala da chamada, no log de câmera virtual instalado na máquina dele, no resíduo de filme reflexivo na lixeira técnica e no token emitido manualmente às 22h11.',
+      chronology: [
+        { time: '21h55', event: 'Bruno inicia a videoconferência com câmera ativa.' },
+        { time: '22h06', event: 'Ele troca para uma gravação usando câmera virtual.' },
+        { time: '22h11', event: 'Um token manual de manutenção é emitido para o cofre.' },
+        { time: '22h13', event: 'A figura sem rosto atravessa o corredor e acessa o cofre.' },
+        { time: '22h19', event: 'Bruno retorna à mesa e encerra o vídeo falso.' }
+      ],
+      suspects: [
+        { id: 'bruno', name: 'Bruno Tavares', age: 41, role: 'Coordenador técnico', description: 'Administrava tokens de manutenção e tinha dívidas recentes.', clueCount: 5 },
+        { id: 'inae', name: 'Inae Moura', age: 33, role: 'Bioquímica', description: 'Disputava autoria da patente com Bruno.', clueCount: 3 },
+        { id: 'sara', name: 'Sara Fontes', age: 29, role: 'Estagiária', description: 'Foi vista perto da sala de servidores mais cedo.', clueCount: 2 },
+        { id: 'heitor', name: 'Heitor Campos', age: 48, role: 'Investidor', description: 'Pressionava a equipe por resultados antes da rodada de financiamento.', clueCount: 2 },
+        { id: 'other', name: 'Outra pessoa', role: 'Fora da lista', description: 'Use esta opção se a equipe acredita que o responsável não está entre os suspeitos principais.', clueCount: 0, isOtherOption: true }
+      ],
+      facts: [
+        ['virtual_camera_log', 'O notebook de Bruno registrou uso de câmera virtual entre 22h06 e 22h19.', true],
+        ['repeated_audio_delay', 'A fala de Bruno na chamada repetia o mesmo atraso de milissegundos em dois trechos.', true],
+        ['manual_token', 'Um token manual de manutenção foi emitido por Bruno às 22h11.', true],
+        ['reflective_mask', 'Fragmentos de filme reflexivo foram encontrados na lixeira técnica.', true],
+        ['face_overexposed', 'A câmera do corredor não falhou; a exposição foi saturada por material reflexivo.', true],
+        ['service_stairs', 'A escada de serviço permitia sair da sala de Bruno sem passar pela recepção.', true],
+        ['debt_motive', 'Bruno acumulava dívidas e recebeu contato de uma concorrente dias antes.', true],
+        ['prototype_access', 'O cofre exigia cartão e senha temporária, ambos dentro das permissões de Bruno.', true],
+        ['intern_red_herring', 'Sara entrou na sala de servidores antes do roubo para reiniciar uma impressora de etiquetas.', false],
+        ['patent_red_herring', 'Inae tinha conflito de autoria, mas permaneceu em câmera real durante todo o intervalo crítico.', false]
+      ],
+      rules: [
+        ['video_alibi_fake', ['A videoconferência era falsa?', 'Bruno usou gravação?', 'O álibi digital dele falha?'], ['virtual_camera_log', 'repeated_audio_delay'], 'YES'],
+        ['faceless_mask', ['Por que o rosto não aparece?', 'Foi máscara reflexiva?', 'A câmera falhou?'], ['reflective_mask', 'face_overexposed'], 'YES'],
+        ['maintenance_access', ['Quem podia abrir o cofre?', 'O token foi de manutenção?', 'Bruno tinha acesso?'], ['manual_token', 'prototype_access'], 'YES'],
+        ['bruno_motive', ['Bruno tinha motivo financeiro?', 'Ele queria vender o protótipo?', 'Havia contato com concorrente?'], ['debt_motive', 'manual_token'], 'YES'],
+        ['route_escape', ['Como ele saiu da sala?', 'A escada de serviço importa?', 'Ele passou pela recepção?'], ['service_stairs', 'virtual_camera_log'], 'YES']
+      ]
+    },
+    {
+      slug: 'o-jardim-sem-pegadas',
+      title: 'O Jardim Sem Pegadas',
+      synopsis: 'Uma escultora desaparece de um jardim encharcado sem deixar pegadas. No centro do labirinto, apenas uma tesoura de poda e uma estátua recém-lavada.',
+      type: 'Caso Clássico',
+      difficulty: 'Difícil',
+      duration: 32,
+      tension: 5,
+      opening: 'Durante a inauguração de um jardim-labirinto, a escultora Nina Arantes desapareceu entre 20h40 e 21h05. A chuva deixou a terra mole, mas não havia pegadas saindo do centro. Uma tesoura de poda estava caída ao lado da estátua principal, recém-lavada pela água.',
+      summary: 'Dario Velloso removeu Nina usando o carrinho interno de manutenção disfarçado sob a lona da estátua. A ausência de pegadas existia porque o trajeto foi feito sobre trilhos de drenagem, não pelo barro.',
+      solution: 'Dario Velloso, curador da exposição, havia vendido obras falsas atribuídas a Nina. Ela descobriu e ameaçou denunciá-lo durante a inauguração. Dario a encontrou no centro do labirinto, sedou-a com spray anestésico usado na restauração e colocou o corpo inconsciente no carrinho estreito de manutenção. O carrinho corre sobre trilhos de drenagem escondidos sob cascalho, por isso não deixou pegadas. A estátua recém-lavada escondia respingos do spray e fibras da lona usada para cobrir Nina. A tesoura de poda foi deixada para sugerir acidente com jardineiros. O conjunto decisivo é o trilho com marcas recentes, o odor químico na lona, as notas de venda falsas no escritório de Dario e o depoimento de que ele mandou desligar a iluminação do labirinto por cinco minutos.',
+      chronology: [
+        { time: '20h25', event: 'Nina confronta Dario sobre obras falsas vendidas em nome dela.' },
+        { time: '20h41', event: 'Dario manda desligar a iluminação do labirinto para "teste técnico".' },
+        { time: '20h46', event: 'Nina é sedada no centro do labirinto.' },
+        { time: '20h51', event: 'Dario usa o carrinho nos trilhos de drenagem para retirar Nina.' },
+        { time: '21h05', event: 'A luz volta e a cena parece não ter rota de fuga no barro.' }
+      ],
+      suspects: [
+        { id: 'dario', name: 'Dario Velloso', age: 50, role: 'Curador', description: 'Organizou a exposição e negociava obras em nome de Nina.', clueCount: 5 },
+        { id: 'celina', name: 'Celina Prado', age: 39, role: 'Paisagista', description: 'Conhecia o desenho do labirinto e os trilhos de drenagem.', clueCount: 3 },
+        { id: 'tomas', name: 'Tomás Arantes', age: 35, role: 'Irmão de Nina', description: 'Discutiu com Nina sobre direitos autorais da família.', clueCount: 2 },
+        { id: 'vitor', name: 'Vítor Leme', age: 43, role: 'Colecionador', description: 'Comprou uma obra suspeita de autenticidade.', clueCount: 2 },
+        { id: 'other', name: 'Outra pessoa', role: 'Fora da lista', description: 'Use esta opção se a equipe acredita que o responsável não está entre os suspeitos principais.', clueCount: 0, isOtherOption: true }
+      ],
+      facts: [
+        ['drainage_tracks', 'O labirinto possui trilhos de drenagem sob o cascalho central.', true],
+        ['cart_marks', 'As marcas recentes nos trilhos correspondem ao carrinho estreito de manutenção.', true],
+        ['no_mud_route', 'A ausência de pegadas se explica porque a retirada não ocorreu pelo barro.', true],
+        ['restoration_spray', 'A lona tinha odor de spray anestésico usado em restauração de peças.', true],
+        ['washed_statue_fibers', 'Fibras da lona ficaram presas na base da estátua recém-lavada.', true],
+        ['fake_art_sales', 'Dario vendeu obras falsas atribuídas a Nina.', true],
+        ['nina_confronted_dario', 'Nina confrontou Dario sobre as vendas antes de desaparecer.', true],
+        ['lights_off_order', 'Dario pediu o desligamento da iluminação por cinco minutos.', true],
+        ['pruning_shears_staged', 'A tesoura de poda foi deixada para sugerir envolvimento da equipe de jardinagem.', true],
+        ['landscape_red_herring', 'Celina conhecia os trilhos, mas estava guiando visitantes quando a luz apagou.', false]
+      ],
+      rules: [
+        ['no_footprints_explained', ['Como não havia pegadas?', 'Ela saiu pelo barro?', 'Os trilhos importam?'], ['drainage_tracks', 'no_mud_route'], 'YES'],
+        ['maintenance_cart', ['Usaram carrinho?', 'As marcas nos trilhos são recentes?', 'Como Nina foi retirada?'], ['cart_marks', 'drainage_tracks'], 'YES'],
+        ['sedation_lona', ['Nina foi sedada?', 'A lona tinha produto químico?', 'O spray de restauração importa?'], ['restoration_spray', 'washed_statue_fibers'], 'YES'],
+        ['dario_motive', ['Dario vendia obras falsas?', 'Nina ia denunciar Dario?', 'Qual era o motivo?'], ['fake_art_sales', 'nina_confronted_dario'], 'YES'],
+        ['staged_gardener_clue', ['A tesoura incrimina os jardineiros?', 'A tesoura foi plantada?', 'Foi acidente de poda?'], ['pruning_shears_staged', 'lights_off_order'], 'YES']
+      ]
+    }
+  ];
+
+  for (const caseData of classicHardCases) {
+    const createdCase = await prisma.cases.upsert({
+      where: { slug: caseData.slug },
+      update: {
+        title: caseData.title,
+        short_synopsis: caseData.synopsis,
+        case_type: caseData.type,
+        difficulty: caseData.difficulty,
+        estimated_duration_minutes: caseData.duration,
+        min_players: 2,
+        max_players: 6,
+        tension_level: caseData.tension,
+        status: 'PUBLISHED'
+      },
+      create: {
+        slug: caseData.slug,
+        title: caseData.title,
+        short_synopsis: caseData.synopsis,
+        case_type: caseData.type,
+        difficulty: caseData.difficulty,
+        estimated_duration_minutes: caseData.duration,
+        min_players: 2,
+        max_players: 6,
+        tension_level: caseData.tension,
+        status: 'PUBLISHED'
+      }
+    });
+
+    const caseVersion = await prisma.case_versions.upsert({
+      where: { case_id_version_number: { case_id: createdCase.id, version_number: '1.0' } },
+      update: {
+        opening: caseData.opening,
+        master_style: JSON.stringify({ tone: 'precise_noir', maxSentences: 2, difficulty: 'hard', allowRedHerrings: true, suspects: caseData.suspects }),
+        scoring_rules: JSON.stringify({ baseScore: 1200, penaltyPerHint: 100, bonusForMotive: 150, bonusForTimeline: 150 }),
+        solution_summary_encrypted: sealSecret(caseData.summary),
+        full_solution_encrypted: sealSecret(caseData.solution),
+        chronology_encrypted: sealSecret(JSON.stringify(caseData.chronology)),
+        publication_status: 'PUBLISHED',
+        published_at: new Date()
+      },
+      create: {
+        case_id: createdCase.id,
+        version_number: '1.0',
+        opening: caseData.opening,
+        master_style: JSON.stringify({ tone: 'precise_noir', maxSentences: 2, difficulty: 'hard', allowRedHerrings: true, suspects: caseData.suspects }),
+        scoring_rules: JSON.stringify({ baseScore: 1200, penaltyPerHint: 100, bonusForMotive: 150, bonusForTimeline: 150 }),
+        solution_summary_encrypted: sealSecret(caseData.summary),
+        full_solution_encrypted: sealSecret(caseData.solution),
+        chronology_encrypted: sealSecret(JSON.stringify(caseData.chronology)),
+        publication_status: 'PUBLISHED',
+        published_at: new Date()
+      }
+    });
+
+    for (const [fact_key, statement, critical] of caseData.facts) {
+      await prisma.case_facts.upsert({
+        where: { case_version_id_fact_key: { case_version_id: caseVersion.id, fact_key: String(fact_key) } },
+        update: {
+          statement: String(statement),
+          visibility: 'ANSWER',
+          pre_unlock_policy: 'ANSWER',
+          is_solution_critical: Boolean(critical)
+        },
+        create: {
+          case_version_id: caseVersion.id,
+          fact_key: String(fact_key),
+          statement: String(statement),
+          visibility: 'ANSWER',
+          pre_unlock_policy: 'ANSWER',
+          is_solution_critical: Boolean(critical)
+        }
+      });
+    }
+
+    for (const [intent_key, examples, facts, classification] of caseData.rules) {
+      await prisma.case_answer_rules.upsert({
+        where: { id: `${caseVersion.id}:${intent_key}` },
+        update: {
+          semantic_examples: JSON.stringify(examples),
+          related_fact_keys: JSON.stringify(facts),
+          default_classification: String(classification)
+        },
+        create: {
+          id: `${caseVersion.id}:${intent_key}`,
+          case_version_id: caseVersion.id,
+          intent_key: String(intent_key),
+          semantic_examples: JSON.stringify(examples),
+          related_fact_keys: JSON.stringify(facts),
+          default_classification: String(classification),
+          response_constraints: JSON.stringify({ maxSentences: 2, avoidFullSolution: true })
+        }
+      });
+    }
+  }
+
   console.log('Seed dos casos oficiais concluído!');
 }
 

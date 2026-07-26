@@ -83,6 +83,36 @@ async function main() {
         'Alguns objetos ligados à restauração do vitral podem explicar mais do que o vidro quebrado.',
         'Procure quem perderia algo concreto se Isadora assinasse a mudança prometida.'
       ]
+    },
+    {
+      slug: 'o-sino-das-tres-batidas',
+      hints: [
+        'A chave no bolso de Elias talvez explique menos do que parece.',
+        'Observe se a torre realmente precisou ser aberta para o sino tocar.',
+        'O arquivo morto e a torre compartilham uma ligação física antiga.',
+        'A morte não combina com uma queda da torre; compare o corpo com as escadas do prédio.',
+        'Procure quem controlava os documentos que Elias tinha acabado de separar.'
+      ]
+    },
+    {
+      slug: 'a-fita-sem-rosto',
+      hints: [
+        'Um álibi em vídeo pode provar presença, mas também pode provar apenas uma imagem.',
+        'O rosto invisível não depende de magia nem de falha da câmera.',
+        'Compare o horário do token de manutenção com o trecho repetido da chamada.',
+        'O caminho até o cofre não precisava passar pela recepção.',
+        'A motivação fica mais clara quando as dívidas e o acesso técnico aparecem juntos.'
+      ]
+    },
+    {
+      slug: 'o-jardim-sem-pegadas',
+      hints: [
+        'A ausência de pegadas é uma pista positiva, não um vazio.',
+        'Nem todo deslocamento no jardim precisava passar pela terra molhada.',
+        'A estátua lavada conserva vestígios pequenos demais para parecerem importantes.',
+        'A iluminação apagada abriu uma janela curta, mas suficiente.',
+        'A tesoura de poda aponta para uma direção conveniente demais.'
+      ]
     }
   ];
 
