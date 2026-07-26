@@ -375,19 +375,6 @@ const Profile: React.FC = () => {
         </form>
       )}
 
-      <div className="profile-stats">
-        <div>
-          <span>Investigações</span>
-          <strong>{playedRoomsCount}</strong>
-          <small>jogadas</small>
-        </div>
-        <div>
-          <span>Precisão</span>
-          <strong>{theoryAccuracy === null ? '—' : `${theoryAccuracy}%`}</strong>
-          <small>das teorias</small>
-        </div>
-      </div>
-
       <section className="profile-section" style={{ marginTop: 32 }}>
         <span className="eyebrow">Conta</span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0' }}>
