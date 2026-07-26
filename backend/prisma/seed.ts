@@ -293,6 +293,162 @@ async function main() {
   ];
   for (const [fact_key, statement, visibility] of factsBlackwell) await prisma.case_facts.upsert({ where: { case_version_id_fact_key: { case_version_id: versionBlackwell.id, fact_key } }, update: {}, create: { case_version_id: versionBlackwell.id, fact_key, statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true } });
 
+  // 9. Caso premium modelo: A Herança de Vidro
+  const caseHerancaVidro = await prisma.cases.upsert({
+    where: { slug: 'a-heranca-de-vidro' },
+    update: {
+      title: 'A Herança de Vidro',
+      short_synopsis: 'Uma restauradora morre dentro de um conservatório trancado na noite em que mudaria o testamento da família. O vidro quebrado aponta para fora, mas a verdade veio de dentro.',
+      case_type: 'Caso Premium',
+      difficulty: 'Difícil',
+      estimated_duration_minutes: 35,
+      min_players: 3,
+      max_players: 6,
+      tension_level: 5,
+      status: 'PUBLISHED'
+    },
+    create: {
+      slug: 'a-heranca-de-vidro',
+      title: 'A Herança de Vidro',
+      short_synopsis: 'Uma restauradora morre dentro de um conservatório trancado na noite em que mudaria o testamento da família. O vidro quebrado aponta para fora, mas a verdade veio de dentro.',
+      case_type: 'Caso Premium',
+      difficulty: 'Difícil',
+      estimated_duration_minutes: 35,
+      min_players: 3,
+      max_players: 6,
+      tension_level: 5,
+      status: 'PUBLISHED'
+    }
+  });
+
+  const versionHerancaVidro = await prisma.case_versions.upsert({
+    where: { case_id_version_number: { case_id: caseHerancaVidro.id, version_number: '1.0' } },
+    update: {
+      opening: 'Isadora Vale, restauradora de vitrais e herdeira menor da família, foi encontrada morta no conservatório da Casa Alvarenga. A porta estava trancada por dentro, o teto de vidro tinha uma rachadura recente e o relógio de bronze parou às 22h46. Horas antes, Isadora avisou que mudaria o testamento e tiraria o controle da fundação das mãos do tio Augusto.',
+      solution_summary_encrypted: sealSecret('Augusto Alvarenga matou Isadora antes da tempestade e montou um falso acidente no conservatório para proteger o esquema de desvio da fundação. A chave do crime não foi o vidro quebrado, mas a restauração recente do vitral, o relógio adiantado e o vinho medicado.'),
+      full_solution_encrypted: sealSecret('Augusto Alvarenga, tio de Isadora e administrador da fundação da família, descobriu que ela transferiria a gestão dos bens para uma auditoria independente. Isadora também havia encontrado recibos falsos de restauração usados por Augusto para desviar dinheiro da fundação. Na noite da tempestade, Augusto a levou ao conservatório sob o pretexto de discutir o novo testamento, serviu vinho com digitalina em baixa dose e esperou a arritmia começar. Depois trancou a porta por dentro usando um fio de restauração passado pela fresta inferior, retirou o fio pela grade de drenagem e quebrou de propósito um painel do teto já fragilizado para simular queda de vidro. O relógio de bronze marcava 22h46 porque havia sido adiantado em 18 minutos durante a manutenção, criando um falso horário de morte enquanto Augusto aparecia em uma chamada de vídeo no escritório. A prova decisiva é o conjunto: resíduo de cola de vitral no punho de Augusto, fio de restauração preso na grelha, digitalina na taça de Isadora, recibos falsos no envelope lacrado e a ausência de chuva dentro das marcas de sapato, indicando que a cena foi montada antes do vidro quebrar.'),
+      chronology_encrypted: sealSecret(JSON.stringify([
+        { time: '20h30', event: 'Isadora informa ao advogado que assinará a mudança do testamento na manhã seguinte.' },
+        { time: '21h12', event: 'Augusto encontra Isadora no conservatório e serve vinho com digitalina.' },
+        { time: '21h34', event: 'Isadora sofre arritmia e derruba a taça perto da mesa de restauração.' },
+        { time: '21h41', event: 'Augusto tranca a porta por dentro usando fio de restauração e o retira pela grelha de drenagem.' },
+        { time: '22h28', event: 'Augusto entra em chamada de vídeo no escritório para criar álibi.' },
+        { time: '22h46', event: 'O relógio adulterado para, registrando uma hora falsa para a morte.' },
+        { time: '23h05', event: 'A tempestade abre a rachadura do teto já fragilizado, reforçando o falso acidente.' }
+      ]))
+    },
+    create: {
+      case_id: caseHerancaVidro.id,
+      version_number: '1.0',
+      opening: 'Isadora Vale, restauradora de vitrais e herdeira menor da família, foi encontrada morta no conservatório da Casa Alvarenga. A porta estava trancada por dentro, o teto de vidro tinha uma rachadura recente e o relógio de bronze parou às 22h46. Horas antes, Isadora avisou que mudaria o testamento e tiraria o controle da fundação das mãos do tio Augusto.',
+      master_style: JSON.stringify({ tone: 'precise_noir', maxSentences: 2, difficulty: 'hard', allowRedHerrings: true }),
+      scoring_rules: JSON.stringify({ baseScore: 1400, penaltyPerHint: 120, bonusForMotive: 200, bonusForTimeline: 200 }),
+      solution_summary_encrypted: sealSecret('Augusto Alvarenga matou Isadora antes da tempestade e montou um falso acidente no conservatório para proteger o esquema de desvio da fundação. A chave do crime não foi o vidro quebrado, mas a restauração recente do vitral, o relógio adiantado e o vinho medicado.'),
+      full_solution_encrypted: sealSecret('Augusto Alvarenga, tio de Isadora e administrador da fundação da família, descobriu que ela transferiria a gestão dos bens para uma auditoria independente. Isadora também havia encontrado recibos falsos de restauração usados por Augusto para desviar dinheiro da fundação. Na noite da tempestade, Augusto a levou ao conservatório sob o pretexto de discutir o novo testamento, serviu vinho com digitalina em baixa dose e esperou a arritmia começar. Depois trancou a porta por dentro usando um fio de restauração passado pela fresta inferior, retirou o fio pela grade de drenagem e quebrou de propósito um painel do teto já fragilizado para simular queda de vidro. O relógio de bronze marcava 22h46 porque havia sido adiantado em 18 minutos durante a manutenção, criando um falso horário de morte enquanto Augusto aparecia em uma chamada de vídeo no escritório. A prova decisiva é o conjunto: resíduo de cola de vitral no punho de Augusto, fio de restauração preso na grelha, digitalina na taça de Isadora, recibos falsos no envelope lacrado e a ausência de chuva dentro das marcas de sapato, indicando que a cena foi montada antes do vidro quebrar.'),
+      chronology_encrypted: sealSecret(JSON.stringify([
+        { time: '20h30', event: 'Isadora informa ao advogado que assinará a mudança do testamento na manhã seguinte.' },
+        { time: '21h12', event: 'Augusto encontra Isadora no conservatório e serve vinho com digitalina.' },
+        { time: '21h34', event: 'Isadora sofre arritmia e derruba a taça perto da mesa de restauração.' },
+        { time: '21h41', event: 'Augusto tranca a porta por dentro usando fio de restauração e o retira pela grelha de drenagem.' },
+        { time: '22h28', event: 'Augusto entra em chamada de vídeo no escritório para criar álibi.' },
+        { time: '22h46', event: 'O relógio adulterado para, registrando uma hora falsa para a morte.' },
+        { time: '23h05', event: 'A tempestade abre a rachadura do teto já fragilizado, reforçando o falso acidente.' }
+      ])),
+      publication_status: 'PUBLISHED',
+      published_at: new Date()
+    }
+  });
+
+  const factsHerancaVidro = [
+    { fact_key: 'testament_change', statement: 'Isadora pretendia alterar o testamento e retirar Augusto da gestão da fundação.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'fake_receipts', statement: 'Os recibos de restauração no envelope lacrado eram falsos e beneficiavam empresas ligadas a Augusto.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'digitalis_wine', statement: 'A taça de Isadora continha traços de digitalina misturados ao vinho.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'augusto_administered_wine', statement: 'Augusto foi a última pessoa confirmada a servir vinho a Isadora.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'clock_fast', statement: 'O relógio do conservatório estava adiantado em 18 minutos desde a manutenção da tarde.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'false_time', statement: 'A hora de 22h46 foi usada para deslocar a morte para o período da chamada de vídeo de Augusto.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'restoration_thread', statement: 'Um fio de restauração passou pela fresta inferior da porta e deixou fibras presas na grelha de drenagem.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'locked_room_trick', statement: 'A porta foi trancada por dentro usando o fio, que depois foi puxado para fora pela drenagem.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'glass_staged', statement: 'O vidro do teto foi fragilizado antes da tempestade para parecer a causa do acidente.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'dry_footprints', statement: 'As marcas de sapato ao lado do corpo estavam secas sob a camada posterior de água da chuva.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'glue_on_cuff', statement: 'O punho do casaco de Augusto tinha resíduo da mesma cola usada na restauração do vitral.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'lawyer_call', statement: 'O advogado recebeu de Isadora a confirmação da mudança do testamento às 20h30.', visibility: 'ANSWER', critical: true },
+    { fact_key: 'medical_red_herring', statement: 'O frasco de remédio de Isadora era real, mas a dosagem regular não explicava uma morte súbita sem a digitalina no vinho.', visibility: 'ANSWER', critical: false },
+    { fact_key: 'cousin_red_herring', statement: 'Cecília discutiu com Isadora sobre herança, mas saiu antes do vinho ser servido e não tinha acesso ao fio de restauração.', visibility: 'ANSWER', critical: false }
+  ];
+
+  for (const fact of factsHerancaVidro) {
+    await prisma.case_facts.upsert({
+      where: { case_version_id_fact_key: { case_version_id: versionHerancaVidro.id, fact_key: fact.fact_key } },
+      update: {
+        statement: fact.statement,
+        visibility: fact.visibility,
+        pre_unlock_policy: 'ANSWER',
+        is_solution_critical: fact.critical
+      },
+      create: {
+        case_version_id: versionHerancaVidro.id,
+        fact_key: fact.fact_key,
+        statement: fact.statement,
+        visibility: fact.visibility,
+        pre_unlock_policy: 'ANSWER',
+        is_solution_critical: fact.critical
+      }
+    });
+  }
+
+  const rulesHerancaVidro = [
+    {
+      intent_key: 'motive_financial_foundation',
+      examples: ['Augusto desviava dinheiro da fundação?', 'O motivo era impedir a auditoria?', 'Isadora ia mudar o testamento?'],
+      facts: ['testament_change', 'fake_receipts'],
+      classification: 'YES'
+    },
+    {
+      intent_key: 'poisoned_wine',
+      examples: ['Isadora foi envenenada pelo vinho?', 'A taça tinha algum medicamento?', 'A digitalina causou a morte?'],
+      facts: ['digitalis_wine', 'augusto_administered_wine'],
+      classification: 'YES'
+    },
+    {
+      intent_key: 'false_clock_alibi',
+      examples: ['O relógio estava adiantado?', 'A hora da morte foi falsificada?', 'A chamada de vídeo era álibi falso?'],
+      facts: ['clock_fast', 'false_time'],
+      classification: 'YES'
+    },
+    {
+      intent_key: 'locked_room_thread',
+      examples: ['A porta foi trancada com um fio?', 'O fio saiu pela drenagem?', 'O conservatório não estava realmente impossível?'],
+      facts: ['restoration_thread', 'locked_room_trick'],
+      classification: 'YES'
+    },
+    {
+      intent_key: 'glass_as_staging',
+      examples: ['O vidro quebrado foi encenação?', 'A tempestade não matou Isadora?', 'O teto foi preparado antes?'],
+      facts: ['glass_staged', 'dry_footprints'],
+      classification: 'YES'
+    }
+  ];
+
+  for (const rule of rulesHerancaVidro) {
+    await prisma.case_answer_rules.upsert({
+      where: { id: `${versionHerancaVidro.id}:${rule.intent_key}` },
+      update: {
+        semantic_examples: JSON.stringify(rule.examples),
+        related_fact_keys: JSON.stringify(rule.facts),
+        default_classification: rule.classification
+      },
+      create: {
+        id: `${versionHerancaVidro.id}:${rule.intent_key}`,
+        case_version_id: versionHerancaVidro.id,
+        intent_key: rule.intent_key,
+        semantic_examples: JSON.stringify(rule.examples),
+        related_fact_keys: JSON.stringify(rule.facts),
+        default_classification: rule.classification,
+        response_constraints: JSON.stringify({ maxSentences: 2, avoidFullSolution: true })
+      }
+    });
+  }
+
   console.log('Seed dos casos oficiais concluído!');
 }
 

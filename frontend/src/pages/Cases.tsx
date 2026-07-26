@@ -46,6 +46,8 @@ const Cases: React.FC = () => {
         const mapped = response.data.map((item: any) => {
           const image = item.cover_image_data
             ? item.cover_image_data
+            : item.slug === 'a-heranca-de-vidro'
+              ? '/capa_heranca_de_vidro.png'
             : item.slug === 'o-quarto-7'
               ? '/capa_quarto_7.png'
               : '/backgrounds/mapa-da-investigacao.png';

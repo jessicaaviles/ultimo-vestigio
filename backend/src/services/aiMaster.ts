@@ -15,9 +15,14 @@ export const processQuestion = async (roomId: string, questionText: string, case
       return { classification: 'BLOCKED', rendered_text: 'Essa pergunta tenta alterar as regras da investigação. Reformule usando apenas os fatos do caso.', fallback_used: false };
     }
 
-    const facts = await prisma.case_facts.findMany({
-      where: { case_version_id: caseVersionId, visibility: { not: 'SECRET' } }
-    });
+    const [facts, answerRules] = await Promise.all([
+      prisma.case_facts.findMany({
+        where: { case_version_id: caseVersionId, visibility: { not: 'SECRET' } }
+      }),
+      prisma.case_answer_rules.findMany({
+        where: { case_version_id: caseVersionId }
+      })
+    ]);
 
     const caseVersion = await prisma.case_versions.findUnique({
       where: { id: caseVersionId },
@@ -31,6 +36,13 @@ export const processQuestion = async (roomId: string, questionText: string, case
     const { revealSecret } = await import('../security/secrets');
     const solutionSummary = revealSecret(caseVersion.solution_summary_encrypted);
     const factListText = facts.map((f: any) => `- ${f.statement}`).join('\n');
+    const answerRulesText = answerRules.length
+      ? answerRules.map((rule: any) => {
+        const examples = JSON.parse(rule.semantic_examples || '[]').join('; ');
+        const factKeys = JSON.parse(rule.related_fact_keys || '[]').join(', ');
+        return `- ${rule.intent_key}: classifique como ${rule.default_classification}; exemplos: ${examples}; fatos relacionados: ${factKeys}`;
+      }).join('\n')
+      : '- Nenhuma regra semântica específica cadastrada para este caso.';
 
     const responseSchema: Schema = {
       type: Type.OBJECT,
@@ -54,6 +66,9 @@ ${solutionSummary}
 
 Fatos Absolutos do Caso:
 ${factListText}
+
+Regras Semânticas de Descoberta:
+${answerRulesText}
 
 Regras ESTRITAS:
 1. Responda apenas "Sim", "Não", "Parcialmente", "Irrelevante" ou "Desconhecido".

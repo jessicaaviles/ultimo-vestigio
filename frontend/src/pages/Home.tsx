@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const fallbackImages: Record<string, string> = {
   'blackwell': '/backgrounds/map_blackwell.png',
+  'a-heranca-de-vidro': '/capa_heranca_de_vidro.png',
   'o-quarto-7': '/capa_quarto_7.png',
   'o-presente-desaparecido': '/backgrounds/cena-do-crime.png',
 };

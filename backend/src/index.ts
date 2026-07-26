@@ -77,8 +77,8 @@ const emitRoomState = async (roomId: string) => {
   const state = await roomState(roomId);
   if (state) {
     const [usages, caseHints] = await Promise.all([
-      prisma.hint_usages.findMany({ where: { room_id: roomId } }),
-      prisma.case_hints.findMany({ where: { case_version_id: state.case_version_id } }),
+      prisma.hint_usages.findMany({ where: { room_id: roomId }, orderBy: { hint_index: 'asc' } }),
+      prisma.case_hints.findMany({ where: { case_version_id: state.case_version_id }, orderBy: { hint_index: 'asc' } }),
     ]);
     const hintMap = new Map(caseHints.map(h => [h.hint_index, revealSecret(h.content_encrypted)]));
     const hintContents = usages.map(u => ({
@@ -86,7 +86,7 @@ const emitRoomState = async (roomId: string) => {
       content: hintMap.get(u.hint_index) || 'Pista indisponível',
       penalty: u.penalty,
     }));
-    io.to(roomId).emit('room_state_updated', { ...state, hint_usages: hintContents });
+    io.to(roomId).emit('room_state_updated', { ...state, hint_usages: hintContents, availableHintCount: caseHints.length });
   }
 };
 
