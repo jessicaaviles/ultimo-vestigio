@@ -45,6 +45,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--serif); font-weight: 400; letter-spa
 .app-container { min-height: 100vh; min-height: 100dvh; background: var(--petrol); }
 .app-shell { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; position: relative; }
 .app-content { width: 100%; max-width: 1240px; margin: 0 auto; flex: 1; min-width: 0; padding: calc(88px + env(safe-area-inset-top)) 24px calc(112px + env(safe-area-inset-bottom)); }
+.app-content:has(.profile-editor-page) { padding-bottom: 0 !important; }
 .topbar { position: absolute; top: 0; left: 0; right: 0; height: calc(88px + env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; max-width: 1240px; width: 100%; margin: 0 auto; padding: env(safe-area-inset-top) 24px 0; z-index: 42; }
 .topbar-brand, .topbar-actions { display: flex; align-items: center; }
 .topbar-brand { gap: 12px; min-width: 0; }
