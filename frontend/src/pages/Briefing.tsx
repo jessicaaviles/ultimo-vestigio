@@ -13,11 +13,33 @@ const Briefing: React.FC = () => {
   useEffect(() => {
     if (!socket || !roomId) return;
     const userId = localStorage.getItem('userId');
+    const leaveStaleRoom = () => {
+      localStorage.removeItem('currentRoomId');
+      localStorage.removeItem('currentRoomCode');
+      navigate('/cases', { replace: true });
+    };
+    const onState = (data: any) => {
+      const stillInRoom = (data?.players || []).some((player: any) => player.anonymous_user_id === userId);
+      if (!stillInRoom) {
+        leaveStaleRoom();
+        return;
+      }
+      setRoom(data);
+    };
+    const onRoomError = (err: string) => {
+      if (String(err).includes('Você não está nesta sala')) leaveStaleRoom();
+    };
+
     socket.emit('join_room', { roomId, userId });
-    const onState = (data: any) => setRoom(data);
     socket.on('room_state_updated', onState);
-    return () => { socket.off('room_state_updated', onState); };
-  }, [socket, roomId]);
+    socket.on('room_error', onRoomError);
+    socket.on('left_room', leaveStaleRoom);
+    return () => {
+      socket.off('room_state_updated', onState);
+      socket.off('room_error', onRoomError);
+      socket.off('left_room', leaveStaleRoom);
+    };
+  }, [socket, roomId, navigate]);
 
   const confirm = () => {
     setReady(true);

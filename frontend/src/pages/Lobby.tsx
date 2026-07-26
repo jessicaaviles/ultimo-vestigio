@@ -18,24 +18,43 @@ const Lobby: React.FC = () => {
     if (!socket || !roomId) return;
 
     const userId = localStorage.getItem('userId');
+    const leaveStaleRoom = () => {
+      localStorage.removeItem('currentRoomId');
+      localStorage.removeItem('currentRoomCode');
+      navigate('/cases', { replace: true });
+    };
+    const handleRoomState = (data: any) => {
+      const stillInRoom = (data?.players || []).some((player: any) => player.anonymous_user_id === userId);
+      if (!stillInRoom) {
+        leaveStaleRoom();
+        return;
+      }
+      setRoomData(data);
+    };
+    const handleGameStarted = () => {
+      navigate(`/room/${roomId}/briefing`);
+    };
+    const handleRoomError = (err: string) => {
+      const message = String(err);
+      if (message.includes('Você não está nesta sala')) {
+        leaveStaleRoom();
+        return;
+      }
+      setStartError(message);
+    };
+
     socket.emit('join_room', { roomId, userId });
 
-    socket.on('room_state_updated', (data) => {
-      setRoomData(data);
-    });
-
-    socket.on('game_started', () => {
-      navigate(`/room/${roomId}/briefing`);
-    });
-
-    socket.on('room_error', (err: string) => {
-      setStartError(String(err));
-    });
+    socket.on('room_state_updated', handleRoomState);
+    socket.on('game_started', handleGameStarted);
+    socket.on('room_error', handleRoomError);
+    socket.on('left_room', leaveStaleRoom);
 
     return () => {
-      socket.off('room_state_updated');
-      socket.off('game_started');
-      socket.off('room_error');
+      socket.off('room_state_updated', handleRoomState);
+      socket.off('game_started', handleGameStarted);
+      socket.off('room_error', handleRoomError);
+      socket.off('left_room', leaveStaleRoom);
     };
   }, [socket, roomId, navigate]);
 

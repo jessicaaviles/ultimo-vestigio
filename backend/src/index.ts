@@ -138,29 +138,46 @@ io.on('connection', (socket) => {
   console.log('Socket connected');
 
   socket.on('join_room', async ({ roomId, userId }) => {
-    socket.data.roomId = roomId;
-    socket.data.userId = userId;
-    socket.join(roomId);
-    console.log('Player joined a room');
-    
-    // Atualiza status do jogador para CONNECTED (se existir)
-    if (userId) {
-      try {
-        await prisma.room_players.updateMany({
-          where: { room_id: roomId, anonymous_user_id: userId },
-          data: { connection_status: 'CONNECTED', last_seen_at: new Date() }
-        });
-      } catch (err) {
-        console.error("Erro ao atualizar status do jogador:", err);
-      }
-    }
-
-    // Busca o estado atualizado da sala e envia
     try {
-      await emitRoomState(roomId);
-      await recordAnalytics('player_reconnected', roomId, userId);
+      const cleanRoomId = String(roomId || '');
+      const cleanUserId = String(userId || '');
+      if (!cleanRoomId || !cleanUserId) {
+        socket.emit('room_error', 'Você não está nesta sala.');
+        socket.emit('left_room', { roomId: cleanRoomId });
+        return;
+      }
+
+      const room = await prisma.rooms.findUnique({
+        where: { id: cleanRoomId },
+        include: {
+          players: {
+            where: { anonymous_user_id: cleanUserId, removed_at: null },
+            select: { id: true }
+          }
+        }
+      });
+
+      if (!room || room.deleted_at || room.players.length === 0) {
+        socket.emit('room_error', 'Você não está nesta sala.');
+        socket.emit('left_room', { roomId: cleanRoomId });
+        return;
+      }
+
+      socket.data.roomId = cleanRoomId;
+      socket.data.userId = cleanUserId;
+      socket.join(cleanRoomId);
+      console.log('Player joined a room');
+
+      await prisma.room_players.updateMany({
+        where: { room_id: cleanRoomId, anonymous_user_id: cleanUserId, removed_at: null },
+        data: { connection_status: 'CONNECTED', last_seen_at: new Date() }
+      });
+
+      await emitRoomState(cleanRoomId);
+      await recordAnalytics('player_reconnected', cleanRoomId, cleanUserId);
     } catch (err) {
       console.error("Erro ao emitir estado da sala:", err);
+      socket.emit('room_error', 'Não foi possível conectar à sala.');
     }
   });
 
