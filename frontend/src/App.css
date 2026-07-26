@@ -275,11 +275,14 @@
 .legal-panel { display: grid; gap: 18px; margin-top: 28px; padding: 20px; border: 1px solid rgba(242,238,229,.1); border-radius: 8px; background: rgba(10,13,16,.38); }
 .legal-panel h2 { margin: 0; color: var(--paper); font-size: 26px; }
 .legal-panel ul { display: grid; gap: 10px; margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; line-height: 1.6; }
-.friends-page { min-height: 100vh; min-height: 100dvh; margin: -88px -24px calc(-100px - env(safe-area-inset-bottom)); padding: calc(112px + env(safe-area-inset-top)) 24px calc(124px + env(safe-area-inset-bottom)); color: var(--paper); background: linear-gradient(180deg, rgba(31,42,48,.58), rgba(31,42,48,.98) 52%), url('/backgrounds/lobby.png') center top/cover fixed; }
-.friends-page > * { max-width: 960px; margin-left: auto; margin-right: auto; }
-.friends-hero { padding: 12px 0 26px; }
-.friends-hero h1 { max-width: 520px; margin: 0 0 12px; font-size: clamp(48px, 11vw, 82px); line-height: .9; }
-.friends-hero p { max-width: 560px; margin: 0; color: rgba(242,238,229,.74); font-size: 15px; line-height: 1.6; }
+.friends-page { min-height: 100vh; min-height: 100dvh; margin: -88px -24px calc(-100px - env(safe-area-inset-bottom)); padding: 0 24px calc(124px + env(safe-area-inset-bottom)); color: var(--paper); background: var(--petrol); }
+.friends-page > *:not(.friends-hero) { max-width: 760px; margin-left: auto; margin-right: auto; }
+.friends-hero { position: relative; min-height: 292px; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; overflow: hidden; margin: 0 -24px 24px; padding: calc(108px + env(safe-area-inset-top)) 24px 34px; background: linear-gradient(180deg, rgba(10,13,16,.08) 0%, rgba(10,13,16,.5) 48%, rgba(31,42,48,.98) 100%), url('/backgrounds/recovery-code.png') center 42%/cover; }
+.friends-hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(10,13,16,.9) 0%, rgba(10,13,16,.48) 56%, rgba(10,13,16,.14) 100%); }
+.friends-hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 92px; pointer-events: none; background: linear-gradient(180deg, rgba(31,42,48,0) 0%, var(--petrol) 100%); }
+.friends-hero > * { position: relative; z-index: 1; max-width: 760px; width: 100%; margin-left: auto; margin-right: auto; }
+.friends-hero h1 { max-width: 430px; margin: 0 0 10px; font-size: clamp(42px, 9vw, 68px); line-height: .95; }
+.friends-hero p { max-width: 430px; margin: 0; color: rgba(242,238,229,.76); font-size: 14px; line-height: 1.55; }
 .friends-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: hidden; border: 1px solid rgba(184,153,83,.26); border-radius: 8px; background: rgba(10,13,16,.46); box-shadow: 0 18px 45px rgba(0,0,0,.18); }
 .friends-summary > div { min-width: 0; display: grid; gap: 5px; justify-items: center; align-content: center; min-height: 104px; padding: 16px 10px; border-right: 1px solid rgba(255,255,255,.08); text-align: center; }
 .friends-summary > div:last-child { border-right: 0; }
