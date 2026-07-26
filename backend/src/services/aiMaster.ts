@@ -110,6 +110,12 @@ Pergunta do Jogador: "${questionText}"`;
 
 export const evaluateTheory = async (theoryAnswers: any, trueSolutionText: string) => {
   try {
+    const clampScore = (value: unknown) => {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return 0;
+      return Math.max(0, Math.min(100, Math.round(numeric)));
+    };
+
     const responseSchema: Schema = {
       type: Type.OBJECT,
       properties: {
@@ -129,20 +135,41 @@ export const evaluateTheory = async (theoryAnswers: any, trueSolutionText: strin
       required: ["score", "feedback", "dimensionResults"]
     };
 
+    const structuredAnswers = {
+      what_happened: String(theoryAnswers.what_happened || theoryAnswers.theory || '').trim(),
+      who: String(theoryAnswers.who || '').trim(),
+      how: String(theoryAnswers.how || '').trim(),
+      why: String(theoryAnswers.why || '').trim()
+    };
+
     const prompt = `Você é o avaliador de um jogo de investigação policial.
-Avalie a teoria dos jogadores comparando-a com a solução real do caso.
+Avalie a teoria dos jogadores comparando cada campo com a solução real do caso.
 
 Solução Real do Caso (Fatos absolutos):
 "${trueSolutionText}"
 
-Teoria submetida pelos jogadores:
-"${theoryAnswers.theory || Object.values(theoryAnswers).join(' ')}"
+Teoria submetida pelos jogadores, separada por campo:
+1. O que aconteceu?
+"${structuredAnswers.what_happened}"
+
+2. Quem foi o responsável?
+"${structuredAnswers.who}"
+
+3. Como foi feito?
+"${structuredAnswers.how}"
+
+4. Por quê?
+"${structuredAnswers.why}"
 
 Instruções ESTRITAS:
-1. Avalie a teoria descrita pelos jogadores dando uma nota geral (score) de 0 a 100 com base em quão próxima ela está da Solução Real.
-2. Seja MUITO tolerante a sinônimos, palavras diferentes ou explicações mais curtas. Se o cerne da resposta bater com a solução real, dê 100. Não penalize por falta de nomes específicos se a intenção e a lógica estiverem corretas.
-3. Para preencher as 'dimensionResults', simplesmente repita a mesma nota geral em todos os campos.
-4. Gere um 'feedback' curto (max 2 frases) em português do Brasil, num tom de detetive sênior. Se a nota for >= 75, confirme o sucesso. Se for menor, aponte de forma misteriosa onde eles erraram.`;
+1. Avalie cada campo separadamente em dimensionResults, de 0 a 100.
+2. what_happened: mede se identificaram corretamente a natureza real do caso, não só a aparência da cena.
+3. who: mede se apontaram o responsável correto ou os envolvidos corretos. Aceite nomes, sobrenomes, cargos ou descrições inequívocas.
+4. how: mede o método, mecanismo, sequência e uso de pistas falsas. Este campo deve ser mais exigente.
+5. why: mede a motivação central. Aceite resumo curto se a motivação principal estiver correta.
+6. Seja tolerante a sinônimos e formulações incompletas, mas não dê nota alta quando o campo acertar só por chute sem lógica.
+7. O score geral deve refletir os quatro campos, mas será recalculado pelo sistema. Ainda assim, retorne uma estimativa coerente.
+8. Gere um feedback curto, no máximo 2 frases, em português do Brasil. Aponte o campo mais fraco sem revelar uma nova pista que os jogadores não tenham citado.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3.5-flash',
@@ -152,10 +179,23 @@ Instruções ESTRITAS:
 
     if (!response.text) throw new Error("Resposta vazia da avaliação");
     const result = JSON.parse(response.text);
+    const dimensionResults = {
+      what_happened: clampScore(result.dimensionResults?.what_happened),
+      who: clampScore(result.dimensionResults?.who),
+      how: clampScore(result.dimensionResults?.how),
+      why: clampScore(result.dimensionResults?.why)
+    };
+    const weightedScore = Math.round(
+      (dimensionResults.what_happened * 0.25)
+      + (dimensionResults.who * 0.25)
+      + (dimensionResults.how * 0.35)
+      + (dimensionResults.why * 0.15)
+    );
+
     return {
-      score: result.score || 0,
+      score: weightedScore,
       feedback: result.feedback || "Avaliação concluída.",
-      dimensionResults: result.dimensionResults || { what_happened: 0, who: 0, how: 0, why: 0 }
+      dimensionResults
     };
   } catch (error) {
     console.error("Erro na avaliação IA da teoria:", error);
