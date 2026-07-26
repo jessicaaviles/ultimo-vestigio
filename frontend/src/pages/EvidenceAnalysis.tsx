@@ -259,18 +259,18 @@ const EvidenceAnalysis: React.FC = () => {
     id: evidenceId, title: 'Evidência Ficheiro ' + evidenceId, type: 'Cena do Crime', date: '12 Mai', image: '/backgrounds/ev_photo.png',
     desc: 'Um objeto encontrado na cena principal com várias peculiaridades.',
     relevance: 78,
-    hypothesis: "Há uma forte possibilidade de que o suspeito tenha estado no quarto 7 pouco antes do crime. Recomendamos investigar o álibi de Rafael Blackwell no período entre 20h e 22h.",
+    hypothesis: "Há uma forte possibilidade de que Renato Álvares tenha estado no quarto 7 pouco antes da encenação. Recomendamos investigar o uso da chave mestra e a escada de serviço entre 22h e 23h.",
     findings: [
-      { icon: <Fingerprint size={16} />, title: "Impressões digitais parciais", desc: "Possível correspondência com Rafael Blackwell" },
+      { icon: <Fingerprint size={16} />, title: "Impressões digitais parciais", desc: "Possível correspondência com Renato Álvares" },
       { icon: <Clock size={16} />, title: "Uso recente", desc: "Resíduos de óleo e microarranhões indicam uso nas últimas 24h" },
-      { icon: <Key size={16} />, title: "Pertence à Blackwell House", desc: "Compatível com as fechaduras dos quartos do segundo andar" }
+      { icon: <Key size={16} />, title: "Pertence ao Hotel Vesper", desc: "Compatível com as fechaduras dos quartos do segundo andar" }
     ],
     connections: [
       { type: "Pessoa citada", name: "Helena", subtitle: "Ligada à cena", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
       { type: "Local", name: "Quarto 7", subtitle: "Porta estava trancada", image: "https://images.unsplash.com/photo-1622396481328-9b1b78cdd9fd?q=80&w=200&auto=format&fit=crop" },
-      { type: "Suspeito", name: "Rafael Blackwell", subtitle: "Impressões parciais", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop" }
+      { type: "Suspeito", name: "Renato Álvares", subtitle: "Impressões parciais", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop" }
     ],
-    aiAnalysis: "A chave foi encontrada na sala de estar, próxima ao corpo de Helena. Há marcas de desgaste compatíveis com uso recente.",
+    aiAnalysis: "A chave mestra apresenta desgaste recente e resíduos de óleo compatíveis com a fechadura do Quarto 7. O registro de uso foi apagado manualmente.",
     discussion: []
   };
 

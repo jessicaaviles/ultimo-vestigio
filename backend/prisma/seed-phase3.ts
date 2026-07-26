@@ -27,9 +27,11 @@ async function main() {
     {
       slug: 'o-quarto-7',
       hints: [
-        'A fechadura da porta indica que alguém usou uma chave para entrar ou sair.',
-        'A câmera no corredor foi posicionada estrategicamente por alguém que trabalha no hotel.',
-        'O relógio quebrado não reflete a hora real do crime, mas sim a hora que o culpado queria que todos acreditassem.'
+        'A fechadura não foi arrombada: alguém com acesso à chave mestra entrou ou saiu do quarto.',
+        'A bandeja de chá entregue ao Quarto 7 carrega uma digital parcial e explica por que Helena foi encontrada desacordada.',
+        'A câmera no corredor foi reposicionada para esconder a escada de serviço, não para vigiar a porta.',
+        'O relógio quebrado não mostra a hora real do ataque, mas a hora que o culpado queria fixar na investigação.',
+        'Os documentos escondidos atrás do rodapé revelam o motivo: Helena podia provar que o gerente desviou verba de manutenção e culpou injustamente o pai dela por um acidente antigo.'
       ]
     },
     {

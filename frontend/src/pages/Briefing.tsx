@@ -49,7 +49,7 @@ const Briefing: React.FC = () => {
   if (!room) return <Loading message="Carregando apresentação..." />;
 
   const title = room.case_version?.case_ref?.title || 'O Quarto 7';
-  const opening = room.case_version?.opening || 'Helena Duarte foi encontrada no Hotel Vesper. Uma chave, uma câmera e um relógio quebrado aguardam uma explicação.';
+  const opening = room.case_version?.opening || 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper. Uma chave mestra, uma câmera reposicionada e um relógio quebrado escondem o verdadeiro motivo.';
   const players = room.players || [];
 
   return (

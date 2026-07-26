@@ -6,7 +6,7 @@ import { Clock3, UsersRound } from 'lucide-react';
 const CASES_MAP: Record<string, { title: string; synopsis: string; players: string; duration: string; image: string }> = {
   'o-quarto-7': {
     title: 'O Quarto 7',
-    synopsis: 'Helena Duarte foi encontrada no Hotel Vesper. Uma chave, uma câmera e um relógio quebrado aguardam uma explicação.',
+    synopsis: 'Helena Duarte foi encontrada desacordada no Hotel Vesper após ameaçar revelar um escândalo antigo. Uma chave mestra, uma câmera reposicionada e um relógio quebrado escondem o verdadeiro motivo.',
     players: '2-6 Jogadores',
     duration: '~20 min',
     image: '/capa_quarto_7.png'

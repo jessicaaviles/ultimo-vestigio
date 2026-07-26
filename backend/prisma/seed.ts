@@ -88,34 +88,55 @@ async function main() {
   // Caso oficial da direção de arte: O Quarto 7.
   const officialCase = await prisma.cases.upsert({
     where: { slug: 'o-quarto-7' },
-    update: { status: 'PUBLISHED' },
+    update: {
+      short_synopsis: 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper após ameaçar revelar um escândalo antigo. Uma chave mestra, uma câmera reposicionada e um relógio quebrado escondem o verdadeiro motivo.',
+      status: 'PUBLISHED'
+    },
     create: {
       slug: 'o-quarto-7',
       title: 'O Quarto 7',
-      short_synopsis: 'Helena Duarte foi encontrada no Hotel Vesper. Uma chave, uma câmera e um relógio quebrado aguardam uma explicação.',
+      short_synopsis: 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper após ameaçar revelar um escândalo antigo. Uma chave mestra, uma câmera reposicionada e um relógio quebrado escondem o verdadeiro motivo.',
       case_type: 'Caso Oficial', difficulty: 'Fácil', estimated_duration_minutes: 20, min_players: 2, max_players: 6, tension_level: 3, status: 'PUBLISHED'
     }
   });
   const officialVersion = await prisma.case_versions.upsert({
     where: { case_id_version_number: { case_id: officialCase.id, version_number: '1.0' } },
-    update: {},
+    update: {
+      opening: 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper. A porta estava trancada por dentro, a câmera do corredor apontava para um ângulo inútil e o relógio quebrado marcava 23h17. Horas antes, Helena havia dito que revelaria "o que o hotel fez com a família dela".',
+      solution_summary_encrypted: sealSecret('O gerente do Hotel Vesper encenou o quarto trancado para silenciar Helena, que havia descoberto provas de desvio de verbas de manutenção ligado à morte do pai dela.'),
+      full_solution_encrypted: sealSecret('Helena Duarte voltou ao Hotel Vesper para confrontar o gerente Renato Álvares com documentos que provavam o desvio de verbas de manutenção. O pai de Helena havia sido culpado injustamente por um acidente antigo no hotel, mas os registros mostravam que Renato cortou custos e ocultou laudos para proteger a reputação do Vesper. Com medo de prisão, falência do hotel e exposição pública, Renato serviu chá com sedativo a Helena, entrou no Quarto 7 usando uma chave mestra, trancou a porta para simular um mistério impossível e reposicionou a câmera do corredor para esconder sua rota pela escada de serviço. Depois quebrou o relógio em 23h17 para criar uma hora falsa e deixou um bilhete dramático para fazer parecer que Helena estava instável. A digital parcial na bandeja de serviço, o registro apagado da chave mestra e os documentos escondidos por Helena atrás do rodapé ligam Renato à encenação e revelam o motivo emocional do crime.'),
+      chronology_encrypted: sealSecret(JSON.stringify([
+        { time: '21h40', event: 'Helena chega ao Hotel Vesper com cópias de documentos antigos de manutenção.' },
+        { time: '22h10', event: 'Renato serve chá com sedativo e tenta convencê-la a desistir da denúncia.' },
+        { time: '22h35', event: 'Helena esconde os documentos atrás do rodapé do Quarto 7.' },
+        { time: '23h17', event: 'Renato quebra o relógio e reposiciona a câmera para fixar uma hora falsa.' }
+      ]))
+    },
     create: {
       case_id: officialCase.id, version_number: '1.0',
-      opening: 'Helena Duarte foi encontrada no Hotel Vesper. A porta do Quarto 7 estava trancada, uma câmera apontava para o corredor e um relógio quebrado marcava 23h17.',
+      opening: 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper. A porta estava trancada por dentro, a câmera do corredor apontava para um ângulo inútil e o relógio quebrado marcava 23h17. Horas antes, Helena havia dito que revelaria "o que o hotel fez com a família dela".',
       master_style: JSON.stringify({ tone: 'investigative', maxSentences: 2 }), scoring_rules: JSON.stringify({ baseScore: 1000, penaltyPerHint: 100 }),
-      solution_summary_encrypted: sealSecret('A cena foi preparada para parecer um quarto trancado por dentro.'),
-      full_solution_encrypted: sealSecret('O gerente do Hotel Vesper usou uma chave reserva para entrar no Quarto 7, posicionou a câmera para criar um álibi e quebrou o relógio durante a encenação. O bilhete e a digital parcial ligam a preparação ao gerente.'),
-      chronology_encrypted: sealSecret(JSON.stringify([{ time: '23h17', event: 'A câmera registra o corredor' }])), publication_status: 'PUBLISHED', published_at: new Date()
+      solution_summary_encrypted: sealSecret('O gerente do Hotel Vesper encenou o quarto trancado para silenciar Helena, que havia descoberto provas de desvio de verbas de manutenção ligado à morte do pai dela.'),
+      full_solution_encrypted: sealSecret('Helena Duarte voltou ao Hotel Vesper para confrontar o gerente Renato Álvares com documentos que provavam o desvio de verbas de manutenção. O pai de Helena havia sido culpado injustamente por um acidente antigo no hotel, mas os registros mostravam que Renato cortou custos e ocultou laudos para proteger a reputação do Vesper. Com medo de prisão, falência do hotel e exposição pública, Renato serviu chá com sedativo a Helena, entrou no Quarto 7 usando uma chave mestra, trancou a porta para simular um mistério impossível e reposicionou a câmera do corredor para esconder sua rota pela escada de serviço. Depois quebrou o relógio em 23h17 para criar uma hora falsa e deixou um bilhete dramático para fazer parecer que Helena estava instável. A digital parcial na bandeja de serviço, o registro apagado da chave mestra e os documentos escondidos por Helena atrás do rodapé ligam Renato à encenação e revelam o motivo emocional do crime.'),
+      chronology_encrypted: sealSecret(JSON.stringify([
+        { time: '21h40', event: 'Helena chega ao Hotel Vesper com cópias de documentos antigos de manutenção.' },
+        { time: '22h10', event: 'Renato serve chá com sedativo e tenta convencê-la a desistir da denúncia.' },
+        { time: '22h35', event: 'Helena esconde os documentos atrás do rodapé do Quarto 7.' },
+        { time: '23h17', event: 'Renato quebra o relógio e reposiciona a câmera para fixar uma hora falsa.' }
+      ])), publication_status: 'PUBLISHED', published_at: new Date()
     }
   });
   const officialFacts = [
-    ['door_locked', 'A porta foi trancada usando uma chave reserva.', 'ANSWER'],
-    ['camera_positioned', 'A câmera foi posicionada para produzir um álibi.', 'ANSWER'],
-    ['broken_clock', 'O relógio foi quebrado durante a encenação.', 'ANSWER'],
-    ['partial_fingerprint', 'A digital parcial pertence ao gerente do hotel.', 'ANSWER'],
-    ['note_relevant', 'O bilhete foi deixado para direcionar a investigação.', 'ANSWER']
+    ['door_locked', 'A porta foi trancada usando a chave mestra do gerente.', 'ANSWER'],
+    ['camera_positioned', 'A câmera foi reposicionada para esconder a passagem pela escada de serviço.', 'ANSWER'],
+    ['broken_clock', 'O relógio foi quebrado em 23h17 para criar uma hora falsa para a cena.', 'ANSWER'],
+    ['partial_fingerprint', 'A digital parcial do gerente aparece na bandeja de chá entregue ao Quarto 7.', 'ANSWER'],
+    ['note_relevant', 'O bilhete foi forjado para fazer Helena parecer emocionalmente instável.', 'ANSWER'],
+    ['sedative_tea', 'O chá servido a Helena continha sedativo em dose não letal.', 'ANSWER'],
+    ['hidden_documents', 'Helena escondeu cópias dos laudos de manutenção atrás do rodapé do quarto.', 'ANSWER'],
+    ['emotional_motive', 'O gerente queria impedir que Helena provasse a inocência do pai e expusesse os desvios do hotel.', 'ANSWER']
   ];
-  for (const [fact_key, statement, visibility] of officialFacts) await prisma.case_facts.upsert({ where: { case_version_id_fact_key: { case_version_id: officialVersion.id, fact_key } }, update: {}, create: { case_version_id: officialVersion.id, fact_key, statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true } });
+  for (const [fact_key, statement, visibility] of officialFacts) await prisma.case_facts.upsert({ where: { case_version_id_fact_key: { case_version_id: officialVersion.id, fact_key } }, update: { statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true }, create: { case_version_id: officialVersion.id, fact_key, statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true } });
 
   // 4. Caso: O Guarda-chuva Molhado
   const caseGuardaChuva = await prisma.cases.upsert({
