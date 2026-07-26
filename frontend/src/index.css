@@ -199,14 +199,14 @@ button[style*="#a88b63"] {
   .app-content, .topbar { padding-left: 24px; padding-right: 24px; }
 }
 @media (max-width: 640px) {
-  .topbar { height: calc(76px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 16px 0; }
+  .topbar { height: calc(76px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 24px 0; }
   .topbar-logo { height: 50px; max-height: 50px; }
   .home-header-profile { gap: 8px; padding-left: 0; padding-right: 4px; }
   .home-header-profile-avatar { width: 40px; height: 40px; }
   .home-header-profile-name { max-width: 112px; font-size: 14px; }
   .home-header-profile-status { font-size: 7px; }
   .topbar-mark { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 9px; }
-  .app-content { padding: calc(76px + env(safe-area-inset-top)) 16px calc(104px + env(safe-area-inset-bottom)); }
+  .app-content { padding: calc(76px + env(safe-area-inset-top)) 24px calc(104px + env(safe-area-inset-bottom)); }
   .page-header { padding-top: 24px; }
   .bottom-nav, .bottom-nav-inner { min-height: 68px; padding-left: 8px; padding-right: 8px; }
   .nav-item { min-width: 52px; min-height: 50px; font-size: 8px; letter-spacing: .06em; }
@@ -1312,7 +1312,7 @@ img.fill, .img-fill, .fill-width {
     margin-right: 4px !important;
   }
   .home-content-wrapper {
-    padding: 0 20px;
+    padding: 0 24px;
   }
   .home-bg {
     height: 680px;
@@ -1363,23 +1363,23 @@ img.fill, .img-fill, .fill-width {
     padding-top: 22px;
   }
   .featured-carousel {
-    margin-left: -20px;
-    margin-right: -20px;
-    width: calc(100% + 40px);
-    scroll-padding: 0 20px;
+    margin-left: -24px;
+    margin-right: -24px;
+    width: calc(100% + 48px);
+    scroll-padding: 0 24px;
   }
   .featured-carousel::before,
   .featured-carousel::after {
-    flex-basis: 20px;
+    flex-basis: 24px;
   }
   .featured-card {
-    min-width: min(326px, calc(100vw - 40px));
+    min-width: min(326px, calc(100vw - 48px));
   }
 }
 
 @media (max-width: 370px) {
   .home-content-wrapper {
-    padding: 0 16px;
+    padding: 0 24px;
   }
   .home-empty-stats {
     grid-template-columns: 1fr;
