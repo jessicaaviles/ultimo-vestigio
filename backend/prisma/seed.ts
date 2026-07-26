@@ -167,6 +167,30 @@ async function main() {
     ['umbrella_used_inside', 'O guarda-chuva foi aberto e utilizado dentro do prédio.', 'ANSWER']
   ];
   for (const [fact_key, statement, visibility] of factsGuardaChuva) await prisma.case_facts.upsert({ where: { case_version_id_fact_key: { case_version_id: versionGuardaChuva.id, fact_key } }, update: {}, create: { case_version_id: versionGuardaChuva.id, fact_key, statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true } });
+  const rulesGuardaChuva = [
+    ['no_rain', ['Choveu naquele dia?', 'A água veio da chuva?', 'O céu estava limpo?', 'Não choveu?'], ['no_rain'], 'NO'],
+    ['leak_source', ['A água veio de um vazamento?', 'Tinha goteira no prédio?', 'O ar condicionado vazou?', 'Havia água no corredor?'], ['ac_leak'], 'YES'],
+    ['used_inside', ['O guarda-chuva foi usado dentro do prédio?', 'Alguém abriu o guarda-chuva no corredor?', 'A pessoa usou o guarda-chuva dentro da sala?'], ['umbrella_used_inside'], 'YES']
+  ];
+  for (const [intent_key, examples, facts, classification] of rulesGuardaChuva) {
+    await prisma.case_answer_rules.upsert({
+      where: { id: `${versionGuardaChuva.id}:${intent_key}` },
+      update: {
+        semantic_examples: JSON.stringify(examples),
+        related_fact_keys: JSON.stringify(facts),
+        default_classification: String(classification)
+      },
+      create: {
+        id: `${versionGuardaChuva.id}:${intent_key}`,
+        case_version_id: versionGuardaChuva.id,
+        intent_key: String(intent_key),
+        semantic_examples: JSON.stringify(examples),
+        related_fact_keys: JSON.stringify(facts),
+        default_classification: String(classification),
+        response_constraints: JSON.stringify({ maxSentences: 1, tutorialCase: true })
+      }
+    });
+  }
 
   // 5. Caso: O Elevador que Não Parou
   const caseElevador = await prisma.cases.upsert({

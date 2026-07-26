@@ -6,6 +6,65 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const BLOCKED_PATTERNS = /(ignore|esqueça|revele|mostre|prompt|instruções|system message|segredo|solução completa|ignore previous|forget|reveal the)/i;
 
+const normalizeText = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('pt-BR');
+
+const processTutorialQuestion = (questionText: string) => {
+  const question = normalizeText(questionText);
+  const hasAny = (words: string[]) => words.some((word) => question.includes(word));
+
+  if (question.includes('ceu') && question.includes('limpo')) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O céu estava limpo, então a água não veio da chuva.',
+      fallback_used: false
+    };
+  }
+
+  if (hasAny(['choveu', 'chuva', 'temporal', 'ceu', 'clima', 'tempo'])) {
+    return {
+      classification: question.includes('nao choveu') || question.includes('sem chuva') ? 'YES' : 'NO',
+      rendered_text: question.includes('nao choveu') || question.includes('sem chuva')
+        ? 'Sim. Não há registro de chuva naquele dia.'
+        : 'Não. A água não veio da chuva.',
+      fallback_used: false
+    };
+  }
+
+  if (hasAny(['ar condicionado', 'condicionado', 'vazamento', 'tubulacao', 'tubo', 'cano', 'corredor', 'goteira'])) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. Há relação com água vindo de uma instalação interna do prédio.',
+      fallback_used: false
+    };
+  }
+
+  if (hasAny(['dentro', 'predio', 'sala', 'interno', 'usou', 'abriu'])) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O guarda-chuva foi usado dentro do prédio.',
+      fallback_used: false
+    };
+  }
+
+  if (hasAny(['molhado', 'agua', 'guarda-chuva', 'guarda chuva'])) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. O guarda-chuva realmente foi molhado por água, mas não por chuva.',
+      fallback_used: false
+    };
+  }
+
+  return {
+    classification: 'UNKNOWN',
+    rendered_text: 'Desconhecido. Essa pergunta não aponta para um fato confirmado no arquivo.',
+    fallback_used: false
+  };
+};
+
 export const processQuestion = async (roomId: string, questionText: string, caseVersionId: string) => {
   try {
     const cleanQuestion = String(questionText || '').trim().slice(0, 500);
@@ -31,6 +90,10 @@ export const processQuestion = async (roomId: string, questionText: string, case
 
     if (!facts || facts.length === 0 || !caseVersion) {
       return { classification: 'UNKNOWN', rendered_text: 'O arquivo do caso não pôde ser acessado agora. Tente novamente em instantes.', fallback_used: true };
+    }
+
+    if (caseVersion.case_ref.slug === 'o-guarda-chuva-molhado') {
+      return processTutorialQuestion(cleanQuestion);
     }
 
     const { revealSecret } = await import('../security/secrets');
