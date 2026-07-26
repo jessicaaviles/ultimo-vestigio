@@ -57,68 +57,20 @@ const Cases: React.FC = () => {
           };
         });
         
-        // Injetar caso do protótipo imersivo para demonstração (apenas se não vier da API)
-        const blackwellCase = {
-          slug: 'blackwell',
-          title: 'Mansão Blackwell',
-          synopsis: 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell.',
-          type: 'Mistério',
-          duration: '30 min',
-          difficulty: 'Média' as const,
-          players: '1-4 Jogadores',
-          tension: 4,
-          image: '/backgrounds/map_blackwell.png',
-          cover_image_data: null
-        };
-        
-        const hasBlackwell = mapped.some((m: any) => m.slug === 'blackwell');
-        const nextCases = hasBlackwell ? mapped : [...mapped, blackwellCase];
-        setCases(nextCases);
+        setCases(mapped);
         if (requestedCaseSlug) {
-          setSelectedCase(nextCases.find((item: CaseItem) => item.slug === requestedCaseSlug) || null);
+          setSelectedCase(mapped.find((item: CaseItem) => item.slug === requestedCaseSlug) || null);
         }
       } else {
-        // Se a API não retornar nada, pelo menos mostre o caso de demonstração
-        const fallbackCases = [{
-          slug: 'blackwell',
-          title: 'Mansão Blackwell',
-          synopsis: 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell.',
-          type: 'Mistério',
-          duration: '30 min',
-          difficulty: 'Média' as const,
-          players: '1-4 Jogadores',
-          tension: 4,
-          image: '/backgrounds/map_blackwell.png',
-          cover_image_data: null
-        }];
-        setCases(fallbackCases);
-        if (requestedCaseSlug) {
-          setSelectedCase(fallbackCases.find((item) => item.slug === requestedCaseSlug) || null);
-        }
+        setCases([]);
+        setSelectedCase(null);
       }
       setLoading(false);
     }).catch((err) => {
       console.error(err);
       setError('Não foi possível carregar os casos. Tente novamente mais tarde.');
-      
-      // Fallback para exibir o protótipo mesmo com erro na API
-      const fallbackCases = [{
-        slug: 'blackwell',
-        title: 'Mansão Blackwell',
-        synopsis: 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell.',
-        type: 'Mistério',
-        duration: '30 min',
-        difficulty: 'Média' as const,
-        players: '1-4 Jogadores',
-        tension: 4,
-        image: '/backgrounds/map_blackwell.png',
-        cover_image_data: null
-      }];
-      setCases(fallbackCases);
-      if (requestedCaseSlug) {
-        setSelectedCase(fallbackCases.find((item) => item.slug === requestedCaseSlug) || null);
-      }
-      
+      setCases([]);
+      setSelectedCase(null);
       setLoading(false);
     });
   }, [location.search, user?.userId]);
@@ -152,7 +104,19 @@ const Cases: React.FC = () => {
       {/* Lista de Casos */}
       {error && <div role="alert" style={{ color: '#d79b8e', marginBottom: '16px' }}>{error}</div>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {loading ? <Loading message="Abrindo o arquivo de casos..." fullPage={false} /> : cases.map((item) => (
+        {loading ? <Loading message="Abrindo o arquivo de casos..." fullPage={false} /> : cases.length === 0 ? (
+          <div style={{
+            backgroundColor: '#13191C',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            borderRadius: '8px',
+            padding: '24px',
+            color: '#8E989F',
+            fontSize: '14px',
+            lineHeight: 1.5
+          }}>
+            Nenhum caso disponível no momento.
+          </div>
+        ) : cases.map((item) => (
           <div 
             key={item.slug}
             onClick={() => setSelectedCase(item)}

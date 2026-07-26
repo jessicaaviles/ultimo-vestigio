@@ -24,7 +24,7 @@ const MapOverview: React.FC = () => {
 
   const selectedLocation = locations.find(l => l.id === selectedPin) || locations[3]; // default to living room
   const foundPistasInSelected = unlockedClues.filter(c => selectedLocation.clueIds.includes(c.clueId)).length;
-  const mockedFoundPistas = foundPistasInSelected;
+  const foundPistas = foundPistasInSelected;
 
   return (
     <div style={{ backgroundColor: '#0A0D10', position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', overflow: 'hidden' }}>
@@ -221,10 +221,10 @@ const MapOverview: React.FC = () => {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ color: '#8E989F', fontSize: '11px', marginBottom: '4px' }}>
-                    <strong style={{ color: '#F8F9FA' }}>{mockedFoundPistas} de {selectedLocation.totalPistas}</strong> pistas encontradas
+                    <strong style={{ color: '#F8F9FA' }}>{foundPistas} de {selectedLocation.totalPistas}</strong> pistas encontradas
                   </div>
                   <div style={{ height: '2px', background: 'rgba(255,255,255,0.1)', borderRadius: '1px', overflow: 'hidden' }}>
-                    <div style={{ width: `${(mockedFoundPistas / selectedLocation.totalPistas) * 100}%`, height: '100%', background: '#C5A880' }} />
+                    <div style={{ width: `${(foundPistas / selectedLocation.totalPistas) * 100}%`, height: '100%', background: '#C5A880' }} />
                   </div>
                 </div>
               </div>

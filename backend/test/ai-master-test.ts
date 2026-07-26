@@ -29,7 +29,7 @@ async function runTests() {
 
   console.log(`Usando Caso: ${caseVersion.case_ref.title} (ID: ${caseVersion.id})\n`);
 
-  const mockRoomId = 'test-room-123';
+  const testRoomId = 'test-room-123';
 
   const testCases = [
     {
@@ -67,7 +67,7 @@ async function runTests() {
     
     try {
       const start = Date.now();
-      const result = await processQuestion(mockRoomId, t.question, caseVersion.id);
+      const result = await processQuestion(testRoomId, t.question, caseVersion.id);
       const elapsed = Date.now() - start;
       
       console.log(`Classificação: ${result.classification}`);

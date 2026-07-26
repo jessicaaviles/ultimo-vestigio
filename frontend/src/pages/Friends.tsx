@@ -43,63 +43,6 @@ type Invite = {
 const STORAGE_KEY = 'uv_friends';
 const INVITES_KEY = 'uv_friend_invites';
 
-const initialFriends: Friend[] = [
-  {
-    id: 'friend-helena',
-    name: 'Helena Duarte',
-    handle: '@helenad',
-    email: 'helena.duarte@arquivo.local',
-    status: 'investigando',
-    level: 12,
-    xp: 3840,
-    accuracy: 78,
-    casesSolved: 9,
-    achievements: ['Primeiro caso', 'Dedução correta', 'Trabalho em equipe'],
-    avatar: '/backgrounds/helena_portrait.png',
-  },
-  {
-    id: 'friend-tomas',
-    name: 'Tomás Ribeiro',
-    handle: '@tomasr',
-    email: 'tomas.ribeiro@arquivo.local',
-    status: 'online',
-    level: 8,
-    xp: 2140,
-    accuracy: 64,
-    casesSolved: 5,
-    achievements: ['Primeiro caso', 'Investigador consistente'],
-    avatar: '/backgrounds/tomas_portrait.png',
-  },
-  {
-    id: 'friend-livia',
-    name: 'Lívia Moraes',
-    handle: '@liviam',
-    email: 'livia.moraes@arquivo.local',
-    status: 'ausente',
-    level: 15,
-    xp: 4520,
-    accuracy: 86,
-    casesSolved: 13,
-    achievements: ['Primeiro caso', 'Precisão de elite', 'Colecionador de pistas'],
-    avatar: '/backgrounds/clara_portrait.png',
-  },
-];
-
-const initialInvites: Invite[] = [
-  {
-    id: 'invite-ana',
-    name: 'Ana Vilar',
-    handle: '@anav',
-    note: 'Quer participar da próxima investigação com você.',
-  },
-  {
-    id: 'invite-caio',
-    name: 'Caio Nogueira',
-    handle: '@caion',
-    note: 'Enviou um convite depois do caso Quarto 7.',
-  },
-];
-
 const readStored = <T,>(key: string, fallback: T): T => {
   try {
     const stored = localStorage.getItem(key);
@@ -131,8 +74,8 @@ const statusLabels: Record<Friend['status'], string> = {
 
 const Friends: React.FC = () => {
   const { user } = useAuth();
-  const [friends, setFriends] = useState<Friend[]>(() => readStored(STORAGE_KEY, initialFriends));
-  const [invites, setInvites] = useState<Invite[]>(() => readStored(INVITES_KEY, initialInvites));
+  const [friends, setFriends] = useState<Friend[]>(() => readStored(STORAGE_KEY, []));
+  const [invites, setInvites] = useState<Invite[]>(() => readStored(INVITES_KEY, []));
   const [query, setQuery] = useState('');
   const [nameOrEmail, setNameOrEmail] = useState('');
   const [status, setStatus] = useState('');
@@ -181,7 +124,7 @@ const Friends: React.FC = () => {
       id: createId(),
       name: normalizedName || 'Novo investigador',
       handle: value.startsWith('@') ? value : `@${normalizedName.toLowerCase().replace(/\s+/g, '') || 'investigador'}`,
-      email: value.includes('@') ? value : `${normalizedName.toLowerCase().replace(/\s+/g, '.')}@convite.local`,
+      email: value.includes('@') ? value : '',
       status: 'online',
       level: 1,
       xp: 0,
@@ -211,7 +154,7 @@ const Friends: React.FC = () => {
       id: invite.id.replace('invite', 'friend'),
       name: invite.name,
       handle: invite.handle,
-      email: `${invite.handle.replace('@', '')}@arquivo.local`,
+      email: '',
       status: 'online',
       level: 3,
       xp: 720,

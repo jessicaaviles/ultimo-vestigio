@@ -3,56 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import * as apiService from '../services/api';
 import { Clock3, UsersRound } from 'lucide-react';
 
-const CASES_MAP: Record<string, { title: string; synopsis: string; players: string; duration: string; image: string }> = {
-  'o-quarto-7': {
-    title: 'O Quarto 7',
-    synopsis: 'Helena Duarte foi encontrada desacordada no Hotel Vesper após ameaçar revelar um escândalo antigo. Uma chave mestra, uma câmera reposicionada e um relógio quebrado escondem o verdadeiro motivo.',
-    players: '2-6 Jogadores',
-    duration: '~20 min',
-    image: '/capa_quarto_7.png'
-  },
-  'o-guarda-chuva-molhado': {
-    title: 'O Guarda-chuva Molhado',
-    synopsis: 'Uma pessoa entra em uma sala vazia e encontra um guarda-chuva completamente molhado. O céu está limpo e não choveu.',
-    players: '2-6 Jogadores',
-    duration: '~5 min',
-    image: '/backgrounds/mapa-da-investigacao.png'
-  },
-  'o-presente-desaparecido': {
-    title: 'O Presente Desaparecido',
-    synopsis: 'Durante uma comemoração em família, a caixa de presente sobre a mesa desaparece diante de todos. Ninguém saiu do ambiente.',
-    players: '2-6 Jogadores',
-    duration: '~8 min',
-    image: '/backgrounds/cena-do-crime.png'
-  },
-  'o-elevador-que-nao-parou': {
-    title: 'O Elevador que Não Parou',
-    synopsis: 'Uma mulher entra sozinha em um elevador. Ele não para em nenhum andar e, quando retorna, está vazio.',
-    players: '2-6 Jogadores',
-    duration: '~10 min',
-    image: '/backgrounds/lobby.png'
-  },
-  'a-mensagem-das-23h17': {
-    title: 'A Mensagem das 23h17',
-    synopsis: 'Às 23h17, uma pessoa envia uma mensagem dizendo: "Agora todos vão entender". Poucos minutos depois, desaparece.',
-    players: '3-6 Jogadores',
-    duration: '~12 min',
-    image: '/backgrounds/equipe-investigadores.png'
-  },
-  'o-retrato-que-piscou': {
-    title: 'O Retrato que Piscou',
-    synopsis: 'Durante um jantar, todos veem o retrato antigo da sala piscar. Segundos depois, uma joia desaparece de uma mesa próxima.',
-    players: '2-6 Jogadores',
-    duration: '~10 min',
-    image: '/capa_carta_anonima.png'
-  },
-  'blackwell': {
-    title: 'Mansão Blackwell',
-    synopsis: 'Investigue o sumiço misterioso de Clara Mendes na secular Mansão Blackwell e desvende o mistério.',
-    players: '2-6 Jogadores',
-    duration: '~30 min',
-    image: '/backgrounds/map_blackwell.png'
-  }
+type CaseInfo = {
+  title: string;
+  synopsis: string;
+  players: string;
+  duration: string;
+  image: string;
+  available: boolean;
 };
 
 const CreateRoom: React.FC = () => {
@@ -66,8 +23,53 @@ const CreateRoom: React.FC = () => {
   const [error, setError] = useState('');
   const [timer, setTimer] = useState<number | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>((location.state as any)?.coverImage || null);
+  const [caseInfo, setCaseInfo] = useState<CaseInfo>({
+    title: 'Carregando caso...',
+    synopsis: 'Buscando as informações oficiais deste caso.',
+    players: '--',
+    duration: '--',
+    image: '/backgrounds/mapa-da-investigacao.png',
+    available: false
+  });
 
-  const caseInfo = CASES_MAP[selectedCaseId] || CASES_MAP['o-quarto-7'];
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    apiService.listCases(userId).then((response: any) => {
+      const selectedCase = response?.data?.find((item: any) => item.slug === selectedCaseId);
+      if (!selectedCase) {
+        setCaseInfo({
+          title: 'Caso indisponível',
+          synopsis: 'Não encontramos este caso no arquivo ativo.',
+          players: '--',
+          duration: '--',
+          image: '/backgrounds/mapa-da-investigacao.png',
+          available: false
+        });
+        return;
+      }
+
+      const image = selectedCase.cover_image_data
+        || (selectedCase.slug === 'o-quarto-7' ? '/capa_quarto_7.png' : '/backgrounds/mapa-da-investigacao.png');
+
+      setCaseInfo({
+        title: selectedCase.title,
+        synopsis: selectedCase.short_synopsis,
+        players: `${selectedCase.min_players}-${selectedCase.max_players} Jogadores`,
+        duration: `~${selectedCase.estimated_duration_minutes} min`,
+        image,
+        available: true
+      });
+    }).catch(() => {
+      setCaseInfo({
+        title: 'Caso indisponível',
+        synopsis: 'Não foi possível carregar as informações oficiais deste caso.',
+        players: '--',
+        duration: '--',
+        image: '/backgrounds/mapa-da-investigacao.png',
+        available: false
+      });
+    });
+  }, [selectedCaseId]);
 
   useEffect(() => {
     if (coverImage) return;
@@ -81,6 +83,10 @@ const CreateRoom: React.FC = () => {
   const handleCreate = async () => {
     try {
       setLoading(true);
+      if (!caseInfo.available) {
+        setError('Este caso não está disponível para criar uma sala.');
+        return;
+      }
       
       const userId = localStorage.getItem('userId');
       if (!userId) {
@@ -165,7 +171,7 @@ const CreateRoom: React.FC = () => {
         <button 
           className="btn-primary" 
           onClick={handleCreate} 
-          disabled={loading}
+          disabled={loading || !caseInfo.available}
           style={{ 
             padding: '16px 24px', 
             fontSize: '14px',

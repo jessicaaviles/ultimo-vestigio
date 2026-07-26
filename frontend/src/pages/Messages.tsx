@@ -12,23 +12,8 @@ interface Chat {
   messages: { sender: 'them' | 'me'; text: string; time: string }[];
 }
 
-const INITIAL_CHATS: Chat[] = [
-  {
-    id: 'system-ia',
-    name: 'Mestre Investigador',
-    role: 'Motor Forense',
-    avatar: 'MI',
-    lastMessage: 'Motor Forense ativo. Pronto para receber e avaliar as teorias da sua equipe.',
-    time: 'Agora',
-    unread: false,
-    messages: [
-      { sender: 'them', text: 'Bem-vindo ao canal seguro do Último Vestígio. O motor forense está pronto para avaliar as teorias enviadas durante as investigações. Crie ou entre em uma sala para iniciar um caso.', time: 'Agora' }
-    ]
-  }
-];
-
 const Messages: React.FC = () => {
-  const [chats, setChats] = useState<Chat[]>(INITIAL_CHATS);
+  const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [inputMessage, setInputMessage] = useState('');
   const { setUnreadMessages, clearMessages } = useNotifications();
@@ -161,6 +146,12 @@ const Messages: React.FC = () => {
           </header>
 
           <div className="messages-list" aria-label="Conversas disponiveis">
+            {chats.length === 0 && (
+              <div className="messages-empty-state">
+                <h2>Nenhuma conversa disponível</h2>
+                <p>As conversas aparecerão aqui quando uma sala ou investigação criar um canal de comunicação.</p>
+              </div>
+            )}
             {chats.map(chat => (
               <div
                 key={chat.id}
