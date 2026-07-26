@@ -250,7 +250,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <button aria-label="Ir para início" onClick={() => navigate('/')} style={{ background: 'none', border: 0 }}>
             <img className="topbar-logo" src="/monograma-ultimo-vestigio.png" alt="Último Vestígio" />
           </button>
-          {!['/', '/cases', '/lobby', '/messages', '/profile'].includes(location.pathname) && (
+          {!['/', '/cases', '/lobby', '/messages', '/profile', '/friends', '/settings'].includes(location.pathname) && (
             <button onClick={() => navigate(-1)} style={{ color: '#8E989F', background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', padding: '4px 8px', lineHeight: 1 }}>
               <span style={{ fontSize: '18px', lineHeight: 1 }}>←</span> Voltar
             </button>
@@ -502,6 +502,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className={`menu-dropdown${menuOpen ? ' menu-dropdown--open' : ''}`} role="menu">
           <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>
             Meu perfil
+          </button>
+          <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/friends'); }}>
+            Amigos
           </button>
           <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>
             Configurações

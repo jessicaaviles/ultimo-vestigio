@@ -13,6 +13,7 @@ import Game from './pages/Game';
 import Cases from './pages/Cases';
 import Messages from './pages/Messages';
 import Profile from './pages/Profile';
+import Friends from './pages/Friends';
 import Settings from './pages/Settings';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
@@ -56,6 +57,7 @@ function App() {
               <Route path="/cases" element={<Layout><Cases /></Layout>} />
               <Route path="/messages" element={<Layout><Messages /></Layout>} />
               <Route path="/profile" element={<Layout><ProtectedRoute><Profile /></ProtectedRoute></Layout>} />
+              <Route path="/friends" element={<Layout><ProtectedRoute><Friends /></ProtectedRoute></Layout>} />
               <Route path="/settings" element={<Layout><ProtectedRoute><Settings /></ProtectedRoute></Layout>} />
               <Route path="/privacy" element={<Layout><ProtectedRoute><Privacy /></ProtectedRoute></Layout>} />
               <Route path="/terms" element={<Layout><ProtectedRoute><Terms /></ProtectedRoute></Layout>} />
