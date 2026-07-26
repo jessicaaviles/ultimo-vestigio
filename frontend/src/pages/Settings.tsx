@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Accessibility,
@@ -55,7 +55,7 @@ const cycle = <T,>(values: T[], current: T) => values[(values.indexOf(current) +
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [settings, setSettings] = useState<SettingsState>(() => {
     try {
       return { ...defaultSettings, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') };
@@ -67,11 +67,6 @@ const Settings: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings]);
-
-  const accountSubtitle = useMemo(() => {
-    const level = user?.hasProfile ? 'Nível 02' : 'Perfil local';
-    return user?.email ? `${level} · Conta sincronizada` : `${level} · Perfil neste dispositivo`;
-  }, [user]);
 
   const update = <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
     setSettings((current) => ({ ...current, [key]: value }));
@@ -142,27 +137,6 @@ const Settings: React.FC = () => {
           <img src="/capa_quarto_7.png" alt="" />
           <img src="/backgrounds/ev_letter.png" alt="" />
         </div>
-      </section>
-
-      <section className="settings-section">
-        <span className="eyebrow">Conta</span>
-        <button className="settings-account-card" onClick={() => navigate('/profile')}>
-          <span className="settings-account-avatar">
-            <img
-              src={user?.photo || '/backgrounds/helena_portrait.png'}
-              alt=""
-              onError={(event) => {
-                event.currentTarget.onerror = null;
-                event.currentTarget.src = '/backgrounds/helena_portrait.png';
-              }}
-            />
-          </span>
-          <span className="settings-account-copy">
-            <strong>{user?.displayName || 'Investigador'}</strong>
-            <span>{accountSubtitle}</span>
-          </span>
-          <ChevronRight size={18} />
-        </button>
       </section>
 
       <section className="settings-section">
