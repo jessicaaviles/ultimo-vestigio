@@ -339,6 +339,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </p>
                   
                   <button
+                    className="lobby-create-button"
                     onClick={handleCreateRoom}
                     disabled={loadingLobby}
                     style={{
