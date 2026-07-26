@@ -93,6 +93,23 @@ html[data-accessibility="reduzir-movimento"] *::after {
   animation-duration: .01ms !important;
   animation-iteration-count: 1 !important;
 }
+html[data-accessibility="reduzir-movimento"] .loading-spinner,
+html[data-accessibility="reduzir-movimento"] .profile-avatar-spinner,
+html[data-accessibility="reduzir-movimento"] .home-hero-loading span,
+html[data-accessibility="reduzir-movimento"] .home-header-profile-avatar--loading,
+html[data-accessibility="reduzir-movimento"] .home-header-profile-name--loading,
+html[data-accessibility="reduzir-movimento"] .home-header-profile-status--loading,
+html[data-accessibility="reduzir-movimento"] .nav-badge {
+  animation-duration: 1s !important;
+  animation-iteration-count: infinite !important;
+}
+html[data-accessibility="reduzir-movimento"] .loading-spinner,
+html[data-accessibility="reduzir-movimento"] .profile-avatar-spinner { animation-name: spin !important; animation-duration: .8s !important; animation-timing-function: linear !important; }
+html[data-accessibility="reduzir-movimento"] .home-hero-loading span { animation-name: home-hero-loading !important; animation-duration: 1.3s !important; animation-timing-function: ease-in-out !important; }
+html[data-accessibility="reduzir-movimento"] .home-header-profile-avatar--loading,
+html[data-accessibility="reduzir-movimento"] .home-header-profile-name--loading,
+html[data-accessibility="reduzir-movimento"] .home-header-profile-status--loading { animation-name: home-header-pulse !important; animation-duration: 1.4s !important; animation-timing-function: ease-in-out !important; }
+html[data-accessibility="reduzir-movimento"] .nav-badge { animation-name: badge-pulse !important; animation-duration: 2.4s !important; animation-timing-function: ease !important; }
 .app-shell { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; position: relative; }
 .app-content { width: 100%; max-width: 1240px; margin: 0 auto; flex: 1; min-width: 0; padding: calc(88px + env(safe-area-inset-top)) 24px calc(100px + env(safe-area-inset-bottom)); }
 .app-content:has(.profile-editor-page) { padding-bottom: 0 !important; }
@@ -283,6 +300,23 @@ button[style*="#a88b63"] {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  .loading-spinner,
+  .profile-avatar-spinner,
+  .home-hero-loading span,
+  .home-header-profile-avatar--loading,
+  .home-header-profile-name--loading,
+  .home-header-profile-status--loading,
+  .nav-badge {
+    animation-duration: 1s !important;
+    animation-iteration-count: infinite !important;
+  }
+  .loading-spinner,
+  .profile-avatar-spinner { animation-name: spin !important; animation-duration: .8s !important; animation-timing-function: linear !important; }
+  .home-hero-loading span { animation-name: home-hero-loading !important; animation-duration: 1.3s !important; animation-timing-function: ease-in-out !important; }
+  .home-header-profile-avatar--loading,
+  .home-header-profile-name--loading,
+  .home-header-profile-status--loading { animation-name: home-header-pulse !important; animation-duration: 1.4s !important; animation-timing-function: ease-in-out !important; }
+  .nav-badge { animation-name: badge-pulse !important; animation-duration: 2.4s !important; animation-timing-function: ease !important; }
 }
 
 /* utility classes for full-width and fill images */
