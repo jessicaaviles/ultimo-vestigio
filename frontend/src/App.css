@@ -206,6 +206,9 @@
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
 .portrait-badge { position: absolute; right: 2px; bottom: 4px; display: grid; place-items: center; width: 24px; height: 24px; color: var(--ink); border: 2px solid var(--petrol); border-radius: 50%; background: var(--olive-light); }
 .profile-edit-trigger { white-space: nowrap; }
+.profile-edit-trigger, .profile-logout-trigger { background: var(--accent-gold) !important; color: #0a0d10 !important; border: 1px solid rgba(245,214,129,.55) !important; font-weight: 800; text-shadow: none !important; }
+.profile-edit-trigger:hover, .profile-logout-trigger:hover { background: var(--accent-gold) !important; color: #0a0d10 !important; filter: brightness(1.04); }
+.profile-edit-trigger svg, .profile-logout-trigger svg { color: #0a0d10 !important; stroke: #0a0d10 !important; }
 .profile-status { margin: 18px 0; padding: 12px 14px; color: var(--gold-soft); border: 1px solid rgba(184,153,83,.35); border-radius: 8px; background: rgba(184,153,83,.08); }
 .btn-danger { min-height: 50px; padding: 0 22px; border-radius: 8px; display: inline-flex; gap: 10px; align-items: center; justify-content: center; color: #f7ddd8; border: 1px solid rgba(205,93,70,.42); background: rgba(115,43,35,.18); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: .2s ease; }
 .btn-danger:hover { border-color: rgba(238,128,103,.72); color: #fff1ed; background: rgba(145,54,42,.28); transform: translateY(-1px); }
@@ -214,6 +217,9 @@
 .profile-account-email { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--olive-light); font-size: 13px; overflow-wrap: anywhere; }
 .profile-account-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: center; width: 100%; }
 .profile-delete-trigger, .profile-logout-trigger { width: 100%; min-height: 44px; padding: 0 14px; font-size: 12px; }
+.profile-delete-trigger, .profile-delete-modal-actions .btn-danger { background: linear-gradient(135deg, #9f3f32 0%, #6f251f 100%) !important; color: #fff2ee !important; border: 1px solid rgba(238,128,103,.62) !important; box-shadow: 0 14px 30px rgba(80,18,14,.24); }
+.profile-delete-trigger:hover, .profile-delete-modal-actions .btn-danger:hover { background: linear-gradient(135deg, #b84d3e 0%, #7c2b23 100%) !important; color: #fffaf8 !important; filter: brightness(1.02); }
+.profile-delete-trigger svg, .profile-delete-modal-actions .btn-danger svg { color: #fff2ee !important; stroke: #fff2ee !important; }
 .profile-delete-modal-backdrop { position: fixed; inset: 0; z-index: 260; display: grid; place-items: center; padding: 24px; background: rgba(4,7,9,.78); backdrop-filter: blur(10px); }
 .profile-delete-modal { width: min(100%, 430px); display: grid; gap: 18px; padding: 22px; border: 1px solid rgba(205,93,70,.34); border-radius: 8px; background: linear-gradient(145deg, rgba(31,37,39,.98), rgba(13,18,20,.98)); box-shadow: 0 24px 70px rgba(0,0,0,.45); }
 .profile-delete-modal-icon { width: 46px; height: 46px; display: grid; place-items: center; color: #f0b1a4; border: 1px solid rgba(205,93,70,.42); border-radius: 50%; background: rgba(115,43,35,.2); }
