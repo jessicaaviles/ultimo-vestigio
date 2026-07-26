@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Último Vestígio</string>
+    <string name="title_activity_main">Último Vestígio</string>
+    <string name="package_name">com.ultimovestigio.app</string>
+    <string name="custom_url_scheme">com.ultimovestigio.app</string>
+</resources>

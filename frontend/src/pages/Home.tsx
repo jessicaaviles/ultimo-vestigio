@@ -13,6 +13,9 @@ const fallbackImages: Record<string, string> = {
   'a-heranca-de-vidro': '/capa_heranca_de_vidro.png',
   'o-quarto-7': '/capa_quarto_7.png',
   'o-presente-desaparecido': '/backgrounds/cena-do-crime.png',
+  'o-sino-das-tres-batidas': '/capa_sino_tres_batidas.png',
+  'a-fita-sem-rosto': '/capa_fita_sem_rosto.png',
+  'o-jardim-sem-pegadas': '/capa_jardim_sem_pegadas.png',
 };
 
 interface FeaturedCase {

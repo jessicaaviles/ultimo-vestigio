@@ -52,6 +52,12 @@ const Cases: React.FC = () => {
               ? '/capa_heranca_de_vidro.png'
             : item.slug === 'o-quarto-7'
               ? '/capa_quarto_7.png'
+            : item.slug === 'o-sino-das-tres-batidas'
+              ? '/capa_sino_tres_batidas.png'
+            : item.slug === 'a-fita-sem-rosto'
+              ? '/capa_fita_sem_rosto.png'
+            : item.slug === 'o-jardim-sem-pegadas'
+              ? '/capa_jardim_sem_pegadas.png'
               : '/backgrounds/mapa-da-investigacao.png';
           return {
             slug: item.slug, title: item.title, synopsis: item.short_synopsis,
