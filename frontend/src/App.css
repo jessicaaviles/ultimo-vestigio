@@ -183,7 +183,10 @@
 .btn-danger { min-height: 50px; padding: 0 22px; border-radius: 8px; display: inline-flex; gap: 10px; align-items: center; justify-content: center; color: #f7ddd8; border: 1px solid rgba(205,93,70,.42); background: rgba(115,43,35,.18); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: .2s ease; }
 .btn-danger:hover { border-color: rgba(238,128,103,.72); color: #fff1ed; background: rgba(145,54,42,.28); transform: translateY(-1px); }
 .btn-danger:disabled, .btn-secondary:disabled, .btn-primary:disabled { cursor: not-allowed; opacity: .58; transform: none; }
-.profile-delete-trigger { margin-top: 4px; }
+.profile-account-panel { display: grid; gap: 12px; padding: 16px 0; }
+.profile-account-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; width: min(100%, 420px); }
+.profile-delete-trigger, .profile-logout-trigger { min-height: 40px; padding: 0 14px; font-size: 12px; }
+.profile-logout-trigger { margin-left: auto; }
 .profile-delete-modal-backdrop { position: fixed; inset: 0; z-index: 260; display: grid; place-items: center; padding: 24px; background: rgba(4,7,9,.78); backdrop-filter: blur(10px); }
 .profile-delete-modal { width: min(100%, 430px); display: grid; gap: 18px; padding: 22px; border: 1px solid rgba(205,93,70,.34); border-radius: 8px; background: linear-gradient(145deg, rgba(31,37,39,.98), rgba(13,18,20,.98)); box-shadow: 0 24px 70px rgba(0,0,0,.45); }
 .profile-delete-modal-icon { width: 46px; height: 46px; display: grid; place-items: center; color: #f0b1a4; border: 1px solid rgba(205,93,70,.42); border-radius: 50%; background: rgba(115,43,35,.2); }

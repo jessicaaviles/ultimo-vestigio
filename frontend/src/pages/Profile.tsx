@@ -401,18 +401,20 @@ const Profile: React.FC = () => {
 
       <section className="profile-section" style={{ marginTop: 32 }}>
         <span className="eyebrow">Conta</span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '16px 0' }}>
+        <div className="profile-account-panel">
           {authEmail && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--olive-light)', fontSize: 13 }}>
               <Mail size={16} /> {authEmail}
             </div>
           )}
-          <button className="btn-secondary" onClick={handleLogout} style={{ alignSelf: 'flex-start', minHeight: 40, fontSize: 12 }}>
-            <LogOut size={14} /> Sair da conta
-          </button>
-          <button className="btn-danger profile-delete-trigger" onClick={() => setDeleteConfirmOpen(true)} style={{ alignSelf: 'flex-start', minHeight: 40, fontSize: 12 }} disabled={deletingAccount}>
-            <Trash2 size={14} /> Excluir conta
-          </button>
+          <div className="profile-account-actions">
+            <button className="btn-danger profile-delete-trigger" onClick={() => setDeleteConfirmOpen(true)} disabled={deletingAccount}>
+              <Trash2 size={14} /> Excluir conta
+            </button>
+            <button className="btn-secondary profile-logout-trigger" onClick={handleLogout}>
+              <LogOut size={14} /> Sair da conta
+            </button>
+          </div>
         </div>
       </section>
 
