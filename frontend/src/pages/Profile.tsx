@@ -403,7 +403,7 @@ const Profile: React.FC = () => {
         <span className="eyebrow">Conta</span>
         <div className="profile-account-panel">
           {authEmail && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--olive-light)', fontSize: 13 }}>
+            <div className="profile-account-email">
               <Mail size={16} /> {authEmail}
             </div>
           )}
