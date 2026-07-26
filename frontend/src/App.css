@@ -96,9 +96,10 @@
   line-height: 1;
   flex-shrink: 0;
 }
-.lobby-create-button { color: #0a0d10 !important; text-shadow: none !important; }
+.lobby-create-button { background: var(--accent-gold) !important; color: #0a0d10 !important; border: 1px solid rgba(245,214,129,.55) !important; text-shadow: none !important; }
+.lobby-create-button:hover { background: var(--accent-gold) !important; color: #0a0d10 !important; filter: brightness(1.04); }
 .lobby-create-button svg { color: #0a0d10 !important; stroke: #0a0d10 !important; }
-.lobby-create-button:disabled { color: rgba(10,13,16,.78) !important; opacity: .82 !important; }
+.lobby-create-button:disabled { background: var(--accent-gold) !important; color: rgba(10,13,16,.78) !important; opacity: .82 !important; }
 .lobby-create-button:disabled svg { color: rgba(10,13,16,.78) !important; stroke: rgba(10,13,16,.78) !important; }
 
 /* Bottom nav badges */

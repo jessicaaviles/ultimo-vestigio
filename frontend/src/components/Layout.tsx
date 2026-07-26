@@ -343,8 +343,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     onClick={handleCreateRoom}
                     disabled={loadingLobby}
                     style={{
-                      background: 'linear-gradient(90deg, #A88B63 0%, #C5A880 100%)',
-                      border: 'none',
+                      background: 'var(--accent-gold)',
+                      border: '1px solid rgba(245,214,129,0.55)',
                       borderRadius: '8px',
                       padding: '10px',
                       color: '#0A0D10',
