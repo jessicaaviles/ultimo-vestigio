@@ -146,6 +146,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleNav = (route: string) => {
     if (route === '/') return navigate('/');
     if (route === 'map') return navigate('/cases');
+    if (route === 'messages') return navigate('/messages');
     const activeRoomId = roomId || localStorage.getItem('currentRoomId');
     navigate(activeRoomId && route !== 'cases' && route !== 'profile' ? `/room/${activeRoomId}/${route}` : `/${route}`);
   };

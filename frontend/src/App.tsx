@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { SocketProvider } from './contexts/SocketContext';
 import { NotificationsProvider } from './contexts/NotificationsContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -58,6 +58,7 @@ function App() {
               <Route path="/room/:roomId/briefing" element={<Layout><ProtectedRoute><Briefing /></ProtectedRoute></Layout>} />
               <Route path="/room/:roomId/game" element={<Layout><ProtectedRoute><Game /></ProtectedRoute></Layout>} />
               <Route path="/room/:roomId/feedback" element={<Layout><ProtectedRoute><Feedback /></ProtectedRoute></Layout>} />
+              <Route path="/room/:roomId/messages" element={<Navigate to="/messages" replace />} />
               
               {/* Immersive Redesign Prototypes */}
               <Route path="/map/:caseId" element={<Layout><ProtectedRoute><MapOverview /></ProtectedRoute></Layout>} />
