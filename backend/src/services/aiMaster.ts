@@ -2,7 +2,11 @@ import { GoogleGenAI, Type, Schema } from '@google/genai';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+const getAiClient = () => {
+  if (!process.env.GEMINI_API_KEY) throw new Error('GEMINI_API_KEY is not configured');
+  return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+};
 
 const BLOCKED_PATTERNS = /(ignore|esqueça|revele|mostre|prompt|instruções|system message|segredo|solução completa|ignore previous|forget|reveal the)/i;
 
@@ -64,14 +68,31 @@ const processRuleBasedQuestion = (questionText: string, answerRules: any[]) => {
   return bestMatch ? buildRuleBasedAnswer(bestMatch.classification) : null;
 };
 
-const processTutorialQuestion = (questionText: string) => {
+export const processTutorialQuestion = (questionText: string) => {
   const question = normalizeText(questionText);
   const hasAny = (words: string[]) => words.some((word) => question.includes(word));
+  const mentionsUmbrella = question.includes('guarda-chuva') || question.includes('guarda chuva');
 
   if (question.includes('ceu') && question.includes('limpo')) {
     return {
       classification: 'YES',
       rendered_text: 'Sim. O céu estava limpo, então a água não veio da chuva.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsUmbrella && hasAny(['dentro', 'predio', 'sala', 'interno', 'usou', 'abriu'])) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O guarda-chuva foi usado dentro do prédio.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsUmbrella && hasAny(['molhado', 'agua'])) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. O guarda-chuva realmente foi molhado por água, mas não por chuva.',
       fallback_used: false
     };
   }
@@ -140,12 +161,16 @@ export const processQuestion = async (roomId: string, questionText: string, case
       include: { case_ref: true }
     });
 
-    if (!facts || facts.length === 0 || !caseVersion) {
+    if (!caseVersion) {
       return { classification: 'UNKNOWN', rendered_text: 'O arquivo do caso não pôde ser acessado agora. Tente novamente em instantes.', fallback_used: true };
     }
 
     if (caseVersion.case_ref.slug === 'o-guarda-chuva-molhado') {
       return processTutorialQuestion(cleanQuestion);
+    }
+
+    if (!facts || facts.length === 0) {
+      return { classification: 'UNKNOWN', rendered_text: 'O arquivo do caso não pôde ser acessado agora. Tente novamente em instantes.', fallback_used: true };
     }
 
     const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, answerRules);
@@ -196,7 +221,7 @@ Regras ESTRITAS:
 
 Pergunta do Jogador: "${questionText}"`;
 
-    const response = await ai.models.generateContent({
+    const response = await getAiClient().models.generateContent({
       model: 'gemini-3.5-flash',
       contents: prompt,
       config: { responseMimeType: 'application/json', responseSchema, temperature: 0.1 }
@@ -297,7 +322,7 @@ Instruções ESTRITAS:
 7. O score geral deve refletir os quatro campos, mas será recalculado pelo sistema. Ainda assim, retorne uma estimativa coerente.
 8. Gere um feedback curto, no máximo 2 frases, em português do Brasil. Aponte o campo mais fraco sem revelar uma nova pista que os jogadores não tenham citado.`;
 
-    const response = await ai.models.generateContent({
+    const response = await getAiClient().models.generateContent({
       model: 'gemini-3.5-flash',
       contents: prompt,
       config: { responseMimeType: 'application/json', responseSchema, temperature: 0.1 }
@@ -352,7 +377,7 @@ REGRA CRUCIAL: Nunca dê a resposta mastigada. O jogador deve desvendar o caso. 
 
 Responda APENAS com a dedução em texto corrido, de forma imersiva (no máximo 2 parágrafos pequenos). Em português do Brasil.`;
 
-    const response = await ai.models.generateContent({
+    const response = await getAiClient().models.generateContent({
       model: 'gemini-3.5-flash',
       contents: prompt,
       config: { temperature: 0.6 }
