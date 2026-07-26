@@ -400,25 +400,6 @@ const Profile: React.FC = () => {
       )}
 
       <section className="profile-section" style={{ marginTop: 32 }}>
-        <span className="eyebrow">Conta</span>
-        <div className="profile-account-panel">
-          {authEmail && (
-            <div className="profile-account-email">
-              <Mail size={16} /> {authEmail}
-            </div>
-          )}
-          <div className="profile-account-actions">
-            <button className="btn-danger profile-delete-trigger" onClick={() => setDeleteConfirmOpen(true)} disabled={deletingAccount}>
-              <Trash2 size={14} /> Excluir conta
-            </button>
-            <button className="btn-secondary profile-logout-trigger" onClick={handleLogout}>
-              <LogOut size={14} /> Sair da conta
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="profile-section" style={{ marginTop: 32 }}>
         <span className="eyebrow">Marcas de campo</span>
         <h2>Conquistas</h2>
         {profile?.stats ? (
@@ -499,6 +480,25 @@ const Profile: React.FC = () => {
         ) : (
           <p style={{ color: 'var(--muted)', fontSize: '13px', padding: '24px 0' }}>Carregando histórico do detetive...</p>
         )}
+      </section>
+
+      <section className="profile-section" style={{ marginTop: 32 }}>
+        <span className="eyebrow">Conta</span>
+        <div className="profile-account-panel">
+          {authEmail && (
+            <div className="profile-account-email">
+              <Mail size={16} /> {authEmail}
+            </div>
+          )}
+          <div className="profile-account-actions">
+            <button className="btn-danger profile-delete-trigger" onClick={() => setDeleteConfirmOpen(true)} disabled={deletingAccount}>
+              <Trash2 size={14} /> Excluir conta
+            </button>
+            <button className="btn-secondary profile-logout-trigger" onClick={handleLogout}>
+              <LogOut size={14} /> Sair da conta
+            </button>
+          </div>
+        </div>
       </section>
 
       {photoViewer && profile?.photo && (
