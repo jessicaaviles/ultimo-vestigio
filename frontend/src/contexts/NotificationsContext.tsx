@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { useSettings } from './SettingsContext';
 
 export interface NotificationsState {
   messages: number;   // count of unread messages
@@ -33,6 +34,7 @@ const NotificationsCtx = createContext<NotificationsContextValue>({
 });
 
 export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { settings } = useSettings();
   const [notifications, setNotifications] = useState<NotificationsState>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -49,13 +51,25 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch { /* ignore */ }
   }, [notifications]);
 
+  useEffect(() => {
+    if (!settings.push) {
+      setNotifications(defaultState);
+      return;
+    }
+    if (!settings.invites) {
+      setNotifications(prev => ({ ...prev, rooms: false }));
+    }
+  }, [settings.invites, settings.push]);
+
   const setUnreadMessages = useCallback((count: number) => {
+    if (!settings.push) return;
     setNotifications(prev => ({ ...prev, messages: Math.max(0, count) }));
-  }, []);
+  }, [settings.push]);
 
   const setRoomsActivity = useCallback((hasActivity: boolean) => {
+    if (hasActivity && (!settings.push || !settings.invites)) return;
     setNotifications(prev => ({ ...prev, rooms: hasActivity }));
-  }, []);
+  }, [settings.invites, settings.push]);
 
   const clearMessages = useCallback(() => {
     setNotifications(prev => ({ ...prev, messages: 0 }));

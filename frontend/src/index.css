@@ -43,6 +43,56 @@ a { color: inherit; text-decoration: none; }
 h1, h2, h3, h4, h5, h6 { font-family: var(--serif); font-weight: 400; letter-spacing: -.02em; }
 
 .app-container { min-height: 100vh; min-height: 100dvh; background: var(--petrol); }
+
+html[data-theme="alto-contraste"] {
+  --ink: #050708;
+  --petrol: #070b0d;
+  --graphite: #101719;
+  --olive: #2f3829;
+  --olive-light: #d8e7aa;
+  --paper: #fffaf0;
+  --muted: #d7d2c4;
+  --gold: #f4ce69;
+  --gold-soft: #ffe5a0;
+  --line: rgba(255, 250, 240, .3);
+}
+
+html[data-text-size="pequeno"] { font-size: 93.75%; }
+html[data-text-size="medio"] { font-size: 100%; }
+html[data-text-size="grande"] { font-size: 112.5%; }
+
+html[data-text-size="grande"] p,
+html[data-text-size="grande"] button,
+html[data-text-size="grande"] input,
+html[data-text-size="grande"] label,
+html[data-text-size="grande"] .settings-row-copy strong,
+html[data-text-size="grande"] .settings-row-copy small,
+html[data-text-size="grande"] .messages-chat-content p,
+html[data-text-size="grande"] .home-stat-label,
+html[data-text-size="grande"] .home-stat-detail {
+  letter-spacing: 0;
+}
+
+html[data-accessibility="contraste-alto"] {
+  --muted: #e4dfd2;
+  --line: rgba(255, 250, 240, .34);
+}
+
+html[data-accessibility="contraste-alto"] .card-surface,
+html[data-accessibility="contraste-alto"] .settings-list,
+html[data-accessibility="contraste-alto"] .featured-card,
+html[data-accessibility="contraste-alto"] .messages-chat-card {
+  border-color: rgba(244, 206, 105, .55) !important;
+}
+
+html[data-accessibility="reduzir-movimento"] *,
+html[data-accessibility="reduzir-movimento"] *::before,
+html[data-accessibility="reduzir-movimento"] *::after {
+  scroll-behavior: auto !important;
+  transition-duration: .01ms !important;
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+}
 .app-shell { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; position: relative; }
 .app-content { width: 100%; max-width: 1240px; margin: 0 auto; flex: 1; min-width: 0; padding: calc(88px + env(safe-area-inset-top)) 24px calc(112px + env(safe-area-inset-bottom)); }
 .app-content:has(.profile-editor-page) { padding-bottom: 0 !important; }

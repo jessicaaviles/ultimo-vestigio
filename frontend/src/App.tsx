@@ -3,6 +3,7 @@ import { SocketProvider } from './contexts/SocketContext';
 import { NotificationsProvider } from './contexts/NotificationsContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { InvestigationProvider } from './contexts/InvestigationContext';
+import { SettingsProvider } from './contexts/SettingsContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import CreateRoom from './pages/CreateRoom';
@@ -13,6 +14,8 @@ import Cases from './pages/Cases';
 import Messages from './pages/Messages';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import LobbyList from './pages/LobbyList';
@@ -34,6 +37,7 @@ function App() {
   return (
     <SocketProvider>
       <AuthProvider>
+      <SettingsProvider>
       <NotificationsProvider>
       <div className="app-container">
         <BrowserRouter>
@@ -53,6 +57,8 @@ function App() {
               <Route path="/messages" element={<Layout><Messages /></Layout>} />
               <Route path="/profile" element={<Layout><ProtectedRoute><Profile /></ProtectedRoute></Layout>} />
               <Route path="/settings" element={<Layout><ProtectedRoute><Settings /></ProtectedRoute></Layout>} />
+              <Route path="/privacy" element={<Layout><ProtectedRoute><Privacy /></ProtectedRoute></Layout>} />
+              <Route path="/terms" element={<Layout><ProtectedRoute><Terms /></ProtectedRoute></Layout>} />
               <Route path="/lobby" element={<Layout><ProtectedRoute><LobbyList /></ProtectedRoute></Layout>} />
               <Route path="/room/:roomId/lobby" element={<Layout><ProtectedRoute><Lobby /></ProtectedRoute></Layout>} />
               <Route path="/room/:roomCode" element={<Layout><ProtectedRoute><RoomEntry /></ProtectedRoute></Layout>} />
@@ -73,6 +79,7 @@ function App() {
         </BrowserRouter>
       </div>
       </NotificationsProvider>
+      </SettingsProvider>
       </AuthProvider>
     </SocketProvider>
   );

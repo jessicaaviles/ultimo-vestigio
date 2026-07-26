@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Accessibility,
@@ -20,56 +20,26 @@ import {
   Volume2,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-
-type SettingsState = {
-  language: string;
-  theme: string;
-  textSize: string;
-  accessibility: string;
-  music: number;
-  effects: number;
-  voices: number;
-  push: boolean;
-  invites: boolean;
-  updates: boolean;
-  weekly: boolean;
-};
-
-const STORAGE_KEY = 'uv_settings';
-
-const defaultSettings: SettingsState = {
-  language: 'Português (Brasil)',
-  theme: 'Escuro',
-  textSize: 'Médio',
-  accessibility: 'Padrão',
-  music: 70,
-  effects: 90,
-  voices: 60,
-  push: true,
-  invites: true,
-  updates: true,
-  weekly: false,
-};
+import { useSettings } from '../contexts/SettingsContext';
 
 const cycle = <T,>(values: T[], current: T) => values[(values.indexOf(current) + 1) % values.length];
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [settings, setSettings] = useState<SettingsState>(() => {
-    try {
-      return { ...defaultSettings, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') };
-    } catch {
-      return defaultSettings;
+  const { settings, updateSetting, resetSettings } = useSettings();
+
+  const update = <K extends keyof typeof settings>(key: K, value: typeof settings[K]) => {
+    updateSetting(key, value);
+  };
+
+  const updateNotification = async (key: 'push' | 'invites' | 'updates' | 'weekly', checked: boolean) => {
+    if (key === 'push' && checked && 'Notification' in window && Notification.permission === 'default') {
+      const permission = await Notification.requestPermission();
+      update('push', permission === 'granted');
+      return;
     }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  }, [settings]);
-
-  const update = <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
-    setSettings((current) => ({ ...current, [key]: value }));
+    update(key, checked);
   };
 
   const handleLogout = async () => {
@@ -120,8 +90,8 @@ const Settings: React.FC = () => {
 
   const aboutRows = [
     { icon: HelpCircle, label: 'Ajuda e suporte', value: '', onClick: () => navigate('/tutorial') },
-    { icon: ShieldCheck, label: 'Política de privacidade', value: '' },
-    { icon: FileText, label: 'Termos de uso', value: '' },
+    { icon: ShieldCheck, label: 'Política de privacidade', value: '', onClick: () => navigate('/privacy') },
+    { icon: FileText, label: 'Termos de uso', value: '', onClick: () => navigate('/terms') },
     { icon: Info, label: 'Versão do jogo', value: '1.0.2' },
   ];
 
@@ -187,7 +157,7 @@ const Settings: React.FC = () => {
               <input
                 type="checkbox"
                 checked={settings[key]}
-                onChange={(event) => update(key, event.target.checked)}
+                onChange={(event) => updateNotification(key, event.target.checked)}
               />
               <span className="settings-switch" aria-hidden="true" />
             </label>
@@ -209,6 +179,10 @@ const Settings: React.FC = () => {
           ))}
         </div>
       </section>
+
+      <button className="settings-reset" onClick={resetSettings}>
+        Restaurar configurações padrão
+      </button>
 
       <button className="settings-logout" onClick={handleLogout}>
         <LogOut size={17} /> Sair da conta

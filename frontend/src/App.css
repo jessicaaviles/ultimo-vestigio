@@ -262,8 +262,16 @@
 .settings-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: rgba(242,238,229,.84); box-shadow: 0 2px 6px rgba(0,0,0,.24); transition: .2s ease; }
 .settings-row--toggle input:checked + .settings-switch { border-color: rgba(209,187,134,.55); background: var(--olive-light); }
 .settings-row--toggle input:checked + .settings-switch::after { left: 19px; background: var(--paper); }
-.settings-logout { width: 100%; min-height: 46px; margin-top: 22px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; color: #ff8f82; border: 1px solid rgba(205,93,70,.42); border-radius: 8px; background: rgba(90,24,22,.14); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.settings-reset { width: 100%; min-height: 44px; margin-top: 22px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; color: var(--gold-soft); border: 1px solid rgba(209,187,134,.34); border-radius: 8px; background: rgba(184,153,83,.08); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.settings-reset:hover { color: var(--ink); background: var(--accent-gold); border-color: rgba(245,214,129,.55); }
+.settings-logout { width: 100%; min-height: 46px; margin-top: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; color: #ff8f82; border: 1px solid rgba(205,93,70,.42); border-radius: 8px; background: rgba(90,24,22,.14); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .settings-logout:hover { color: #ffd2ca; background: rgba(115,43,35,.24); border-color: rgba(238,128,103,.62); }
+.legal-page { max-width: 760px; margin: 0 auto; padding: 24px 0 calc(96px + env(safe-area-inset-bottom)); color: var(--paper); }
+.legal-page h1 { margin: 0 0 16px; font-size: clamp(38px, 8vw, 62px); line-height: .96; }
+.legal-page p { max-width: 620px; margin: 0 0 18px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.legal-panel { display: grid; gap: 18px; margin-top: 28px; padding: 20px; border: 1px solid rgba(242,238,229,.1); border-radius: 8px; background: rgba(10,13,16,.38); }
+.legal-panel h2 { margin: 0; color: var(--paper); font-size: 26px; }
+.legal-panel ul { display: grid; gap: 10px; margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 .chapter-complete-page { position: relative; min-height: 100vh; margin: -88px -24px calc(-112px - env(safe-area-inset-bottom)); padding: calc(98px + env(safe-area-inset-top)) 24px calc(100px + env(safe-area-inset-bottom)); overflow: hidden auto; color: var(--paper); background: #06090b; }
 .chapter-complete-bg { position: fixed; inset: 0; z-index: 0; background: linear-gradient(180deg, rgba(6,9,11,.45), rgba(6,9,11,.96) 44%, #06090b 100%), url('/backgrounds/equipe-investigadores.png') center top/cover; filter: saturate(.75) contrast(.96); }
 .chapter-complete-page > *:not(.chapter-complete-bg) { position: relative; z-index: 1; max-width: 760px; margin-left: auto; margin-right: auto; }
