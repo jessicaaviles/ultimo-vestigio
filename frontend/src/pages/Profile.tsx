@@ -5,6 +5,7 @@ import { AlertTriangle, ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail,
 import { getProfile, updateProfile, deleteProfile, authValidate, authLogout } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
+import { applyProgressReset } from '../utils/progressReset';
 
 interface ProfileData {
   id: string;
@@ -71,11 +72,12 @@ const Profile: React.FC = () => {
           const profileRes = await getProfile(res.data.userId);
           if (seq !== fetchSeqRef.current) return;
           if (profileRes.success) {
-            setProfile(profileRes.data);
-            setName(profileRes.data.displayName);
-            localStorage.setItem('userName', profileRes.data.displayName);
-            setBio(profileRes.data.bio);
-            setActive(profileRes.data.active);
+            const visibleProfile = applyProgressReset(profileRes.data, res.data.userId);
+            setProfile(visibleProfile);
+            setName(visibleProfile.displayName);
+            localStorage.setItem('userName', visibleProfile.displayName);
+            setBio(visibleProfile.bio);
+            setActive(visibleProfile.active);
           } else {
             setStatus('Perfil não encontrado.');
           }

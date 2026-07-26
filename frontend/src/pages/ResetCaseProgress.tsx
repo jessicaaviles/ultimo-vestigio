@@ -3,13 +3,14 @@ import { RotateCcw } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { resetCaseProgress } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { markAllProgressReset } from '../utils/progressReset';
 
-const clearLocalCaseState = (caseSlug: string) => {
+const clearLocalCaseState = (caseSlug: string, userId: string) => {
   localStorage.removeItem('currentRoomId');
   localStorage.removeItem('currentRoomCode');
 
   if (caseSlug.toLowerCase() === 'all') {
-    localStorage.setItem('solvedCases', JSON.stringify([]));
+    markAllProgressReset(userId);
   } else {
     const solvedCases = JSON.parse(localStorage.getItem('solvedCases') || '[]');
     if (Array.isArray(solvedCases)) {
@@ -42,7 +43,7 @@ const ResetCaseProgress: React.FC = () => {
         return;
       }
 
-      clearLocalCaseState(caseSlug);
+      clearLocalCaseState(caseSlug, user.userId);
       await refresh();
       setMessage('Progresso resetado. Voltando para o início...');
       window.setTimeout(() => navigate('/', { replace: true }), 900);

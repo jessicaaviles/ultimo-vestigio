@@ -6,6 +6,7 @@ import {
 import { registerAnonymousUser, listCases, getProfile } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
+import { emptyProgressStats, hasAllProgressReset } from '../utils/progressReset';
 
 const fallbackImages: Record<string, string> = {
   'blackwell': '/backgrounds/map_blackwell.png',
@@ -79,7 +80,7 @@ const Home: React.FC = () => {
     if (userId) {
       getProfile(userId)
         .then((res) => {
-          if (res.success) setProfileStats(res.data?.stats || null);
+          if (res.success) setProfileStats(hasAllProgressReset(userId) ? emptyProgressStats : res.data?.stats || null);
         })
         .catch(() => undefined)
         .finally(() => setProfileLoading(false));
@@ -110,10 +111,11 @@ const Home: React.FC = () => {
       const res: any = await listCases(userId);
       if (!res.success || !Array.isArray(res.data)) throw new Error('Invalid cases response');
 
-      const solvedSlugs = Array.isArray(res.solvedSlugs) ? res.solvedSlugs : [];
+      const resetAllProgress = hasAllProgressReset(userId);
+      const solvedSlugs = resetAllProgress ? [] : Array.isArray(res.solvedSlugs) ? res.solvedSlugs : [];
       const activeStatus = String(res.activeRoom?.status || '');
       const activeStatuses = new Set(['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
-      const active = res.activeRoom?.roomId && res.activeRoom?.case && activeStatuses.has(activeStatus)
+      const active = !resetAllProgress && res.activeRoom?.roomId && res.activeRoom?.case && activeStatuses.has(activeStatus)
         ? {
             roomId: String(res.activeRoom.roomId),
             status: activeStatus,
