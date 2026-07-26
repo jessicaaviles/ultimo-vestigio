@@ -221,10 +221,12 @@ const Home: React.FC = () => {
           ) : (
             <>
               <span className="hero-tag">{activeInvestigation ? 'CASO EM ANDAMENTO' : 'CASO EM DESTAQUE'}</span>
-              <h2 className="home-hero-title">{heroCase?.title || 'O Segredo de Blackwell House'}</h2>
-              <p className="home-hero-subtitle">
-                {heroCase?.description || 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell. Analise todas as evidências e encontre a verdade.'}
-              </p>
+              <div className="home-hero-text">
+                <h2 className="home-hero-title">{heroCase?.title || 'O Segredo de Blackwell House'}</h2>
+                <p className="home-hero-subtitle">
+                  {heroCase?.description || 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell. Analise todas as evidências e encontre a verdade.'}
+                </p>
+              </div>
               <div className="home-hero-details" aria-label="Detalhes do caso">
                 <span><Clock3 size={15} /> {heroCase ? heroCase.duration : 'Cerca de 30 min'}</span>
                 <span><Users size={15} /> {heroCase ? heroCase.players : '1 a 6 investigadores'}</span>

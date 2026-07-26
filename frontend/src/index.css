@@ -572,10 +572,13 @@ img.fill, .img-fill, .fill-width {
   margin-bottom: 8px;
   display: block;
 }
+.home-hero-text {
+  width: 70%;
+}
 .home-hero-title {
   color: var(--paper);
   font-family: var(--font-serif);
-  font-size: clamp(34px, 5vw, 52px);
+  font-size: clamp(30px, 4.5vw, 46px);
   line-height: 1.1;
   margin: 0 0 8px 0;
   text-shadow: 0 4px 20px rgba(0,0,0,0.8);
@@ -1132,12 +1135,12 @@ img.fill, .img-fill, .fill-width {
   --badge-fill: linear-gradient(145deg, #343027, #151b1d 72%);
   position: relative;
   isolation: isolate;
-  width: 58px;
-  height: 64px;
+  width: 62px;
+  aspect-ratio: 0.8660254;
   display: grid;
   place-items: center;
   color: #e7c86f;
-  clip-path: polygon(50% 0, 92% 24%, 92% 76%, 50% 100%, 8% 76%, 8% 24%);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
   background: linear-gradient(145deg, #f2d98b 0%, #b89953 52%, #745720 100%);
   filter: drop-shadow(0 10px 10px rgba(0,0,0,.3)) drop-shadow(0 0 7px rgba(184,153,83,.12));
 }
@@ -1325,7 +1328,7 @@ img.fill, .img-fill, .fill-width {
     margin-bottom: 8px;
   }
   .home-hero-title {
-    font-size: clamp(32px, 11vw, 42px);
+    font-size: clamp(28px, 9vw, 36px);
   }
   .home-hero-subtitle {
     font-size: 13px;

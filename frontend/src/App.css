@@ -213,17 +213,17 @@
 .profile-achievement-card::after { content: ''; position: absolute; z-index: -1; width: 150px; height: 150px; left: -62px; top: -70px; border-radius: 50%; background: rgba(255,255,255,.035); }
 .profile-achievement-card:not(.profile-achievement-card--unlocked) { color: rgba(242,238,229,.68); }
 .profile-achievement-card--unlocked { border-color: rgba(184,153,83,.5); background: linear-gradient(145deg, rgba(89,73,39,.32), rgba(20,27,29,.96) 62%); box-shadow: inset 3px 0 0 rgba(184,153,83,.64), 0 14px 28px rgba(0,0,0,.14); }
-.profile-achievement-medal-wrap { position: relative; width: 74px; height: 82px; display: grid; place-items: center; }
+.profile-achievement-medal-wrap { position: relative; width: 74px; aspect-ratio: .8660254; display: grid; place-items: center; }
 .profile-achievement-medal {
   --medal-fill: linear-gradient(145deg, #293438, #12191c);
   position: relative;
   isolation: isolate;
   width: 70px;
-  height: 78px;
+  aspect-ratio: .8660254;
   display: grid;
   place-items: center;
   color: rgba(242,238,229,.38);
-  clip-path: polygon(50% 0, 91% 22%, 91% 72%, 50% 100%, 9% 72%, 9% 22%);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
   background: linear-gradient(145deg, rgba(184,153,83,.48), rgba(98,79,39,.34));
   filter: drop-shadow(0 8px 9px rgba(0,0,0,.26));
 }
@@ -333,6 +333,7 @@
   .profile-achievement-list { grid-template-columns: 1fr; }
   .profile-achievement-card { grid-template-columns: 70px minmax(0, 1fr); min-height: 148px; padding: 15px; gap: 13px; }
   .profile-achievement-medal-wrap { width: 68px; }
+  .profile-achievement-medal { width: 66px; }
   .cases-page [style*="gridTemplateColumns"] { grid-template-columns: 1fr !important; }
   .home-actions .btn-primary, .home-actions .btn-secondary { width: 100%; }.feedback-page, .tutorial-page { padding-top: 16px; }
   .profile-editor-page { padding-top: 100px !important; }.profile-hero { grid-template-columns: auto 1fr; gap: 24px; }.profile-avatar { width: 100px; height: 100px; }.profile-edit-trigger { grid-column: 1 / -1; width: 100%; }.profile-stats { gap: 8px; }.profile-stats > div { padding: 14px; }
