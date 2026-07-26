@@ -12,6 +12,58 @@ const normalizeText = (value: string) =>
     .replace(/[\u0300-\u036f]/g, '')
     .toLocaleLowerCase('pt-BR');
 
+const tokenize = (value: string) =>
+  normalizeText(value)
+    .split(/\W+/)
+    .filter((word) => word.length > 3);
+
+const verdictPrefix: Record<string, string> = {
+  YES: 'Sim.',
+  NO: 'Não.',
+  PARTIAL: 'Parcialmente.',
+  IRRELEVANT: 'Irrelevante.',
+  UNKNOWN: 'Desconhecido.'
+};
+
+const buildRuleBasedAnswer = (classification: string) => {
+  const normalizedClassification = classification.toUpperCase();
+  const prefix = verdictPrefix[normalizedClassification] || 'Desconhecido.';
+  const explanation = normalizedClassification === 'YES'
+    ? 'Essa linha de investigação é pertinente ao caso.'
+    : normalizedClassification === 'NO'
+      ? 'Essa hipótese não se confirma pelos fatos disponíveis.'
+      : normalizedClassification === 'PARTIAL'
+        ? 'Há uma parte correta nessa linha, mas ela ainda não fecha o fato inteiro.'
+        : 'O arquivo não confirma essa hipótese neste momento.';
+
+  return {
+    classification: normalizedClassification,
+    rendered_text: `${prefix} ${explanation}`,
+    fallback_used: false
+  };
+};
+
+const processRuleBasedQuestion = (questionText: string, answerRules: any[]) => {
+  const questionWords = new Set(tokenize(questionText));
+  if (questionWords.size === 0) return null;
+
+  let bestMatch: { score: number; classification: string } | null = null;
+  for (const rule of answerRules) {
+    const examples = JSON.parse(rule.semantic_examples || '[]');
+    const examplesText = Array.isArray(examples) ? examples.join(' ') : String(examples || '');
+    const exampleWords = new Set(tokenize(`${rule.intent_key} ${examplesText}`));
+    if (exampleWords.size === 0) continue;
+
+    const overlap = [...questionWords].filter((word) => exampleWords.has(word)).length;
+    const score = overlap / Math.max(1, Math.min(questionWords.size, exampleWords.size));
+    if (overlap >= 2 && score >= 0.35 && (!bestMatch || score > bestMatch.score)) {
+      bestMatch = { score, classification: String(rule.default_classification || 'UNKNOWN') };
+    }
+  }
+
+  return bestMatch ? buildRuleBasedAnswer(bestMatch.classification) : null;
+};
+
 const processTutorialQuestion = (questionText: string) => {
   const question = normalizeText(questionText);
   const hasAny = (words: string[]) => words.some((word) => question.includes(word));
@@ -96,6 +148,9 @@ export const processQuestion = async (roomId: string, questionText: string, case
       return processTutorialQuestion(cleanQuestion);
     }
 
+    const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, answerRules);
+    if (ruleBasedAnswer) return ruleBasedAnswer;
+
     const { revealSecret } = await import('../security/secrets');
     const solutionSummary = revealSecret(caseVersion.solution_summary_encrypted);
     const factListText = facts.map((f: any) => `- ${f.statement}`).join('\n');
@@ -153,7 +208,11 @@ Pergunta do Jogador: "${questionText}"`;
     
     const uppercaseVerdict = String(logicResult.verdict).toUpperCase();
     if (uppercaseVerdict === 'REFORMULATE') {
-      return { classification: 'AMBIGUOUS', rendered_text: logicResult.publicExplanation, fallback_used: false };
+      const questionWords = tokenize(cleanQuestion);
+      if (questionWords.length <= 2) {
+        return { classification: 'AMBIGUOUS', rendered_text: logicResult.publicExplanation || 'A pergunta está ambígua demais. Dê um pouco mais de contexto.', fallback_used: false };
+      }
+      return { classification: 'UNKNOWN', rendered_text: 'Desconhecido. O arquivo não confirma essa hipótese neste momento.', fallback_used: false };
     }
 
     return { 
@@ -167,7 +226,11 @@ Pergunta do Jogador: "${questionText}"`;
 
   } catch (error) {
     console.error("Erro no Mestre IA:", error);
-    return { classification: "UNKNOWN", rendered_text: "O Mestre está consultando os arquivos. Tente reformular a pergunta.", fallback_used: true };
+    return {
+      classification: "UNKNOWN",
+      rendered_text: "Desconhecido. O arquivo não confirma essa hipótese neste momento.",
+      fallback_used: false
+    };
   }
 };
 
