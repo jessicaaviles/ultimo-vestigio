@@ -37,15 +37,24 @@ const ResetCaseProgress: React.FC = () => {
         return;
       }
 
+      const resetAllCases = caseSlug.toLowerCase() === 'all';
+      if (resetAllCases) {
+        clearLocalCaseState(caseSlug, user.userId);
+      }
+
       const response = await resetCaseProgress(user.userId, caseSlug, token);
-      if (!response.success) {
+      if (!response.success && !resetAllCases) {
         setMessage(response.error || 'Não foi possível resetar este caso agora.');
         return;
       }
 
-      clearLocalCaseState(caseSlug, user.userId);
+      if (!resetAllCases) {
+        clearLocalCaseState(caseSlug, user.userId);
+      }
       await refresh();
-      setMessage('Progresso resetado. Voltando para o início...');
+      setMessage(resetAllCases && !response.success
+        ? 'Progresso local resetado. Voltando para o início...'
+        : 'Progresso resetado. Voltando para o início...');
       window.setTimeout(() => navigate('/', { replace: true }), 900);
     };
 

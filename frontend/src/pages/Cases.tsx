@@ -4,6 +4,7 @@ import { listCases } from '../services/api';
 import { Clock3, Flame, UsersRound } from 'lucide-react';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
+import { hasAllProgressReset } from '../utils/progressReset';
 
 interface CaseItem {
   slug: string;
@@ -37,7 +38,8 @@ const Cases: React.FC = () => {
       if (response.success && response.data?.length) {
         // Usar o banco de dados como fonte absoluta da verdade
         // Se a API retornou a lista, ela sobrescreve qualquer cache incorreto local
-        const mergedSolved = response.solvedSlugs !== undefined ? response.solvedSlugs : localSolved;
+        const resetAllProgress = hasAllProgressReset(userId);
+        const mergedSolved = resetAllProgress ? [] : response.solvedSlugs !== undefined ? response.solvedSlugs : localSolved;
         setSolvedCases(mergedSolved);
         
         // Atualiza o local storage para ficar em sincronia com o banco de dados
