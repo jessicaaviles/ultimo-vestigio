@@ -66,6 +66,14 @@ export const deleteProfile = async (userId: string, token: string) => {
   return res.json();
 };
 
+export const resetCaseProgress = async (userId: string, caseSlug: string, token: string) => {
+  const res = await fetch(`${API_URL}/profiles/${encodeURIComponent(userId)}/cases/${encodeURIComponent(caseSlug)}/reset-progress`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+};
+
 export const authRegister = async (email: string, password: string, displayName?: string) => {
   const res = await fetch(`${API_URL}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, displayName }) });
   return res.json();

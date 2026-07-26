@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import { generateProfilePortrait } from '../services/profilePortrait';
+import { hashToken } from '../security/secrets';
 
 const prisma = new PrismaClient();
 
@@ -27,21 +28,21 @@ export const getProfile = async (req: Request, res: Response) => {
   if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Profile not found' });
   
   // Calculate Stats
-  const hostedRoomsCount = await prisma.rooms.count({ where: { host_user_id: userId, status: 'COMPLETED' } });
+  const hostedRoomsCount = await prisma.rooms.count({ where: { host_user_id: userId, status: 'COMPLETED', deleted_at: null } });
   
   const playedRooms = await prisma.room_players.findMany({ 
-    where: { anonymous_user_id: userId },
+    where: { anonymous_user_id: userId, removed_at: null },
     include: { room: true }
   });
-  const playedRoomsCount = playedRooms.filter((rp: any) => rp.room.status === 'COMPLETED').length;
+  const playedRoomsCount = playedRooms.filter((rp: any) => rp.room.status === 'COMPLETED' && !rp.room.deleted_at).length;
 
   const theoriesCount = await prisma.theories.count({
-    where: { player: { anonymous_user_id: userId } }
+    where: { player: { anonymous_user_id: userId, removed_at: null }, room: { deleted_at: null } }
   });
 
   const correctTheoriesCount = await prisma.theory_evaluations.count({
     where: { 
-      theory: { player: { anonymous_user_id: userId } },
+      theory: { player: { anonymous_user_id: userId, removed_at: null }, room: { deleted_at: null } },
       result: 'CORRECT'
     }
   });
@@ -162,5 +163,129 @@ export const deleteProfile = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error deleting profile:', error);
     res.status(500).json({ success: false, error: 'Erro interno ao excluir conta.' });
+  }
+};
+
+export const resetCaseProgress = async (req: Request, res: Response) => {
+  try {
+    const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
+    const caseSlug = String(Array.isArray(req.params.caseSlug) ? req.params.caseSlug[0] : req.params.caseSlug || '').trim();
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Token não fornecido.' });
+    }
+
+    const token = authHeader.slice(7);
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await prisma.anonymous_users.findFirst({
+      where: { id: userId, auth_token_hash: tokenHash, deleted_at: null },
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Perfil não encontrado ou token inválido.' });
+    }
+
+    const caseRecord = await prisma.cases.findUnique({ where: { slug: caseSlug } });
+    if (!caseRecord) {
+      return res.status(404).json({ success: false, error: 'Caso não encontrado.' });
+    }
+
+    const roomPlayers = await prisma.room_players.findMany({
+      where: {
+        anonymous_user_id: user.id,
+        room: {
+          deleted_at: null,
+          case_version: { case_ref: { slug: caseSlug } },
+        },
+      },
+      include: { room: { include: { players: { where: { removed_at: null }, orderBy: { joined_at: 'asc' } } } } },
+    });
+
+    const roomIds = Array.from(new Set(roomPlayers.map((player) => player.room_id)));
+    const playerIds = roomPlayers.map((player) => player.id);
+    const now = new Date();
+
+    if (roomIds.length > 0) {
+      await prisma.$transaction(async (tx) => {
+        const userQuestions = await tx.questions.findMany({
+          where: { room_id: { in: roomIds }, player_id: { in: playerIds } },
+          select: { id: true },
+        });
+        const questionIds = userQuestions.map((question) => question.id);
+
+        if (questionIds.length > 0) {
+          const answers = await tx.master_answers.findMany({ where: { question_id: { in: questionIds } }, select: { id: true } });
+          const answerIds = answers.map((answer) => answer.id);
+          if (answerIds.length > 0) {
+            await tx.master_answers.updateMany({ where: { corrected_answer_id: { in: answerIds } }, data: { corrected_answer_id: null } });
+          }
+          await tx.answer_contestations.deleteMany({ where: { question_id: { in: questionIds } } });
+          await tx.question_clarifications.deleteMany({ where: { question_id: { in: questionIds } } });
+          await tx.master_answers.deleteMany({ where: { question_id: { in: questionIds } } });
+          await tx.question_interpretations.deleteMany({ where: { question_id: { in: questionIds } } });
+          await tx.questions.updateMany({ where: { repeated_question_id: { in: questionIds } }, data: { repeated_question_id: null } });
+          await tx.questions.deleteMany({ where: { id: { in: questionIds } } });
+        }
+
+        const userTheories = await tx.theories.findMany({
+          where: { room_id: { in: roomIds }, player_id: { in: playerIds } },
+          select: { id: true },
+        });
+        const theoryIds = userTheories.map((theory) => theory.id);
+        if (theoryIds.length > 0) {
+          await tx.theory_evaluations.deleteMany({ where: { theory_id: { in: theoryIds } } });
+          await tx.theories.deleteMany({ where: { id: { in: theoryIds } } });
+        }
+
+        await tx.vote_responses.deleteMany({ where: { player_id: { in: playerIds } } });
+        await tx.turns.deleteMany({ where: { room_id: { in: roomIds }, player_id: { in: playerIds } } });
+        await tx.hint_usages.deleteMany({ where: { room_id: { in: roomIds }, requested_by: user.id } });
+        await tx.feedback.deleteMany({ where: { room_id: { in: roomIds }, anonymous_player_hash: hashToken(user.id) } });
+        await tx.room_players.updateMany({
+          where: { id: { in: playerIds } },
+          data: {
+            is_host: false,
+            ready_status: 'NOT_READY',
+            connection_status: 'DISCONNECTED',
+            left_at: now,
+            removed_at: now,
+            last_seen_at: now,
+          },
+        });
+
+        for (const roomPlayer of roomPlayers) {
+          const remainingPlayers = roomPlayer.room.players.filter((player) => player.anonymous_user_id !== user.id);
+          if (remainingPlayers.length === 0) {
+            await tx.rooms.update({
+              where: { id: roomPlayer.room_id },
+              data: {
+                status: 'CANCELLED',
+                current_round: 0,
+                current_turn_id: null,
+                completed_at: null,
+                cancelled_at: now,
+                deleted_at: now,
+                last_activity_at: now,
+              },
+            });
+          } else if (roomPlayer.room.host_user_id === user.id) {
+            const successor = remainingPlayers[0];
+            await tx.rooms.update({
+              where: { id: roomPlayer.room_id },
+              data: { host_user_id: successor.anonymous_user_id, last_activity_at: now },
+            });
+            await tx.room_players.update({
+              where: { id: successor.id },
+              data: { is_host: true, ready_status: 'READY' },
+            });
+          }
+        }
+      });
+    }
+
+    res.json({ success: true, data: { caseSlug, resetRoomsCount: roomIds.length } });
+  } catch (error) {
+    console.error('Error resetting case progress:', error);
+    res.status(500).json({ success: false, error: 'Erro interno ao resetar progresso do caso.' });
   }
 };

@@ -30,6 +30,7 @@ import SceneExplorer from './pages/SceneExplorer';
 import InvestigationBoard from './pages/InvestigationBoard';
 import CaseFiles from './pages/CaseFiles';
 import EvidenceAnalysis from './pages/EvidenceAnalysis';
+import ResetCaseProgress from './pages/ResetCaseProgress';
 import Layout from './components/Layout';
 import { SocketNotificationsBridge } from './contexts/SocketNotificationsBridge';
 import './App.css';
@@ -59,6 +60,7 @@ function App() {
               <Route path="/profile" element={<Layout><ProtectedRoute><Profile /></ProtectedRoute></Layout>} />
               <Route path="/friends" element={<Layout><ProtectedRoute><Friends /></ProtectedRoute></Layout>} />
               <Route path="/settings" element={<Layout><ProtectedRoute><Settings /></ProtectedRoute></Layout>} />
+              <Route path="/reset-case/:caseSlug" element={<Layout><ProtectedRoute><ResetCaseProgress /></ProtectedRoute></Layout>} />
               <Route path="/privacy" element={<Layout><ProtectedRoute><Privacy /></ProtectedRoute></Layout>} />
               <Route path="/terms" element={<Layout><ProtectedRoute><Terms /></ProtectedRoute></Layout>} />
               <Route path="/lobby" element={<Layout><ProtectedRoute><LobbyList /></ProtectedRoute></Layout>} />

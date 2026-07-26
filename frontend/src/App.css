@@ -275,6 +275,11 @@
 .legal-panel { display: grid; gap: 18px; margin-top: 28px; padding: 20px; border: 1px solid rgba(242,238,229,.1); border-radius: 8px; background: rgba(10,13,16,.38); }
 .legal-panel h2 { margin: 0; color: var(--paper); font-size: 26px; }
 .legal-panel ul { display: grid; gap: 10px; margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.reset-case-page { min-height: calc(100dvh - 188px); display: grid; place-items: center; color: var(--paper); }
+.reset-case-card { width: min(100%, 420px); display: grid; justify-items: center; gap: 12px; padding: 28px 22px; border: 1px solid rgba(184,153,83,.24); border-radius: 8px; background: rgba(10,13,16,.5); text-align: center; box-shadow: 0 18px 45px rgba(0,0,0,.18); }
+.reset-case-card svg { color: var(--gold-soft); }
+.reset-case-card h1 { margin: 0; font-size: clamp(34px, 8vw, 48px); line-height: 1; }
+.reset-case-card p { margin: 0 0 12px; color: var(--muted); font-size: 14px; line-height: 1.5; }
 .friends-page { min-height: 100vh; min-height: 100dvh; margin: -88px -24px calc(-100px - env(safe-area-inset-bottom)); padding: 0 24px calc(124px + env(safe-area-inset-bottom)); color: var(--paper); background: var(--petrol); }
 .friends-page > *:not(.friends-hero) { max-width: 760px; margin-left: auto; margin-right: auto; }
 .friends-hero { position: relative; min-height: 292px; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; overflow: hidden; margin: 0 -24px 24px; padding: calc(108px + env(safe-area-inset-top)) 24px 34px; background: linear-gradient(180deg, rgba(10,13,16,.08) 0%, rgba(10,13,16,.5) 48%, rgba(31,42,48,.98) 100%), url('/backgrounds/recovery-code.png') center 42%/cover; }
