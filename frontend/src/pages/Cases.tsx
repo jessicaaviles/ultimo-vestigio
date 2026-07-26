@@ -340,30 +340,7 @@ const Cases: React.FC = () => {
 
             {/* Botão de Escolha */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
-              <button className="btn-primary"
-                onClick={() => {
-                  if (!user || !user.email) {
-                    navigate(`/register?return=/create?caseId=${selectedCase.slug}`);
-                  } else {
-                    handleSelectCase(selectedCase.slug);
-                  }
-                }}
-                style={{
-                   backgroundColor: 'var(--olive)',
-                   color: 'var(--paper)',
-                  border: 'none',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}
-              >
-                Jogar (Modo clássico)
-              </button>
-              {selectedCase.slug === 'blackwell' && (
+              {selectedCase.slug === 'blackwell' ? (
                 <button 
                   onClick={() => {
                     if (!user || !user.email) {
@@ -373,12 +350,12 @@ const Cases: React.FC = () => {
                     }
                   }}
                   style={{
-                    backgroundColor: 'rgba(212,175,55,0.1)',
-                    color: 'var(--accent-gold)',
-                    border: '1px solid var(--accent-gold)',
+                    backgroundColor: 'var(--accent-gold)',
+                    color: '#0A0D10',
+                    border: '1px solid rgba(245,214,129,0.55)',
                     padding: '16px',
                     borderRadius: '8px',
-                    fontWeight: 600,
+                    fontWeight: 800,
                     fontSize: '14px',
                     cursor: 'pointer',
                     textTransform: 'uppercase',
@@ -390,6 +367,30 @@ const Cases: React.FC = () => {
                   }}
                 >
                   Jogar (Modo imersivo)
+                </button>
+              ) : (
+                <button className="btn-primary"
+                  onClick={() => {
+                    if (!user || !user.email) {
+                      navigate(`/register?return=/create?caseId=${selectedCase.slug}`);
+                    } else {
+                      handleSelectCase(selectedCase.slug);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: 'var(--olive)',
+                    color: 'var(--paper)',
+                    border: 'none',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                  }}
+                >
+                  Jogar (Modo clássico)
                 </button>
               )}
               <button 
