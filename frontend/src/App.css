@@ -180,6 +180,17 @@
 .portrait-badge { position: absolute; right: 2px; bottom: 4px; display: grid; place-items: center; width: 24px; height: 24px; color: var(--ink); border: 2px solid var(--petrol); border-radius: 50%; background: var(--olive-light); }
 .profile-edit-trigger { white-space: nowrap; }
 .profile-status { margin: 18px 0; padding: 12px 14px; color: var(--gold-soft); border: 1px solid rgba(184,153,83,.35); border-radius: 8px; background: rgba(184,153,83,.08); }
+.btn-danger { min-height: 50px; padding: 0 22px; border-radius: 8px; display: inline-flex; gap: 10px; align-items: center; justify-content: center; color: #f7ddd8; border: 1px solid rgba(205,93,70,.42); background: rgba(115,43,35,.18); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: .2s ease; }
+.btn-danger:hover { border-color: rgba(238,128,103,.72); color: #fff1ed; background: rgba(145,54,42,.28); transform: translateY(-1px); }
+.btn-danger:disabled, .btn-secondary:disabled, .btn-primary:disabled { cursor: not-allowed; opacity: .58; transform: none; }
+.profile-delete-trigger { margin-top: 4px; }
+.profile-delete-modal-backdrop { position: fixed; inset: 0; z-index: 260; display: grid; place-items: center; padding: 24px; background: rgba(4,7,9,.78); backdrop-filter: blur(10px); }
+.profile-delete-modal { width: min(100%, 430px); display: grid; gap: 18px; padding: 22px; border: 1px solid rgba(205,93,70,.34); border-radius: 8px; background: linear-gradient(145deg, rgba(31,37,39,.98), rgba(13,18,20,.98)); box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+.profile-delete-modal-icon { width: 46px; height: 46px; display: grid; place-items: center; color: #f0b1a4; border: 1px solid rgba(205,93,70,.42); border-radius: 50%; background: rgba(115,43,35,.2); }
+.profile-delete-modal h2 { margin: 8px 0 0; color: var(--paper); font: 28px var(--serif); line-height: 1.05; }
+.profile-delete-modal p { margin: 12px 0 0; color: rgba(242,238,229,.76); font-size: 13px; line-height: 1.55; }
+.profile-delete-modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.profile-delete-modal-actions .btn-secondary, .profile-delete-modal-actions .btn-danger { width: 100%; min-height: 44px; padding: 0 14px; font-size: 11px; }
 .profile-form { display: grid; gap: 16px; padding: 22px 0 30px; max-width: 620px; background: transparent !important; box-shadow: none !important; }
 .profile-form label { display: grid; gap: 7px; color: var(--gold-soft); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
 .profile-form textarea { resize: vertical; }
@@ -327,6 +338,8 @@
   .profile-achievement-card { grid-template-columns: 70px minmax(0, 1fr); min-height: 148px; padding: 15px; gap: 13px; }
   .profile-achievement-medal-wrap { width: 68px; }
   .profile-achievement-medal { width: 66px; }
+  .profile-delete-modal { padding: 20px; }
+  .profile-delete-modal-actions { grid-template-columns: 1fr; }
   .cases-page [style*="gridTemplateColumns"] { grid-template-columns: 1fr !important; }
   .home-actions .btn-primary, .home-actions .btn-secondary { width: 100%; }.feedback-page, .tutorial-page { padding-top: 16px; }
   .profile-editor-page { padding-top: 100px !important; }.profile-hero { grid-template-columns: auto 1fr; gap: 24px; }.profile-avatar { width: 100px; height: 100px; }.profile-edit-trigger { grid-column: 1 / -1; width: 100%; }

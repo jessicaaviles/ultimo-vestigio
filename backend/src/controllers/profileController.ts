@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import crypto from 'crypto';
 import { generateProfilePortrait } from '../services/profilePortrait';
 
 const prisma = new PrismaClient();
@@ -120,4 +121,46 @@ export const updateProfile = async (req: Request, res: Response) => {
     : user;
 
   res.json({ success: true, portraitStatus, data: publicProfile(updated ?? user) });
+};
+
+export const deleteProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Token não fornecido.' });
+    }
+
+    const token = authHeader.slice(7);
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await prisma.anonymous_users.findFirst({
+      where: { id: userId, auth_token_hash: tokenHash, deleted_at: null },
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Perfil não encontrado ou token inválido.' });
+    }
+
+    await prisma.anonymous_users.update({
+      where: { id: user.id },
+      data: {
+        email: null,
+        password_hash: null,
+        auth_token_hash: null,
+        default_display_name: 'Conta excluída',
+        bio: null,
+        profile_active: false,
+        profile_photo_data: null,
+        generated_profile_photo_data: null,
+        portrait_generations: 0,
+        profile_photo_updated_at: null,
+        deleted_at: new Date(),
+      },
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting profile:', error);
+    res.status(500).json({ success: false, error: 'Erro interno ao excluir conta.' });
+  }
 };

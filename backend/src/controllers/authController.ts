@@ -67,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
     if (!email || !password) return res.status(400).json({ success: false, error: 'Email e senha são obrigatórios.' });
 
     const user = await prisma.anonymous_users.findUnique({ where: { email: String(email).toLowerCase().trim() } });
-    if (!user || !user.password_hash) return res.status(401).json({ success: false, error: 'Email ou senha inválidos.' });
+    if (!user || user.deleted_at || !user.password_hash) return res.status(401).json({ success: false, error: 'Email ou senha inválidos.' });
     if (!verifyPassword(String(password), user.password_hash)) return res.status(401).json({ success: false, error: 'Email ou senha inválidos.' });
 
     const authToken = crypto.randomUUID();
@@ -166,7 +166,7 @@ export const googleLogin = async (req: Request, res: Response) => {
     const email = payload.email.toLowerCase().trim();
     let user = await prisma.anonymous_users.findUnique({ where: { email } });
 
-    if (user) {
+    if (user && !user.deleted_at) {
       const authToken = crypto.randomUUID();
       const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
       await prisma.anonymous_users.update({

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Upload, UserPlus, X, Medal, Shield, Search, Star, Trophy, Lock, FileText, Crosshair } from 'lucide-react';
-import { getProfile, updateProfile, authValidate, authLogout } from '../services/api';
+import { AlertTriangle, ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Trash2, Upload, UserPlus, X, Medal, Shield, Search, Star, Trophy, Lock, FileText, Crosshair } from 'lucide-react';
+import { getProfile, updateProfile, deleteProfile, authValidate, authLogout } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -42,6 +42,8 @@ const Profile: React.FC = () => {
   const [status, setStatus] = useState('');
   const [photoViewer, setPhotoViewer] = useState(false);
   const [generatingPortrait, setGeneratingPortrait] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const fetchSeqRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -99,6 +101,28 @@ const Profile: React.FC = () => {
     setAuthToken(null);
     setProfile(null);
     setStatus('Você saiu da sua conta.');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!profile?.id || !authToken) return;
+    setDeletingAccount(true);
+    setStatus('');
+    try {
+      const response = await deleteProfile(profile.id, authToken);
+      if (!response.success) throw new Error(response.error);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      setAuthToken(null);
+      setProfile(null);
+      setDeleteConfirmOpen(false);
+      await refresh();
+      navigate('/register', { replace: true });
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Não foi possível excluir a conta.');
+    } finally {
+      setDeletingAccount(false);
+    }
   };
 
   const handleDownloadPhoto = () => {
@@ -386,6 +410,9 @@ const Profile: React.FC = () => {
           <button className="btn-secondary" onClick={handleLogout} style={{ alignSelf: 'flex-start', minHeight: 40, fontSize: 12 }}>
             <LogOut size={14} /> Sair da conta
           </button>
+          <button className="btn-danger profile-delete-trigger" onClick={() => setDeleteConfirmOpen(true)} style={{ alignSelf: 'flex-start', minHeight: 40, fontSize: 12 }} disabled={deletingAccount}>
+            <Trash2 size={14} /> Excluir conta
+          </button>
         </div>
       </section>
 
@@ -495,6 +522,31 @@ const Profile: React.FC = () => {
             <button onClick={() => { setPhotoViewer(false); fileInputRef.current?.click(); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
               <Upload size={16} /> Alterar imagem
             </button>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirmOpen && (
+        <div className="profile-delete-modal-backdrop" role="presentation" onClick={() => !deletingAccount && setDeleteConfirmOpen(false)}>
+          <div className="profile-delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-account-title" onClick={(event) => event.stopPropagation()}>
+            <div className="profile-delete-modal-icon" aria-hidden="true">
+              <AlertTriangle size={22} strokeWidth={1.7} />
+            </div>
+            <div>
+              <span className="eyebrow">Exclusão permanente</span>
+              <h2 id="delete-account-title">Excluir sua conta?</h2>
+              <p>
+                Seu cadastro será removido, seus dados de perfil serão apagados e o contador de retratos será reiniciado. Ao criar uma nova conta, você poderá gerar 3 imagens novamente.
+              </p>
+            </div>
+            <div className="profile-delete-modal-actions">
+              <button type="button" className="btn-secondary" onClick={() => setDeleteConfirmOpen(false)} disabled={deletingAccount}>
+                Cancelar
+              </button>
+              <button type="button" className="btn-danger" onClick={handleDeleteAccount} disabled={deletingAccount}>
+                <Trash2 size={15} /> {deletingAccount ? 'Excluindo...' : 'Excluir conta'}
+              </button>
+            </div>
           </div>
         </div>
       )}

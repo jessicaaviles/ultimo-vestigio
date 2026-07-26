@@ -58,6 +58,14 @@ export const updateProfile = async (userId: string, payload: { displayName: stri
   return res.json();
 };
 
+export const deleteProfile = async (userId: string, token: string) => {
+  const res = await fetch(`${API_URL}/profiles/${encodeURIComponent(userId)}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+};
+
 export const authRegister = async (email: string, password: string, displayName?: string) => {
   const res = await fetch(`${API_URL}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, displayName }) });
   return res.json();
