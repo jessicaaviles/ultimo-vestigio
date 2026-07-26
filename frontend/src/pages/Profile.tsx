@@ -310,6 +310,7 @@ const Profile: React.FC = () => {
     .filter((achievement) => achievement.unlocked)
     .reduce((total, achievement) => total + achievement.points, 0);
   const achievementCompletion = Math.round((unlockedAchievements / achievementItems.length) * 100);
+  const hasAchievementProgress = playedRoomsCount > 0 || hostedRoomsCount > 0 || theoriesCount > 0 || correctTheoriesCount > 0;
 
   if (!authToken) {
     return (
@@ -402,7 +403,7 @@ const Profile: React.FC = () => {
       <section className="profile-section" style={{ marginTop: 32 }}>
         <span className="eyebrow">Marcas de campo</span>
         <h2>Conquistas</h2>
-        {profile?.stats ? (
+        {profile?.stats && hasAchievementProgress ? (
           <div className="profile-achievement-panel">
             <div className="profile-achievement-summary">
               <div className="profile-achievement-overview">
@@ -475,6 +476,16 @@ const Profile: React.FC = () => {
                   </div>
                 </article>
               ))}
+            </div>
+          </div>
+        ) : profile?.stats ? (
+          <div className="home-empty-stats">
+            <div className="home-empty-stats-icon">
+              <Trophy size={22} />
+            </div>
+            <div className="home-empty-stats-copy">
+              <h4>Nenhuma conquista ainda</h4>
+              <p>Suas badges aparecem aqui depois que você avançar em casos, teorias e salas.</p>
             </div>
           </div>
         ) : (

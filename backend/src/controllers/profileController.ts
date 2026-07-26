@@ -23,6 +23,10 @@ const publicProfile = (user: any, stats?: any) => ({
 });
 
 export const getProfile = async (req: Request, res: Response) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+
   const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
   const user = await prisma.anonymous_users.findUnique({ where: { id: userId } });
   if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Profile not found' });

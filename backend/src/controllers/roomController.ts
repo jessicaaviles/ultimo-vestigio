@@ -18,6 +18,10 @@ const generateRoomCode = () => {
 
 export const listCases = async (req: Request, res: Response) => {
   try {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
     const userId = req.query.userId as string;
     const cases = await prisma.cases.findMany({ where: { status: { in: ['PUBLISHED', 'published'] }, deleted_at: null }, orderBy: { created_at: 'asc' } });
     cases.sort((a, b) => Number(b.slug === 'o-guarda-chuva-molhado') - Number(a.slug === 'o-guarda-chuva-molhado'));

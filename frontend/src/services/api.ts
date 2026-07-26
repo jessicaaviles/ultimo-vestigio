@@ -2,7 +2,10 @@ const rawApiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3001/api';
 export const API_URL = rawApiUrl.endsWith('/api') ? rawApiUrl : `${rawApiUrl.replace(/\/$/, '')}/api`;
 
 export const listCases = async (userId?: string | null) => {
-  const query = userId ? `?userId=${encodeURIComponent(userId)}` : '';
+  const params = new URLSearchParams();
+  if (userId) params.set('userId', userId);
+  params.set('_t', String(Date.now()));
+  const query = `?${params.toString()}`;
   const res = await fetch(`${API_URL}/cases${query}`, { cache: 'no-store' });
   return res.json();
 };
@@ -49,7 +52,7 @@ export const submitFeedback = async (payload: {
 };
 
 export const getProfile = async (userId: string) => {
-  const res = await fetch(`${API_URL}/profiles/${encodeURIComponent(userId)}`, { cache: 'no-store' });
+  const res = await fetch(`${API_URL}/profiles/${encodeURIComponent(userId)}?_t=${Date.now()}`, { cache: 'no-store' });
   return res.json();
 };
 
