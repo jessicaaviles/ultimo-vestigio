@@ -170,6 +170,26 @@
 .cases-page > div:not(:first-child), .profile-page > div, .messages-page > div > div, .lobby-list-page > div { animation: scene-enter 300ms ease both; }
 
 .profile-page > div:not(:first-child), .messages-page > div > div, .lobby-list-page > div { background-color: rgba(44,48,46,.72) !important; border-color: var(--line) !important; box-shadow: 0 18px 50px rgba(0,0,0,.2); }
+.messages-page { display: flex !important; flex-direction: column !important; padding-bottom: 104px !important; }
+.messages-shell { display: flex !important; flex-direction: column !important; gap: 24px !important; width: 100%; padding: 0 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; position: relative; z-index: 1; }
+.messages-header { display: grid; gap: 6px; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+.messages-eyebrow { color: var(--eyebrow-gold); font-size: 10px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
+.messages-header h1 { margin: 0; color: var(--paper); font-family: var(--serif); font-size: clamp(30px, 8vw, 42px); font-weight: 400; line-height: 1; }
+.messages-header p { max-width: 440px; margin: 0; color: rgba(242,238,229,.68); font-size: 14px; font-weight: 300; line-height: 1.45; }
+.messages-list { display: grid !important; gap: 12px !important; margin-top: 6px !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+.messages-chat-card { display: grid !important; grid-template-columns: 48px minmax(0, 1fr); align-items: center; gap: 14px; min-height: 96px; padding: 16px; border: 1px solid rgba(184,153,83,.22) !important; border-radius: 8px !important; background: rgba(12,17,19,.84) !important; box-shadow: 0 18px 40px rgba(0,0,0,.28) !important; cursor: pointer; position: relative; isolation: isolate; }
+.messages-chat-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, rgba(184,153,83,.12), rgba(255,255,255,0) 44%); pointer-events: none; z-index: -1; }
+.messages-chat-card:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+.messages-unread-dot { position: absolute; top: 16px; right: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--eyebrow-gold); box-shadow: 0 0 0 4px rgba(184,153,83,.12); }
+.messages-avatar { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid rgba(184,153,83,.34); border-radius: 50%; background: rgba(184,153,83,.08); color: var(--eyebrow-gold); font-size: 14px; font-weight: 800; letter-spacing: .06em; }
+.messages-chat-content { min-width: 0; display: grid; gap: 4px; }
+.messages-chat-topline { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; min-width: 0; }
+.messages-chat-topline h3 { min-width: 0; margin: 0; color: var(--paper); font-size: 16px; font-weight: 500; overflow-wrap: anywhere; }
+.messages-chat-topline span { flex-shrink: 0; color: rgba(242,238,229,.56); font-size: 10px; }
+.messages-chat-role { color: var(--eyebrow-gold); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.messages-chat-content p { margin: 0; color: rgba(242,238,229,.66); font-size: 12px; font-weight: 300; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.messages-chat-content p.is-unread { color: rgba(242,238,229,.86); font-weight: 600; }
+.messages-thread { display: flex !important; flex: 1; flex-direction: column !important; min-height: calc(100dvh - 176px); padding-bottom: 96px; position: relative; background: rgba(12,17,19,.54) !important; border: 1px solid rgba(184,153,83,.16); border-radius: 8px; box-shadow: 0 18px 50px rgba(0,0,0,.24); overflow: hidden; }
 .profile-editor-page { padding: 112px 24px calc(76px + env(safe-area-inset-bottom) + 24px) !important; }
 .profile-hero { display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: start; padding: 0 0 34px; border-bottom: 1px solid var(--line); background: transparent !important; box-shadow: none !important; }
 .profile-hero h1 { margin: 5px 0; font-size: clamp(32px, 6vw, 52px); }

@@ -144,92 +144,50 @@ const Messages: React.FC = () => {
   };
 
   return (
-    <div className="messages-page" style={{
-      paddingBottom: '80px',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div className="messages-page">
       {/* Se não houver chat ativo, mostra a lista */}
       {!activeChat ? (
-        <div style={{ padding: 0, display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <header>
-            <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
+        <div className="messages-shell">
+          <header className="messages-header">
+            <span className="messages-eyebrow">
               CANAL SEGURO
             </span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '4px 0 8px 0' }}>
+            <h1>
               Comunicações
             </h1>
-            <p style={{ color: '#8E989F', fontSize: '14px', margin: 0, fontWeight: 300 }}>
+            <p>
               Fale com outros membros da equipe ou com o Mestre Investigador.
             </p>
           </header>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
+          <div className="messages-list" aria-label="Conversas disponiveis">
             {chats.map(chat => (
               <div
                 key={chat.id}
+                className="messages-chat-card"
                 onClick={() => {
                   setActiveChat(chat);
                   // Marcar como lida
                   setChats(chats.map(c => c.id === chat.id ? { ...c, unread: false } : c));
                 }}
-                style={{
-                  backgroundColor: '#13191C',
-                  borderRadius: '12px',
-                  padding: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.03)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  cursor: 'pointer',
-                  position: 'relative'
-                }}
               >
                 {chat.unread && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '16px',
-                    right: '16px',
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: '#C5A880'
-                  }}></div>
+                  <div className="messages-unread-dot"></div>
                 )}
                 
-                <div style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  color: '#C5A880'
-                }}>
+                <div className="messages-avatar">
                   {chat.avatar}
                 </div>
 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '2px' }}>
-                    <h3 style={{ fontSize: '15px', fontWeight: 500, margin: 0 }}>{chat.name}</h3>
-                    <span style={{ fontSize: '10px', color: '#8E989F' }}>{chat.time}</span>
+                <div className="messages-chat-content">
+                  <div className="messages-chat-topline">
+                    <h3>{chat.name}</h3>
+                    <span>{chat.time}</span>
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+                  <div className="messages-chat-role">
                     {chat.role}
                   </div>
-                  <p style={{
-                    fontSize: '12px',
-                    color: '#8E989F',
-                    margin: 0,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    fontWeight: chat.unread ? 500 : 300
-                  }}>
+                  <p className={chat.unread ? 'is-unread' : undefined}>
                     {chat.lastMessage}
                   </p>
                 </div>
@@ -239,7 +197,7 @@ const Messages: React.FC = () => {
         </div>
       ) : (
         /* Chat Ativo */
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, height: '100%', paddingBottom: '96px', position: 'relative' }}>
+        <div className="messages-thread">
           {/* Header do Chat */}
           <div style={{
             padding: '24px 24px 16px 24px',
