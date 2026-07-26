@@ -32,24 +32,26 @@ const ResetCaseProgress: React.FC = () => {
   useEffect(() => {
     const runReset = async () => {
       const token = localStorage.getItem('authToken');
-      if (!user?.userId || !token) {
+      const userId = user?.userId || localStorage.getItem('userId');
+      const resetAllCases = caseSlug.toLowerCase() === 'all';
+
+      if (resetAllCases && userId) {
+        clearLocalCaseState(caseSlug, userId);
+      }
+
+      if (!userId || !token) {
         setMessage('Entre na sua conta para resetar este caso.');
         return;
       }
 
-      const resetAllCases = caseSlug.toLowerCase() === 'all';
-      if (resetAllCases) {
-        clearLocalCaseState(caseSlug, user.userId);
-      }
-
-      const response = await resetCaseProgress(user.userId, caseSlug, token);
+      const response = await resetCaseProgress(userId, caseSlug, token);
       if (!response.success && !resetAllCases) {
         setMessage(response.error || 'Não foi possível resetar este caso agora.');
         return;
       }
 
       if (!resetAllCases) {
-        clearLocalCaseState(caseSlug, user.userId);
+        clearLocalCaseState(caseSlug, userId);
       }
       await refresh();
       setMessage(resetAllCases && !response.success
