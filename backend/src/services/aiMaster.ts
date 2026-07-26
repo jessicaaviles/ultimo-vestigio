@@ -72,8 +72,9 @@ ${answerRulesText}
 
 Regras ESTRITAS:
 1. Responda apenas "Sim", "Não", "Parcialmente", "Irrelevante" ou "Desconhecido".
-2. Não revele detalhes na \`publicExplanation\`. Aja de forma misteriosa e seca.
-3. Se a pergunta demonstrar que o jogador investigou corretamente um hotspot ou desvendou uma etapa, defina \`unlockClue\` como true e indique a \`clueIdToUnlock\` ou \`locationId\` apropriada conforme o gabarito das regras especiais.
+2. Não revele detalhes na \`publicExplanation\`. Confirme apenas a parte exata perguntada, sem listar outros fatos relacionados, nomes novos, método completo, motivo completo ou cronologia completa.
+3. Se a pergunta estiver perto da solução, responda de forma curta e ainda investigativa. Não entregue a solução de bandeja.
+4. Se a pergunta demonstrar que o jogador investigou corretamente um hotspot ou desvendou uma etapa, defina \`unlockClue\` como true e indique a \`clueIdToUnlock\` ou \`locationId\` apropriada conforme o gabarito das regras especiais.
 
 Pergunta do Jogador: "${questionText}"`;
 

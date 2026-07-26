@@ -77,14 +77,11 @@ async function main() {
     {
       slug: 'a-heranca-de-vidro',
       hints: [
-        'O vidro quebrado chama atenção, mas as marcas secas no chão indicam que a cena principal aconteceu antes da chuva entrar.',
-        'O relógio do conservatório não é confiável: ele passou por manutenção naquela tarde e ficou adiantado.',
-        'A taça de Isadora não aponta para uma queda acidental; há traços de uma substância cardíaca misturada ao vinho.',
-        'A porta trancada por dentro pode ter sido manipulada de fora com um material fino, flexível e usado na restauração de vitrais.',
-        'O envelope lacrado não era só testamento: ele continha recibos falsos que comprometiam a administração da fundação.',
-        'O álibi de Augusto depende da hora marcada pelo relógio, mas essa hora foi deslocada para coincidir com a chamada de vídeo.',
-        'Cecília tinha conflito familiar, mas não tinha acesso ao método: vinho, fio de restauração, manutenção do relógio e recibos falsos convergem para Augusto.',
-        'A solução exige trocar a pergunta: não foi "como o vidro matou Isadora?", mas "quem usou o vidro para esconder veneno, fraude e uma porta falsamente impossível?".'
+        'Nem todo vestígio barulhento é o vestígio principal. Observe o que parece teatral demais na cena.',
+        'A ordem dos acontecimentos importa mais do que a aparência do conservatório depois da tempestade.',
+        'O horário registrado na cena merece ser comparado com outras marcas de tempo da casa.',
+        'Alguns objetos ligados à restauração do vitral podem explicar mais do que o vidro quebrado.',
+        'Procure quem perderia algo concreto se Isadora assinasse a mudança prometida.'
       ]
     }
   ];
