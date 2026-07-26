@@ -8,9 +8,13 @@ const clearLocalCaseState = (caseSlug: string) => {
   localStorage.removeItem('currentRoomId');
   localStorage.removeItem('currentRoomCode');
 
-  const solvedCases = JSON.parse(localStorage.getItem('solvedCases') || '[]');
-  if (Array.isArray(solvedCases)) {
-    localStorage.setItem('solvedCases', JSON.stringify(solvedCases.filter((slug) => slug !== caseSlug)));
+  if (caseSlug.toLowerCase() === 'all') {
+    localStorage.setItem('solvedCases', JSON.stringify([]));
+  } else {
+    const solvedCases = JSON.parse(localStorage.getItem('solvedCases') || '[]');
+    if (Array.isArray(solvedCases)) {
+      localStorage.setItem('solvedCases', JSON.stringify(solvedCases.filter((slug) => slug !== caseSlug)));
+    }
   }
 
   Object.keys(localStorage)
@@ -52,7 +56,7 @@ const ResetCaseProgress: React.FC = () => {
       <div className="reset-case-card">
         <RotateCcw size={32} />
         <span className="eyebrow">Reset de progresso</span>
-        <h1>{caseSlug === 'blackwell' ? 'Mansão Blackwell' : 'Caso'}</h1>
+        <h1>{caseSlug.toLowerCase() === 'all' ? 'Todo o progresso' : caseSlug === 'blackwell' ? 'Mansão Blackwell' : 'Caso'}</h1>
         <p>{message}</p>
         <button className="btn-secondary" onClick={() => navigate('/', { replace: true })}>
           Voltar ao início

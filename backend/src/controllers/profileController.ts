@@ -192,9 +192,12 @@ export const resetCaseProgress = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, error: 'Perfil não encontrado ou token inválido.' });
     }
 
-    const caseRecord = await prisma.cases.findUnique({ where: { slug: caseSlug } });
-    if (!caseRecord) {
-      return res.status(404).json({ success: false, error: 'Caso não encontrado.' });
+    const resetAllCases = caseSlug.toLowerCase() === 'all';
+    if (!resetAllCases) {
+      const caseRecord = await prisma.cases.findUnique({ where: { slug: caseSlug } });
+      if (!caseRecord) {
+        return res.status(404).json({ success: false, error: 'Caso não encontrado.' });
+      }
     }
 
     const roomPlayers = await prisma.room_players.findMany({
@@ -202,7 +205,7 @@ export const resetCaseProgress = async (req: Request, res: Response) => {
         anonymous_user_id: user.id,
         room: {
           deleted_at: null,
-          case_version: { case_ref: { slug: caseSlug } },
+          ...(resetAllCases ? {} : { case_version: { case_ref: { slug: caseSlug } } }),
         },
       },
       include: { room: { include: { players: { where: { removed_at: null }, orderBy: { joined_at: 'asc' } } } } },
@@ -291,7 +294,7 @@ export const resetCaseProgress = async (req: Request, res: Response) => {
       });
     }
 
-    res.json({ success: true, data: { caseSlug, resetRoomsCount: roomIds.length } });
+    res.json({ success: true, data: { caseSlug, resetAllCases, resetRoomsCount: roomIds.length } });
   } catch (error) {
     console.error('Error resetting case progress:', error);
     res.status(500).json({ success: false, error: 'Erro interno ao resetar progresso do caso.' });
