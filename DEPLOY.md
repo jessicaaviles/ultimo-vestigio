@@ -1,25 +1,25 @@
 # Guia de Deploy - Jogo de Investigação
 
-Este documento detalha o processo de deploy do backend no **Railway** e do frontend no **Netlify** ou **Vercel**, incluindo comandos, variáveis de ambiente necessárias e validação.
+Este documento detalha o processo de deploy do backend no **Render** e do frontend no **Netlify** ou **Vercel**, incluindo comandos, variáveis de ambiente necessárias e validação.
 
 ---
 
-## 1. Deploy do Backend (Railway)
+## 1. Deploy do Backend (Render)
 
 ### Pasta a ser publicada
 - **Pasta:** `/backend`
 
 ### Comandos
-- **Comando de Build:** `npm install && npm run build` (o script executa `prisma generate` para gerar o cliente para PostgreSQL e `tsc` para compilar o TypeScript).
-- **Comando de Start:** `npm run db:migrate && npm run start` (roda as migrações, aplica os seeds idempotentes dos casos oficiais e depois inicia a aplicação com `node dist/index.js`).
+- **Build Command:** `npm install && npm run build` (o script executa `prisma generate` para gerar o cliente para PostgreSQL e `tsc` para compilar o TypeScript).
+- **Start Command:** `npm run db:migrate && npm run start` (roda as migrações, aplica os seeds idempotentes dos casos oficiais e depois inicia a aplicação com `node dist/index.js`).
 
-### Variáveis de Ambiente no Railway
-Cadastre as seguintes variáveis no painel do seu serviço no Railway:
+### Variáveis de Ambiente no Render
+Cadastre as seguintes variáveis no painel do seu serviço no Render:
 
 | Variável | Descrição | Exemplo / Origem |
 | :--- | :--- | :--- |
-| `DATABASE_URL` | String de conexão com o banco de dados PostgreSQL. | Gerado automaticamente pelo Railway ao adicionar um serviço do PostgreSQL no projeto. |
-| `PORT` | Porta na qual o servidor Express irá escutar. | Inserido automaticamente pelo Railway. |
+| `DATABASE_URL` | String de conexão com o banco de dados PostgreSQL. | Gerado pelo banco PostgreSQL usado no Render ou serviço externo. |
+| `PORT` | Porta na qual o servidor Express irá escutar. | Inserido automaticamente pelo Render. |
 | `FRONTEND_URL` | URL completa do frontend publicado. | `https://seu-app.netlify.app` |
 | `GEMINI_API_KEY` | Chave de acesso à API do Gemini. | `AIzaSy...` |
 | `OPENAI_API_KEY` | Chave de acesso à API do OpenAI. | `sk-proj-...` |
@@ -48,8 +48,8 @@ Cadastre as seguintes variáveis no painel de configurações do seu projeto (Ve
 
 | Variável | Descrição | Exemplo |
 | :--- | :--- | :--- |
-| `VITE_API_URL` | URL base das rotas HTTP da API do backend. **Deve terminar com `/api`**. | `https://seu-backend.up.railway.app/api` |
-| `VITE_SOCKET_URL` | URL base do servidor Socket.IO (domínio do backend **sem** o sufixo `/api`). | `https://seu-backend.up.railway.app` |
+| `VITE_API_URL` | URL base das rotas HTTP da API do backend. **Deve terminar com `/api`**. | `https://seu-backend.onrender.com/api` |
+| `VITE_SOCKET_URL` | URL base do servidor Socket.IO (domínio do backend **sem** o sufixo `/api`). | `https://seu-backend.onrender.com` |
 
 ---
 
@@ -58,7 +58,7 @@ Cadastre as seguintes variáveis no painel de configurações do seu projeto (Ve
 ### Como testar a rota `/health`
 Para verificar se o backend está ativo e respondendo corretamente a chamadas HTTP:
 1. Abra um terminal ou ferramenta de requisição (como Postman ou navegador).
-2. Acesse a URL: `https://seu-backend.up.railway.app/health`
+2. Acesse a URL: `https://seu-backend.onrender.com/health`
 3. O retorno deve ser um JSON com status `200 OK`:
    ```json
    { "status": "ok" }
