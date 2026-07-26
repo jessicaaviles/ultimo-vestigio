@@ -40,7 +40,7 @@ interface InvestigatorStats {
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { refresh, user } = useAuth();
+  const { refresh, user, loading: authLoading } = useAuth();
   const [profileLoading, setProfileLoading] = useState(true);
   const [casesLoading, setCasesLoading] = useState(true);
   const [casesError, setCasesError] = useState(false);
@@ -71,8 +71,10 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (authLoading) return;
+
     const deviceToken = localStorage.getItem('deviceToken');
-    const userId = localStorage.getItem('userId');
+    const userId = user?.userId || localStorage.getItem('userId');
 
     if (userId) {
       getProfile(userId)
@@ -98,7 +100,7 @@ const Home: React.FC = () => {
         })
         .catch(() => undefined);
     }
-  }, [refresh]);
+  }, [authLoading, refresh, user?.userId]);
 
   const loadCases = useCallback(async () => {
     setCasesLoading(true);

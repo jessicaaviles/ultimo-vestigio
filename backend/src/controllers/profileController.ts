@@ -203,10 +203,9 @@ export const resetCaseProgress = async (req: Request, res: Response) => {
     const roomPlayers = await prisma.room_players.findMany({
       where: {
         anonymous_user_id: user.id,
-        room: {
-          deleted_at: null,
-          ...(resetAllCases ? {} : { case_version: { case_ref: { slug: caseSlug } } }),
-        },
+        ...(resetAllCases
+          ? {}
+          : { room: { case_version: { case_ref: { slug: caseSlug } } } }),
       },
       include: { room: { include: { players: { where: { removed_at: null }, orderBy: { joined_at: 'asc' } } } } },
     });

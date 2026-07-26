@@ -40,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (validateRes.success && validateRes.data?.userId) {
           const profileRes = await getProfile(validateRes.data.userId);
           if (profileRes.success) {
+            localStorage.setItem('userId', validateRes.data.userId);
             setUser({
               userId: validateRes.data.userId,
               displayName: profileRes.data.displayName || 'Investigador',
