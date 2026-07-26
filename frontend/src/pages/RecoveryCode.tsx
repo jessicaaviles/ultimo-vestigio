@@ -30,8 +30,8 @@ const RecoveryCode: React.FC = () => {
 
         {/* Cabeçalho */}
         <div>
-          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>Apenas para o anfitrião</span>
-          <h2 style={{ fontSize: '30px', marginBottom: '6px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>Código de recuperação</h2>
+          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '8px' }}>Apenas para o anfitrião</span>
+          <h2 style={{ fontSize: '30px', margin: '0 0 6px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>Código de recuperação</h2>
           <p style={{ color: '#8E989F', fontSize: '13px', maxWidth: '85%', fontWeight: 300 }}>Guarde este código. Ele permite recuperar o controle da sala. Não compartilhe.</p>
         </div>
 

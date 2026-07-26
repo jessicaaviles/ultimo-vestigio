@@ -157,10 +157,10 @@ const Lobby: React.FC = () => {
 
         {/* Cabeçalho */}
         <div>
-          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
+          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '8px' }}>
             Sala de Briefing
           </span>
-          <h2 style={{ fontSize: '28px', marginBottom: '4px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>
+          <h2 style={{ fontSize: '28px', margin: '0 0 4px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>
             {roomData.case_version?.case_ref?.title || 'O Quarto 7'}
           </h2>
           <p style={{ color: '#8E989F', fontSize: '12px', fontWeight: 300 }}>Aguardando os investigadores da equipe.</p>

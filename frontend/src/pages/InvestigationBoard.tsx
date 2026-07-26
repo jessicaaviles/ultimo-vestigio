@@ -60,8 +60,8 @@ const InvestigationBoard: React.FC = () => {
         {/* Título do Caso */}
         <div style={{ padding: '0 24px', marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Investigação</span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>O Segredo da<br/>Mansão Blackwell</h1>
+            <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '8px' }}>Investigação</span>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '0 0 8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1 }}>O Segredo da<br/>Mansão Blackwell</h1>
             <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', maxWidth: '80%', lineHeight: 1.5 }}>
               Conecte pistas, descubra relações e revele a verdade.
             </p>

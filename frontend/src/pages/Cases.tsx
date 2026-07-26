@@ -141,7 +141,7 @@ const Cases: React.FC = () => {
         <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', letterSpacing: '2px', fontWeight: 600, textTransform: 'uppercase' }}>
           ARQUIVO MUNICIPAL
         </span>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '4px 0 8px 0' }}>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '0 0 8px 0' }}>
           Casos Disponíveis
         </h1>
         <p style={{ color: '#8E989F', fontSize: '14px', lineHeight: '1.45', margin: 0, fontWeight: 300 }}>

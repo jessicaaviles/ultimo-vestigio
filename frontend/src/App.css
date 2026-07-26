@@ -132,7 +132,7 @@
 .home-hero-caption { position: absolute; z-index: 2; right: 8%; top: 48%; writing-mode: vertical-rl; display: flex; gap: 20px; color: rgba(242,238,229,.6); font-size: 9px; letter-spacing: .2em; }
 .home-featured { padding: 56px 8% 28px; }
 .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 24px; }
-.section-heading h2 { font-size: 32px; margin-top: 5px; }
+.section-heading h2 { font-size: 32px; margin-top: 0; }
 .text-link { color: var(--gold-soft); display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
 .case-rail { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 18px; }
 .featured-card { background: rgba(44,48,46,.72); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .25s ease, border-color .25s ease; }
@@ -179,7 +179,7 @@
 .profile-page > div:not(:first-child), .messages-page > div > div, .lobby-list-page > div { background-color: rgba(44,48,46,.72) !important; border-color: var(--line) !important; box-shadow: 0 18px 50px rgba(0,0,0,.2); }
 .messages-page { display: flex !important; flex-direction: column !important; padding-bottom: 104px !important; }
 .messages-shell { display: flex !important; flex-direction: column !important; gap: 24px !important; width: 100%; padding: 0 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; position: relative; z-index: 1; }
-.messages-header { display: grid; gap: 6px; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+.messages-header { display: grid; gap: 8px; background: transparent !important; border: 0 !important; box-shadow: none !important; }
 .messages-eyebrow { color: var(--eyebrow-gold); font-size: 10px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; }
 .messages-header h1 { margin: 0; color: var(--paper); font-family: var(--serif); font-size: clamp(30px, 8vw, 42px); font-weight: 400; line-height: 1; }
 .messages-header p { max-width: 440px; margin: 0; color: rgba(242,238,229,.68); font-size: 14px; font-weight: 300; line-height: 1.45; }
@@ -199,7 +199,7 @@
 .messages-thread { display: flex !important; flex: 1; flex-direction: column !important; min-height: calc(100dvh - 176px); padding-bottom: 96px; position: relative; background: rgba(12,17,19,.54) !important; border: 1px solid rgba(184,153,83,.16); border-radius: 8px; box-shadow: 0 18px 50px rgba(0,0,0,.24); overflow: hidden; }
 .profile-editor-page { padding: 112px 24px calc(76px + env(safe-area-inset-bottom) + 24px) !important; }
 .profile-hero { display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: start; padding: 0 0 34px; border-bottom: 1px solid var(--line); background: transparent !important; box-shadow: none !important; }
-.profile-hero h1 { margin: 5px 0; font-size: clamp(32px, 6vw, 52px); }
+.profile-hero h1 { margin: 0 0 5px; font-size: clamp(32px, 6vw, 52px); }
 .profile-hero p { color: var(--muted); max-width: 440px; }
 .profile-avatar-wrap { position: relative; }
 .profile-avatar { width: 140px; height: 140px; overflow: hidden; display: grid; place-items: center; color: var(--gold-soft); border: 1px solid var(--gold); border-radius: 50%; background: rgba(44,48,46,.78); position: relative; }
@@ -235,7 +235,7 @@
 .settings-hero::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 92px; pointer-events: none; background: linear-gradient(180deg, rgba(31,42,48,0) 0%, var(--petrol) 100%); }
 .settings-hero::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(10,13,16,.9) 0%, rgba(10,13,16,.42) 58%, rgba(10,13,16,.12) 100%); }
 .settings-hero-copy { position: relative; z-index: 1; }
-.settings-hero h1 { max-width: 390px; margin: 10px 0; font-size: clamp(39px, 8vw, 62px); line-height: .96; letter-spacing: 0; }
+.settings-hero h1 { max-width: 390px; margin: 0 0 10px; font-size: clamp(39px, 8vw, 62px); line-height: .96; letter-spacing: 0; }
 .settings-hero p { margin: 0; color: rgba(242,238,229,.76); font-size: 14px; }
 .settings-section { display: grid; gap: 10px; margin-top: 22px; }
 .settings-list, .settings-account-card { overflow: hidden; border: 1px solid rgba(242,238,229,.09); border-radius: 8px; background: rgba(10,13,16,.38); box-shadow: 0 14px 38px rgba(0,0,0,.16); }
@@ -333,7 +333,7 @@
 .profile-toggle { display: flex !important; grid-template-columns: none !important; align-items: center; gap: 8px; color: var(--paper) !important; text-transform: none !important; letter-spacing: 0 !important; }
 .profile-toggle input { accent-color: var(--olive-light); }
 .profile-section { background: transparent !important; box-shadow: none !important; }
-.profile-section h2 { margin: 5px 0 18px; font-size: 30px; }
+.profile-section h2 { margin: 0 0 18px; font-size: 30px; }
 .profile-achievement-panel { display: grid; gap: 18px; margin-top: 16px; }
 .profile-achievement-summary { display: grid; grid-template-columns: minmax(220px, 1.35fr) repeat(3, minmax(90px, .65fr)); border: 1px solid rgba(184,153,83,.34); border-radius: 8px; background: linear-gradient(105deg, rgba(184,153,83,.11), rgba(15,20,23,.62) 48%); overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,.16); }
 .profile-achievement-overview { display: flex; align-items: center; gap: 14px; padding: 17px 18px; border-right: 1px solid rgba(255,255,255,.09); }

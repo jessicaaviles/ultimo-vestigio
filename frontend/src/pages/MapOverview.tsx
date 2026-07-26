@@ -53,8 +53,8 @@ const MapOverview: React.FC = () => {
           
           {/* Coluna Esquerda: Título e Texto */}
           <div style={{ flex: 1, paddingRight: '16px' }}>
-            <span style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}>Planta Baixa</span>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1, wordWrap: 'break-word' }}>
+            <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '8px' }}>Planta Baixa</span>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', margin: '0 0 8px 0', color: '#F8F9FA', fontWeight: 400, lineHeight: 1.1, wordWrap: 'break-word' }}>
               Mansão<br/>Blackwell
             </h1>
             <p style={{ color: '#8E989F', fontSize: '13px', margin: '8px 0 24px 0', lineHeight: 1.5 }}>

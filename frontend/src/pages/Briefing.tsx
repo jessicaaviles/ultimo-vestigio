@@ -79,10 +79,10 @@ const Briefing: React.FC = () => {
 
         {/* Cabeçalho */}
         <div>
-          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
+          <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', textTransform: 'uppercase', marginBottom: '8px' }}>
             Apresentação do caso
           </span>
-          <h2 style={{ fontSize: '28px', marginBottom: '6px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>
+          <h2 style={{ fontSize: '28px', margin: '0 0 6px', fontFamily: 'var(--font-serif)', lineHeight: 1.1, fontWeight: 400, color: '#F8F9FA' }}>
             {title}
           </h2>
           <p style={{ color: '#8E989F', fontSize: '13px', lineHeight: 1.6, fontWeight: 300 }}>
