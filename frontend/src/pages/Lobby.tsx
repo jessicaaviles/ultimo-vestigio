@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSocket } from '../contexts/useSocket';
 import { QRCodeCanvas } from 'qrcode.react';
 import { getProfile } from '../services/api';
+import { LogOut } from 'lucide-react';
 import Loading from '../components/Loading';
 
 const Lobby: React.FC = () => {
@@ -11,6 +12,7 @@ const Lobby: React.FC = () => {
   const socket = useSocket();
   const [roomData, setRoomData] = useState<any>(null);
   const [startError, setStartError] = useState('');
+  const [leavingRoom, setLeavingRoom] = useState(false);
 
   useEffect(() => {
     if (!socket || !roomId) return;
@@ -89,6 +91,22 @@ const Lobby: React.FC = () => {
 
   const handleReady = () => {
     socket?.emit('player_ready', { roomId, userId: currentUserId, ready: !isReady });
+  };
+
+  const handleLeaveRoom = () => {
+    if (!socket || !roomId || !currentUserId || leavingRoom) return;
+    setLeavingRoom(true);
+    setStartError('');
+    socket.emit('leave_room', { roomId, userId: currentUserId }, (response: { success: boolean; error?: string }) => {
+      if (response?.success) {
+        localStorage.removeItem('currentRoomId');
+        localStorage.removeItem('currentRoomCode');
+        navigate('/cases', { replace: true });
+        return;
+      }
+      setStartError(response?.error || 'Não foi possível sair da sala.');
+      setLeavingRoom(false);
+    });
   };
 
   const invite = `${window.location.origin}/join?room=${roomData.public_code}`;
@@ -207,6 +225,9 @@ const Lobby: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button className="btn-secondary" onClick={handleReady} style={{ justifyContent: 'center' }}>
             {isReady ? '✓ Estou pronto' : 'Marcar como pronto'}
+          </button>
+          <button className="btn-danger" onClick={handleLeaveRoom} disabled={leavingRoom} style={{ minHeight: 46, justifyContent: 'center' }}>
+            <LogOut size={15} /> {leavingRoom ? 'Saindo...' : 'Sair da sala'}
           </button>
           {isHost ? (
             <button className="btn-primary" onClick={handleStart} disabled={players.length < 2}

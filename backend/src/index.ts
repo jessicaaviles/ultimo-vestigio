@@ -30,7 +30,7 @@ const roomState = async (roomId: string) => {
   const room = await prisma.rooms.findUnique({
     where: { id: roomId },
     include: {
-      players: { orderBy: { turn_order: 'asc' }, include: { user: { select: { id: true, default_display_name: true, profile_photo_data: true, generated_profile_photo_data: true } } } },
+      players: { where: { removed_at: null }, orderBy: { turn_order: 'asc' }, include: { user: { select: { id: true, default_display_name: true, profile_photo_data: true, generated_profile_photo_data: true } } } },
       turns: { where: { status: 'ACTIVE' } },
       theories: { select: { id: true, player_id: true, attempt_number: true, answers: true, status: true, submitted_at: true } },
       case_version: { select: { opening: true, case_ref: { select: { slug: true, title: true, short_synopsis: true, difficulty: true, estimated_duration_minutes: true } } } },
@@ -155,7 +155,7 @@ io.on('connection', (socket) => {
 
   socket.on('start_game', async ({ roomId, userId }) => {
     try {
-      const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: true } });
+      const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: { where: { removed_at: null } } } });
       if (!room || room.host_user_id !== userId) return;
       console.log('[start_game] players:', room.players.map(p => ({ id: p.anonymous_user_id, name: p.display_name, conn: p.connection_status })));
       const activePlayers = room.players.filter(p => p.connection_status === 'CONNECTED');
@@ -216,10 +216,70 @@ io.on('connection', (socket) => {
   });
 
   socket.on('player_ready', async ({ roomId, userId, ready = true }) => {
-    await prisma.room_players.updateMany({ where: { room_id: roomId, anonymous_user_id: userId }, data: { ready_status: ready ? 'READY' : 'NOT_READY' } });
+    await prisma.room_players.updateMany({ where: { room_id: roomId, anonymous_user_id: userId, removed_at: null }, data: { ready_status: ready ? 'READY' : 'NOT_READY' } });
     await emitRoomState(roomId);
     await recordAnalytics('player_ready', roomId, userId, { ready: Boolean(ready) });
     await recordRoomEvent(roomId, 'player_ready', { ready: Boolean(ready) });
+  });
+
+  socket.on('leave_room', async ({ roomId, userId }, callback?: (response: { success: boolean; error?: string }) => void) => {
+    try {
+      const room = await prisma.rooms.findUnique({
+        where: { id: roomId },
+        include: { players: { where: { removed_at: null }, orderBy: { joined_at: 'asc' } } }
+      });
+      if (!room || room.deleted_at) {
+        callback?.({ success: false, error: 'Sala não encontrada.' });
+        return;
+      }
+      if (room.status !== 'LOBBY') {
+        callback?.({ success: false, error: 'Só é possível sair de uma sala antes da investigação começar.' });
+        return;
+      }
+
+      const player = room.players.find((item) => item.anonymous_user_id === String(userId));
+      if (!player) {
+        callback?.({ success: false, error: 'Você não está nesta sala.' });
+        return;
+      }
+
+      const now = new Date();
+      const remainingPlayers = room.players.filter((item) => item.id !== player.id);
+      await prisma.$transaction(async (tx) => {
+        await tx.room_players.update({
+          where: { id: player.id },
+          data: {
+            is_host: false,
+            ready_status: 'NOT_READY',
+            connection_status: 'DISCONNECTED',
+            left_at: now,
+            removed_at: now,
+            last_seen_at: now,
+          },
+        });
+
+        if (remainingPlayers.length === 0) {
+          await tx.rooms.update({ where: { id: room.id }, data: { status: 'CANCELLED', deleted_at: now } });
+          return;
+        }
+
+        if (room.host_user_id === String(userId)) {
+          const successor = remainingPlayers[0];
+          await tx.rooms.update({ where: { id: room.id }, data: { host_user_id: successor.anonymous_user_id } });
+          await tx.room_players.update({ where: { id: successor.id }, data: { is_host: true, ready_status: 'READY' } });
+          io.to(roomId).emit('host_transferred', { playerId: successor.id });
+        }
+      });
+
+      socket.leave(roomId);
+      await recordAnalytics('room_left', roomId, userId);
+      await recordRoomEvent(roomId, 'room_left', { userId });
+      if (remainingPlayers.length > 0) await emitRoomState(roomId);
+      callback?.({ success: true });
+    } catch (error) {
+      console.error('Erro em leave_room:', error);
+      callback?.({ success: false, error: 'Não foi possível sair da sala.' });
+    }
   });
 
   socket.on('pass_turn', async ({ roomId, userId, turnId }) => {
@@ -519,7 +579,7 @@ io.on('connection', (socket) => {
 
   socket.on('start_solving', async ({ roomId, userId }) => {
     try {
-      const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: true } });
+      const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: { where: { removed_at: null } } } });
       if (!room || room.status !== 'IN_PROGRESS') return;
       if (!room.players.some(player => player.anonymous_user_id === userId)) return;
 

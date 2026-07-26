@@ -32,7 +32,7 @@ export const listCases = async (req: Request, res: Response) => {
     if (userId) {
       const [solvedRooms, activeRoomRecord] = await Promise.all([
         prisma.room_players.findMany({
-          where: { anonymous_user_id: userId, room: { status: { in: ['COMPLETED', 'GAME_OVER'] } } },
+          where: { anonymous_user_id: userId, removed_at: null, room: { status: { in: ['COMPLETED', 'GAME_OVER'] } } },
           include: { room: { include: { case_version: { include: { case_ref: true } } } } }
         }),
         prisma.rooms.findFirst({
@@ -224,6 +224,9 @@ export const joinRoom = async (req: Request, res: Response) => {
       update: {
         display_name: cleanName || user.default_display_name || 'Investigador',
         connection_status: 'CONNECTED',
+        ready_status: room.host_user_id === userId ? 'READY' : 'NOT_READY',
+        removed_at: null,
+        left_at: null,
         last_seen_at: new Date()
       },
       create: {
@@ -247,6 +250,57 @@ export const joinRoom = async (req: Request, res: Response) => {
     await prisma.analytics_events.create({ data: { event_name: 'room_joined', room_id: room.id, anonymous_hash: hashToken(userId), payload: '{}' } }).catch(() => undefined);
   } catch (error) {
     console.error('Error joining room:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+};
+
+export const leaveRoom = async (req: Request, res: Response) => {
+  try {
+    const roomId = Array.isArray(req.params.roomId) ? req.params.roomId[0] : req.params.roomId;
+    const { userId } = req.body;
+    if (!roomId || !userId) return res.status(400).json({ success: false, error: 'Room and user are required' });
+
+    const room = await prisma.rooms.findUnique({
+      where: { id: roomId },
+      include: { players: { where: { removed_at: null }, orderBy: { joined_at: 'asc' } } },
+    });
+    if (!room || room.deleted_at) return res.status(404).json({ success: false, error: 'Room not found' });
+    if (room.status !== 'LOBBY') return res.status(400).json({ success: false, error: 'Só é possível sair de uma sala antes da investigação começar.' });
+
+    const player = room.players.find((item) => item.anonymous_user_id === String(userId));
+    if (!player) return res.status(404).json({ success: false, error: 'Jogador não está nesta sala.' });
+
+    const now = new Date();
+    const remainingPlayers = room.players.filter((item) => item.id !== player.id);
+    await prisma.$transaction(async (tx) => {
+      await tx.room_players.update({
+        where: { id: player.id },
+        data: {
+          is_host: false,
+          ready_status: 'NOT_READY',
+          connection_status: 'DISCONNECTED',
+          left_at: now,
+          removed_at: now,
+          last_seen_at: now,
+        },
+      });
+
+      if (remainingPlayers.length === 0) {
+        await tx.rooms.update({ where: { id: room.id }, data: { status: 'CANCELLED', deleted_at: now } });
+        return;
+      }
+
+      if (room.host_user_id === String(userId)) {
+        const successor = remainingPlayers[0];
+        await tx.rooms.update({ where: { id: room.id }, data: { host_user_id: successor.anonymous_user_id } });
+        await tx.room_players.update({ where: { id: successor.id }, data: { is_host: true, ready_status: 'READY' } });
+      }
+    });
+
+    await prisma.analytics_events.create({ data: { event_name: 'room_left', room_id: room.id, anonymous_hash: hashToken(String(userId)), payload: '{}' } }).catch(() => undefined);
+    res.json({ success: true, roomClosed: remainingPlayers.length === 0 });
+  } catch (error) {
+    console.error('Error leaving room:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
   }
 };
