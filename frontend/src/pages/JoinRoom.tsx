@@ -48,7 +48,7 @@ const JoinRoom: React.FC = () => {
         localStorage.setItem('currentRoomId', res.data.roomId);
         localStorage.setItem('currentRoomCode', code.toUpperCase());
         const startedStatuses = new Set(['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
-        navigate(startedStatuses.has(String(res.data.status)) ? `/room/${res.data.roomId}/game` : `/room/${res.data.roomId}/lobby`);
+        navigate(startedStatuses.has(String(res.data.status || '').toUpperCase()) ? `/room/${res.data.roomId}/game` : `/room/${res.data.roomId}/lobby`);
       } else {
         setError(res.error || "Falha ao entrar");
       }

@@ -29,6 +29,11 @@ const Lobby: React.FC = () => {
         leaveStaleRoom();
         return;
       }
+      const startedStatuses = new Set(['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
+      if (startedStatuses.has(String(data?.status || '').toUpperCase())) {
+        navigate(`/room/${roomId}/game`, { replace: true });
+        return;
+      }
       setRoomData(data);
     };
     const handleGameStarted = () => {
