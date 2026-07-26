@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { useSocket } from '../contexts/useSocket';
-import { PenTool, Skull, Target, AlertTriangle } from 'lucide-react';
+import { PenTool, Skull, Target, AlertTriangle, Check, Fingerprint, UserRound } from 'lucide-react';
+
+interface CaseSuspect {
+  id: string;
+  name: string;
+  age?: number;
+  role?: string;
+  description?: string;
+  image?: string;
+  clueCount?: number;
+  isOtherOption?: boolean;
+}
 
 interface FinalTheoryFormProps {
   roomId: string;
@@ -8,14 +19,17 @@ interface FinalTheoryFormProps {
   myTheory: any;
   theories: any[];
   players: any[];
+  suspects?: CaseSuspect[];
 }
 
-const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myTheory, theories, players }) => {
+const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myTheory, theories, players, suspects = [] }) => {
   const socket = useSocket();
   const [what, setWhat] = useState('');
   const [who, setWho] = useState('');
   const [how, setHow] = useState('');
   const [why, setWhy] = useState('');
+  const [selectedSuspectId, setSelectedSuspectId] = useState('');
+  const hasSuspects = suspects.length > 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +45,11 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
         why: why
       }
     });
+  };
+
+  const chooseSuspect = (suspect: CaseSuspect) => {
+    setSelectedSuspectId(suspect.id);
+    setWho(suspect.isOtherOption ? '' : suspect.name);
   };
 
   if (myTheory) {
@@ -81,12 +100,93 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Skull size={14} /> 2. Quem é o culpado?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Indique os nomes dos responsáveis diretos e de possíveis cúmplices.</p>
-          <input 
-            required type="text" value={who} onChange={e => setWho(e.target.value)} 
-            placeholder="Nome do(s) perpetrador(es)"
-            style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', fontFamily: 'inherit' }} 
-          />
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>
+            {hasSuspects ? 'Escolha o suspeito mais provável. A teoria ainda precisa sustentar essa escolha.' : 'Indique os nomes dos responsáveis diretos e de possíveis cúmplices.'}
+          </p>
+          {hasSuspects ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {suspects.map((suspect) => {
+                const selected = selectedSuspectId === suspect.id;
+                return (
+                  <button
+                    key={suspect.id}
+                    type="button"
+                    onClick={() => chooseSuspect(suspect)}
+                    style={{
+                      width: '100%',
+                      display: 'grid',
+                      gridTemplateColumns: '72px 1fr 44px',
+                      gap: '14px',
+                      alignItems: 'center',
+                      textAlign: 'left',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: selected ? '1px solid rgba(245,214,129,0.75)' : '1px solid rgba(255,255,255,0.09)',
+                      background: selected ? 'rgba(197,168,128,0.12)' : 'rgba(255,255,255,0.025)',
+                      color: '#F8F9FA',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <div style={{
+                      width: '72px',
+                      height: '72px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(197,168,128,0.25)',
+                      background: suspect.image ? `url(${suspect.image}) center / cover` : 'linear-gradient(145deg, rgba(197,168,128,0.18), rgba(255,255,255,0.03))',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'var(--eyebrow-gold)'
+                    }}>
+                      {!suspect.image && (suspect.isOtherOption ? <UserRound size={28} /> : <Fingerprint size={28} />)}
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontFamily: 'var(--font-serif)', fontSize: '19px', color: '#F8F9FA', lineHeight: 1.15 }}>{suspect.name}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: '11px', marginTop: '4px' }}>
+                        {suspect.age ? `${suspect.age} anos · ` : ''}{suspect.role || 'Suspeito'}
+                      </div>
+                      {suspect.description && (
+                        <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: '12px', lineHeight: 1.45, margin: '8px 0 0' }}>{suspect.description}</p>
+                      )}
+                      <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', marginTop: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+                        {suspect.isOtherOption ? 'suspeito alternativo' : `${suspect.clueCount || 0} pistas ligam a ele`}
+                      </div>
+                    </div>
+                    <div style={{
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: '50%',
+                      border: selected ? '1px solid rgba(245,214,129,0.9)' : '1px solid rgba(197,168,128,0.45)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: selected ? '#0A0D10' : 'var(--eyebrow-gold)',
+                      background: selected ? 'var(--accent-gold)' : 'transparent',
+                      justifySelf: 'end'
+                    }}>
+                      {selected && <Check size={18} />}
+                    </div>
+                  </button>
+                );
+              })}
+              {selectedSuspectId && suspects.find(suspect => suspect.id === selectedSuspectId)?.isOtherOption && (
+                <input
+                  required
+                  type="text"
+                  value={who}
+                  onChange={e => setWho(e.target.value)}
+                  placeholder="Digite quem vocês acreditam ser o responsável"
+                  style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', fontFamily: 'inherit' }}
+                />
+              )}
+            </div>
+          ) : (
+            <input 
+              required type="text" value={who} onChange={e => setWho(e.target.value)} 
+              placeholder="Nome do(s) perpetrador(es)"
+              style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', fontFamily: 'inherit' }} 
+            />
+          )}
         </div>
 
         {/* Como */}

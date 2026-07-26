@@ -321,10 +321,25 @@ async function main() {
     }
   });
 
+  const herancaVidroMasterStyle = JSON.stringify({
+    tone: 'precise_noir',
+    maxSentences: 2,
+    difficulty: 'hard',
+    allowRedHerrings: true,
+    suspects: [
+      { id: 'augusto', name: 'Augusto Alvarenga', age: 57, role: 'Administrador da fundação', description: 'Tio de Isadora. Controlava as contas da família e perderia poder com a nova auditoria.', image: '/suspects/augusto-alvarenga.png', clueCount: 5 },
+      { id: 'cecilia', name: 'Cecília Alvarenga', age: 34, role: 'Prima de Isadora', description: 'Discutiu com Isadora sobre herança e foi vista deixando a casa antes da tempestade.', image: '/suspects/cecilia-alvarenga.png', clueCount: 2 },
+      { id: 'renato', name: 'Dr. Renato Salles', age: 49, role: 'Médico da família', description: 'Receitava medicamentos cardíacos e conhecia o histórico clínico dos Alvarenga.', image: '/suspects/renato-salles.png', clueCount: 3 },
+      { id: 'marta', name: 'Marta Nóbrega', age: 46, role: 'Governanta', description: 'Tinha acesso às chaves da casa e encontrou o conservatório pouco antes da polícia chegar.', image: '/suspects/marta-nobrega.png', clueCount: 2 },
+      { id: 'other', name: 'Outra pessoa', role: 'Fora da lista', description: 'Use esta opção se a equipe acredita que o responsável não está entre os suspeitos principais.', clueCount: 0, isOtherOption: true }
+    ]
+  });
+
   const versionHerancaVidro = await prisma.case_versions.upsert({
     where: { case_id_version_number: { case_id: caseHerancaVidro.id, version_number: '1.0' } },
     update: {
       opening: 'Isadora Vale, restauradora de vitrais e herdeira menor da família, foi encontrada morta no conservatório da Casa Alvarenga. A porta estava trancada por dentro, o teto de vidro tinha uma rachadura recente e o relógio de bronze parou às 22h46. Horas antes, Isadora avisou que mudaria o testamento e tiraria o controle da fundação das mãos do tio Augusto.',
+      master_style: herancaVidroMasterStyle,
       solution_summary_encrypted: sealSecret('Augusto Alvarenga matou Isadora antes da tempestade e montou um falso acidente no conservatório para proteger o esquema de desvio da fundação. A chave do crime não foi o vidro quebrado, mas a restauração recente do vitral, o relógio adiantado e o vinho medicado.'),
       full_solution_encrypted: sealSecret('Augusto Alvarenga, tio de Isadora e administrador da fundação da família, descobriu que ela transferiria a gestão dos bens para uma auditoria independente. Isadora também havia encontrado recibos falsos de restauração usados por Augusto para desviar dinheiro da fundação. Na noite da tempestade, Augusto a levou ao conservatório sob o pretexto de discutir o novo testamento, serviu vinho com digitalina em baixa dose e esperou a arritmia começar. Depois trancou a porta por dentro usando um fio de restauração passado pela fresta inferior, retirou o fio pela grade de drenagem e quebrou de propósito um painel do teto já fragilizado para simular queda de vidro. O relógio de bronze marcava 22h46 porque havia sido adiantado em 18 minutos durante a manutenção, criando um falso horário de morte enquanto Augusto aparecia em uma chamada de vídeo no escritório. A prova decisiva é o conjunto: resíduo de cola de vitral no punho de Augusto, fio de restauração preso na grelha, digitalina na taça de Isadora, recibos falsos no envelope lacrado e a ausência de chuva dentro das marcas de sapato, indicando que a cena foi montada antes do vidro quebrar.'),
       chronology_encrypted: sealSecret(JSON.stringify([
@@ -341,7 +356,7 @@ async function main() {
       case_id: caseHerancaVidro.id,
       version_number: '1.0',
       opening: 'Isadora Vale, restauradora de vitrais e herdeira menor da família, foi encontrada morta no conservatório da Casa Alvarenga. A porta estava trancada por dentro, o teto de vidro tinha uma rachadura recente e o relógio de bronze parou às 22h46. Horas antes, Isadora avisou que mudaria o testamento e tiraria o controle da fundação das mãos do tio Augusto.',
-      master_style: JSON.stringify({ tone: 'precise_noir', maxSentences: 2, difficulty: 'hard', allowRedHerrings: true }),
+      master_style: herancaVidroMasterStyle,
       scoring_rules: JSON.stringify({ baseScore: 1400, penaltyPerHint: 120, bonusForMotive: 200, bonusForTimeline: 200 }),
       solution_summary_encrypted: sealSecret('Augusto Alvarenga matou Isadora antes da tempestade e montou um falso acidente no conservatório para proteger o esquema de desvio da fundação. A chave do crime não foi o vidro quebrado, mas a restauração recente do vitral, o relógio adiantado e o vinho medicado.'),
       full_solution_encrypted: sealSecret('Augusto Alvarenga, tio de Isadora e administrador da fundação da família, descobriu que ela transferiria a gestão dos bens para uma auditoria independente. Isadora também havia encontrado recibos falsos de restauração usados por Augusto para desviar dinheiro da fundação. Na noite da tempestade, Augusto a levou ao conservatório sob o pretexto de discutir o novo testamento, serviu vinho com digitalina em baixa dose e esperou a arritmia começar. Depois trancou a porta por dentro usando um fio de restauração passado pela fresta inferior, retirou o fio pela grade de drenagem e quebrou de propósito um painel do teto já fragilizado para simular queda de vidro. O relógio de bronze marcava 22h46 porque havia sido adiantado em 18 minutos durante a manutenção, criando um falso horário de morte enquanto Augusto aparecia em uma chamada de vídeo no escritório. A prova decisiva é o conjunto: resíduo de cola de vitral no punho de Augusto, fio de restauração preso na grelha, digitalina na taça de Isadora, recibos falsos no envelope lacrado e a ausência de chuva dentro das marcas de sapato, indicando que a cena foi montada antes do vidro quebrar.'),

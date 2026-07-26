@@ -331,6 +331,14 @@ const Game: React.FC = () => {
   const caseTitle = roomData?.case_version?.case_ref?.title || 'Investigação';
   const caseSynopsis = roomData?.case_version?.case_ref?.short_synopsis || '';
   const caseOpening = roomData?.case_version?.opening || '';
+  const caseSuspects = (() => {
+    try {
+      const masterStyle = JSON.parse(roomData?.case_version?.master_style || '{}');
+      return Array.isArray(masterStyle.suspects) ? masterStyle.suspects : [];
+    } catch {
+      return [];
+    }
+  })();
   const availableHintCount = Number(roomData?.availableHintCount || 3);
   const remainingHints = Math.max(availableHintCount - hints.length, 0);
   const timerSeconds = (() => { try { return JSON.parse(roomData?.settings || '{}').turn_timer_seconds ?? null; } catch { return null; } })();
@@ -615,6 +623,7 @@ const Game: React.FC = () => {
               myTheory={myTheory} 
               theories={theories} 
               players={players} 
+              suspects={caseSuspects}
             />
           )}
 
