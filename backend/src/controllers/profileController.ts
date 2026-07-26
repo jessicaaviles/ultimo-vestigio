@@ -28,7 +28,14 @@ export const getProfile = async (req: Request, res: Response) => {
   if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Profile not found' });
   
   // Calculate Stats
-  const hostedRoomsCount = await prisma.rooms.count({ where: { host_user_id: userId, status: 'COMPLETED', deleted_at: null } });
+  const hostedRoomsCount = await prisma.room_players.count({
+    where: {
+      anonymous_user_id: userId,
+      is_host: true,
+      removed_at: null,
+      room: { status: 'COMPLETED', deleted_at: null }
+    }
+  });
   
   const playedRooms = await prisma.room_players.findMany({ 
     where: { anonymous_user_id: userId, removed_at: null },
@@ -256,6 +263,7 @@ export const resetCaseProgress = async (req: Request, res: Response) => {
         for (const roomPlayer of roomPlayers) {
           const remainingPlayers = roomPlayer.room.players.filter((player) => player.anonymous_user_id !== user.id);
           if (remainingPlayers.length === 0) {
+            await tx.game_results.deleteMany({ where: { room_id: roomPlayer.room_id } });
             await tx.rooms.update({
               where: { id: roomPlayer.room_id },
               data: {
