@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Award, BadgeCheck, LogOut, Mic, RotateCcw, Square, Star, Trophy, TrendingUp, Volume2 } from 'lucide-react';
 import { useSocket } from '../contexts/useSocket';
+import { useSettings } from '../contexts/SettingsContext';
 import Loading from '../components/Loading';
 import FinalTheoryForm from '../components/FinalTheoryForm';
 
@@ -18,6 +19,7 @@ const Game: React.FC = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const socket = useSocket();
+  const { settings } = useSettings();
   const [roomData, setRoomData] = useState<any>(null);
   const [question, setQuestion] = useState('');
   const [history, setHistory] = useState<any[]>([]);
@@ -87,7 +89,7 @@ const Game: React.FC = () => {
 
   const speakAnswer = useCallback((text: string) => {
     try {
-      if (!window.speechSynthesis || !text) return;
+      if (!settings.voices || !window.speechSynthesis || !text) return;
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'pt-BR';
@@ -107,7 +109,7 @@ const Game: React.FC = () => {
     } catch (err) {
       console.warn("Fala automática falhou (comum em mobile sem interação direta):", err);
     }
-  }, []);
+  }, [settings.voices]);
 
   useEffect(() => {
     if (!socket || !roomId) return;

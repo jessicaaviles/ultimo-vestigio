@@ -5,9 +5,9 @@ export type SettingsState = {
   theme: string;
   textSize: string;
   accessibility: string;
-  music: number;
-  effects: number;
-  voices: number;
+  music: boolean;
+  effects: boolean;
+  voices: boolean;
   push: boolean;
   invites: boolean;
   updates: boolean;
@@ -27,9 +27,9 @@ export const defaultSettings: SettingsState = {
   theme: 'Escuro',
   textSize: 'Médio',
   accessibility: 'Padrão',
-  music: 70,
-  effects: 90,
-  voices: 60,
+  music: true,
+  effects: true,
+  voices: true,
   push: true,
   invites: true,
   updates: true,
@@ -44,7 +44,14 @@ const SettingsCtx = createContext<SettingsContextValue>({
 
 const readStoredSettings = (): SettingsState => {
   try {
-    return { ...defaultSettings, ...JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || '{}') };
+    const stored = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || '{}');
+    return {
+      ...defaultSettings,
+      ...stored,
+      music: typeof stored.music === 'number' ? stored.music > 0 : stored.music ?? defaultSettings.music,
+      effects: typeof stored.effects === 'number' ? stored.effects > 0 : stored.effects ?? defaultSettings.effects,
+      voices: typeof stored.voices === 'number' ? stored.voices > 0 : stored.voices ?? defaultSettings.voices,
+    };
   } catch {
     return defaultSettings;
   }
@@ -64,9 +71,9 @@ const applySettingsToDocument = (settings: SettingsState) => {
   root.dataset.textSize = normalizeDataValue(settings.textSize);
   root.dataset.accessibility = normalizeDataValue(settings.accessibility);
   root.lang = settings.language === 'English' ? 'en' : 'pt-BR';
-  root.style.setProperty('--uv-music-volume', `${settings.music / 100}`);
-  root.style.setProperty('--uv-effects-volume', `${settings.effects / 100}`);
-  root.style.setProperty('--uv-voices-volume', `${settings.voices / 100}`);
+  root.dataset.audioMusic = settings.music ? 'on' : 'off';
+  root.dataset.audioEffects = settings.effects ? 'on' : 'off';
+  root.dataset.audioVoices = settings.voices ? 'on' : 'off';
 };
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

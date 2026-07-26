@@ -126,20 +126,18 @@ const Settings: React.FC = () => {
         <span className="eyebrow">Áudio</span>
         <div className="settings-list">
           {audioRows.map(({ icon: Icon, label, key }) => (
-            <label className="settings-row settings-row--slider" key={key}>
+            <label className="settings-row settings-row--toggle" key={key}>
               <Icon size={20} strokeWidth={1.5} />
               <span className="settings-row-copy">
                 <strong>{label}</strong>
               </span>
               <input
                 aria-label={label}
-                type="range"
-                min={0}
-                max={100}
-                value={settings[key]}
-                onChange={(event) => update(key, Number(event.target.value))}
+                type="checkbox"
+                checked={settings[key]}
+                onChange={(event) => update(key, event.target.checked)}
               />
-              <span className="settings-row-percent">{settings[key]}%</span>
+              <span className="settings-switch" aria-hidden="true" />
             </label>
           ))}
         </div>
