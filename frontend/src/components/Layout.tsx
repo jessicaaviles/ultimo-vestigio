@@ -200,7 +200,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       const clueTitles: Record<string, string> = {
         'window': 'Janela Entreaberta',
         'armchair': 'Poltrona Revirada',
-        'table': 'Carta Anônima',
+        'table': 'Bilhete Forjado',
         'fireplace': 'Restos na Lareira',
         'blood': 'Sangue Artificial',
         'wine_glass': 'Taça Quebrada',

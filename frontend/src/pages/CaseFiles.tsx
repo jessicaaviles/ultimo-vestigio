@@ -7,11 +7,11 @@ const CaseFiles: React.FC = () => {
   const { unlockedClues } = useInvestigation();
 
   const allEvidences = [
-    { id: 'fireplace', title: 'Carta Anônima', type: 'Documento', date: '12/05', image: '/backgrounds/ev_letter.png' },
+    { id: 'fireplace', title: 'Restos na Lareira', type: 'Vestígio', date: '12/05', image: '/backgrounds/ev_matches.png' },
     { id: 'armchair', title: 'Chave do quarto 7', type: 'Item Físico', date: '13/05', image: '/backgrounds/ev_key_7.png' },
     { id: 'window', title: 'Foto da Família', type: 'Foto', date: '13/05', image: '/backgrounds/ev_photo.png' },
-    { id: 'table', title: 'Diário de Elisa', type: 'Documento', date: '14/05', image: '/backgrounds/ev_diary.png' },
-    { id: 'blood', title: 'Mancha de Sangue', type: 'Vestígio', date: '15/05', image: '/backgrounds/ev_blood.png' },
+    { id: 'table', title: 'Bilhete Forjado', type: 'Documento', date: '14/05', image: '/backgrounds/ev_letter.png' },
+    { id: 'blood', title: 'Sangue Artificial', type: 'Vestígio', date: '15/05', image: '/backgrounds/ev_blood.png' },
   ];
 
   const foundEvidences = allEvidences.filter(e => unlockedClues.some(c => c.clueId === e.id));

@@ -20,7 +20,7 @@ const CASES_MAP: Record<string, { title: string; synopsis: string; players: stri
   },
   'o-presente-desaparecido': {
     title: 'O Presente Desaparecido',
-    synopsis: 'Durante uma comemoração em família, um presente desaparece de uma mesa diante de todos. Ninguém saiu do ambiente.',
+    synopsis: 'Durante uma comemoração em família, a caixa de presente sobre a mesa desaparece diante de todos. Ninguém saiu do ambiente.',
     players: '2-6 Jogadores',
     duration: '~8 min',
     image: '/backgrounds/cena-do-crime.png'
@@ -29,21 +29,21 @@ const CASES_MAP: Record<string, { title: string; synopsis: string; players: stri
     title: 'O Elevador que Não Parou',
     synopsis: 'Uma mulher entra sozinha em um elevador. Ele não para em nenhum andar e, quando retorna, está vazio.',
     players: '2-6 Jogadores',
-    duration: '~12 min',
+    duration: '~10 min',
     image: '/backgrounds/lobby.png'
   },
   'a-mensagem-das-23h17': {
     title: 'A Mensagem das 23h17',
     synopsis: 'Às 23h17, uma pessoa envia uma mensagem dizendo: "Agora todos vão entender". Poucos minutos depois, desaparece.',
     players: '3-6 Jogadores',
-    duration: '~15 min',
+    duration: '~12 min',
     image: '/backgrounds/equipe-investigadores.png'
   },
   'o-retrato-que-piscou': {
     title: 'O Retrato que Piscou',
     synopsis: 'Durante um jantar, todos veem o retrato antigo da sala piscar. Segundos depois, uma joia desaparece de uma mesa próxima.',
     players: '2-6 Jogadores',
-    duration: '~12 min',
+    duration: '~10 min',
     image: '/capa_carta_anonima.png'
   },
   'blackwell': {
@@ -51,7 +51,7 @@ const CASES_MAP: Record<string, { title: string; synopsis: string; players: stri
     synopsis: 'Investigue o sumiço misterioso de Clara Mendes na secular Mansão Blackwell e desvende o mistério.',
     players: '2-6 Jogadores',
     duration: '~30 min',
-    image: '/backgrounds/mapa-da-investigacao.png'
+    image: '/backgrounds/map_blackwell.png'
   }
 };
 

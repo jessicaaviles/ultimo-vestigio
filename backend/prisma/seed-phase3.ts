@@ -59,9 +59,9 @@ async function main() {
     {
       slug: 'o-retrato-que-piscou',
       hints: [
-        'O "piscar" não foi uma falha na luz, mas um intenso clarão óptico direcionado.',
+        'O "piscar" não veio da pintura, mas de um reflexo intenso no vidro ou verniz do retrato.',
         'Os convidados ficaram momentaneamente cegos, criando a oportunidade perfeita.',
-        'O clarão veio de um equipamento escondido pelo garçom, que roubou a joia na confusão.'
+        'O clarão veio de um equipamento escondido na bandeja do garçom, que roubou a joia na confusão.'
       ]
     },
     {

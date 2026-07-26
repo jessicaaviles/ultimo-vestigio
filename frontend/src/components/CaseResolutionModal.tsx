@@ -12,19 +12,19 @@ const CaseResolutionModal: React.FC<CaseResolutionModalProps> = ({ onClose }) =>
 
   const questions = [
     {
-      title: 'Quem orquestrou o crime desta noite?',
+      title: 'Quem planejou o desaparecimento de Clara?',
       options: ['Clara Mendes', 'Sr. Tomás Blackwell', 'Helena'],
       correct: 'Clara Mendes'
     },
     {
-      title: 'Qual foi a verdadeira motivação do assassino?',
-      options: ['Disputa pela herança da família', 'Vingança meticulosamente orquestrada', 'Ocultar rituais do passado'],
-      correct: 'Vingança meticulosamente orquestrada'
+      title: 'Qual era o objetivo do plano?',
+      options: ['Incriminar Tomás pelos desvios financeiros', 'Disputa pela herança da família', 'Ocultar rituais do passado'],
+      correct: 'Incriminar Tomás pelos desvios financeiros'
     },
     {
-      title: 'Qual evidência prova a premeditação e incrimina a mansão?',
-      options: ['Carta Anônima', 'Diário de Elisa', 'Mancha de Sangue'],
-      correct: 'Carta Anônima'
+      title: 'Qual evidência sustenta o motivo real?',
+      options: ['Livro-caixa desenterrado', 'Retrato da sala', 'Vidro de remédios'],
+      correct: 'Livro-caixa desenterrado'
     }
   ];
 
@@ -51,7 +51,7 @@ const CaseResolutionModal: React.FC<CaseResolutionModalProps> = ({ onClose }) =>
           </div>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', color: '#F8F9FA', margin: '0 0 16px 0', fontWeight: 400 }}>Caso Encerrado</h2>
           <p style={{ color: '#8E989F', fontSize: '14px', lineHeight: 1.5, marginBottom: '32px', maxWidth: '300px', margin: '0 auto 32px auto' }}>
-            Sua dedução foi genial. Clara forjou o próprio desaparecimento e plantou a carta falsa para incriminar o Sr. Tomás em vingança pela morte de Elisa. O feitiço virou contra o feiticeiro.
+            Sua dedução fechou o caso. Clara simulou o próprio sequestro com ajuda de Helena, usou sangue artificial e deixou pistas falsas para apontar Tomás, enquanto o livro-caixa revelava os desvios financeiros.
           </p>
           <button 
             onClick={onClose}

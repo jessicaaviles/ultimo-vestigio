@@ -69,11 +69,11 @@ const EvidenceAnalysis: React.FC = () => {
       discussion: []
     },
     'table': {
-      id: 'table', title: 'Carta Anônima', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_letter.png',
+      id: 'table', title: 'Bilhete Forjado', type: 'Documento', date: '12 Mai', image: '/backgrounds/ev_letter.png',
       desc: 'Uma nota rabiscada deixada sobre a mesa de centro.',
-      transcription: "Vocês pensam que sabem a verdade.\nMas a casa guarda o que vocês\npreferem esquecer.\nPagará pelo que fez a Elisa.",
+      transcription: "Tomás vai pagar pelo que escondeu.\nA verdade está enterrada no jardim.\nNinguém vai me calar.",
       aiAnalysis: "A caligrafia agressiva tenta imitar a letra cursiva característica do Sr. Tomás Blackwell. A tinta é de uma caneta-tinteiro edição limitada francesa (Montblanc Rouge). Clara Mendes é conhecida por colecionar e escrever exclusivamente com canetas-tinteiro europeias.",
-      hypothesis: "A carta não foi uma ameaça externa. Clara escreveu a nota para incriminar a família antes de sumir.",
+      hypothesis: "O bilhete não foi uma ameaça externa. Clara escreveu a nota para incriminar Tomás e conduzir a investigação até o livro-caixa no jardim.",
       relevance: 82,
       findings: [
         { icon: <Sparkles size={16} />, title: "Análise Grafotécnica", desc: "A caligrafia tenta imitar a letra de Tomás." },
@@ -138,7 +138,7 @@ const EvidenceAnalysis: React.FC = () => {
         { icon: <Sparkles size={16} />, title: "Grafologia", desc: "Escrita sob estresse. Autoria de Helena." }
       ],
       connections: [
-        { type: "Vítima", name: "Helena", subtitle: "Autora do aviso", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
+        { type: "Aliada", name: "Helena", subtitle: "Autora do aviso", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
         { type: "Suspeito", name: "Clara Mendes", subtitle: "Destinatária", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" }
       ],
       discussion: []
@@ -237,7 +237,7 @@ const EvidenceAnalysis: React.FC = () => {
       ],
       connections: [
         { type: "Suspeito", name: "Clara Mendes", subtitle: "Saltos (Tamanho 37)", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
-        { type: "Vítima", name: "Helena", subtitle: "Botas (Tamanho 35)", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" }
+        { type: "Aliada", name: "Helena", subtitle: "Botas (Tamanho 35)", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" }
       ],
       discussion: []
     },
@@ -266,7 +266,7 @@ const EvidenceAnalysis: React.FC = () => {
       { icon: <Key size={16} />, title: "Pertence à Blackwell House", desc: "Compatível com as fechaduras dos quartos do segundo andar" }
     ],
     connections: [
-      { type: "Vítima", name: "Helena", subtitle: "Encontrada a 2m do corpo", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
+      { type: "Pessoa citada", name: "Helena", subtitle: "Ligada à cena", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
       { type: "Local", name: "Quarto 7", subtitle: "Porta estava trancada", image: "https://images.unsplash.com/photo-1622396481328-9b1b78cdd9fd?q=80&w=200&auto=format&fit=crop" },
       { type: "Suspeito", name: "Rafael Blackwell", subtitle: "Impressões parciais", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200&auto=format&fit=crop" }
     ],

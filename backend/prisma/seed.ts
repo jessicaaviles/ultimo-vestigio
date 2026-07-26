@@ -9,11 +9,14 @@ async function main() {
   // 1. Criar o Caso: O Presente Desaparecido
   const caso = await prisma.cases.upsert({
     where: { slug: 'o-presente-desaparecido' },
-    update: {},
+    update: {
+      short_synopsis: 'Durante uma comemoração em família, a caixa de presente sobre a mesa desaparece diante de todos. Ninguém saiu do ambiente.',
+      status: 'PUBLISHED'
+    },
     create: {
       slug: 'o-presente-desaparecido',
       title: 'O Presente Desaparecido',
-      short_synopsis: 'Durante uma comemoração em família, um presente desaparece de uma mesa diante de todos. Ninguém saiu do ambiente.',
+      short_synopsis: 'Durante uma comemoração em família, a caixa de presente sobre a mesa desaparece diante de todos. Ninguém saiu do ambiente.',
       case_type: 'Rápido',
       difficulty: 'Fácil',
       estimated_duration_minutes: 8,
@@ -33,18 +36,19 @@ async function main() {
       }
     },
     update: {
-      solution_summary_encrypted: sealSecret('O anfitrião planejou iniciar uma caça ao tesouro e guardou a caixa sob a toalha.'),
-      full_solution_encrypted: sealSecret('A caixa era apenas cenográfica (sem presente dentro). O anfitrião (responsável), dobrou a caixa vazia de papel e colocou sob a toalha da mesa durante o brinde como distração, para iniciar uma caça ao tesouro.'),
+      opening: 'Durante uma comemoração em família, a caixa de presente sobre a mesa desaparece diante de todos. Ninguém saiu do ambiente e nenhuma pessoa admite ter tocado na caixa.',
+      solution_summary_encrypted: sealSecret('Não houve roubo: o presente real nunca esteve naquela caixa, e o anfitrião dobrou a embalagem cenográfica sob a toalha para iniciar uma caça ao tesouro.'),
+      full_solution_encrypted: sealSecret('A caixa sobre a mesa era apenas uma embalagem cenográfica vazia. Durante o brinde, o anfitrião dobrou a caixa de papel rígido e a colocou sob a toalha da mesa, usando a distração para iniciar uma caça ao tesouro com o presente real escondido em outro lugar da casa.'),
       chronology_encrypted: sealSecret(JSON.stringify([]))
     },
     create: {
       case_id: caso.id,
       version_number: '1.0',
-      opening: 'Durante uma comemoração em família, um presente desaparece de uma mesa diante de todos. Ninguém saiu do ambiente e nenhuma pessoa admite ter tocado na caixa.',
+      opening: 'Durante uma comemoração em família, a caixa de presente sobre a mesa desaparece diante de todos. Ninguém saiu do ambiente e nenhuma pessoa admite ter tocado na caixa.',
       master_style: JSON.stringify({ tone: "familiar", humorAllowed: false, maxSentences: 2 }),
       scoring_rules: JSON.stringify({ baseScore: 1000, penaltyPerHint: 100 }),
-       solution_summary_encrypted: sealSecret('O anfitrião planejou iniciar uma caça ao tesouro e guardou a caixa sob a toalha.'),
-       full_solution_encrypted: sealSecret('A caixa era apenas cenográfica (sem presente dentro). O anfitrião (responsável), dobrou a caixa vazia de papel e colocou sob a toalha da mesa durante o brinde como distração, para iniciar uma caça ao tesouro.'),
+       solution_summary_encrypted: sealSecret('Não houve roubo: o presente real nunca esteve naquela caixa, e o anfitrião dobrou a embalagem cenográfica sob a toalha para iniciar uma caça ao tesouro.'),
+       full_solution_encrypted: sealSecret('A caixa sobre a mesa era apenas uma embalagem cenográfica vazia. Durante o brinde, o anfitrião dobrou a caixa de papel rígido e a colocou sob a toalha da mesa, usando a distração para iniciar uma caça ao tesouro com o presente real escondido em outro lugar da casa.'),
        chronology_encrypted: sealSecret(JSON.stringify([])),
       publication_status: 'PUBLISHED',
       published_at: new Date()
@@ -216,22 +220,27 @@ async function main() {
   });
   const versionRetrato = await prisma.case_versions.upsert({
     where: { case_id_version_number: { case_id: caseRetrato.id, version_number: '1.0' } },
-    update: {},
+    update: {
+      opening: 'Durante um jantar, todos veem o retrato antigo da sala piscar. Segundos depois, uma joia desaparece de uma mesa próxima. A pintura não possui mecanismos.',
+      solution_summary_encrypted: sealSecret('O "piscar" foi o reflexo de um flash externo no vidro ou verniz do retrato, usado para cegar momentaneamente os convidados enquanto o garçom roubava a joia.'),
+      full_solution_encrypted: sealSecret('O retrato não tinha mecanismo algum. Um garçom cúmplice acionou um pequeno flash de alta intensidade escondido em sua bandeja de serviço e direcionado ao vidro ou verniz do quadro, fazendo o reflexo parecer um piscar. O clarão cegou os convidados por poucos segundos; nesse intervalo, ele retirou a joia da mesa próxima.'),
+      chronology_encrypted: sealSecret(JSON.stringify([]))
+    },
     create: {
       case_id: caseRetrato.id, version_number: '1.0',
       opening: 'Durante um jantar, todos veem o retrato antigo da sala piscar. Segundos depois, uma joia desaparece de uma mesa próxima. A pintura não possui mecanismos.',
       master_style: JSON.stringify({ tone: 'investigative', maxSentences: 2 }), scoring_rules: JSON.stringify({ baseScore: 1000, penaltyPerHint: 100 }),
-      solution_summary_encrypted: sealSecret('O "piscar" foi o reflexo de um flash de câmera usado para cegar momentaneamente os convidados enquanto o garçom roubava a joia.'),
-      full_solution_encrypted: sealSecret('Um garçom cúmplice utilizou um pequeno emissor de flash de alta intensidade escondido na moldura do retrato antigo para criar um clarão forte (cegando todos por um instante). Nesse piscar de olhos, ele pegou a joia da mesa próxima.'),
+      solution_summary_encrypted: sealSecret('O "piscar" foi o reflexo de um flash externo no vidro ou verniz do retrato, usado para cegar momentaneamente os convidados enquanto o garçom roubava a joia.'),
+      full_solution_encrypted: sealSecret('O retrato não tinha mecanismo algum. Um garçom cúmplice acionou um pequeno flash de alta intensidade escondido em sua bandeja de serviço e direcionado ao vidro ou verniz do quadro, fazendo o reflexo parecer um piscar. O clarão cegou os convidados por poucos segundos; nesse intervalo, ele retirou a joia da mesa próxima.'),
       chronology_encrypted: sealSecret(JSON.stringify([])), publication_status: 'PUBLISHED', published_at: new Date()
     }
   });
   const factsRetrato = [
-    ['flash_reflection', 'O piscar do retrato foi um clarão óptico de alta intensidade direcionado.', 'ANSWER'],
+    ['flash_reflection', 'O piscar foi um reflexo no vidro ou verniz do retrato, provocado por um flash externo.', 'ANSWER'],
     ['temporary_blindness', 'Todos os convidados sofreram de cegueira temporária por 3 segundos.', 'ANSWER'],
     ['waiter_accomplice', 'O garçom aproximou-se da mesa exatamente no instante do clarão.', 'ANSWER']
   ];
-  for (const [fact_key, statement, visibility] of factsRetrato) await prisma.case_facts.upsert({ where: { case_version_id_fact_key: { case_version_id: versionRetrato.id, fact_key } }, update: {}, create: { case_version_id: versionRetrato.id, fact_key, statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true } });
+  for (const [fact_key, statement, visibility] of factsRetrato) await prisma.case_facts.upsert({ where: { case_version_id_fact_key: { case_version_id: versionRetrato.id, fact_key } }, update: { statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true }, create: { case_version_id: versionRetrato.id, fact_key, statement, visibility, pre_unlock_policy: 'ANSWER', is_solution_critical: true } });
 
   // 8. Caso: Mansão Blackwell (blackwell)
   const caseBlackwell = await prisma.cases.upsert({

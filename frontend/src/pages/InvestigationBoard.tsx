@@ -11,7 +11,7 @@ const InvestigationBoard: React.FC = () => {
   // Cards de evidência para o novo roteiro expandido
   const cards = [
     { id: 'clara', type: 'person', image: '/backgrounds/clara_portrait.png', title: 'Clara Mendes', label: 'Forjou a própria morte', top: '10%', left: '15%', rotation: '-5deg' },
-    { id: 'letter', type: 'note', text: 'Carta anônima\n\nA caligrafia é do Sr. Tomás, mas a tinta é da caneta que Clara usa.', top: '12%', left: '40%', rotation: '2deg' },
+    { id: 'letter', type: 'note', text: 'Bilhete forjado\n\nA caligrafia imita o Sr. Tomás, mas a tinta é da caneta que Clara usa.', top: '12%', left: '40%', rotation: '2deg' },
     { id: 'tomas', type: 'person', image: '/backgrounds/tomas_portrait.png', title: 'Sr. Tomás Blackwell', label: 'O alvo da armação', top: '15%', left: '70%', rotation: '4deg' },
     { id: 'house', type: 'location', image: '/backgrounds/map_blackwell.png', title: 'Mansão Blackwell', top: '45%', left: '35%', rotation: '-2deg' },
     { id: 'flight', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Passagem p/ Buenos Aires', label: 'Comprada por C.M.', top: '55%', left: '5%', rotation: '-8deg' },
