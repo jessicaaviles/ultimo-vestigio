@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { listCases } from '../services/api';
 import { Clock3, Flame, UsersRound } from 'lucide-react';
 import Loading from '../components/Loading';
@@ -20,6 +20,7 @@ interface CaseItem {
 
 const Cases: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedCase, setSelectedCase] = useState<CaseItem | null>(null);
   const [cases, setCases] = useState<CaseItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +31,7 @@ const Cases: React.FC = () => {
   React.useEffect(() => {
     const localSolved = JSON.parse(localStorage.getItem('solvedCases') || '[]');
     const userId = user?.userId || localStorage.getItem('userId');
+    const requestedCaseSlug = new URLSearchParams(location.search).get('case');
     
     listCases(userId).then((response) => {
       if (response.success && response.data?.length) {
@@ -70,10 +72,14 @@ const Cases: React.FC = () => {
         };
         
         const hasBlackwell = mapped.some((m: any) => m.slug === 'blackwell');
-        setCases(hasBlackwell ? mapped : [...mapped, blackwellCase]);
+        const nextCases = hasBlackwell ? mapped : [...mapped, blackwellCase];
+        setCases(nextCases);
+        if (requestedCaseSlug) {
+          setSelectedCase(nextCases.find((item: CaseItem) => item.slug === requestedCaseSlug) || null);
+        }
       } else {
         // Se a API não retornar nada, pelo menos mostre o caso de demonstração
-        setCases([{
+        const fallbackCases = [{
           slug: 'blackwell',
           title: 'Mansão Blackwell',
           synopsis: 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell.',
@@ -84,7 +90,11 @@ const Cases: React.FC = () => {
           tension: 4,
           image: '/backgrounds/map_blackwell.png',
           cover_image_data: null
-        }]);
+        }];
+        setCases(fallbackCases);
+        if (requestedCaseSlug) {
+          setSelectedCase(fallbackCases.find((item) => item.slug === requestedCaseSlug) || null);
+        }
       }
       setLoading(false);
     }).catch((err) => {
@@ -92,7 +102,7 @@ const Cases: React.FC = () => {
       setError('Não foi possível carregar os casos. Tente novamente mais tarde.');
       
       // Fallback para exibir o protótipo mesmo com erro na API
-      setCases([{
+      const fallbackCases = [{
         slug: 'blackwell',
         title: 'Mansão Blackwell',
         synopsis: 'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell.',
@@ -103,11 +113,15 @@ const Cases: React.FC = () => {
         tension: 4,
         image: '/backgrounds/map_blackwell.png',
         cover_image_data: null
-      }]);
+      }];
+      setCases(fallbackCases);
+      if (requestedCaseSlug) {
+        setSelectedCase(fallbackCases.find((item) => item.slug === requestedCaseSlug) || null);
+      }
       
       setLoading(false);
     });
-  }, [user?.userId]);
+  }, [location.search, user?.userId]);
 
   const handleSelectCase = (slug: string) => {
     const c = cases.find(item => item.slug === slug);

@@ -330,7 +330,7 @@ const Home: React.FC = () => {
           ) : (
             <div className="featured-carousel">
               {featuredCases.map((item, index) => (
-                <button key={item.slug} className="featured-card" onClick={() => navigate('/cases')} aria-label={`Abrir caso ${item.title}`}>
+                <button key={item.slug} className="featured-card" onClick={() => navigate(`/cases?case=${encodeURIComponent(item.slug)}`)} aria-label={`Abrir caso ${item.title}`}>
                   <div className="featured-card-image" style={{ backgroundImage: `url("${item.image}")` }}>
                     <div className="featured-card-overlay">
                       <span className="featured-card-number">0{index + 1}</span>
