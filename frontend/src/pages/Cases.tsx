@@ -50,10 +50,10 @@ const Cases: React.FC = () => {
     
     listCases(userId).then((response) => {
       if (response.success && response.data?.length) {
-        // Usar o banco de dados como fonte absoluta da verdade
-        // Se a API retornou a lista, ela sobrescreve qualquer cache incorreto local
+        // Une API e estado local para não perder um caso recém-resolvido antes da próxima sincronização.
         const resetAllProgress = hasAllProgressReset(userId);
-        const mergedSolved = resetAllProgress ? [] : response.solvedSlugs !== undefined ? response.solvedSlugs : localSolved;
+        const apiSolved = Array.isArray(response.solvedSlugs) ? response.solvedSlugs : [];
+        const mergedSolved = resetAllProgress ? [] : Array.from(new Set([...localSolved, ...apiSolved]));
         setSolvedCases(mergedSolved);
         
         // Atualiza o local storage para ficar em sincronia com o banco de dados

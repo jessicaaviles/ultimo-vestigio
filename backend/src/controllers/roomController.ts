@@ -59,7 +59,6 @@ export const listCases = async (req: Request, res: Response) => {
         prisma.room_players.findMany({
           where: {
             anonymous_user_id: userId,
-            removed_at: null,
             room: {
               status: { in: ['COMPLETED', 'GAME_OVER'] },
               deleted_at: null
