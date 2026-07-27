@@ -148,6 +148,119 @@ export const processFactBasedQuestion = (questionText: string, facts: Array<{ st
   return null;
 };
 
+const safeJsonParse = (value: string | null | undefined, fallback: any = null) => {
+  try {
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const formatContextBlock = (title: string, lines: string[]) => {
+  const content = lines.filter(Boolean).join('\n');
+  return `${title}:\n${content || '- Não cadastrado.'}`;
+};
+
+const formatChronology = (chronologyText: string) => {
+  const chronology = safeJsonParse(chronologyText, []);
+  if (!Array.isArray(chronology) || chronology.length === 0) return ['- Não cadastrada.'];
+  return chronology.map((entry: any) => {
+    const time = entry.time ? `${entry.time}: ` : '';
+    return `- ${time}${entry.event || entry.description || JSON.stringify(entry)}`;
+  });
+};
+
+const formatMasterStyle = (masterStyleText: string | null | undefined) => {
+  const style = safeJsonParse(masterStyleText, {});
+  if (!style || typeof style !== 'object') return ['- Tom investigativo, respostas curtas.'];
+  return Object.entries(style).map(([key, value]) => `- ${key}: ${String(value)}`);
+};
+
+export const buildMasterPrompt = ({
+  caseTitle,
+  caseSynopsis,
+  caseType,
+  caseDifficulty,
+  caseOpening,
+  masterStyle,
+  solutionSummary,
+  chronology,
+  facts,
+  answerRules,
+  hints,
+  solutionFields,
+  questionText
+}: {
+  caseTitle: string;
+  caseSynopsis: string;
+  caseType: string;
+  caseDifficulty: string;
+  caseOpening: string;
+  masterStyle: string;
+  solutionSummary: string;
+  chronology: string;
+  facts: Array<{ fact_key?: string; statement: string; is_solution_critical?: boolean }>;
+  answerRules: any[];
+  hints: Array<{ hint_index: number; content: string; penalty_points?: number }>;
+  solutionFields: Array<{ field_key: string; label: string; is_required: boolean }>;
+  questionText: string;
+}) => {
+  const factListText = facts.map((fact: any) => {
+    const critical = fact.is_solution_critical ? 'essencial' : 'apoio';
+    return `- [${fact.fact_key || 'fato'} | ${critical}] ${fact.statement}`;
+  });
+  const answerRulesText = answerRules.length
+    ? answerRules.map((rule: any) => {
+      const examples = safeJsonParse(rule.semantic_examples, []).join('; ');
+      const factKeys = safeJsonParse(rule.related_fact_keys, []).join(', ');
+      return `- ${rule.intent_key}: classifique como ${rule.default_classification}; exemplos: ${examples}; fatos relacionados: ${factKeys}`;
+    })
+    : ['- Nenhuma regra semântica específica cadastrada para este caso.'];
+  const hintsText = hints.length
+    ? hints.map((hint) => `- Pista ${hint.hint_index}: ${hint.content}${hint.penalty_points ? ` (-${hint.penalty_points} pts)` : ''}`)
+    : ['- Nenhuma pista cadastrada.'];
+  const fieldsText = solutionFields.length
+    ? solutionFields.map((field) => `- ${field.field_key}: ${field.label}${field.is_required ? ' (obrigatório)' : ''}`)
+    : ['- Usar os campos padrão: o que aconteceu, quem, como e por quê.'];
+
+  return `Você atua como o Mestre IA (árbitro) de um jogo de investigação.
+Sua função é interpretar a pergunta do jogador e validar se ele descobriu algo.
+Responda SEMPRE em português do Brasil (pt-BR).
+
+${formatContextBlock('Contexto Narrativo do Caso', [
+  `- Título: ${caseTitle}`,
+  `- Tipo: ${caseType}`,
+  `- Dificuldade: ${caseDifficulty}`,
+  `- Sinopse: ${caseSynopsis}`,
+  `- Abertura apresentada aos jogadores: ${caseOpening}`
+])}
+
+${formatContextBlock('Estilo do Mestre', formatMasterStyle(masterStyle))}
+
+Resumo da Solução e Regras Especiais de Desbloqueio:
+${solutionSummary}
+
+${formatContextBlock('Cronologia Privada do Caso', formatChronology(chronology))}
+
+${formatContextBlock('Fatos Absolutos do Caso', factListText)}
+
+${formatContextBlock('Pistas Cadastradas', hintsText)}
+
+${formatContextBlock('Campos da Solução Final', fieldsText)}
+
+${formatContextBlock('Regras Semânticas de Descoberta', answerRulesText)}
+
+Regras ESTRITAS:
+1. Responda apenas "Sim", "Não", "Parcialmente", "Irrelevante" ou "Desconhecido".
+2. Use todo o contexto privado acima para entender intenção, cronologia, suspeitos, pistas e causa real, mas não transforme esse contexto em dica gratuita.
+3. Não revele detalhes na \`publicExplanation\`. Confirme apenas a parte exata perguntada, sem listar outros fatos relacionados, nomes novos, método completo, motivo completo ou cronologia completa.
+4. Se a pergunta estiver perto da solução, responda de forma curta e ainda investigativa. Não entregue a solução de bandeja.
+5. Se a pergunta demonstrar que o jogador investigou corretamente um hotspot ou desvendou uma etapa, defina \`unlockClue\` como true e indique a \`clueIdToUnlock\` ou \`locationId\` apropriada conforme o gabarito das regras especiais.
+6. Se a pergunta for vaga, ampla ou não puder ser confirmada pelo contexto do caso, use "Desconhecido" em vez de inventar uma confirmação.
+
+Pergunta do Jogador: "${questionText}"`;
+};
+
 const isTooAmbiguousForPlay = (questionText: string) => {
   const questionWords = tokenizeForMatching(questionText);
   return questionWords.length <= 1;
@@ -264,12 +377,20 @@ export const processQuestion = async (roomId: string, questionText: string, case
       return { classification: 'BLOCKED', rendered_text: 'Essa pergunta tenta alterar as regras da investigação. Reformule usando apenas os fatos do caso.', fallback_used: false };
     }
 
-    const [facts, answerRules] = await Promise.all([
+    const [facts, answerRules, hints, solutionFields] = await Promise.all([
       prisma.case_facts.findMany({
         where: { case_version_id: caseVersionId, visibility: { not: 'SECRET' } }
       }),
       prisma.case_answer_rules.findMany({
         where: { case_version_id: caseVersionId }
+      }),
+      prisma.case_hints.findMany({
+        where: { case_version_id: caseVersionId },
+        orderBy: { hint_index: 'asc' }
+      }),
+      prisma.case_solution_fields.findMany({
+        where: { case_version_id: caseVersionId },
+        orderBy: { display_order: 'asc' }
       })
     ]);
 
@@ -298,14 +419,12 @@ export const processQuestion = async (roomId: string, questionText: string, case
 
     const { revealSecret } = await import('../security/secrets');
     const solutionSummary = revealSecret(caseVersion.solution_summary_encrypted);
-    const factListText = facts.map((f: any) => `- ${f.statement}`).join('\n');
-    const answerRulesText = answerRules.length
-      ? answerRules.map((rule: any) => {
-        const examples = JSON.parse(rule.semantic_examples || '[]').join('; ');
-        const factKeys = JSON.parse(rule.related_fact_keys || '[]').join(', ');
-        return `- ${rule.intent_key}: classifique como ${rule.default_classification}; exemplos: ${examples}; fatos relacionados: ${factKeys}`;
-      }).join('\n')
-      : '- Nenhuma regra semântica específica cadastrada para este caso.';
+    const chronology = revealSecret(caseVersion.chronology_encrypted);
+    const promptHints = hints.map((hint: any) => ({
+      hint_index: hint.hint_index,
+      content: revealSecret(hint.content_encrypted),
+      penalty_points: hint.penalty_points
+    }));
 
     const responseSchema: Schema = {
       type: Type.OBJECT,
@@ -320,26 +439,21 @@ export const processQuestion = async (roomId: string, questionText: string, case
       required: ["verdict", "shortAnswer", "publicExplanation", "unlockClue"]
     };
 
-    const prompt = `Você atua como o Mestre IA (árbitro) de um jogo de investigação.
-Sua função é interpretar a pergunta do jogador e validar se ele descobriu algo.
-Responda SEMPRE em português do Brasil (pt-BR).
-
-Resumo da Solução e Regras Especiais de Desbloqueio:
-${solutionSummary}
-
-Fatos Absolutos do Caso:
-${factListText}
-
-Regras Semânticas de Descoberta:
-${answerRulesText}
-
-Regras ESTRITAS:
-1. Responda apenas "Sim", "Não", "Parcialmente", "Irrelevante" ou "Desconhecido".
-2. Não revele detalhes na \`publicExplanation\`. Confirme apenas a parte exata perguntada, sem listar outros fatos relacionados, nomes novos, método completo, motivo completo ou cronologia completa.
-3. Se a pergunta estiver perto da solução, responda de forma curta e ainda investigativa. Não entregue a solução de bandeja.
-4. Se a pergunta demonstrar que o jogador investigou corretamente um hotspot ou desvendou uma etapa, defina \`unlockClue\` como true e indique a \`clueIdToUnlock\` ou \`locationId\` apropriada conforme o gabarito das regras especiais.
-
-Pergunta do Jogador: "${questionText}"`;
+    const prompt = buildMasterPrompt({
+      caseTitle: caseVersion.case_ref.title,
+      caseSynopsis: caseVersion.case_ref.short_synopsis,
+      caseType: caseVersion.case_ref.case_type,
+      caseDifficulty: caseVersion.case_ref.difficulty,
+      caseOpening: caseVersion.opening,
+      masterStyle: caseVersion.master_style,
+      solutionSummary,
+      chronology,
+      facts,
+      answerRules,
+      hints: promptHints,
+      solutionFields,
+      questionText
+    });
 
     const response = await getAiClient().models.generateContent({
       model: 'gemini-3.5-flash',
