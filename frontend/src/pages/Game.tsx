@@ -434,8 +434,8 @@ const Game: React.FC = () => {
         <div style={{ flexShrink: 0, padding: '0 20px 8px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
           {/* Header do caso */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ minWidth: 0 }}>
               <h2 style={{ fontSize: '28px', fontFamily: 'var(--font-serif)', lineHeight: 1.2, margin: 0, marginBottom: '4px' }}>{caseTitle}</h2>
               <div style={labelStyle}>
                 {status === 'IN_PROGRESS' ? `Investigação em andamento${remainingSeconds !== null ? ` · ${remainingSeconds}s` : ''}` :
@@ -445,14 +445,14 @@ const Game: React.FC = () => {
               </div>
             </div>
             {['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL'].includes(String(status)) && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.35fr) minmax(0, 1fr)', gap: '8px' }}>
                 {status === 'IN_PROGRESS' && (
-                  <button onClick={handleStartSolving} style={{ padding: '8px 14px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap' }}>Tentar Resolver</button>
+                  <button onClick={handleStartSolving} style={{ minHeight: '44px', padding: '10px 12px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap', letterSpacing: '.04em' }}>Tentar Resolver</button>
                 )}
-                {isHost && status === 'IN_PROGRESS' && <button style={{ padding: '8px 14px', backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', fontSize: '12px' }} onClick={() => socket?.emit('pause_room', { roomId, userId })}>Pausar</button>}
-                {isHost && status === 'PAUSED' && <button style={{ padding: '8px 14px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }} onClick={() => socket?.emit('resume_room', { roomId, userId })}>Retomar</button>}
-                {isHost && <button onClick={handleResetProgress} disabled={roomActionLoading !== null} style={{ padding: '8px 14px', backgroundColor: 'rgba(184,153,83,0.12)', color: 'var(--gold-soft)', border: '1px solid rgba(184,153,83,0.28)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}><RotateCcw size={13} /> {roomActionLoading === 'reset' ? 'Reiniciando...' : 'Reiniciar'}</button>}
-                <button onClick={handleLeaveRoom} disabled={roomActionLoading !== null} style={{ padding: '8px 14px', backgroundColor: 'rgba(115,43,35,0.2)', color: '#f7ddd8', border: '1px solid rgba(205,93,70,0.38)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}><LogOut size={13} /> {roomActionLoading === 'leave' ? 'Saindo...' : 'Sair'}</button>
+                {isHost && status === 'IN_PROGRESS' && <button style={{ minHeight: '44px', padding: '10px 12px', backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.74)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={() => socket?.emit('pause_room', { roomId, userId })}>Pausar</button>}
+                {isHost && status === 'PAUSED' && <button style={{ minHeight: '44px', padding: '10px 12px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={() => socket?.emit('resume_room', { roomId, userId })}>Retomar</button>}
+                {isHost && <button onClick={handleResetProgress} disabled={roomActionLoading !== null} style={{ minHeight: '42px', padding: '9px 12px', backgroundColor: 'rgba(184,153,83,0.1)', color: 'var(--gold-soft)', border: '1px solid rgba(184,153,83,0.25)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}><RotateCcw size={13} /> {roomActionLoading === 'reset' ? 'Reiniciando...' : 'Reiniciar'}</button>}
+                <button onClick={handleLeaveRoom} disabled={roomActionLoading !== null} style={{ minHeight: '42px', padding: '9px 12px', backgroundColor: 'rgba(115,43,35,0.18)', color: '#f7ddd8', border: '1px solid rgba(205,93,70,0.34)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}><LogOut size={13} /> {roomActionLoading === 'leave' ? 'Saindo...' : 'Sair'}</button>
               </div>
             )}
           </div>
