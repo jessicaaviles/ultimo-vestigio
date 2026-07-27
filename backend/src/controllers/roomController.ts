@@ -103,7 +103,7 @@ export const listCases = async (req: Request, res: Response) => {
 
       solvedSlugs = Array.from(new Set(solvedRooms.map(rp => rp.room.case_version.case_ref.slug)));
 
-      if (activeRoomRecord) {
+      if (activeRoomRecord && !solvedSlugs.includes(activeRoomRecord.case_version.case_ref.slug)) {
         activeRoom = {
           roomId: activeRoomRecord.id,
           status: activeRoomRecord.status,

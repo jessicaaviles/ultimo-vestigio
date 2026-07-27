@@ -114,12 +114,14 @@ const Home: React.FC = () => {
       if (!res.success || !Array.isArray(res.data)) throw new Error('Invalid cases response');
 
       const apiSolved = Array.isArray(res.solvedSlugs) ? res.solvedSlugs : [];
+      const localSolved = JSON.parse(localStorage.getItem('solvedCases') || '[]');
       if (apiSolved.length > 0) clearAllProgressReset(userId);
-      const resetAllProgress = hasAllProgressReset(userId) && apiSolved.length === 0;
-      const solvedSlugs = resetAllProgress ? [] : apiSolved;
+      const resetAllProgress = hasAllProgressReset(userId) && apiSolved.length === 0 && localSolved.length === 0;
+      const solvedSlugs = resetAllProgress ? [] : Array.from(new Set([...localSolved, ...apiSolved]));
       const activeStatus = String(res.activeRoom?.status || '');
       const activeStatuses = new Set(['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
-      const active = !resetAllProgress && res.activeRoom?.roomId && res.activeRoom?.case && activeStatuses.has(activeStatus)
+      const activeCaseSlug = String(res.activeRoom?.case?.slug || '');
+      const active = !resetAllProgress && res.activeRoom?.roomId && res.activeRoom?.case && activeStatuses.has(activeStatus) && !solvedSlugs.includes(activeCaseSlug)
         ? {
             roomId: String(res.activeRoom.roomId),
             status: activeStatus,
