@@ -161,6 +161,10 @@ export const processTutorialQuestion = (questionText: string) => {
   const mentionsUmbrella = question.includes('guarda-chuva') || question.includes('guarda chuva');
   const mentionsProtection = hasAny(['protegia', 'proteger', 'protegeu', 'proteção', 'protecao', 'cobria', 'cobrir']);
   const mentionsWeatherOutsideUmbrellaTerm = hasAnyOutsideUmbrellaTerm(['choveu', 'chuva', 'temporal', 'ceu', 'clima', 'tempo']);
+  const mentionsInternalPlace = hasAny(['predio', 'sala', 'interno', 'interna', 'dentro']);
+  const mentionsPerson = hasAny(['pessoa', 'alguem', 'morador', 'funcionario', 'homem', 'mulher']);
+  const mentionsEntering = hasAny(['entrou', 'entrar', 'entrada']);
+  const mentionsUsing = hasAny(['usou', 'abriu', 'usar', 'abrir']);
 
   if (question.includes('ceu') && question.includes('limpo')) {
     return {
@@ -186,7 +190,7 @@ export const processTutorialQuestion = (questionText: string) => {
     };
   }
 
-  if (mentionsUmbrella && hasAny(['dentro', 'predio', 'sala', 'interno', 'usou', 'abriu'])) {
+  if (mentionsUmbrella && (mentionsInternalPlace || mentionsUsing)) {
     return {
       classification: 'YES',
       rendered_text: 'Sim. O guarda-chuva foi usado dentro do prédio.',
@@ -228,10 +232,10 @@ export const processTutorialQuestion = (questionText: string) => {
     };
   }
 
-  if (hasAny(['dentro', 'predio', 'sala', 'interno', 'usou', 'abriu'])) {
+  if (mentionsPerson && mentionsEntering && mentionsInternalPlace) {
     return {
       classification: 'YES',
-      rendered_text: 'Sim. O guarda-chuva foi usado dentro do prédio.',
+      rendered_text: 'Sim. A pessoa entrou em uma sala interna do prédio.',
       fallback_used: false
     };
   }

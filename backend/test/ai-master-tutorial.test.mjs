@@ -21,6 +21,7 @@ test('caso tutorial aceita perguntas sobre uso dentro do predio', () => {
   assert.equal(result.classification, 'YES');
   assert.equal(result.fallback_used, false);
   assert.match(result.rendered_text, /Sim\./);
+  assert.match(result.rendered_text, /guarda-chuva foi usado dentro do prédio/i);
 });
 
 test('caso tutorial aceita perguntas sobre sala coberta', () => {
@@ -28,6 +29,23 @@ test('caso tutorial aceita perguntas sobre sala coberta', () => {
   assert.equal(result.classification, 'YES');
   assert.equal(result.fallback_used, false);
   assert.match(result.rendered_text, /Sim\./);
+  assert.match(result.rendered_text, /sala interna/i);
+  assert.doesNotMatch(result.rendered_text, /guarda-chuva foi usado/i);
+});
+
+test('caso tutorial responde entrada da pessoa sem repetir frase do guarda-chuva', () => {
+  const result = processTutorialQuestion('A pessoa entrou em uma sala interna?');
+  assert.equal(result.classification, 'YES');
+  assert.equal(result.fallback_used, false);
+  assert.match(result.rendered_text, /pessoa entrou/i);
+  assert.doesNotMatch(result.rendered_text, /guarda-chuva foi usado/i);
+});
+
+test('caso tutorial nao transforma pergunta generica sobre sala em uso do guarda-chuva', () => {
+  const result = processTutorialQuestion('A sala tinha uma janela?');
+  assert.equal(result.classification, 'UNKNOWN');
+  assert.equal(result.fallback_used, false);
+  assert.doesNotMatch(result.rendered_text, /guarda-chuva foi usado/i);
 });
 
 test('caso tutorial entende pergunta sobre funcao do guarda-chuva', () => {
