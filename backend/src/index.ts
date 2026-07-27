@@ -25,6 +25,7 @@ const io = new Server(server, {
 
 const prisma = new PrismaClient();
 const requestWindows = new Map<string, { startedAt: number; count: number }>();
+app.disable('etag');
 
 const initialRoomSettings = (existingSettings?: string | null) => {
   let parsed: any = {};
@@ -104,6 +105,15 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json({ limit: '7mb' }));
+app.use((req, res, next) => {
+  res.set({
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    Pragma: 'no-cache',
+    Expires: '0',
+    'Surrogate-Control': 'no-store'
+  });
+  next();
+});
 app.use((req, res, next) => {
   console.log(`[HTTP] ${req.method} ${req.url}`, req.body);
   next();

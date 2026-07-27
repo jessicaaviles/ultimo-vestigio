@@ -6,8 +6,16 @@ const REQUEST_TIMEOUT_MS = 15000;
 const apiFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const method = init?.method?.toUpperCase() || 'GET';
+  const target = typeof input === 'string' || input instanceof URL ? new URL(String(input), window.location.origin) : input;
+  const requestInput = method === 'GET' && target instanceof URL
+    ? (() => {
+      target.searchParams.set('_t', String(Date.now()));
+      return target.toString();
+    })()
+    : input;
   try {
-    return await fetch(input, { ...init, signal: controller.signal });
+    return await fetch(requestInput, { ...init, cache: 'no-store', signal: controller.signal });
   } finally {
     window.clearTimeout(timeout);
   }
