@@ -21,6 +21,51 @@ const tokenize = (value: string) =>
     .split(/\W+/)
     .filter((word) => word.length > 3);
 
+const INTERROGATIVE_STOPWORDS = new Set([
+  'aconteceu',
+  'alguma',
+  'algum',
+  'alguem',
+  'aquela',
+  'aquele',
+  'aquilo',
+  'caso',
+  'coisa',
+  'como',
+  'comum',
+  'dava',
+  'dele',
+  'dela',
+  'deles',
+  'delas',
+  'disso',
+  'disto',
+  'essa',
+  'esse',
+  'esta',
+  'este',
+  'estava',
+  'foram',
+  'havia',
+  'isso',
+  'isto',
+  'naquele',
+  'naquela',
+  'onde',
+  'para',
+  'pela',
+  'pelo',
+  'porque',
+  'qual',
+  'quando',
+  'quem',
+  'sobre',
+  'tinha'
+]);
+
+const tokenizeForMatching = (value: string) =>
+  tokenize(value).filter((word) => !INTERROGATIVE_STOPWORDS.has(word));
+
 const verdictPrefix: Record<string, string> = {
   YES: 'Sim.',
   NO: 'Não.',
@@ -48,14 +93,14 @@ const buildRuleBasedAnswer = (classification: string) => {
 };
 
 const processRuleBasedQuestion = (questionText: string, answerRules: any[]) => {
-  const questionWords = new Set(tokenize(questionText));
+  const questionWords = new Set(tokenizeForMatching(questionText));
   if (questionWords.size === 0) return null;
 
   let bestMatch: { score: number; classification: string } | null = null;
   for (const rule of answerRules) {
     const examples = JSON.parse(rule.semantic_examples || '[]');
     const examplesText = Array.isArray(examples) ? examples.join(' ') : String(examples || '');
-    const exampleWords = new Set(tokenize(`${rule.intent_key} ${examplesText}`));
+    const exampleWords = new Set(tokenizeForMatching(`${rule.intent_key} ${examplesText}`));
     if (exampleWords.size === 0) continue;
 
     const overlap = [...questionWords].filter((word) => exampleWords.has(word)).length;
@@ -66,6 +111,41 @@ const processRuleBasedQuestion = (questionText: string, answerRules: any[]) => {
   }
 
   return bestMatch ? buildRuleBasedAnswer(bestMatch.classification) : null;
+};
+
+const buildFactBasedAnswer = (classification = 'UNKNOWN') => ({
+  classification,
+  rendered_text: classification === 'YES'
+    ? 'Sim. Essa linha aparece nos fatos confirmados do caso.'
+    : 'Desconhecido. O arquivo não confirma essa hipótese neste momento.',
+  fallback_used: false
+});
+
+export const processFactBasedQuestion = (questionText: string, facts: Array<{ statement: string }>, opening = '') => {
+  const questionWords = new Set(tokenizeForMatching(questionText));
+  if (questionWords.size === 0) return null;
+
+  let bestScore = 0;
+  for (const fact of facts) {
+    const factWords = new Set(tokenizeForMatching(fact.statement || ''));
+    if (factWords.size === 0) continue;
+    const overlap = [...questionWords].filter((word) => factWords.has(word)).length;
+    const score = overlap / Math.max(1, Math.min(questionWords.size, factWords.size));
+    if (overlap >= 2 && score > bestScore) bestScore = score;
+  }
+
+  if (bestScore >= 0.34) return buildFactBasedAnswer('YES');
+
+  const caseVocabulary = new Set(tokenizeForMatching(`${opening} ${facts.map((fact) => fact.statement).join(' ')}`));
+  const relevantWords = [...questionWords].filter((word) => caseVocabulary.has(word));
+  if (relevantWords.length > 0) return buildFactBasedAnswer('UNKNOWN');
+
+  return null;
+};
+
+const isTooAmbiguousForPlay = (questionText: string) => {
+  const questionWords = tokenizeForMatching(questionText);
+  return questionWords.length <= 1;
 };
 
 export const processTutorialQuestion = (questionText: string) => {
@@ -184,6 +264,9 @@ export const processQuestion = async (roomId: string, questionText: string, case
     const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, answerRules);
     if (ruleBasedAnswer) return ruleBasedAnswer;
 
+    const factBasedAnswer = processFactBasedQuestion(cleanQuestion, facts, caseVersion.opening);
+    if (factBasedAnswer) return factBasedAnswer;
+
     const { revealSecret } = await import('../security/secrets');
     const solutionSummary = revealSecret(caseVersion.solution_summary_encrypted);
     const factListText = facts.map((f: any) => `- ${f.statement}`).join('\n');
@@ -241,8 +324,7 @@ Pergunta do Jogador: "${questionText}"`;
     
     const uppercaseVerdict = String(logicResult.verdict).toUpperCase();
     if (uppercaseVerdict === 'REFORMULATE') {
-      const questionWords = tokenize(cleanQuestion);
-      if (questionWords.length <= 2) {
+      if (isTooAmbiguousForPlay(cleanQuestion)) {
         return { classification: 'AMBIGUOUS', rendered_text: logicResult.publicExplanation || 'A pergunta está ambígua demais. Dê um pouco mais de contexto.', fallback_used: false };
       }
       return { classification: 'UNKNOWN', rendered_text: 'Desconhecido. O arquivo não confirma essa hipótese neste momento.', fallback_used: false };
