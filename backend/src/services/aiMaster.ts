@@ -115,6 +115,14 @@ export const processTutorialQuestion = (questionText: string) => {
     };
   }
 
+  if (hasAny(['teto', 'forro', 'cobertura'])) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. Era uma sala interna, protegida da chuva direta.',
+      fallback_used: false
+    };
+  }
+
   if (hasAny(['dentro', 'predio', 'sala', 'interno', 'usou', 'abriu'])) {
     return {
       classification: 'YES',

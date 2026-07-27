@@ -22,3 +22,10 @@ test('caso tutorial aceita perguntas sobre uso dentro do predio', () => {
   assert.equal(result.fallback_used, false);
   assert.match(result.rendered_text, /Sim\./);
 });
+
+test('caso tutorial aceita perguntas sobre sala coberta', () => {
+  const result = processTutorialQuestion('Havia teto na sala?');
+  assert.equal(result.classification, 'YES');
+  assert.equal(result.fallback_used, false);
+  assert.match(result.rendered_text, /Sim\./);
+});

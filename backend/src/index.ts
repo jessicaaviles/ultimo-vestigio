@@ -132,6 +132,14 @@ app.use('/api/ai', aiRoutes);
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+app.get('/version', (req, res) => {
+  res.json({
+    status: 'ok',
+    commit: process.env.RENDER_GIT_COMMIT || process.env.GIT_COMMIT || 'local',
+    service: process.env.RENDER_SERVICE_NAME || 'local',
+    deployedAt: process.env.RENDER || null
+  });
+});
 
 // Socket.io
 io.on('connection', (socket) => {

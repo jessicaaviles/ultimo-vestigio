@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: jogo-investigacao-kobn
+    env: node
+    rootDir: backend
+    buildCommand: npm ci && npm run build
+    startCommand: npm run db:migrate && npm run db:seed && node dist/index.js
+    healthCheckPath: /health
