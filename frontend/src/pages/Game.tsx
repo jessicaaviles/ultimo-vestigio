@@ -130,6 +130,7 @@ const Game: React.FC = () => {
         setHistory(data.questions.map((q: any) => ({
           question: { original_text: q.original_text, id: q.id },
           questionText: q.original_text,
+          playerId: q.player_id,
           answer: q.master_answers?.[0] ? { rendered_text: q.master_answers[0].rendered_text } : null,
           responseText: q.master_answers?.[0]?.rendered_text || '',
           clarification: null,
@@ -342,6 +343,13 @@ const Game: React.FC = () => {
   const availableHintCount = Number(roomData?.availableHintCount || 3);
   const remainingHints = Math.max(availableHintCount - hints.length, 0);
   const timerSeconds = (() => { try { return JSON.parse(roomData?.settings || '{}').turn_timer_seconds ?? null; } catch { return null; } })();
+  const getQuestionPlayer = (item: any) => players.find((p: any) => (
+    p.id === item.playerId ||
+    p.id === item.player_id ||
+    p.anonymous_user_id === item.askedBy
+  ));
+  const getPlayerPhoto = (player: any) => player?.user?.generated_profile_photo_data || player?.user?.profile_photo_data || null;
+  const getPlayerInitial = (player: any) => String(player?.display_name || 'Investigador').trim().charAt(0).toUpperCase() || 'I';
 
   useEffect(() => {
     if (!timerSeconds || !activeTurn?.started_at) { setRemainingSeconds(null); return; }
@@ -555,24 +563,38 @@ const Game: React.FC = () => {
                       ⏳ Vez de {item.playerName}
                     </span>
                   </div>
-                ) : (
-                <div key={idx} style={{ paddingLeft: '14px', borderLeft: '2px solid rgba(184,153,83,0.35)', marginBottom: '16px' }}>
-                  <div style={{ fontWeight: 600, marginBottom: '6px', color: '#fff', fontSize: '14px', fontStyle: 'italic' }}>
-                    "{item.question?.original_text || item.questionText}"
-                  </div>
-                  <div className="answer-row" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', lineHeight: 1.6, display: 'flex', alignItems: 'flex-start' }}>
-                    <span style={{ color: 'var(--accent-gold)', fontWeight: 700, marginRight: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', flexShrink: 0 }}>Mestre:</span>
-                    <span className="answer-text">{item.answer?.rendered_text || item.responseText}</span>
-                    <button onClick={() => speakAnswer(item.answer?.rendered_text || item.responseText)} style={{ flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '6px', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', fontSize: '14px' }} title="Ouvir resposta"><Volume2 size={14} /></button>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <button onClick={() => requestClarification(item.question?.id)} disabled={!item.question?.id || item.clarification} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Esclarecer</button>
-                    <button onClick={() => contestAnswer(item.question?.id)} disabled={!item.question?.id || item.contestation} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Contestar</button>
-                  </div>
-                  {item.clarification && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Esclarecimento: {item.clarification}</div>}
-                  {item.contestation && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Revisão: {item.contestation}</div>}
-                </div>
-                )
+                ) : (() => {
+                  const questionPlayer = getQuestionPlayer(item);
+                  const playerPhoto = getPlayerPhoto(questionPlayer);
+                  return (
+                    <div key={idx} style={{ display: 'grid', gridTemplateColumns: '36px minmax(0, 1fr)', gap: '10px', marginBottom: '16px' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden', border: '1px solid rgba(184,153,83,0.45)', background: 'rgba(184,153,83,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold-soft)', fontSize: '13px', fontWeight: 800, flexShrink: 0 }}>
+                        {playerPhoto ? (
+                          <img src={playerPhoto} alt={`Avatar de ${questionPlayer?.display_name || 'investigador'}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : getPlayerInitial(questionPlayer)}
+                      </div>
+                      <div style={{ paddingLeft: '12px', borderLeft: '2px solid rgba(184,153,83,0.35)', minWidth: 0 }}>
+                        <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.4px', fontWeight: 700, marginBottom: '4px' }}>
+                          {questionPlayer?.display_name || 'Investigador'}
+                        </div>
+                        <div style={{ fontWeight: 600, marginBottom: '6px', color: '#fff', fontSize: '14px', fontStyle: 'italic' }}>
+                          "{item.question?.original_text || item.questionText}"
+                        </div>
+                        <div className="answer-row" style={{ color: 'rgba(255,255,255,0.75)', fontSize: '14px', lineHeight: 1.6, display: 'flex', alignItems: 'flex-start' }}>
+                          <span style={{ color: 'var(--accent-gold)', fontWeight: 700, marginRight: '6px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', flexShrink: 0 }}>Mestre:</span>
+                          <span className="answer-text">{item.answer?.rendered_text || item.responseText}</span>
+                          <button onClick={() => speakAnswer(item.answer?.rendered_text || item.responseText)} style={{ flexShrink: 0, width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '6px', cursor: 'pointer', color: 'rgba(255,255,255,0.6)', fontSize: '14px' }} title="Ouvir resposta"><Volume2 size={14} /></button>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                          <button onClick={() => requestClarification(item.question?.id)} disabled={!item.question?.id || item.clarification} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Esclarecer</button>
+                          <button onClick={() => contestAnswer(item.question?.id)} disabled={!item.question?.id || item.contestation} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Contestar</button>
+                        </div>
+                        {item.clarification && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Esclarecimento: {item.clarification}</div>}
+                        {item.contestation && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Revisão: {item.contestation}</div>}
+                      </div>
+                    </div>
+                  );
+                })()
               ))}
               
               {/* Indicador de digitação */}
