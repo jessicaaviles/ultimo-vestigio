@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSocket } from '../contexts/useSocket';
-import { PenTool, Skull, Target, AlertTriangle, Check, Fingerprint, UserRound } from 'lucide-react';
+import { PenTool, Search, Target, AlertTriangle, Check, Fingerprint, UserRound } from 'lucide-react';
 
 interface CaseSuspect {
   id: string;
@@ -56,8 +56,8 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
     return (
       <div style={{ backgroundColor: '#0A0D10', border: '1px solid rgba(197, 168, 128, 0.4)', borderRadius: '16px', padding: '40px 24px', textAlign: 'center', boxShadow: '0 0 40px rgba(0,0,0,0.8) inset' }}>
         <div style={{ fontSize: '40px', marginBottom: '16px', color: '#C5A880' }}>✓</div>
-        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', color: '#C5A880', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '2px' }}>Acusação Registrada</h3>
-        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: 1.6, margin: '0 0 24px' }}>Sua teoria final foi assinada e arquivada. O destino dos envolvidos agora depende dos seus colegas.</p>
+        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '24px', color: '#C5A880', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '2px' }}>Relatório Registrado</h3>
+        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '15px', lineHeight: 1.6, margin: '0 0 24px' }}>Sua teoria final foi assinada e arquivada. A conclusão da equipe agora depende dos seus colegas.</p>
         <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', display: 'inline-block' }}>
           <div style={{ color: '#C5A880', fontSize: '14px', fontWeight: 600 }}>{theories.length} de {players.length} investigadores</div>
           <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginTop: '4px' }}>já enviaram seus relatórios.</div>
@@ -74,9 +74,9 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
         <div style={{ color: '#ef4444', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '3px', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <AlertTriangle size={14} /> Arquivo Confidencial — Relatório Final
         </div>
-        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', color: '#F8F9FA', margin: '0 0 8px 0' }}>Acusação Oficial</h2>
+        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', color: '#F8F9FA', margin: '0 0 8px 0' }}>Relatório Final</h2>
         <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', margin: 0, lineHeight: 1.5 }}>
-          Preencha os campos abaixo com precisão forense. Uma vez enviado, este documento não poderá ser alterado. Seja direto.
+          Preencha os campos abaixo com a conclusão da equipe. Uma vez enviado, este documento não poderá ser alterado. Seja direto.
         </p>
       </div>
 
@@ -87,10 +87,10 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <PenTool size={14} /> 1. O que aconteceu?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Descreva a natureza do crime (ex: homicídio, encenação de morte, roubo).</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Explique, em uma frase, qual é a verdade central por trás da situação apresentada.</p>
           <textarea 
             required rows={2} value={what} onChange={e => setWhat(e.target.value)} 
-            placeholder="Qual é o evento principal que estamos investigando?"
+            placeholder="O que realmente aconteceu neste caso?"
             style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', resize: 'vertical', fontFamily: 'inherit' }} 
           />
         </div>
@@ -98,10 +98,10 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
         {/* Quem */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Skull size={14} /> 2. Quem é o culpado?
+            <Search size={14} /> 2. Qual é a causa ou responsável?
           </label>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>
-            {hasSuspects ? 'Escolha o suspeito mais provável. A teoria ainda precisa sustentar essa escolha.' : 'Indique os nomes dos responsáveis diretos e de possíveis cúmplices.'}
+            {hasSuspects ? 'Escolha a pessoa mais provável quando houver envolvimento humano. A teoria ainda precisa sustentar essa escolha.' : 'Indique a pessoa, causa, objeto, fenômeno ou condição que explica o mistério.'}
           </p>
           {hasSuspects ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -175,7 +175,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
                   type="text"
                   value={who}
                   onChange={e => setWho(e.target.value)}
-                  placeholder="Digite quem vocês acreditam ser o responsável"
+                  placeholder="Digite a pessoa, causa ou explicação principal"
                   style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', fontFamily: 'inherit' }}
                 />
               )}
@@ -183,7 +183,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           ) : (
             <input 
               required type="text" value={who} onChange={e => setWho(e.target.value)} 
-              placeholder="Nome do(s) perpetrador(es)"
+              placeholder="Pessoa, causa ou explicação principal"
               style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', fontFamily: 'inherit' }} 
             />
           )}
@@ -192,12 +192,12 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
         {/* Como */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Target size={14} /> 3. Como o plano foi executado?
+            <Target size={14} /> 3. Como isso foi possível?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Explique os métodos, ferramentas e a cronologia básica do evento.</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Explique o mecanismo, sequência, condição escondida ou pista decisiva que torna a solução possível.</p>
           <textarea 
             required rows={3} value={how} onChange={e => setHow(e.target.value)} 
-            placeholder="Qual foi o modus operandi?"
+            placeholder="Como a aparente impossibilidade se explica?"
             style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', resize: 'vertical', fontFamily: 'inherit' }} 
           />
         </div>
@@ -205,12 +205,12 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
         {/* Por quê */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <AlertTriangle size={14} /> 4. Por que eles fizeram isso?
+            <AlertTriangle size={14} /> 4. Qual era a intenção ou motivo?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Descreva a motivação (dinheiro, vingança, ocultar um segredo).</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Quando houver uma ação humana, descreva a intenção. Em enigmas sem culpado, explique a finalidade ou o motivo da confusão.</p>
           <textarea 
             required rows={3} value={why} onChange={e => setWhy(e.target.value)} 
-            placeholder="Qual era o motivo?"
+            placeholder="Por que isso aconteceu ou parecia misterioso?"
             style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', resize: 'vertical', fontFamily: 'inherit' }} 
           />
         </div>
@@ -225,7 +225,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
             boxShadow: '0 4px 15px rgba(220, 38, 38, 0.4)'
           }}
         >
-          Assinar e Enviar Acusação
+          Assinar e Enviar Relatório
         </button>
       </form>
     </div>

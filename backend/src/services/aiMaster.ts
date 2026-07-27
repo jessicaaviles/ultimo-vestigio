@@ -536,21 +536,21 @@ Teoria submetida pelos jogadores, separada por campo:
 1. O que aconteceu?
 "${structuredAnswers.what_happened}"
 
-2. Quem foi o responsável?
+2. Qual é a causa ou responsável?
 "${structuredAnswers.who}"
 
-3. Como foi feito?
+3. Como isso foi possível?
 "${structuredAnswers.how}"
 
-4. Por quê?
+4. Qual era a intenção, motivo ou finalidade?
 "${structuredAnswers.why}"
 
 Instruções ESTRITAS:
 1. Avalie cada campo separadamente em dimensionResults, de 0 a 100.
-2. what_happened: mede se identificaram corretamente a natureza real do caso, não só a aparência da cena.
-3. who: mede se apontaram o responsável correto ou os envolvidos corretos. Aceite nomes, sobrenomes, cargos ou descrições inequívocas.
-4. how: mede o método, mecanismo, sequência e uso de pistas falsas. Este campo deve ser mais exigente.
-5. why: mede a motivação central. Aceite resumo curto se a motivação principal estiver correta.
+2. what_happened: mede se identificaram corretamente a verdade central do caso, não só a aparência da cena.
+3. who: mede se apontaram a pessoa responsável, causa principal, objeto, fenômeno ou condição correta. Nem todo caso clássico tem culpado humano; não penalize quando o campo trouxer a causa certa.
+4. how: mede o mecanismo, sequência, condição escondida e uso de pistas falsas. Este campo deve ser mais exigente.
+5. why: mede a motivação central quando houver ação humana. Em enigmas sem culpado, aceite finalidade, função ou motivo da confusão aparente.
 6. Seja tolerante a sinônimos e formulações incompletas, mas não dê nota alta quando o campo acertar só por chute sem lógica.
 7. O score geral deve refletir os quatro campos, mas será recalculado pelo sistema. Ainda assim, retorne uma estimativa coerente.
 8. Gere um feedback curto, no máximo 2 frases, em português do Brasil. Aponte o campo mais fraco sem revelar uma nova pista que os jogadores não tenham citado.`;

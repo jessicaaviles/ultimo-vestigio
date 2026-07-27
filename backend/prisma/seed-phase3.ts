@@ -9,9 +9,9 @@ async function main() {
   // Campos de Solução Padrão (para todos os casos que não os tiverem)
   const defaultFields = [
     { key: 'what_happened', label: 'O que aconteceu?', order: 1 },
-    { key: 'who', label: 'Quem foi o responsável?', order: 2 },
-    { key: 'how', label: 'Como foi feito?', order: 3 },
-    { key: 'why', label: 'Qual foi o motivo?', order: 4 }
+    { key: 'who', label: 'Qual é a causa ou responsável?', order: 2 },
+    { key: 'how', label: 'Como isso foi possível?', order: 3 },
+    { key: 'why', label: 'Qual era a intenção ou motivo?', order: 4 }
   ];
 
   // Dicionário de Pistas Corrigidas
