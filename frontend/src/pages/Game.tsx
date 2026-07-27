@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Award, BadgeCheck, LogOut, Mic, RotateCcw, Square, Star, Trophy, TrendingUp, Volume2 } from 'lucide-react';
+import { Award, BadgeCheck, LogOut, Mic, MoreVertical, Pause, Play, RotateCcw, Square, Star, Trophy, TrendingUp, Volume2 } from 'lucide-react';
 import { useSocket } from '../contexts/useSocket';
 import { useSettings } from '../contexts/SettingsContext';
 import Loading from '../components/Loading';
@@ -41,11 +41,13 @@ const Game: React.FC = () => {
   const [myVote, setMyVote] = useState<string | null>(null);
   const [voteTiedMessage, setVoteTiedMessage] = useState(false);
   const [roomActionLoading, setRoomActionLoading] = useState<'leave' | 'reset' | null>(null);
+  const [showRoomMenu, setShowRoomMenu] = useState(false);
   const typingTimeoutRef = useRef<any>(null);
   const recognitionRef = useRef<any>(null);
   const historyRef = useRef<HTMLDivElement>(null);
   const prevTurnRef = useRef<string | null>(null);
   const hintsMenuRef = useRef<HTMLDivElement>(null);
+  const roomMenuRef = useRef<HTMLDivElement>(null);
   const toggleVoice = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
@@ -80,12 +82,15 @@ const Game: React.FC = () => {
       if (showHintsPanel && hintsMenuRef.current && !hintsMenuRef.current.contains(e.target as Node)) {
         setShowHintsPanel(false);
       }
+      if (showRoomMenu && roomMenuRef.current && !roomMenuRef.current.contains(e.target as Node)) {
+        setShowRoomMenu(false);
+      }
     };
-    if (showHintsPanel) {
+    if (showHintsPanel || showRoomMenu) {
       document.addEventListener('mousedown', handleOutsideClick);
     }
     return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, [showHintsPanel]);
+  }, [showHintsPanel, showRoomMenu]);
 
   const speakAnswer = useCallback((text: string) => {
     try {
@@ -453,14 +458,40 @@ const Game: React.FC = () => {
               </div>
             </div>
             {['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL'].includes(String(status)) && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.35fr) minmax(0, 1fr)', gap: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: status === 'IN_PROGRESS' ? 'minmax(0, 1fr) 44px' : '44px', gap: '8px', alignItems: 'stretch', justifyContent: 'end' }}>
                 {status === 'IN_PROGRESS' && (
                   <button onClick={handleStartSolving} style={{ minHeight: '44px', padding: '10px 12px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap', letterSpacing: '.04em' }}>Tentar Resolver</button>
                 )}
-                {isHost && status === 'IN_PROGRESS' && <button style={{ minHeight: '44px', padding: '10px 12px', backgroundColor: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.74)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={() => socket?.emit('pause_room', { roomId, userId })}>Pausar</button>}
-                {isHost && status === 'PAUSED' && <button style={{ minHeight: '44px', padding: '10px 12px', backgroundColor: 'var(--accent-gold)', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap' }} onClick={() => socket?.emit('resume_room', { roomId, userId })}>Retomar</button>}
-                {isHost && <button onClick={handleResetProgress} disabled={roomActionLoading !== null} style={{ minHeight: '42px', padding: '9px 12px', backgroundColor: 'rgba(184,153,83,0.1)', color: 'var(--gold-soft)', border: '1px solid rgba(184,153,83,0.25)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}><RotateCcw size={13} /> {roomActionLoading === 'reset' ? 'Reiniciando...' : 'Reiniciar'}</button>}
-                <button onClick={handleLeaveRoom} disabled={roomActionLoading !== null} style={{ minHeight: '42px', padding: '9px 12px', backgroundColor: 'rgba(115,43,35,0.18)', color: '#f7ddd8', border: '1px solid rgba(205,93,70,0.34)', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}><LogOut size={13} /> {roomActionLoading === 'leave' ? 'Saindo...' : 'Sair'}</button>
+                <div className="menu-wrapper" ref={roomMenuRef} style={{ position: 'relative' }}>
+                  <button
+                    aria-label="Abrir opções da sala"
+                    aria-expanded={showRoomMenu}
+                    onClick={() => setShowRoomMenu(v => !v)}
+                    style={{ width: '44px', height: '44px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.15)', background: showRoomMenu ? 'rgba(184,153,83,0.16)' : 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.82)', display: 'grid', placeItems: 'center', cursor: 'pointer' }}
+                  >
+                    <MoreVertical size={19} />
+                  </button>
+                  <div className={`menu-dropdown${showRoomMenu ? ' menu-dropdown--open' : ''}`} style={{ minWidth: '220px' }}>
+                    {isHost && status === 'IN_PROGRESS' && (
+                      <button className="menu-dropdown-item" onClick={() => { setShowRoomMenu(false); socket?.emit('pause_room', { roomId, userId }); }} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+                        <Pause size={15} /> Pausar investigação
+                      </button>
+                    )}
+                    {isHost && status === 'PAUSED' && (
+                      <button className="menu-dropdown-item" onClick={() => { setShowRoomMenu(false); socket?.emit('resume_room', { roomId, userId }); }} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+                        <Play size={15} /> Retomar investigação
+                      </button>
+                    )}
+                    {isHost && (
+                      <button className="menu-dropdown-item" onClick={() => { setShowRoomMenu(false); handleResetProgress(); }} disabled={roomActionLoading !== null} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: 'var(--gold-soft)' }}>
+                        <RotateCcw size={15} /> {roomActionLoading === 'reset' ? 'Reiniciando...' : 'Reiniciar caso'}
+                      </button>
+                    )}
+                    <button className="menu-dropdown-item" onClick={() => { setShowRoomMenu(false); handleLeaveRoom(); }} disabled={roomActionLoading !== null} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#f7ddd8' }}>
+                      <LogOut size={15} /> {roomActionLoading === 'leave' ? 'Saindo...' : 'Sair da sala'}
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>
