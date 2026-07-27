@@ -482,6 +482,16 @@ const Game: React.FC = () => {
                         <Play size={15} /> Retomar investigação
                       </button>
                     )}
+                    {status === 'IN_PROGRESS' && remainingHints > 0 && (
+                      <button className="menu-dropdown-item" onClick={() => { setShowRoomMenu(false); handleHint(); }} disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px' }}>
+                        <Star size={15} /> Pedir pista ({remainingHints})
+                      </button>
+                    )}
+                    {status === 'IN_PROGRESS' && (
+                      <button className="menu-dropdown-item" onClick={() => { setShowRoomMenu(false); setShowHintsPanel(v => !v); }} disabled={hints.length === 0} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: hints.length === 0 ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.82)' }}>
+                        <BadgeCheck size={15} /> {showHintsPanel ? 'Ocultar pistas' : `Ver pistas (${hints.length})`}
+                      </button>
+                    )}
                     {isHost && (
                       <button className="menu-dropdown-item" onClick={() => { setShowRoomMenu(false); handleResetProgress(); }} disabled={roomActionLoading !== null} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: 'var(--gold-soft)' }}>
                         <RotateCcw size={15} /> {roomActionLoading === 'reset' ? 'Reiniciando...' : 'Reiniciar caso'}
@@ -849,6 +859,16 @@ const Game: React.FC = () => {
                       </button>
                     )}
                   </div>
+                  {(isMyTurn || isHost) && (
+                    <button
+                      type="button"
+                      onClick={handlePassTurn}
+                      disabled={loading}
+                      style={{ padding: '14px 14px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.72)', cursor: loading ? 'default' : 'pointer', fontWeight: 700, fontSize: '13px', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+                    >
+                      {isHost && !isMyTurn ? 'Forçar' : 'Pular'}
+                    </button>
+                  )}
                   <button
                     type="submit"
                     disabled={!isMyTurn || !question.trim() || loading}
@@ -857,27 +877,10 @@ const Game: React.FC = () => {
                     {loading ? '...' : 'Enviar'}
                   </button>
                 </form>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {remainingHints > 0 && (
-                    <button
-                      onClick={handleHint}
-                      disabled={loading}
-                      style={{ flex: 1, padding: '12px', background: 'rgba(132,147,107,0.15)', border: '1px solid rgba(132,147,107,0.3)', borderRadius: '10px', color: 'rgba(255,255,255,0.8)', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
-                    >
-                      Pedir pistas ({remainingHints})
-                    </button>
-                  )}
-                  <div className="menu-wrapper" style={{ flex: 1, position: 'relative' }} ref={hintsMenuRef}>
-                    <button
-                      onClick={() => setShowHintsPanel(v => !v)}
-                      disabled={hints.length === 0}
-                      style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: hints.length === 0 ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.7)', cursor: hints.length === 0 ? 'default' : 'pointer', fontWeight: 600, fontSize: '13px' }}
-                    >
-                      {showHintsPanel ? '▲ Ocultar pistas' : `▼ Ver pistas (${hints.length})`}
-                    </button>
-                    <div 
-                      className={`menu-dropup${showHintsPanel && hints.length > 0 ? ' menu-dropup--open' : ''}`}
-                    >
+                <div className="menu-wrapper" style={{ position: 'relative' }} ref={hintsMenuRef}>
+                  <div 
+                    className={`menu-dropup${showHintsPanel && hints.length > 0 ? ' menu-dropup--open' : ''}`}
+                  >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(184,153,83,0.3)', paddingBottom: '12px', marginBottom: '8px' }}>
                         <h3 style={{ fontFamily: 'var(--font-serif)', color: 'var(--accent-gold)', margin: 0, fontSize: '18px' }}>Pistas Reveladas</h3>
                       </div>
@@ -888,18 +891,7 @@ const Game: React.FC = () => {
                           <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '8px', textAlign: 'right', fontStyle: 'italic' }}>−{hint.penalty} pontos</div>
                         </div>
                       ))}
-                    </div>
                   </div>
-                  
-                  {(isMyTurn || isHost) && (
-                    <button
-                      onClick={handlePassTurn}
-                      disabled={loading}
-                      style={{ flex: 1, padding: '12px', background: 'transparent', border: '1px dashed rgba(255,255,255,0.2)', borderRadius: '10px', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontWeight: 600, fontSize: '13px' }}
-                    >
-                      {isHost && !isMyTurn ? 'Forçar pular vez' : 'Passar a vez'}
-                    </button>
-                  )}
                 </div>
                 
                 <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setAutoSpeak(v => !v)}>
