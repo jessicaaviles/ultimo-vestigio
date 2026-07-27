@@ -5,6 +5,7 @@ import { useSocket } from '../contexts/useSocket';
 import { useSettings } from '../contexts/SettingsContext';
 import Loading from '../components/Loading';
 import FinalTheoryForm from '../components/FinalTheoryForm';
+import { clearAllProgressReset } from '../utils/progressReset';
 
 const dedupeHints = (hintsList: any[]) => {
   const seen = new Set();
@@ -371,6 +372,7 @@ const Game: React.FC = () => {
     if (status === 'GAME_OVER' || status === 'COMPLETED') {
       const slug = roomData?.case_version?.case_ref?.slug;
       if (slug) {
+        clearAllProgressReset(userId);
         const solved = JSON.parse(localStorage.getItem('solvedCases') || '[]');
         if (!solved.includes(slug)) {
           localStorage.setItem('solvedCases', JSON.stringify([...solved, slug]));

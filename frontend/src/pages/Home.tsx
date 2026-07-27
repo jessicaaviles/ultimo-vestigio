@@ -6,7 +6,7 @@ import {
 import { registerAnonymousUser, listCases, getProfile } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
-import { emptyProgressStats, hasAllProgressReset } from '../utils/progressReset';
+import { clearAllProgressReset, emptyProgressStats, hasAllProgressReset } from '../utils/progressReset';
 import { caseCoverImages, getCaseCoverImage } from '../utils/caseAssets';
 
 interface FeaturedCase {
@@ -72,7 +72,17 @@ const Home: React.FC = () => {
     if (userId) {
       getProfile(userId)
         .then((res) => {
-          if (res.success) setProfileStats(hasAllProgressReset(userId) ? emptyProgressStats : res.data?.stats || null);
+          if (res.success) {
+            const stats = res.data?.stats || null;
+            const hasRemoteProgress = Boolean(stats && (
+              Number(stats.hostedRoomsCount) > 0 ||
+              Number(stats.playedRoomsCount) > 0 ||
+              Number(stats.theoriesCount) > 0 ||
+              Number(stats.correctTheoriesCount) > 0
+            ));
+            if (hasRemoteProgress) clearAllProgressReset(userId);
+            setProfileStats(hasAllProgressReset(userId) && !hasRemoteProgress ? emptyProgressStats : stats);
+          }
         })
         .catch(() => undefined)
         .finally(() => setProfileLoading(false));
@@ -103,8 +113,10 @@ const Home: React.FC = () => {
       const res: any = await listCases(userId);
       if (!res.success || !Array.isArray(res.data)) throw new Error('Invalid cases response');
 
-      const resetAllProgress = hasAllProgressReset(userId);
-      const solvedSlugs = resetAllProgress ? [] : Array.isArray(res.solvedSlugs) ? res.solvedSlugs : [];
+      const apiSolved = Array.isArray(res.solvedSlugs) ? res.solvedSlugs : [];
+      if (apiSolved.length > 0) clearAllProgressReset(userId);
+      const resetAllProgress = hasAllProgressReset(userId) && apiSolved.length === 0;
+      const solvedSlugs = resetAllProgress ? [] : apiSolved;
       const activeStatus = String(res.activeRoom?.status || '');
       const activeStatuses = new Set(['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
       const active = !resetAllProgress && res.activeRoom?.roomId && res.activeRoom?.case && activeStatuses.has(activeStatus)

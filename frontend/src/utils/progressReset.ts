@@ -25,7 +25,24 @@ export const hasAllProgressReset = (userId?: string | null) => {
   return localStorage.getItem('progressResetUserId') === userId && Boolean(localStorage.getItem('progressResetAllAt'));
 };
 
+export const clearAllProgressReset = (userId?: string | null) => {
+  if (userId && localStorage.getItem('progressResetUserId') !== userId) return;
+  localStorage.removeItem('progressResetUserId');
+  localStorage.removeItem('progressResetAllAt');
+};
+
 export const applyProgressReset = <T extends { stats?: ProgressStats | null }>(profile: T, userId?: string | null): T => {
   if (!hasAllProgressReset(userId)) return profile;
+  const stats = profile.stats;
+  const hasProgress = Boolean(stats && (
+    Number(stats.hostedRoomsCount) > 0 ||
+    Number(stats.playedRoomsCount) > 0 ||
+    Number(stats.theoriesCount) > 0 ||
+    Number(stats.correctTheoriesCount) > 0
+  ));
+  if (hasProgress) {
+    clearAllProgressReset(userId);
+    return profile;
+  }
   return { ...profile, stats: emptyProgressStats };
 };

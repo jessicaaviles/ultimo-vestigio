@@ -36,24 +36,23 @@ export const getProfile = async (req: Request, res: Response) => {
     where: {
       anonymous_user_id: userId,
       is_host: true,
-      removed_at: null,
-      room: { status: 'COMPLETED', deleted_at: null }
+      room: { status: { in: ['COMPLETED', 'GAME_OVER'] }, deleted_at: null }
     }
   });
   
   const playedRooms = await prisma.room_players.findMany({ 
-    where: { anonymous_user_id: userId, removed_at: null },
+    where: { anonymous_user_id: userId },
     include: { room: true }
   });
-  const playedRoomsCount = playedRooms.filter((rp: any) => rp.room.status === 'COMPLETED' && !rp.room.deleted_at).length;
+  const playedRoomsCount = playedRooms.filter((rp: any) => ['COMPLETED', 'GAME_OVER'].includes(rp.room.status) && !rp.room.deleted_at).length;
 
   const theoriesCount = await prisma.theories.count({
-    where: { player: { anonymous_user_id: userId, removed_at: null }, room: { deleted_at: null } }
+    where: { player: { anonymous_user_id: userId }, room: { deleted_at: null } }
   });
 
   const correctTheoriesCount = await prisma.theory_evaluations.count({
     where: { 
-      theory: { player: { anonymous_user_id: userId, removed_at: null }, room: { deleted_at: null } },
+      theory: { player: { anonymous_user_id: userId }, room: { deleted_at: null } },
       result: 'CORRECT'
     }
   });

@@ -4,7 +4,7 @@ import { listCases } from '../services/api';
 import { Clock3, Flame, UsersRound } from 'lucide-react';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
-import { hasAllProgressReset } from '../utils/progressReset';
+import { clearAllProgressReset, hasAllProgressReset } from '../utils/progressReset';
 import { getCaseCoverImage } from '../utils/caseAssets';
 
 interface CaseItem {
@@ -51,8 +51,9 @@ const Cases: React.FC = () => {
     listCases(userId).then((response) => {
       if (response.success && response.data?.length) {
         // Une API e estado local para não perder um caso recém-resolvido antes da próxima sincronização.
-        const resetAllProgress = hasAllProgressReset(userId);
         const apiSolved = Array.isArray(response.solvedSlugs) ? response.solvedSlugs : [];
+        if (apiSolved.length > 0 || localSolved.length > 0) clearAllProgressReset(userId);
+        const resetAllProgress = hasAllProgressReset(userId) && apiSolved.length === 0 && localSolved.length === 0;
         const mergedSolved = resetAllProgress ? [] : Array.from(new Set([...localSolved, ...apiSolved]));
         setSolvedCases(mergedSolved);
         
