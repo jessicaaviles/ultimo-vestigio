@@ -826,9 +826,9 @@ const Game: React.FC = () => {
 
           {/* Chat/Controles Normais */}
           {!activeVote && status === 'IN_PROGRESS' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px' }}>
-                  <div style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto auto', gap: '8px', alignItems: 'stretch' }}>
+                  <div style={{ minWidth: 0, display: 'flex', gap: '6px', alignItems: 'stretch' }}>
                     <input
                       type="text"
                       value={question}
@@ -840,7 +840,7 @@ const Game: React.FC = () => {
                       }}
                       placeholder={isMyTurn ? 'Faça uma pergunta de sim ou não...' : 'Aguarde sua vez...'}
                       disabled={!isMyTurn || loading}
-                      style={{ ...inputStyle, flex: 1 }}
+                      style={{ ...inputStyle, minWidth: 0, flex: 1 }}
                     />
                     {isMyTurn && !loading && (
                       <button
@@ -848,7 +848,7 @@ const Game: React.FC = () => {
                         onClick={toggleVoice}
                         disabled={!isMyTurn || loading}
                         style={{
-                          padding: '0 14px', borderRadius: '10px', border: 'none',
+                          width: '44px', padding: 0, borderRadius: '10px', border: 'none',
                           backgroundColor: listening ? '#d79b8e' : 'rgba(255,255,255,0.08)',
                           color: listening ? '#000' : 'rgba(255,255,255,0.5)',
                           cursor: 'pointer', fontSize: '18px', transition: 'all 0.2s'
@@ -864,7 +864,7 @@ const Game: React.FC = () => {
                       type="button"
                       onClick={handlePassTurn}
                       disabled={loading}
-                      style={{ padding: '14px 14px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.72)', cursor: loading ? 'default' : 'pointer', fontWeight: 700, fontSize: '13px', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+                      style={{ width: '58px', padding: '0 8px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.72)', cursor: loading ? 'default' : 'pointer', fontWeight: 700, fontSize: '13px', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
                     >
                       Pular
                     </button>
@@ -872,7 +872,7 @@ const Game: React.FC = () => {
                   <button
                     type="submit"
                     disabled={!isMyTurn || !question.trim() || loading}
-                    style={{ padding: '14px 20px', borderRadius: '10px', backgroundColor: (isMyTurn && question.trim() && !loading) ? 'var(--accent-gold)' : 'rgba(255,255,255,0.08)', color: (isMyTurn && question.trim() && !loading) ? '#000' : 'rgba(255,255,255,0.3)', border: 'none', fontWeight: 700, cursor: 'pointer', fontSize: '14px', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
+                    style={{ width: '64px', padding: '0 8px', borderRadius: '10px', backgroundColor: (isMyTurn && question.trim() && !loading) ? 'var(--accent-gold)' : 'rgba(255,255,255,0.08)', color: (isMyTurn && question.trim() && !loading) ? '#000' : 'rgba(255,255,255,0.3)', border: 'none', fontWeight: 700, cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
                   >
                     {loading ? '...' : 'Enviar'}
                   </button>
@@ -894,7 +894,7 @@ const Game: React.FC = () => {
                   </div>
                 </div>
                 
-                <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setAutoSpeak(v => !v)}>
+                <div style={{ marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setAutoSpeak(v => !v)}>
                   <input type="checkbox" checked={autoSpeak} onChange={(e) => setAutoSpeak(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: 'var(--accent-gold)', cursor: 'pointer' }} />
                   <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 500 }}>Ativar leitura automática de respostas</span>
                 </div>
