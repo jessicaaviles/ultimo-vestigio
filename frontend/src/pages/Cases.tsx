@@ -20,6 +20,19 @@ interface CaseItem {
   cover_image_data: string | null;
 }
 
+const resolvedTagStyle: React.CSSProperties = {
+  background: 'linear-gradient(90deg, #b89953 0%, #f0d28a 100%)',
+  color: '#0A0D10',
+  padding: '4px 10px',
+  borderRadius: '4px',
+  fontSize: '9px',
+  fontWeight: 800,
+  letterSpacing: '0.8px',
+  textTransform: 'uppercase',
+  border: '1px solid rgba(245,214,129,0.45)',
+  boxShadow: '0 6px 16px rgba(0,0,0,0.22)'
+};
+
 const Cases: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -115,7 +128,9 @@ const Cases: React.FC = () => {
           }}>
             Nenhum caso disponível no momento.
           </div>
-        ) : cases.map((item) => (
+        ) : cases.map((item) => {
+          const isSolved = solvedCases.includes(item.slug);
+          return (
           <div 
             key={item.slug}
             onClick={() => setSelectedCase(item)}
@@ -155,22 +170,14 @@ const Cases: React.FC = () => {
                 {item.type}
               </div>
               
-              {solvedCases.includes(item.slug) && (
+              {isSolved && (
                 <div style={{
                   position: 'absolute',
                   top: '12px',
                   right: '12px',
-                  backgroundColor: 'var(--olive)',
-                  color: 'var(--paper)',
-                  padding: '4px 10px',
-                  borderRadius: '4px',
-                  fontSize: '9px',
-                  fontWeight: 700,
-                  letterSpacing: '0.8px',
-                  textTransform: 'uppercase',
-                  border: '1px solid rgba(255,255,255,0.1)'
+                  ...resolvedTagStyle
                 }}>
-                  ✅ Resolvido
+                  Resolvido
                 </div>
               )}
             </div>
@@ -205,7 +212,8 @@ const Cases: React.FC = () => {
               </div>
             </div>
           </div>
-        ))}
+        );
+        })}
       </div>
 
       {/* Modal de Detalhes do Caso */}
@@ -264,17 +272,8 @@ const Cases: React.FC = () => {
                 {solvedCases.includes(selectedCase.slug) && (
                   <>
                     <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.2)' }}></span>
-                    <span style={{ 
-                      backgroundColor: 'var(--olive)', 
-                      color: 'var(--paper)', 
-                      padding: '2px 6px', 
-                      borderRadius: '4px', 
-                      fontSize: '9px', 
-                      fontWeight: 700, 
-                      letterSpacing: '0.5px', 
-                      textTransform: 'uppercase' 
-                    }}>
-                      ✅ Resolvido
+                    <span style={resolvedTagStyle}>
+                      Resolvido
                     </span>
                   </>
                 )}
