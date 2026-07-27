@@ -13,7 +13,7 @@ export const caseCoverImages: Record<string, string> = {
 };
 
 export const getCaseCoverImage = (slug?: string | null, coverImageData?: string | null) => {
-  if (coverImageData) return coverImageData;
   if (slug && caseCoverImages[slug]) return caseCoverImages[slug];
+  if (coverImageData) return coverImageData;
   return '/backgrounds/mapa-da-investigacao.png';
 };
