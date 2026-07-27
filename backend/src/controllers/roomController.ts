@@ -18,6 +18,7 @@ const caseListSelect = {
   max_players: true,
   tension_level: true,
   status: true,
+  cover_image_data: true,
   created_at: true,
   updated_at: true
 };
