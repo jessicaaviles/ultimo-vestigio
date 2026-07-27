@@ -866,7 +866,7 @@ const Game: React.FC = () => {
                       disabled={loading}
                       style={{ padding: '14px 14px', borderRadius: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', color: 'rgba(255,255,255,0.72)', cursor: loading ? 'default' : 'pointer', fontWeight: 700, fontSize: '13px', whiteSpace: 'nowrap', transition: 'all 0.2s' }}
                     >
-                      {isHost && !isMyTurn ? 'Forçar' : 'Pular'}
+                      Pular
                     </button>
                   )}
                   <button
