@@ -1,6 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { processFactBasedQuestion } from '../dist/services/aiMaster.js';
+import { processFactBasedQuestion, processTutorialQuestion } from '../dist/services/aiMaster.js';
+
+const normalize = (value) =>
+  String(value || '')
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
+
+const assertIncludesTerms = (text, terms, label) => {
+  const normalizedText = normalize(text);
+  for (const term of terms) {
+    assert.match(normalizedText, new RegExp(normalize(term)), `${label} deveria mencionar "${term}"`);
+  }
+};
 
 const caseSamples = [
   {
@@ -11,7 +24,8 @@ const caseSamples = [
       'O anfitrião planejou a ação.',
       'A caixa foi colocada sob a toalha da mesa.'
     ],
-    question: 'A caixa estava vazia desde o começo?'
+    question: 'A caixa estava vazia desde o começo?',
+    expectedTerms: ['caixa', 'vazia']
   },
   {
     title: 'O Quarto 7',
@@ -21,7 +35,8 @@ const caseSamples = [
       'O chá servido a Helena continha sedativo em dose não letal.',
       'O gerente queria impedir que Helena provasse a inocência do pai.'
     ],
-    question: 'O chá servido para Helena tinha sedativo?'
+    question: 'O chá servido para Helena tinha sedativo?',
+    expectedTerms: ['chá', 'sedativo']
   },
   {
     title: 'O Elevador que Não Parou',
@@ -31,7 +46,8 @@ const caseSamples = [
       'O elevador parou por 3 minutos entre o segundo e o terceiro andar.',
       'A mulher conhecia a rota de manutenção interna do poço do elevador.'
     ],
-    question: 'O elevador parou entre dois andares?'
+    question: 'O elevador parou entre dois andares?',
+    expectedTerms: ['elevador', 'parou']
   },
   {
     title: 'A Mensagem das 23h17',
@@ -41,7 +57,8 @@ const caseSamples = [
       'A vítima saiu de casa voluntariamente horas antes do envio.',
       'O computador da vítima estava ligado e conectado à mesma rede.'
     ],
-    question: 'A mensagem foi enviada por um script agendado?'
+    question: 'A mensagem foi enviada por um script agendado?',
+    expectedTerms: ['mensagem', 'script']
   },
   {
     title: 'O Retrato que Piscou',
@@ -51,7 +68,8 @@ const caseSamples = [
       'Todos os convidados sofreram de cegueira temporária por 3 segundos.',
       'O garçom aproximou-se da mesa exatamente no instante do clarão.'
     ],
-    question: 'O retrato piscou por causa de um reflexo no vidro?'
+    question: 'O retrato piscou por causa de um reflexo no vidro?',
+    expectedTerms: ['retrato', 'reflexo']
   },
   {
     title: 'Mansão Blackwell',
@@ -61,7 +79,8 @@ const caseSamples = [
       'Clara e Helena fugiram juntas pelos jardins da mansão.',
       'O livro-caixa desenterrado no jardim prova que Tomás desviava fundos.'
     ],
-    question: 'O sangue na poltrona era artificial?'
+    question: 'O sangue na poltrona era artificial?',
+    expectedTerms: ['sangue', 'artificial']
   },
   {
     title: 'A Herança de Vidro',
@@ -71,7 +90,8 @@ const caseSamples = [
       'O relógio do conservatório estava adiantado em 18 minutos desde a manutenção da tarde.',
       'A porta foi trancada por dentro usando o fio, que depois foi puxado para fora pela drenagem.'
     ],
-    question: 'A taça de Isadora tinha digitalina no vinho?'
+    question: 'A taça de Isadora tinha digitalina no vinho?',
+    expectedTerms: ['taça', 'digitalina']
   },
   {
     title: 'O Sino das Três Batidas',
@@ -81,7 +101,8 @@ const caseSamples = [
       'Uma fibra transparente ficou presa no badalo do sino.',
       'Um conduíte antigo liga o arquivo morto à torre do sino.'
     ],
-    question: 'Tinha uma fibra transparente no badalo do sino?'
+    question: 'Tinha uma fibra transparente no badalo do sino?',
+    expectedTerms: ['fibra', 'badalo']
   },
   {
     title: 'A Fita Sem Rosto',
@@ -91,7 +112,8 @@ const caseSamples = [
       'Fragmentos de filme reflexivo foram encontrados na lixeira técnica.',
       'Um token manual de manutenção foi emitido por Bruno às 22h11.'
     ],
-    question: 'Bruno usou câmera virtual na videoconferência?'
+    question: 'Bruno usou câmera virtual na videoconferência?',
+    expectedTerms: ['Bruno', 'câmera virtual']
   },
   {
     title: 'O Jardim Sem Pegadas',
@@ -101,11 +123,12 @@ const caseSamples = [
       'As marcas recentes nos trilhos correspondem ao carrinho estreito de manutenção.',
       'A lona tinha odor de spray anestésico usado em restauração de peças.'
     ],
-    question: 'Os trilhos de drenagem explicam a falta de pegadas?'
+    question: 'Os trilhos de drenagem explicam a falta de pegadas?',
+    expectedTerms: ['trilhos', 'drenagem']
   }
 ];
 
-test('perguntas plausiveis de todos os casos nao pedem reformulacao', () => {
+test('perguntas plausiveis de todos os casos recebem resposta com contexto correto', () => {
   for (const sample of caseSamples) {
     const result = processFactBasedQuestion(
       sample.question,
@@ -114,11 +137,18 @@ test('perguntas plausiveis de todos os casos nao pedem reformulacao', () => {
     );
 
     assert.ok(result, `${sample.title} deveria gerar uma resposta local`);
-    assert.notEqual(result.classification, 'AMBIGUOUS', sample.title);
-    assert.notEqual(result.classification, 'MULTI_PREMISE', sample.title);
-    assert.notEqual(result.classification, 'BLOCKED', sample.title);
+    assert.equal(result.classification, 'YES', sample.title);
     assert.equal(result.fallback_used, false, sample.title);
+    assertIncludesTerms(result.rendered_text, sample.expectedTerms, sample.title);
   }
+});
+
+test('caso tutorial responde protecao do guarda-chuva sem confundir com chuva', () => {
+  const result = processTutorialQuestion('O guarda chuva protegia alguma coisa ou alguém?');
+
+  assert.equal(result.classification, 'YES');
+  assertIncludesTerms(result.rendered_text, ['guarda-chuva', 'protegia', 'dentro do prédio'], 'O Guarda-chuva Molhado');
+  assert.doesNotMatch(normalize(result.rendered_text), /agua nao veio da chuva|veio da chuva/);
 });
 
 test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reformulacao', () => {

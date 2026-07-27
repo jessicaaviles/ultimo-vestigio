@@ -116,10 +116,10 @@ const processRuleBasedQuestion = (questionText: string, answerRules: any[], fact
   return bestMatch ? buildRuleBasedAnswer(bestMatch.classification, bestMatch.factKeys.map((key) => factMap.get(key) || '')) : null;
 };
 
-const buildFactBasedAnswer = (classification = 'UNKNOWN') => ({
+const buildFactBasedAnswer = (classification = 'UNKNOWN', relatedFact = '') => ({
   classification,
   rendered_text: classification === 'YES'
-    ? 'Sim. Essa linha aparece nos fatos confirmados do caso.'
+    ? `Sim. ${relatedFact || 'Essa linha aparece nos fatos confirmados do caso.'}`
     : 'Desconhecido. O arquivo não confirma essa hipótese neste momento.',
   fallback_used: false
 });
@@ -128,16 +128,18 @@ export const processFactBasedQuestion = (questionText: string, facts: Array<{ st
   const questionWords = new Set(tokenizeForMatching(questionText));
   if (questionWords.size === 0) return null;
 
-  let bestScore = 0;
+  let bestMatch: { score: number; statement: string } | null = null;
   for (const fact of facts) {
     const factWords = new Set(tokenizeForMatching(fact.statement || ''));
     if (factWords.size === 0) continue;
     const overlap = [...questionWords].filter((word) => factWords.has(word)).length;
     const score = overlap / Math.max(1, Math.min(questionWords.size, factWords.size));
-    if (overlap >= 2 && score > bestScore) bestScore = score;
+    if (overlap >= 2 && (!bestMatch || score > bestMatch.score)) {
+      bestMatch = { score, statement: fact.statement || '' };
+    }
   }
 
-  if (bestScore >= 0.34) return buildFactBasedAnswer('YES');
+  if (bestMatch && bestMatch.score >= 0.34) return buildFactBasedAnswer('YES', bestMatch.statement);
 
   const caseVocabulary = new Set(tokenizeForMatching(`${opening} ${facts.map((fact) => fact.statement).join(' ')}`));
   const relevantWords = [...questionWords].filter((word) => caseVocabulary.has(word));
