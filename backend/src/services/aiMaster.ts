@@ -74,15 +74,16 @@ const verdictPrefix: Record<string, string> = {
   UNKNOWN: 'Desconhecido.'
 };
 
-const buildRuleBasedAnswer = (classification: string) => {
+const buildRuleBasedAnswer = (classification: string, relatedFacts: string[] = []) => {
   const normalizedClassification = classification.toUpperCase();
   const prefix = verdictPrefix[normalizedClassification] || 'Desconhecido.';
+  const relatedFact = relatedFacts.find(Boolean);
   const explanation = normalizedClassification === 'YES'
-    ? 'Essa linha de investigação é pertinente ao caso.'
+    ? relatedFact || 'Essa linha de investigação é pertinente ao caso.'
     : normalizedClassification === 'NO'
       ? 'Essa hipótese não se confirma pelos fatos disponíveis.'
       : normalizedClassification === 'PARTIAL'
-        ? 'Há uma parte correta nessa linha, mas ela ainda não fecha o fato inteiro.'
+        ? relatedFact || 'Há uma parte correta nessa linha, mas ela ainda não fecha o fato inteiro.'
         : 'O arquivo não confirma essa hipótese neste momento.';
 
   return {
@@ -92,13 +93,15 @@ const buildRuleBasedAnswer = (classification: string) => {
   };
 };
 
-const processRuleBasedQuestion = (questionText: string, answerRules: any[]) => {
+const processRuleBasedQuestion = (questionText: string, answerRules: any[], facts: Array<{ fact_key: string; statement: string }> = []) => {
   const questionWords = new Set(tokenizeForMatching(questionText));
   if (questionWords.size === 0) return null;
 
-  let bestMatch: { score: number; classification: string } | null = null;
+  let bestMatch: { score: number; classification: string; factKeys: string[] } | null = null;
+  const factMap = new Map(facts.map((fact) => [fact.fact_key, fact.statement]));
   for (const rule of answerRules) {
     const examples = JSON.parse(rule.semantic_examples || '[]');
+    const factKeys = JSON.parse(rule.related_fact_keys || '[]');
     const examplesText = Array.isArray(examples) ? examples.join(' ') : String(examples || '');
     const exampleWords = new Set(tokenizeForMatching(`${rule.intent_key} ${examplesText}`));
     if (exampleWords.size === 0) continue;
@@ -106,11 +109,11 @@ const processRuleBasedQuestion = (questionText: string, answerRules: any[]) => {
     const overlap = [...questionWords].filter((word) => exampleWords.has(word)).length;
     const score = overlap / Math.max(1, Math.min(questionWords.size, exampleWords.size));
     if (overlap >= 2 && score >= 0.35 && (!bestMatch || score > bestMatch.score)) {
-      bestMatch = { score, classification: String(rule.default_classification || 'UNKNOWN') };
+      bestMatch = { score, classification: String(rule.default_classification || 'UNKNOWN'), factKeys };
     }
   }
 
-  return bestMatch ? buildRuleBasedAnswer(bestMatch.classification) : null;
+  return bestMatch ? buildRuleBasedAnswer(bestMatch.classification, bestMatch.factKeys.map((key) => factMap.get(key) || '')) : null;
 };
 
 const buildFactBasedAnswer = (classification = 'UNKNOWN') => ({
@@ -150,13 +153,33 @@ const isTooAmbiguousForPlay = (questionText: string) => {
 
 export const processTutorialQuestion = (questionText: string) => {
   const question = normalizeText(questionText);
+  const questionWithoutUmbrellaTerm = question.replace(/guarda[\s-]?chuva/g, 'guarda objeto');
   const hasAny = (words: string[]) => words.some((word) => question.includes(word));
+  const hasAnyOutsideUmbrellaTerm = (words: string[]) => words.some((word) => questionWithoutUmbrellaTerm.includes(word));
   const mentionsUmbrella = question.includes('guarda-chuva') || question.includes('guarda chuva');
+  const mentionsProtection = hasAny(['protegia', 'proteger', 'protegeu', 'proteção', 'protecao', 'cobria', 'cobrir']);
+  const mentionsWeatherOutsideUmbrellaTerm = hasAnyOutsideUmbrellaTerm(['choveu', 'chuva', 'temporal', 'ceu', 'clima', 'tempo']);
 
   if (question.includes('ceu') && question.includes('limpo')) {
     return {
       classification: 'YES',
       rendered_text: 'Sim. O céu estava limpo, então a água não veio da chuva.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsUmbrella && mentionsProtection && mentionsWeatherOutsideUmbrellaTerm) {
+    return {
+      classification: 'NO',
+      rendered_text: 'Não. A proteção não era contra chuva.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsUmbrella && mentionsProtection) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O guarda-chuva protegia uma pessoa de água dentro do prédio.',
       fallback_used: false
     };
   }
@@ -177,7 +200,7 @@ export const processTutorialQuestion = (questionText: string) => {
     };
   }
 
-  if (hasAny(['choveu', 'chuva', 'temporal', 'ceu', 'clima', 'tempo'])) {
+  if (mentionsWeatherOutsideUmbrellaTerm) {
     return {
       classification: question.includes('nao choveu') || question.includes('sem chuva') ? 'YES' : 'NO',
       rendered_text: question.includes('nao choveu') || question.includes('sem chuva')
@@ -261,7 +284,7 @@ export const processQuestion = async (roomId: string, questionText: string, case
       return { classification: 'UNKNOWN', rendered_text: 'O arquivo do caso não pôde ser acessado agora. Tente novamente em instantes.', fallback_used: true };
     }
 
-    const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, answerRules);
+    const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, answerRules, facts);
     if (ruleBasedAnswer) return ruleBasedAnswer;
 
     const factBasedAnswer = processFactBasedQuestion(cleanQuestion, facts, caseVersion.opening);

@@ -29,3 +29,18 @@ test('caso tutorial aceita perguntas sobre sala coberta', () => {
   assert.equal(result.fallback_used, false);
   assert.match(result.rendered_text, /Sim\./);
 });
+
+test('caso tutorial entende pergunta sobre funcao do guarda-chuva', () => {
+  const result = processTutorialQuestion('O guarda chuva protegia alguma coisa ou alguém?');
+  assert.equal(result.classification, 'YES');
+  assert.equal(result.fallback_used, false);
+  assert.match(result.rendered_text, /protegia/i);
+  assert.doesNotMatch(result.rendered_text, /veio da chuva/i);
+});
+
+test('caso tutorial separa protecao geral de protecao contra chuva', () => {
+  const result = processTutorialQuestion('O guarda-chuva protegia alguém da chuva?');
+  assert.equal(result.classification, 'NO');
+  assert.equal(result.fallback_used, false);
+  assert.match(result.rendered_text, /não era contra chuva/i);
+});
