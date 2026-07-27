@@ -67,11 +67,11 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
   }
 
   return (
-    <div style={{ backgroundColor: '#0A0D10', border: '1px solid rgba(255,0,0,0.2)', borderRadius: '16px', overflow: 'hidden', position: 'relative' }}>
+    <div style={{ backgroundColor: '#0A0D10', border: '1px solid rgba(197,168,128,0.28)', borderRadius: '16px', overflow: 'hidden', position: 'relative' }}>
       
       {/* Cabelhaço estilo documento confidencial */}
-      <div style={{ background: 'linear-gradient(90deg, #1A0505 0%, #0A0D10 100%)', padding: '24px', borderBottom: '1px solid rgba(255,0,0,0.1)' }}>
-        <div style={{ color: '#ef4444', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '3px', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ background: 'linear-gradient(90deg, rgba(197,168,128,0.18) 0%, #0A0D10 100%)', padding: '24px', borderBottom: '1px solid rgba(197,168,128,0.16)' }}>
+        <div style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '3px', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <AlertTriangle size={14} /> Arquivo Confidencial — Relatório Final
         </div>
         <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', color: '#F8F9FA', margin: '0 0 8px 0' }}>Relatório Final</h2>
@@ -219,10 +219,10 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           type="submit" 
           style={{ 
             marginTop: '16px', padding: '16px', 
-            background: 'linear-gradient(90deg, #991b1b 0%, #dc2626 100%)', 
-            color: '#fff', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', 
+            background: 'linear-gradient(90deg, #b89953 0%, #f0d28a 100%)', 
+            color: '#0A0D10', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', 
             border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px',
-            boxShadow: '0 4px 15px rgba(220, 38, 38, 0.4)'
+            boxShadow: '0 4px 15px rgba(184,153,83,0.28)'
           }}
         >
           Assinar e Enviar Relatório
