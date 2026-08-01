@@ -7,6 +7,10 @@ import { hashToken } from '../security/secrets';
 const prisma = new PrismaClient();
 
 const MAX_PORTRAIT_GENERATIONS = 3;
+const PORTRAIT_RESET_EMAILS = (process.env.PORTRAIT_RESET_EMAILS || 'jessica.aviles16@gmail.com')
+  .split(',')
+  .map((email) => email.trim().toLowerCase())
+  .filter(Boolean);
 
 const publicProfile = (user: any, stats?: any) => ({
   id: user.id,
@@ -173,6 +177,41 @@ export const deleteProfile = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error deleting profile:', error);
     res.status(500).json({ success: false, error: 'Erro interno ao excluir conta.' });
+  }
+};
+
+export const resetPortraitGenerations = async (req: Request, res: Response) => {
+  try {
+    const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Token não fornecido.' });
+    }
+
+    const token = authHeader.slice(7);
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await prisma.anonymous_users.findFirst({
+      where: { id: userId, auth_token_hash: tokenHash, deleted_at: null },
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Perfil não encontrado ou token inválido.' });
+    }
+
+    const email = String(user.email || '').trim().toLowerCase();
+    if (!PORTRAIT_RESET_EMAILS.includes(email)) {
+      return res.status(403).json({ success: false, error: 'Reset de retratos indisponível para esta conta.' });
+    }
+
+    const updated = await prisma.anonymous_users.update({
+      where: { id: user.id },
+      data: { portrait_generations: 0 },
+    });
+
+    res.json({ success: true, data: publicProfile(updated) });
+  } catch (error) {
+    console.error('Error resetting portrait generations:', error);
+    res.status(500).json({ success: false, error: 'Erro interno ao resetar gerações de retrato.' });
   }
 };
 

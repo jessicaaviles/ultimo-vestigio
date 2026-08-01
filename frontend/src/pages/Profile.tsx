@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Trash2, Upload, UserPlus, X, Medal, Shield, Search, Star, Trophy, Lock, FileText, Crosshair } from 'lucide-react';
-import { getProfile, updateProfile, deleteProfile, authValidate, authLogout } from '../services/api';
+import { AlertTriangle, ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Trash2, Upload, UserPlus, X, Medal, Shield, Search, Star, Trophy, Lock, FileText, Crosshair, RotateCcw } from 'lucide-react';
+import { getProfile, updateProfile, deleteProfile, authValidate, authLogout, resetProfilePortraitGenerations } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
 import { applyProgressReset } from '../utils/progressReset';
@@ -45,6 +45,7 @@ const Profile: React.FC = () => {
   const [generatingPortrait, setGeneratingPortrait] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [resettingPortraits, setResettingPortraits] = useState(false);
   const [photoSheetOpen, setPhotoSheetOpen] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState('');
@@ -177,6 +178,23 @@ const Profile: React.FC = () => {
       setStatus(error instanceof Error ? error.message : 'Não foi possível excluir a conta.');
     } finally {
       setDeletingAccount(false);
+    }
+  };
+
+  const handleResetPortraitGenerations = async () => {
+    if (!profile?.id || !authToken) return;
+    setResettingPortraits(true);
+    setStatus('');
+    try {
+      const response = await resetProfilePortraitGenerations(profile.id, authToken);
+      if (!response.success) throw new Error(response.error);
+      setProfile(response.data);
+      setStatus('Gerações de imagem de perfil resetadas. Você tem 3/3 disponíveis.');
+      await refresh();
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'Não foi possível resetar as gerações.');
+    } finally {
+      setResettingPortraits(false);
     }
   };
 
@@ -386,6 +404,7 @@ const Profile: React.FC = () => {
     .reduce((total, achievement) => total + achievement.points, 0);
   const achievementCompletion = Math.round((unlockedAchievements / achievementItems.length) * 100);
   const hasAchievementProgress = playedRoomsCount > 0 || hostedRoomsCount > 0 || theoriesCount > 0 || correctTheoriesCount > 0;
+  const canResetPortraitGenerations = authEmail?.trim().toLowerCase() === 'jessica.aviles16@gmail.com';
 
   if (!authToken) {
     return (
@@ -583,6 +602,11 @@ const Profile: React.FC = () => {
             <button className="btn-secondary profile-logout-trigger" onClick={handleLogout}>
               <LogOut size={14} /> Sair da conta
             </button>
+            {canResetPortraitGenerations && (
+              <button className="btn-secondary profile-reset-portraits-trigger" onClick={handleResetPortraitGenerations} disabled={resettingPortraits}>
+                <RotateCcw size={14} /> {resettingPortraits ? 'Resetando...' : 'Resetar gerações de foto'}
+              </button>
+            )}
           </div>
         </div>
       </section>

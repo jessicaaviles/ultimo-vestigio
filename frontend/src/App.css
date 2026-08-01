@@ -222,6 +222,9 @@
 .profile-account-email { display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--olive-light); font-size: 13px; overflow-wrap: anywhere; }
 .profile-account-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: center; width: 100%; }
 .profile-delete-trigger, .profile-logout-trigger { width: 100%; min-height: 44px; padding: 0 14px; font-size: 12px; }
+.profile-reset-portraits-trigger { grid-column: 1 / -1; width: 100%; min-height: 44px; padding: 0 14px; font-size: 12px; background: rgba(184,153,83,.16) !important; color: var(--gold-soft) !important; border: 1px solid rgba(184,153,83,.42) !important; box-shadow: none; }
+.profile-reset-portraits-trigger:hover { background: rgba(184,153,83,.24) !important; color: #ffe6ac !important; border-color: rgba(245,214,129,.68) !important; }
+.profile-reset-portraits-trigger svg { color: var(--gold-soft) !important; stroke: var(--gold-soft) !important; }
 .profile-delete-trigger { background: rgba(115,43,35,.18) !important; color: #f7ddd8 !important; border: 1px solid rgba(205,93,70,.42) !important; box-shadow: none; }
 .profile-delete-trigger:hover { background: rgba(145,54,42,.28) !important; color: #fff1ed !important; border-color: rgba(238,128,103,.72) !important; }
 .profile-delete-trigger svg { color: #f7ddd8 !important; stroke: #f7ddd8 !important; }

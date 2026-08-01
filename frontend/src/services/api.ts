@@ -89,6 +89,14 @@ export const deleteProfile = async (userId: string, token: string) => {
   return res.json();
 };
 
+export const resetProfilePortraitGenerations = async (userId: string, token: string) => {
+  const res = await apiFetch(`${API_URL}/profiles/${encodeURIComponent(userId)}/reset-portrait-generations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+};
+
 export const resetCaseProgress = async (userId: string, caseSlug: string, token: string) => {
   const res = await apiFetch(`${API_URL}/profiles/${encodeURIComponent(userId)}/cases/${encodeURIComponent(caseSlug)}/reset-progress`, {
     method: 'POST',
