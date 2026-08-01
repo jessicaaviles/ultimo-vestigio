@@ -187,16 +187,21 @@ const Profile: React.FC = () => {
     if (!profile?.id || !authToken) return;
     setResettingPortraits(true);
     setStatus('');
+    setPhotoSheetStatus('');
     try {
       const response = await resetProfilePortraitGenerations(profile.id, authToken);
       if (!response.success) throw new Error(response.error);
       setProfile(response.data);
       setPhotoData('');
       setPreview('');
-      setStatus('Gerações de imagem de perfil resetadas. Você tem 3/3 disponíveis.');
+      const message = 'Gerações de imagem de perfil resetadas. Você tem 3/3 disponíveis.';
+      if (photoSheetOpen) setPhotoSheetStatus(message);
+      else setStatus(message);
       await refresh();
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Não foi possível resetar as gerações.');
+      const message = error instanceof Error ? error.message : 'Não foi possível resetar as gerações.';
+      if (photoSheetOpen) setPhotoSheetStatus(message);
+      else setStatus(message);
     } finally {
       setResettingPortraits(false);
     }
@@ -736,6 +741,8 @@ const Profile: React.FC = () => {
                   style={{
                     margin: '-8px 0 0',
                     padding: '11px 12px',
+                    display: 'grid',
+                    gap: 10,
                     color: 'var(--gold-soft)',
                     border: '1px solid rgba(184,153,83,.35)',
                     borderRadius: 10,
@@ -744,7 +751,27 @@ const Profile: React.FC = () => {
                     lineHeight: 1.4
                   }}
                 >
-                  {photoSheetStatus}
+                  <span>{photoSheetStatus}</span>
+                  {canResetPortraitGenerations && photoSheetStatus.includes('Limite de retratos') && (
+                    <button
+                      type="button"
+                      onClick={handleResetPortraitGenerations}
+                      disabled={resettingPortraits}
+                      style={{
+                        minHeight: 38,
+                        borderRadius: 8,
+                        border: '1px solid rgba(245,214,129,.55)',
+                        background: 'var(--accent-gold)',
+                        color: '#0A0D10',
+                        fontSize: 11,
+                        fontWeight: 900,
+                        letterSpacing: '.08em',
+                        textTransform: 'uppercase'
+                      }}
+                    >
+                      {resettingPortraits ? 'Resetando...' : 'Resetar limite'}
+                    </button>
+                  )}
                 </div>
               )}
               <div style={{ display: 'grid', overflow: 'hidden', borderRadius: 22, background: 'rgba(255,255,255,.045)' }}>
