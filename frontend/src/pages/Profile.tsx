@@ -48,6 +48,7 @@ const Profile: React.FC = () => {
   const [resettingPortraits, setResettingPortraits] = useState(false);
   const [photoSheetOpen, setPhotoSheetOpen] = useState(false);
   const [photoSheetStatus, setPhotoSheetStatus] = useState('');
+  const [capturedSelfie, setCapturedSelfie] = useState('');
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState('');
 
@@ -81,6 +82,7 @@ const Profile: React.FC = () => {
     setCameraError('');
     setCameraReady(false);
     setPhotoSheetStatus('');
+    setCapturedSelfie('');
 
     const startCamera = async () => {
       try {
@@ -329,7 +331,8 @@ const Profile: React.FC = () => {
       return;
     }
     ctx.drawImage(video, sx, sy, size, size, 0, 0, canvas.width, canvas.height);
-    void submitProfilePhoto(canvas.toDataURL('image/jpeg', 0.9));
+    setCapturedSelfie(canvas.toDataURL('image/jpeg', 0.9));
+    setPhotoSheetStatus('Confira a foto antes de enviar para gerar seu retrato.');
   };
 
   const startEditing = () => {
@@ -704,7 +707,7 @@ const Profile: React.FC = () => {
                 onClick={(event) => event.preventDefault()}
                 onPointerUp={(event) => {
                   event.preventDefault();
-                  if (!generatingPortrait) captureSelfie();
+                  if (!generatingPortrait && !capturedSelfie) captureSelfie();
                 }}
                 disabled={generatingPortrait}
                 style={{
@@ -722,18 +725,69 @@ const Profile: React.FC = () => {
                   touchAction: 'manipulation'
                 }}
               >
-                <video
-                  ref={videoRef}
-                  muted
-                  playsInline
-                  onLoadedMetadata={() => setCameraReady(true)}
-                  onCanPlay={() => setCameraReady(true)}
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', pointerEvents: 'none' }}
-                />
-                <span style={{ position: 'relative', zIndex: 1, width: 38, height: 38, display: 'grid', placeItems: 'center', borderRadius: '50%', color: '#0A0D10', background: 'rgba(242,238,229,.92)', boxShadow: '0 8px 20px rgba(0,0,0,.22)' }}>
+                {capturedSelfie ? (
+                  <img
+                    src={capturedSelfie}
+                    alt="Selfie capturada"
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <video
+                    ref={videoRef}
+                    muted
+                    playsInline
+                    onLoadedMetadata={() => setCameraReady(true)}
+                    onCanPlay={() => setCameraReady(true)}
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', pointerEvents: 'none' }}
+                  />
+                )}
+                <span style={{ position: 'relative', zIndex: 1, width: 38, height: 38, display: capturedSelfie ? 'none' : 'grid', placeItems: 'center', borderRadius: '50%', color: '#0A0D10', background: 'rgba(242,238,229,.92)', boxShadow: '0 8px 20px rgba(0,0,0,.22)' }}>
                   <Camera size={20} />
                 </span>
               </button>
+              {capturedSelfie && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <button
+                    type="button"
+                    onClick={() => void submitProfilePhoto(capturedSelfie)}
+                    disabled={generatingPortrait}
+                    style={{
+                      minHeight: 44,
+                      borderRadius: 10,
+                      border: '1px solid rgba(245,214,129,.55)',
+                      background: 'var(--accent-gold)',
+                      color: '#0A0D10',
+                      fontSize: 11,
+                      fontWeight: 900,
+                      letterSpacing: '.08em',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    Usar foto
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCapturedSelfie('');
+                      setPhotoSheetStatus('');
+                    }}
+                    disabled={generatingPortrait}
+                    style={{
+                      minHeight: 44,
+                      borderRadius: 10,
+                      border: '1px solid rgba(255,255,255,.12)',
+                      background: 'rgba(255,255,255,.045)',
+                      color: 'var(--paper)',
+                      fontSize: 11,
+                      fontWeight: 900,
+                      letterSpacing: '.08em',
+                      textTransform: 'uppercase'
+                    }}
+                  >
+                    Tirar outra
+                  </button>
+                </div>
+              )}
               {cameraError && <p style={{ margin: '-12px 0 0', color: 'rgba(242,238,229,.56)', fontSize: 12 }}>{cameraError}</p>}
               {photoSheetStatus && (
                 <div
