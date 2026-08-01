@@ -45,10 +45,15 @@ const Profile: React.FC = () => {
   const [generatingPortrait, setGeneratingPortrait] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [photoSheetOpen, setPhotoSheetOpen] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraError, setCameraError] = useState('');
 
   const fetchSeqRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bioInputRef = useRef<HTMLTextAreaElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const cameraStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     if (editing && bioInputRef.current) {
@@ -57,6 +62,54 @@ const Profile: React.FC = () => {
       el.style.height = el.scrollHeight + 'px';
     }
   }, [editing]);
+
+  const stopCamera = () => {
+    cameraStreamRef.current?.getTracks().forEach(track => track.stop());
+    cameraStreamRef.current = null;
+    setCameraReady(false);
+  };
+
+  useEffect(() => {
+    if (!photoSheetOpen) {
+      stopCamera();
+      return;
+    }
+
+    let cancelled = false;
+    setCameraError('');
+    setCameraReady(false);
+
+    const startCamera = async () => {
+      try {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          setCameraError('Câmera indisponível neste navegador.');
+          return;
+        }
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 720 } },
+          audio: false
+        });
+        if (cancelled) {
+          stream.getTracks().forEach(track => track.stop());
+          return;
+        }
+        cameraStreamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play();
+          setCameraReady(true);
+        }
+      } catch {
+        setCameraError('Não foi possível abrir a câmera.');
+      }
+    };
+
+    void startCamera();
+    return () => {
+      cancelled = true;
+      stopCamera();
+    };
+  }, [photoSheetOpen]);
 
   useEffect(() => {
     if (!authToken) { setLoading(false); return; }
@@ -173,16 +226,10 @@ const Profile: React.FC = () => {
     }
   };
 
-  const choosePhoto = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024)
-      return setStatus('Use uma imagem JPG, PNG ou WEBP de até 4 MB.');
+  const submitProfilePhoto = async (value: string) => {
     if ((profile?.portraitGenerationsRemaining ?? 3) <= 0)
       return setStatus('Limite de retratos atingido (máximo 3).');
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const value = String(reader.result);
+    setPhotoSheetOpen(false);
       setPhotoData(value);
       setPreview(value);
       setStatus('Gerando retrato investigador…');
@@ -212,8 +259,34 @@ const Profile: React.FC = () => {
           setGeneratingPortrait(false);
         }
       }
+  };
+
+  const choosePhoto = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024)
+      return setStatus('Use uma imagem JPG, PNG ou WEBP de até 4 MB.');
+    const reader = new FileReader();
+    reader.onload = () => {
+      void submitProfilePhoto(String(reader.result));
     };
     reader.readAsDataURL(file);
+  };
+
+  const captureSelfie = () => {
+    const video = videoRef.current;
+    if (!video || !cameraReady) return;
+    const canvas = document.createElement('canvas');
+    const size = Math.min(video.videoWidth || 720, video.videoHeight || 720);
+    const sx = Math.max(0, ((video.videoWidth || size) - size) / 2);
+    const sy = Math.max(0, ((video.videoHeight || size) - size) / 2);
+    canvas.width = 720;
+    canvas.height = 720;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, sx, sy, size, size, 0, 0, canvas.width, canvas.height);
+    void submitProfilePhoto(canvas.toDataURL('image/jpeg', 0.9));
   };
 
   const startEditing = () => {
@@ -346,7 +419,7 @@ const Profile: React.FC = () => {
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div className="profile-hero">
         <div className="profile-avatar-wrap" style={{ position: 'relative' }}>
-          <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: 'pointer' }} onClick={() => image ? setPhotoViewer(true) : fileInputRef.current?.click()}>
+          <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: 'pointer' }} onClick={() => setPhotoSheetOpen(true)}>
             {image ? <img src={image} alt={`Retrato de ${name}`} /> : <Upload size={24} strokeWidth={1.3} />}
             {generatingPortrait && <div className="profile-avatar-spinner" />}
           </div>
@@ -534,9 +607,84 @@ const Profile: React.FC = () => {
             <button onClick={() => setPhotoViewer(false)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
               <ArrowLeft size={16} /> Voltar
             </button>
-            <button onClick={() => { setPhotoViewer(false); fileInputRef.current?.click(); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+            <button onClick={() => { setPhotoViewer(false); setPhotoSheetOpen(true); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
               <Upload size={16} /> Alterar imagem
             </button>
+          </div>
+        </div>
+      )}
+
+      {photoSheetOpen && (
+        <div
+          role="presentation"
+          onClick={() => setPhotoSheetOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 240,
+            display: 'flex',
+            alignItems: 'flex-end',
+            background: 'rgba(4,7,9,.72)',
+            backdropFilter: 'blur(8px)'
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="photo-sheet-title"
+            onClick={(event) => event.stopPropagation()}
+            style={{
+              width: '100%',
+              minHeight: '330px',
+              padding: '14px 22px calc(22px + env(safe-area-inset-bottom))',
+              borderRadius: '24px 24px 0 0',
+              border: '1px solid rgba(255,255,255,.08)',
+              background: 'linear-gradient(180deg, rgba(35,37,38,.98), rgba(20,23,24,.98))',
+              boxShadow: '0 -22px 70px rgba(0,0,0,.45)'
+            }}
+          >
+            <button
+              aria-label="Fechar seleção de foto"
+              onClick={() => setPhotoSheetOpen(false)}
+              style={{ width: 42, height: 4, display: 'block', margin: '0 auto 20px', padding: 0, border: 0, borderRadius: 999, background: 'rgba(255,255,255,.16)', cursor: 'pointer' }}
+            />
+            <h2 id="photo-sheet-title" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>Adicionar foto de perfil</h2>
+            <div style={{ display: 'grid', gap: 20 }}>
+              <button
+                type="button"
+                onClick={captureSelfie}
+                disabled={!cameraReady || generatingPortrait}
+                style={{
+                  width: 112,
+                  height: 112,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  display: 'grid',
+                  placeItems: 'center',
+                  borderRadius: 24,
+                  border: '1px solid rgba(197,168,128,.35)',
+                  background: 'rgba(10,13,16,.72)',
+                  color: '#fff',
+                  cursor: cameraReady && !generatingPortrait ? 'pointer' : 'default'
+                }}
+              >
+                <video ref={videoRef} muted playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} />
+                <span style={{ position: 'relative', zIndex: 1, width: 38, height: 38, display: 'grid', placeItems: 'center', borderRadius: '50%', color: '#0A0D10', background: 'rgba(242,238,229,.92)', boxShadow: '0 8px 20px rgba(0,0,0,.22)' }}>
+                  <Camera size={20} />
+                </span>
+              </button>
+              {cameraError && <p style={{ margin: '-12px 0 0', color: 'rgba(242,238,229,.56)', fontSize: 12 }}>{cameraError}</p>}
+              <div style={{ display: 'grid', overflow: 'hidden', borderRadius: 22, background: 'rgba(255,255,255,.045)' }}>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={generatingPortrait}
+                  style={{ minHeight: 68, padding: '0 18px', display: 'flex', alignItems: 'center', gap: 16, border: 0, background: 'transparent', color: 'var(--paper)', cursor: generatingPortrait ? 'default' : 'pointer', fontSize: 15, fontWeight: 800, textAlign: 'left' }}
+                >
+                  <Upload size={22} /> Escolher na galeria
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
