@@ -466,7 +466,14 @@ const Profile: React.FC = () => {
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div className="profile-hero">
         <div className="profile-avatar-wrap" style={{ position: 'relative' }}>
-          <div className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`} style={{ cursor: 'pointer' }} onClick={() => setPhotoSheetOpen(true)}>
+          <div
+            className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`}
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              if (image) setPhotoViewer(true);
+              else setPhotoSheetOpen(true);
+            }}
+          >
             {image ? <img src={image} alt={`Retrato de ${name}`} /> : <Upload size={24} strokeWidth={1.3} />}
             {generatingPortrait && <div className="profile-avatar-spinner" />}
           </div>
@@ -654,13 +661,13 @@ const Profile: React.FC = () => {
               <X size={20} />
             </button>
           </div>
-          <div style={{ width: '80%', maxWidth: 600, height: '60vh', backgroundImage: `url(${profile.photo})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundColor: 'transparent' }} />
+          <div style={{ width: 'min(86vw, 520px)', aspectRatio: '1 / 1', maxHeight: '64vh', borderRadius: 18, backgroundImage: `url(${profile.photo})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundColor: 'transparent', boxShadow: '0 22px 70px rgba(0,0,0,.42)', border: '1px solid rgba(245,214,129,.22)' }} />
           <div style={{ display: 'flex', gap: 12 }}>
             <button onClick={() => setPhotoViewer(false)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
               <ArrowLeft size={16} /> Voltar
             </button>
-            <button onClick={() => { setPhotoViewer(false); setPhotoSheetOpen(true); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-              <Upload size={16} /> Alterar imagem
+            <button onClick={() => { setPhotoViewer(false); setPhotoSheetOpen(true); }} style={{ background: 'var(--accent-gold)', border: '1px solid rgba(245,214,129,.55)', color: '#0A0D10', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 800 }}>
+              <Upload size={16} /> Enviar nova foto
             </button>
           </div>
         </div>
