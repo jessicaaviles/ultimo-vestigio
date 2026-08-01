@@ -205,7 +205,10 @@ export const resetPortraitGenerations = async (req: Request, res: Response) => {
 
     const updated = await prisma.anonymous_users.update({
       where: { id: user.id },
-      data: { portrait_generations: 0 },
+      data: {
+        portrait_generations: 0,
+        generated_profile_photo_data: null,
+      },
     });
 
     res.json({ success: true, data: publicProfile(updated) });

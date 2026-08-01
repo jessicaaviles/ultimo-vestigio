@@ -47,6 +47,7 @@ const Profile: React.FC = () => {
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [resettingPortraits, setResettingPortraits] = useState(false);
   const [photoSheetOpen, setPhotoSheetOpen] = useState(false);
+  const [photoSheetStatus, setPhotoSheetStatus] = useState('');
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState('');
 
@@ -79,6 +80,7 @@ const Profile: React.FC = () => {
     let cancelled = false;
     setCameraError('');
     setCameraReady(false);
+    setPhotoSheetStatus('');
 
     const startCamera = async () => {
       try {
@@ -189,6 +191,8 @@ const Profile: React.FC = () => {
       const response = await resetProfilePortraitGenerations(profile.id, authToken);
       if (!response.success) throw new Error(response.error);
       setProfile(response.data);
+      setPhotoData('');
+      setPreview('');
       setStatus('Gerações de imagem de perfil resetadas. Você tem 3/3 disponíveis.');
       await refresh();
     } catch (error) {
@@ -245,8 +249,12 @@ const Profile: React.FC = () => {
   };
 
   const submitProfilePhoto = async (value: string) => {
-    if ((profile?.portraitGenerationsRemaining ?? 3) <= 0)
-      return setStatus('Limite de retratos atingido (máximo 3).');
+    if ((profile?.portraitGenerationsRemaining ?? 3) <= 0) {
+      const message = 'Limite de retratos atingido (máximo 3).';
+      if (photoSheetOpen) setPhotoSheetStatus(message);
+      else setStatus(message);
+      return;
+    }
     setPhotoSheetOpen(false);
       setPhotoData(value);
       setPreview(value);
@@ -283,8 +291,12 @@ const Profile: React.FC = () => {
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024)
-      return setStatus('Use uma imagem JPG, PNG ou WEBP de até 4 MB.');
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 4 * 1024 * 1024) {
+      const message = 'Use uma imagem JPG, PNG ou WEBP de até 4 MB.';
+      if (photoSheetOpen) setPhotoSheetStatus(message);
+      else setStatus(message);
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       void submitProfilePhoto(String(reader.result));
@@ -295,7 +307,7 @@ const Profile: React.FC = () => {
   const captureSelfie = () => {
     const video = videoRef.current;
     if (!video || !cameraReady || video.readyState < 2) {
-      setStatus('A câmera ainda está carregando. Tente novamente em alguns segundos.');
+      setPhotoSheetStatus('A câmera ainda está carregando. Tente novamente em alguns segundos.');
       return;
     }
     const canvas = document.createElement('canvas');
@@ -308,7 +320,7 @@ const Profile: React.FC = () => {
     canvas.height = 720;
     const ctx = canvas.getContext('2d');
     if (!ctx) {
-      setStatus('Não foi possível capturar a foto.');
+      setPhotoSheetStatus('Não foi possível capturar a foto.');
       return;
     }
     ctx.drawImage(video, sx, sy, size, size, 0, 0, canvas.width, canvas.height);
@@ -718,6 +730,23 @@ const Profile: React.FC = () => {
                 </span>
               </button>
               {cameraError && <p style={{ margin: '-12px 0 0', color: 'rgba(242,238,229,.56)', fontSize: 12 }}>{cameraError}</p>}
+              {photoSheetStatus && (
+                <div
+                  role="status"
+                  style={{
+                    margin: '-8px 0 0',
+                    padding: '11px 12px',
+                    color: 'var(--gold-soft)',
+                    border: '1px solid rgba(184,153,83,.35)',
+                    borderRadius: 10,
+                    background: 'rgba(184,153,83,.08)',
+                    fontSize: 12,
+                    lineHeight: 1.4
+                  }}
+                >
+                  {photoSheetStatus}
+                </div>
+              )}
               <div style={{ display: 'grid', overflow: 'hidden', borderRadius: 22, background: 'rgba(255,255,255,.045)' }}>
                 <button
                   type="button"
