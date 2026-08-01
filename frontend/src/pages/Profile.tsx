@@ -294,15 +294,23 @@ const Profile: React.FC = () => {
 
   const captureSelfie = () => {
     const video = videoRef.current;
-    if (!video || !cameraReady) return;
+    if (!video || !cameraReady || video.readyState < 2) {
+      setStatus('A câmera ainda está carregando. Tente novamente em alguns segundos.');
+      return;
+    }
     const canvas = document.createElement('canvas');
-    const size = Math.min(video.videoWidth || 720, video.videoHeight || 720);
-    const sx = Math.max(0, ((video.videoWidth || size) - size) / 2);
-    const sy = Math.max(0, ((video.videoHeight || size) - size) / 2);
+    const videoWidth = video.videoWidth || 720;
+    const videoHeight = video.videoHeight || 720;
+    const size = Math.min(videoWidth, videoHeight);
+    const sx = Math.max(0, (videoWidth - size) / 2);
+    const sy = Math.max(0, (videoHeight - size) / 2);
     canvas.width = 720;
     canvas.height = 720;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      setStatus('Não foi possível capturar a foto.');
+      return;
+    }
     ctx.drawImage(video, sx, sy, size, size, 0, 0, canvas.width, canvas.height);
     void submitProfilePhoto(canvas.toDataURL('image/jpeg', 0.9));
   };
@@ -676,8 +684,12 @@ const Profile: React.FC = () => {
             <div style={{ display: 'grid', gap: 20 }}>
               <button
                 type="button"
-                onClick={captureSelfie}
-                disabled={!cameraReady || generatingPortrait}
+                onClick={(event) => event.preventDefault()}
+                onPointerUp={(event) => {
+                  event.preventDefault();
+                  if (!generatingPortrait) captureSelfie();
+                }}
+                disabled={generatingPortrait}
                 style={{
                   width: 112,
                   height: 112,
@@ -689,10 +701,18 @@ const Profile: React.FC = () => {
                   border: '1px solid rgba(197,168,128,.35)',
                   background: 'rgba(10,13,16,.72)',
                   color: '#fff',
-                  cursor: cameraReady && !generatingPortrait ? 'pointer' : 'default'
+                  cursor: generatingPortrait ? 'default' : 'pointer',
+                  touchAction: 'manipulation'
                 }}
               >
-                <video ref={videoRef} muted playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} />
+                <video
+                  ref={videoRef}
+                  muted
+                  playsInline
+                  onLoadedMetadata={() => setCameraReady(true)}
+                  onCanPlay={() => setCameraReady(true)}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', pointerEvents: 'none' }}
+                />
                 <span style={{ position: 'relative', zIndex: 1, width: 38, height: 38, display: 'grid', placeItems: 'center', borderRadius: '50%', color: '#0A0D10', background: 'rgba(242,238,229,.92)', boxShadow: '0 8px 20px rgba(0,0,0,.22)' }}>
                   <Camera size={20} />
                 </span>
