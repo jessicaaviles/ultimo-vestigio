@@ -541,7 +541,7 @@ export const processGardenQuestion = (questionText: string) => {
   const asksConsciousState = asksAbout(['acordada', 'acordado', 'consciente', 'inconsciente', 'desmaiada', 'desmaiado', 'sedada', 'sedado', 'dopada', 'dopado']);
   const asksCleaningProduct = asksAbout(['limpeza', 'desinfetante', 'detergente', 'sabao', 'sabão', 'alcool', 'álcool', 'higienizacao', 'higienização']);
   const asksProtection = asksAbout(['protegia', 'proteger', 'protegeu', 'protecao', 'proteção', 'cobria', 'cobrir', 'cobertura']);
-  const asksOrigin = asksAbout(['era de', 'eram de', 'pertencia', 'pertenciam', 'origem', 'dna', 'sangue', 'fio de cabelo', 'cabelo', 'biologico', 'biológico']);
+  const asksOrigin = asksAbout(['era de', 'eram de', 'de nina', 'da nina', 'dela', 'pertencia', 'pertenciam', 'origem', 'dna', 'sangue', 'fio de cabelo', 'cabelo', 'biologico', 'biológico']);
 
   const entities = {
     nina: asksAbout(['nina', 'escultora', 'ela']),
@@ -743,6 +743,14 @@ export const processGardenQuestion = (questionText: string) => {
     return {
       classification: 'NO',
       rendered_text: 'Não. O arquivo aponta para spray de restauração com efeito anestésico, não produto de limpeza.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.nina && entities.chemical) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O arquivo indica que Nina foi sedada com spray anestésico usado em restauração.',
       fallback_used: false
     };
   }
