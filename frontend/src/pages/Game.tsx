@@ -53,8 +53,12 @@ const Game: React.FC = () => {
   const turnAlertAudioRef = useRef<AudioContext | null>(null);
 
   const notifyMyTurn = useCallback(() => {
-    if ('vibrate' in navigator) {
-      navigator.vibrate([120, 70, 120]);
+    const vibrate = navigator.vibrate?.bind(navigator);
+    if (vibrate && document.visibilityState === 'visible') {
+      const pattern = [260, 90, 260, 90, 380];
+      vibrate(pattern);
+      window.setTimeout(() => vibrate(pattern), 450);
+      window.setTimeout(() => vibrate([420]), 1200);
     }
 
     if (!settings.effects) return;
