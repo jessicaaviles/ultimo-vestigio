@@ -498,11 +498,29 @@ export const processGardenQuestion = (questionText: string) => {
   const mentionsLights = hasAny(['luz', 'luzes', 'iluminacao', 'apagou', 'desligar', 'desligou']);
   const mentionsEscape = hasAny(['fugiu', 'fuga', 'escapou', 'saiu', 'deixou']);
   const mentionsHuman = hasAny(['humana', 'humano', 'pessoa', 'mulher']);
+  const mentionsHelp = hasAny(['ajuda', 'ajudou', 'auxilio', 'auxiliou', 'cumplice', 'alguem']);
+  const asksIfDisappeared = hasAny(['desapareceu', 'desaparecer', 'sumiu', 'sumir', 'desaparecimento']);
 
   if (mentionsNina && mentionsHuman) {
     return {
       classification: 'YES',
       rendered_text: 'Sim. Nina é uma pessoa, a escultora desaparecida.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsNina && mentionsHelp && asksIfDisappeared) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. O arquivo indica interferência de outra pessoa no desaparecimento.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsNina && asksIfDisappeared) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O desaparecimento de Nina é o evento central do caso.',
       fallback_used: false
     };
   }
