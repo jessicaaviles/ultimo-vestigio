@@ -51,15 +51,24 @@ const Game: React.FC = () => {
   const hintsMenuRef = useRef<HTMLDivElement>(null);
   const roomMenuRef = useRef<HTMLDivElement>(null);
   const turnAlertAudioRef = useRef<AudioContext | null>(null);
+  const vibrationPrimedRef = useRef(false);
+
+  const triggerTurnVibration = useCallback(() => {
+    const vibrate = navigator.vibrate?.bind(navigator);
+    if (!vibrate) return false;
+
+    vibrate(0);
+    const pattern = vibrationPrimedRef.current
+      ? [360, 120, 360, 120, 520]
+      : [520, 140, 520, 140, 650];
+    const firstTry = vibrate(pattern);
+    window.setTimeout(() => vibrate(pattern), 450);
+    window.setTimeout(() => vibrate([650]), 1200);
+    return firstTry;
+  }, []);
 
   const notifyMyTurn = useCallback(() => {
-    const vibrate = navigator.vibrate?.bind(navigator);
-    if (vibrate && document.visibilityState === 'visible') {
-      const pattern = [260, 90, 260, 90, 380];
-      vibrate(pattern);
-      window.setTimeout(() => vibrate(pattern), 450);
-      window.setTimeout(() => vibrate([420]), 1200);
-    }
+    triggerTurnVibration();
 
     if (!settings.effects) return;
 
@@ -93,7 +102,23 @@ const Game: React.FC = () => {
     } catch {
       // Browsers may block audio until a user gesture; vibration still works.
     }
-  }, [settings.effects]);
+  }, [settings.effects, triggerTurnVibration]);
+
+  useEffect(() => {
+    const primeVibration = () => {
+      if (vibrationPrimedRef.current) return;
+      const vibrate = navigator.vibrate?.bind(navigator);
+      if (!vibrate) return;
+      vibrationPrimedRef.current = vibrate(8);
+    };
+
+    window.addEventListener('pointerdown', primeVibration, { passive: true });
+    window.addEventListener('touchstart', primeVibration, { passive: true });
+    return () => {
+      window.removeEventListener('pointerdown', primeVibration);
+      window.removeEventListener('touchstart', primeVibration);
+    };
+  }, []);
 
   const toggleVoice = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
