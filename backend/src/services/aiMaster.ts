@@ -368,6 +368,99 @@ export const processTutorialQuestion = (questionText: string) => {
   };
 };
 
+export const processGardenQuestion = (questionText: string) => {
+  const question = normalizeText(questionText);
+  const hasAny = (words: string[]) => words.some((word) => question.includes(word));
+  const mentionsNina = hasAny(['nina', 'escultora', 'ela']);
+  const mentionsGarden = hasAny(['jardim', 'labirinto', 'centro']);
+  const mentionsFootprints = hasAny(['pegada', 'pegadas', 'barro', 'lama']);
+  const mentionsTracks = hasAny(['trilho', 'trilhos', 'drenagem', 'cascalho']);
+  const mentionsCart = hasAny(['carrinho', 'carrinho de manutencao', 'manutencao']);
+  const mentionsStatue = hasAny(['estatua', 'escultura', 'obra']);
+  const mentionsAuthor = hasAny(['feita', 'fez', 'autoria', 'autora', 'propria']);
+  const mentionsAlone = hasAny(['sozinha', 'sozinho', 'propria', 'voluntariamente']);
+  const mentionsRemoved = hasAny(['retirada', 'levada', 'removeu', 'carregada', 'desapareceu']);
+  const mentionsChemical = hasAny(['spray', 'anestesico', 'produto', 'quimico', 'odor', 'cheiro', 'lona']);
+  const mentionsShears = hasAny(['tesoura', 'poda', 'jardineiro', 'jardineiros']);
+  const mentionsDario = hasAny(['dario', 'curador']);
+  const mentionsFakeArt = hasAny(['falsa', 'falsas', 'falso', 'venda', 'vendas', 'denunciar']);
+  const mentionsLights = hasAny(['luz', 'luzes', 'iluminacao', 'apagou', 'desligar', 'desligou']);
+
+  if (mentionsNina && mentionsAlone && (mentionsGarden || mentionsRemoved)) {
+    return {
+      classification: 'NO',
+      rendered_text: 'Não. O arquivo indica que Nina não deixou o jardim por conta própria.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsStatue && mentionsAuthor) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. A estátua fazia parte das obras atribuídas a Nina na exposição.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsFootprints && mentionsTracks) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. Os trilhos de drenagem explicam por que não havia pegadas no barro.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsCart || (mentionsRemoved && mentionsTracks)) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. As marcas recentes nos trilhos são compatíveis com o carrinho de manutenção.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsChemical) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O odor químico na lona é uma pista relevante.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsShears) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. A tesoura é relevante, mas não como prova direta contra jardineiros.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsDario && mentionsFakeArt) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. As vendas de obras falsas ligam Dario a um motivo.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsDario && mentionsLights) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O pedido para desligar a iluminação é relevante para a linha de tempo.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsGarden || mentionsNina || mentionsStatue || mentionsFootprints || mentionsDario) {
+    return {
+      classification: 'UNKNOWN',
+      rendered_text: 'Desconhecido. O arquivo não confirma essa hipótese neste momento.',
+      fallback_used: false
+    };
+  }
+
+  return null;
+};
+
 export const processQuestion = async (roomId: string, questionText: string, caseVersionId: string) => {
   try {
     const cleanQuestion = String(questionText || '').trim().slice(0, 500);
@@ -405,6 +498,11 @@ export const processQuestion = async (roomId: string, questionText: string, case
 
     if (caseVersion.case_ref.slug === 'o-guarda-chuva-molhado') {
       return processTutorialQuestion(cleanQuestion);
+    }
+
+    if (caseVersion.case_ref.slug === 'o-jardim-sem-pegadas') {
+      const gardenAnswer = processGardenQuestion(cleanQuestion);
+      if (gardenAnswer) return gardenAnswer;
     }
 
     if (!facts || facts.length === 0) {

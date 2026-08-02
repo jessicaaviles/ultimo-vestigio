@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { processFactBasedQuestion, processTutorialQuestion } from '../dist/services/aiMaster.js';
+import { processFactBasedQuestion, processGardenQuestion, processTutorialQuestion } from '../dist/services/aiMaster.js';
 
 const normalize = (value) =>
   String(value || '')
@@ -149,6 +149,20 @@ test('caso tutorial responde protecao do guarda-chuva sem confundir com chuva', 
   assert.equal(result.classification, 'YES');
   assertIncludesTerms(result.rendered_text, ['guarda-chuva', 'protegia', 'dentro do prédio'], 'O Guarda-chuva Molhado');
   assert.doesNotMatch(normalize(result.rendered_text), /agua nao veio da chuva|veio da chuva/);
+});
+
+test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', () => {
+  const alone = processGardenQuestion('Ela saiu sozinha do jardim?');
+  assert.equal(alone?.classification, 'NO');
+  assertIncludesTerms(alone?.rendered_text || '', ['Nina', 'não', 'própria'], 'O Jardim Sem Pegadas - saida sozinha');
+
+  const statue = processGardenQuestion('A estátua foi feita pela própria escultora?');
+  assert.equal(statue?.classification, 'YES');
+  assertIncludesTerms(statue?.rendered_text || '', ['estátua', 'Nina'], 'O Jardim Sem Pegadas - estatua');
+
+  const shears = processGardenQuestion('A tesoura incrimina os jardineiros?');
+  assert.equal(shears?.classification, 'PARTIAL');
+  assertIncludesTerms(shears?.rendered_text || '', ['tesoura', 'jardineiros'], 'O Jardim Sem Pegadas - tesoura');
 });
 
 test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reformulacao', () => {

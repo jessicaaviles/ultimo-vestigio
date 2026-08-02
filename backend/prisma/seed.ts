@@ -608,6 +608,8 @@ async function main() {
         ['drainage_tracks', 'O labirinto possui trilhos de drenagem sob o cascalho central.', true],
         ['cart_marks', 'As marcas recentes nos trilhos correspondem ao carrinho estreito de manutenção.', true],
         ['no_mud_route', 'A ausência de pegadas se explica porque a retirada não ocorreu pelo barro.', true],
+        ['not_left_alone', 'Nina não deixou o jardim por conta própria.', true],
+        ['statue_by_nina', 'A estátua principal fazia parte das obras atribuídas a Nina na exposição.', false],
         ['restoration_spray', 'A lona tinha odor de spray anestésico usado em restauração de peças.', true],
         ['washed_statue_fibers', 'Fibras da lona ficaram presas na base da estátua recém-lavada.', true],
         ['fake_art_sales', 'Dario vendeu obras falsas atribuídas a Nina.', true],
@@ -618,6 +620,8 @@ async function main() {
       ],
       rules: [
         ['no_footprints_explained', ['Como não havia pegadas?', 'Ela saiu pelo barro?', 'Os trilhos importam?'], ['drainage_tracks', 'no_mud_route'], 'YES'],
+        ['not_alone_exit', ['Ela saiu sozinha do jardim?', 'Nina foi embora por conta própria?', 'Ela desapareceu voluntariamente?'], ['not_left_alone'], 'NO'],
+        ['statue_author', ['A estátua foi feita pela própria escultora?', 'A estátua era obra de Nina?', 'A escultura era dela?'], ['statue_by_nina'], 'YES'],
         ['maintenance_cart', ['Usaram carrinho?', 'As marcas nos trilhos são recentes?', 'Como Nina foi retirada?'], ['cart_marks', 'drainage_tracks'], 'YES'],
         ['sedation_lona', ['Nina foi sedada?', 'A lona tinha produto químico?', 'O spray de restauração importa?'], ['restoration_spray', 'washed_statue_fibers'], 'YES'],
         ['dario_motive', ['Dario vendia obras falsas?', 'Nina ia denunciar Dario?', 'Qual era o motivo?'], ['fake_art_sales', 'nina_confronted_dario'], 'YES'],
