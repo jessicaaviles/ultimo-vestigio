@@ -186,6 +186,10 @@ test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', 
   const disappeared = processGardenQuestion('Nina desapareceu mesmo?');
   assert.equal(disappeared?.classification, 'YES');
   assertIncludesTerms(disappeared?.rendered_text || '', ['desaparecimento', 'Nina'], 'O Jardim Sem Pegadas - desaparecimento');
+
+  const contractor = processGardenQuestion('Quem contratou a Nina tem haver com o desaparecimento dela?');
+  assert.equal(contractor?.classification, 'YES');
+  assertIncludesTerms(contractor?.rendered_text || '', ['exposição', 'Nina', 'desaparecimento'], 'O Jardim Sem Pegadas - contratante');
 });
 
 test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reformulacao', () => {

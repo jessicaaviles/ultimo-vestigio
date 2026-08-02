@@ -500,11 +500,20 @@ export const processGardenQuestion = (questionText: string) => {
   const mentionsHuman = hasAny(['humana', 'humano', 'pessoa', 'mulher']);
   const mentionsHelp = hasAny(['ajuda', 'ajudou', 'auxilio', 'auxiliou', 'cumplice', 'alguem']);
   const asksIfDisappeared = hasAny(['desapareceu', 'desaparecer', 'sumiu', 'sumir', 'desaparecimento']);
+  const mentionsContractor = hasAny(['contratou', 'contratante', 'organizou', 'organizador', 'curador', 'exposicao']);
 
   if (mentionsNina && mentionsHuman) {
     return {
       classification: 'YES',
       rendered_text: 'Sim. Nina é uma pessoa, a escultora desaparecida.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsNina && mentionsContractor && asksIfDisappeared) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. A pessoa ligada à exposição de Nina tem relação relevante com o desaparecimento.',
       fallback_used: false
     };
   }
