@@ -980,7 +980,7 @@ io.on('connection', (socket) => {
 
       await prisma.rooms.update({
         where: { id: roomId },
-        data: { status: 'GAME_OVER' }
+        data: { status: 'COMPLETED', completed_at: new Date(), current_turn_id: null }
       });
 
       const [questionCount, repeatedQuestionCount, hintsUsed] = await Promise.all([

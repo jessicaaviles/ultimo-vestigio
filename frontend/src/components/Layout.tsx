@@ -62,6 +62,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     socket.emit('join_room', { roomId, userId });
 
     const handleRoomUpdate = (data: any) => {
+      if (['GAME_OVER', 'COMPLETED', 'CANCELLED'].includes(String(data?.status || '').toUpperCase())) {
+        clearStaleRoom();
+        return;
+      }
       const stillInRoom = (data?.players || []).some((player: any) => player.anonymous_user_id === userId);
       if (!stillInRoom) {
         clearStaleRoom();

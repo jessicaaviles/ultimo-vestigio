@@ -273,6 +273,8 @@ const Game: React.FC = () => {
       setLoading(false);
       setGameResult(data);
       setTrueSolution(data.solution?.text || null);
+      localStorage.removeItem('currentRoomId');
+      localStorage.removeItem('currentRoomCode');
     });
     socket.on('theory_evaluation', (data) => setEvaluationNotice(data));
     socket.on('room_error', (err) => { setLoading(false); setErrorMessage(String(err)); });
@@ -454,6 +456,9 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     if (status === 'GAME_OVER' || status === 'COMPLETED') {
+      localStorage.removeItem('currentRoomId');
+      localStorage.removeItem('currentRoomCode');
+
       const slug = roomData?.case_version?.case_ref?.slug;
       if (slug) {
         clearAllProgressReset(userId);
@@ -463,7 +468,7 @@ const Game: React.FC = () => {
         }
       }
     }
-  }, [status, roomData?.case_version?.case_ref?.slug]);
+  }, [status, roomData?.case_version?.case_ref?.slug, userId]);
 
   if (!roomData) return <Loading message="Recuperando o estado oficial da sala..." />;
 
