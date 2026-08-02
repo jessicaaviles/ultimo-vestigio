@@ -615,7 +615,15 @@ const Game: React.FC = () => {
                       <div style={{ ...labelStyle, marginBottom: '10px', fontSize: '10px' }}>Pessoas citadas</div>
                       <div style={{ display: 'grid', gap: '8px' }}>
                         {caseSuspects.filter((suspect: any) => !suspect.isOtherOption).map((suspect: any) => (
-                          <div key={suspect.id || suspect.name} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '10px', alignItems: 'baseline' }}>
+                          <div key={suspect.id || suspect.name} style={{ display: 'grid', gridTemplateColumns: '32px minmax(0, 1fr) auto', gap: '10px', alignItems: 'center' }}>
+                            <div style={{
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: '50%',
+                              border: '1px solid rgba(245,214,129,0.38)',
+                              background: suspect.image ? `url(${suspect.image}) center / cover` : 'rgba(245,214,129,0.12)',
+                              boxShadow: '0 0 18px rgba(0,0,0,0.28)'
+                            }} />
                             <span style={{ color: 'rgba(255,255,255,0.88)', fontSize: '13px', fontWeight: 700, minWidth: 0 }}>{suspect.name}</span>
                             <span style={{ color: 'var(--gold-soft)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '.12em', textAlign: 'right' }}>{suspect.role}</span>
                           </div>

@@ -99,10 +99,20 @@ async function main() {
       case_type: 'Caso Oficial', difficulty: 'Fácil', estimated_duration_minutes: 20, min_players: 2, max_players: 6, tension_level: 3, status: 'PUBLISHED'
     }
   });
+  const quarto7MasterStyle = JSON.stringify({
+    tone: 'investigative',
+    maxSentences: 2,
+    suspects: [
+      { id: 'renato_alvares', name: 'Renato Álvares', age: 46, role: 'Gerente do hotel', description: 'Controlava a chave mestra, a equipe de serviço e os registros de manutenção do Vesper.', image: '/suspects/renato-alvares.png', clueCount: 5 },
+      { id: 'helena_duarte', name: 'Helena Duarte', age: 34, role: 'Hóspede e denunciante', description: 'Voltou ao hotel para revelar documentos ligados à morte injustamente atribuída ao pai.', image: '/suspects/helena-duarte.png', clueCount: 4 },
+      { id: 'other', name: 'Outra pessoa', role: 'Fora da lista', description: 'Use esta opção se a equipe acredita que o responsável não está entre as pessoas principais.', clueCount: 0, isOtherOption: true }
+    ]
+  });
   const officialVersion = await prisma.case_versions.upsert({
     where: { case_id_version_number: { case_id: officialCase.id, version_number: '1.0' } },
     update: {
-      opening: 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper. A porta estava trancada por dentro, a câmera do corredor apontava para um ângulo inútil e o relógio quebrado marcava 23h17. Horas antes, Helena havia dito que revelaria "o que o hotel fez com a família dela".',
+      opening: 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper. O gerente Renato Álvares controlava a chave mestra, a equipe de serviço e os registros de manutenção do hotel. A porta estava trancada por dentro, a câmera do corredor apontava para um ângulo inútil e o relógio quebrado marcava 23h17. Horas antes, Helena havia dito que revelaria "o que o hotel fez com a família dela".',
+      master_style: quarto7MasterStyle,
       solution_summary_encrypted: sealSecret('O gerente do Hotel Vesper encenou o quarto trancado para silenciar Helena, que havia descoberto provas de desvio de verbas de manutenção ligado à morte do pai dela.'),
       full_solution_encrypted: sealSecret('Helena Duarte voltou ao Hotel Vesper para confrontar o gerente Renato Álvares com documentos que provavam o desvio de verbas de manutenção. O pai de Helena havia sido culpado injustamente por um acidente antigo no hotel, mas os registros mostravam que Renato cortou custos e ocultou laudos para proteger a reputação do Vesper. Com medo de prisão, falência do hotel e exposição pública, Renato serviu chá com sedativo a Helena, entrou no Quarto 7 usando uma chave mestra, trancou a porta para simular um mistério impossível e reposicionou a câmera do corredor para esconder sua rota pela escada de serviço. Depois quebrou o relógio em 23h17 para criar uma hora falsa e deixou um bilhete dramático para fazer parecer que Helena estava instável. A digital parcial na bandeja de serviço, o registro apagado da chave mestra e os documentos escondidos por Helena atrás do rodapé ligam Renato à encenação e revelam o motivo emocional do crime.'),
       chronology_encrypted: sealSecret(JSON.stringify([
@@ -114,8 +124,8 @@ async function main() {
     },
     create: {
       case_id: officialCase.id, version_number: '1.0',
-      opening: 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper. A porta estava trancada por dentro, a câmera do corredor apontava para um ângulo inútil e o relógio quebrado marcava 23h17. Horas antes, Helena havia dito que revelaria "o que o hotel fez com a família dela".',
-      master_style: JSON.stringify({ tone: 'investigative', maxSentences: 2 }), scoring_rules: JSON.stringify({ baseScore: 1000, penaltyPerHint: 100 }),
+      opening: 'Helena Duarte foi encontrada desacordada no Quarto 7 do Hotel Vesper. O gerente Renato Álvares controlava a chave mestra, a equipe de serviço e os registros de manutenção do hotel. A porta estava trancada por dentro, a câmera do corredor apontava para um ângulo inútil e o relógio quebrado marcava 23h17. Horas antes, Helena havia dito que revelaria "o que o hotel fez com a família dela".',
+      master_style: quarto7MasterStyle, scoring_rules: JSON.stringify({ baseScore: 1000, penaltyPerHint: 100 }),
       solution_summary_encrypted: sealSecret('O gerente do Hotel Vesper encenou o quarto trancado para silenciar Helena, que havia descoberto provas de desvio de verbas de manutenção ligado à morte do pai dela.'),
       full_solution_encrypted: sealSecret('Helena Duarte voltou ao Hotel Vesper para confrontar o gerente Renato Álvares com documentos que provavam o desvio de verbas de manutenção. O pai de Helena havia sido culpado injustamente por um acidente antigo no hotel, mas os registros mostravam que Renato cortou custos e ocultou laudos para proteger a reputação do Vesper. Com medo de prisão, falência do hotel e exposição pública, Renato serviu chá com sedativo a Helena, entrou no Quarto 7 usando uma chave mestra, trancou a porta para simular um mistério impossível e reposicionou a câmera do corredor para esconder sua rota pela escada de serviço. Depois quebrou o relógio em 23h17 para criar uma hora falsa e deixou um bilhete dramático para fazer parecer que Helena estava instável. A digital parcial na bandeja de serviço, o registro apagado da chave mestra e os documentos escondidos por Helena atrás do rodapé ligam Renato à encenação e revelam o motivo emocional do crime.'),
       chronology_encrypted: sealSecret(JSON.stringify([
@@ -497,7 +507,7 @@ async function main() {
       difficulty: 'Difícil',
       duration: 28,
       tension: 4,
-      opening: 'Na antiga Escola São Brás, o conselho se reuniu para decidir a venda do prédio histórico. Às 21h, o sino da torre, desativado havia anos, tocou três vezes. O acesso à torre estava trancado, o zelador Elias caiu no pátio interno e a chave da torre estava no bolso dele.',
+      opening: 'Na antiga Escola São Brás, o conselho se reuniu para decidir a venda do prédio histórico. Estavam diretamente ligados à decisão: Lúcia Ferraz, presidente do conselho; Padre Miguel, ex-diretor; Otávio Nunes, comprador interessado; e Marina Reis, professora que liderava protestos. Às 21h, o sino da torre, desativado havia anos, tocou três vezes. O acesso à torre estava trancado, o zelador Elias caiu no pátio interno e a chave da torre estava no bolso dele.',
       summary: 'Lúcia Ferraz matou Elias para impedir que ele revelasse a falsificação dos documentos da venda da escola. O sino não foi tocado por alguém na torre: foi acionado por um fio preso ao mecanismo e puxado do arquivo durante a reunião.',
       solution: 'Lúcia Ferraz, presidente do conselho, falsificou documentos para vender a escola por baixo valor a uma empresa ligada a ela. Elias descobriu a fraude ao catalogar caixas antigas no arquivo e marcou uma conversa depois da reunião. Lúcia preparou o sino usando um fio de pesca passado pelo conduíte antigo entre o arquivo e a torre. Durante uma pausa, ela puxou o fio para criar distração e atrair Elias ao pátio. Elias não caiu da torre: foi empurrado da escada lateral do arquivo, onde encontrou a pasta da fraude. A chave no bolso era encenação, pois ninguém precisou entrar na torre. A prova central é a fibra transparente presa no badalo, a poeira intacta na porta da torre, a pasta de venda com assinatura copiada e o arranhão recente na janela do arquivo.',
       chronology: [
@@ -508,10 +518,10 @@ async function main() {
         { time: '21h04', event: 'Elias é atraído para a escada lateral do arquivo e empurrado.' }
       ],
       suspects: [
-        { id: 'lucia', name: 'Lúcia Ferraz', age: 52, role: 'Presidente do conselho', description: 'Defendia a venda imediata da escola e controlava os documentos da negociação.', clueCount: 5 },
-        { id: 'padre_miguel', name: 'Padre Miguel', age: 61, role: 'Ex-diretor', description: 'Era contra a venda e tinha acesso histórico à torre.', clueCount: 2 },
-        { id: 'otavio', name: 'Otávio Nunes', age: 44, role: 'Comprador interessado', description: 'Representava a empresa que compraria o prédio.', clueCount: 3 },
-        { id: 'marina', name: 'Marina Reis', age: 37, role: 'Professora', description: 'Organizou protestos contra a reunião do conselho.', clueCount: 2 },
+        { id: 'lucia', name: 'Lúcia Ferraz', age: 52, role: 'Presidente do conselho', description: 'Defendia a venda imediata da escola e controlava os documentos da negociação.', image: '/suspects/lucia-ferraz.png', clueCount: 5 },
+        { id: 'padre_miguel', name: 'Padre Miguel', age: 61, role: 'Ex-diretor', description: 'Era contra a venda e tinha acesso histórico à torre.', image: '/suspects/padre-miguel.png', clueCount: 2 },
+        { id: 'otavio', name: 'Otávio Nunes', age: 44, role: 'Comprador interessado', description: 'Representava a empresa que compraria o prédio.', image: '/suspects/otavio-nunes.png', clueCount: 3 },
+        { id: 'marina', name: 'Marina Reis', age: 37, role: 'Professora', description: 'Organizou protestos contra a reunião do conselho.', image: '/suspects/marina-reis.png', clueCount: 2 },
         { id: 'other', name: 'Outra pessoa', role: 'Fora da lista', description: 'Use esta opção se a equipe acredita que o responsável não está entre os suspeitos principais.', clueCount: 0, isOtherOption: true }
       ],
       facts: [
@@ -542,7 +552,7 @@ async function main() {
       difficulty: 'Difícil',
       duration: 30,
       tension: 4,
-      opening: 'No laboratório Nereida, um protótipo de bateria biológica desapareceu às 22h13. A câmera mostra uma figura de jaleco atravessando o corredor sem rosto identificável. Quatro pesquisadores estavam em videoconferência no mesmo horário, com áudio e imagem ativos.',
+      opening: 'No laboratório Nereida, um protótipo de bateria biológica desapareceu às 22h13. Estavam diretamente ligados ao projeto: Bruno Tavares, coordenador técnico; Inae Moura, bioquímica; Sara Fontes, estagiária; e Heitor Campos, investidor. A câmera mostra uma figura de jaleco atravessando o corredor sem rosto identificável. Os quatro apareciam em videoconferência no mesmo horário, com áudio e imagem ativos.',
       summary: 'Bruno Tavares roubou o protótipo usando uma gravação prévia na videoconferência e uma máscara reflexiva que apagou o rosto na câmera. O álibi dele era digital, não presencial.',
       solution: 'Bruno Tavares, coordenador técnico, estava endividado e negociava o protótipo com uma empresa concorrente. Ele gravou alguns minutos de si mesmo em videoconferência, injetou o vídeo como câmera virtual e saiu pela escada de serviço. No corredor, usou uma máscara de filme reflexivo que estourou a exposição da câmera, apagando o rosto. O acesso ao cofre exigia cartão e senha temporária; Bruno gerava esses tokens para manutenção. A prova está no atraso de milissegundos repetido na fala da chamada, no log de câmera virtual instalado na máquina dele, no resíduo de filme reflexivo na lixeira técnica e no token emitido manualmente às 22h11.',
       chronology: [
@@ -553,10 +563,10 @@ async function main() {
         { time: '22h19', event: 'Bruno retorna à mesa e encerra o vídeo falso.' }
       ],
       suspects: [
-        { id: 'bruno', name: 'Bruno Tavares', age: 41, role: 'Coordenador técnico', description: 'Administrava tokens de manutenção e tinha dívidas recentes.', clueCount: 5 },
-        { id: 'inae', name: 'Inae Moura', age: 33, role: 'Bioquímica', description: 'Disputava autoria da patente com Bruno.', clueCount: 3 },
-        { id: 'sara', name: 'Sara Fontes', age: 29, role: 'Estagiária', description: 'Foi vista perto da sala de servidores mais cedo.', clueCount: 2 },
-        { id: 'heitor', name: 'Heitor Campos', age: 48, role: 'Investidor', description: 'Pressionava a equipe por resultados antes da rodada de financiamento.', clueCount: 2 },
+        { id: 'bruno', name: 'Bruno Tavares', age: 41, role: 'Coordenador técnico', description: 'Administrava tokens de manutenção e tinha dívidas recentes.', image: '/suspects/bruno-tavares.png', clueCount: 5 },
+        { id: 'inae', name: 'Inae Moura', age: 33, role: 'Bioquímica', description: 'Disputava autoria da patente com Bruno.', image: '/suspects/inae-moura.png', clueCount: 3 },
+        { id: 'sara', name: 'Sara Fontes', age: 29, role: 'Estagiária', description: 'Foi vista perto da sala de servidores mais cedo.', image: '/suspects/sara-fontes.png', clueCount: 2 },
+        { id: 'heitor', name: 'Heitor Campos', age: 48, role: 'Investidor', description: 'Pressionava a equipe por resultados antes da rodada de financiamento.', image: '/suspects/heitor-campos.png', clueCount: 2 },
         { id: 'other', name: 'Outra pessoa', role: 'Fora da lista', description: 'Use esta opção se a equipe acredita que o responsável não está entre os suspeitos principais.', clueCount: 0, isOtherOption: true }
       ],
       facts: [
@@ -598,10 +608,10 @@ async function main() {
         { time: '21h05', event: 'A luz volta e a cena parece não ter rota de fuga no barro.' }
       ],
       suspects: [
-        { id: 'dario', name: 'Dario Velloso', age: 50, role: 'Curador', description: 'Organizou a exposição e negociava obras em nome de Nina.', clueCount: 5 },
-        { id: 'celina', name: 'Celina Prado', age: 39, role: 'Paisagista', description: 'Conhecia o desenho do labirinto e os trilhos de drenagem.', clueCount: 3 },
-        { id: 'tomas', name: 'Tomás Arantes', age: 35, role: 'Irmão de Nina', description: 'Discutiu com Nina sobre direitos autorais da família.', clueCount: 2 },
-        { id: 'vitor', name: 'Vítor Leme', age: 43, role: 'Colecionador', description: 'Comprou uma obra suspeita de autenticidade.', clueCount: 2 },
+        { id: 'dario', name: 'Dario Velloso', age: 50, role: 'Curador', description: 'Organizou a exposição e negociava obras em nome de Nina.', image: '/suspects/dario-velloso.png', clueCount: 5 },
+        { id: 'celina', name: 'Celina Prado', age: 39, role: 'Paisagista', description: 'Conhecia o desenho do labirinto e os trilhos de drenagem.', image: '/suspects/celina-prado.png', clueCount: 3 },
+        { id: 'tomas', name: 'Tomás Arantes', age: 35, role: 'Irmão de Nina', description: 'Discutiu com Nina sobre direitos autorais da família.', image: '/suspects/tomas-arantes.png', clueCount: 2 },
+        { id: 'vitor', name: 'Vítor Leme', age: 43, role: 'Colecionador', description: 'Comprou uma obra suspeita de autenticidade.', image: '/suspects/vitor-leme.png', clueCount: 2 },
         { id: 'other', name: 'Outra pessoa', role: 'Fora da lista', description: 'Use esta opção se a equipe acredita que o responsável não está entre os suspeitos principais.', clueCount: 0, isOtherOption: true }
       ],
       facts: [
