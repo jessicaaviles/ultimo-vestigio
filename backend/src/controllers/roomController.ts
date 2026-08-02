@@ -192,7 +192,7 @@ export const getRoomFeedbackSummary = async (req: Request, res: Response) => {
           playerId: player.id,
           userId: player.anonymous_user_id,
           name: player.display_name,
-          avatar: player.user.profile_photo_data || player.user.generated_profile_photo_data || null,
+          avatar: player.user.generated_profile_photo_data || player.user.profile_photo_data || null,
           votedTheoryId: response.option_id,
           votedFor: selectedAuthor?.display_name || 'Teoria selecionada',
           createdAt: response.created_at
