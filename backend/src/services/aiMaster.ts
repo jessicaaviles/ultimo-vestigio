@@ -604,6 +604,14 @@ export const processGardenQuestion = (questionText: string) => {
     };
   }
 
+  if (entities.celina && entities.dario) {
+    return {
+      classification: 'NO',
+      rendered_text: 'Não. O arquivo não confirma que Celina ajudasse Dario nas negociações ou nas obras falsas.',
+      fallback_used: false
+    };
+  }
+
   if (entities.dario) {
     if (asksMotive) {
       return {
