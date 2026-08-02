@@ -65,6 +65,91 @@
   opacity: 1;
   pointer-events: auto;
 }
+.hint-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 320;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(4,7,9,.74);
+  backdrop-filter: blur(10px);
+}
+.hint-modal {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  width: min(100%, 420px);
+  padding: 26px 24px 24px;
+  border: 1px solid rgba(184,153,83,.42);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(34,40,40,.98), rgba(12,17,19,.98));
+  box-shadow: 0 26px 70px rgba(0,0,0,.55);
+}
+.hint-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,.8);
+  background: rgba(255,255,255,.06);
+  cursor: pointer;
+}
+.hint-modal-icon {
+  width: 58px;
+  height: 58px;
+  border: 1px solid rgba(196,163,88,.72);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: var(--accent-gold);
+  background: radial-gradient(circle, rgba(196,163,88,.22), rgba(196,163,88,.05) 68%);
+}
+.hint-modal-eyebrow {
+  margin-bottom: 8px;
+  color: var(--accent-gold);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.hint-modal h2 {
+  margin: 0;
+  color: var(--paper);
+  font-family: var(--font-serif);
+  font-size: 30px;
+  line-height: 1.1;
+}
+.hint-modal p {
+  margin: 0;
+  color: rgba(242,238,229,.88);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.hint-modal-penalty {
+  color: rgba(242,238,229,.58);
+  font-size: 12px;
+  font-style: italic;
+  text-align: right;
+}
+.hint-modal-action {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 4px;
+  border: 1px solid rgba(196,163,88,.7);
+  border-radius: 8px;
+  color: #111617;
+  background: linear-gradient(135deg, #c4a358, #e0c17a);
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
 .menu-dropdown-item {
   color: var(--paper);
   text-align: left;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Award, BadgeCheck, LogOut, Mic, MoreVertical, Pause, Play, RotateCcw, Square, Star, Trophy, TrendingUp, Volume2 } from 'lucide-react';
+import { Award, BadgeCheck, LogOut, Mic, MoreVertical, Pause, Play, RotateCcw, Square, Star, Trophy, TrendingUp, Volume2, X } from 'lucide-react';
 import { useSocket } from '../contexts/useSocket';
 import { useSettings } from '../contexts/SettingsContext';
 import Loading from '../components/Loading';
@@ -38,6 +38,7 @@ const Game: React.FC = () => {
   const [typingPlayer, setTypingPlayer] = useState<string | null>(null);
   const [processingUser, setProcessingUser] = useState<string | null>(null);
   const [showHintsPanel, setShowHintsPanel] = useState(false);
+  const [activeHintModal, setActiveHintModal] = useState<any | null>(null);
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [myVote, setMyVote] = useState<string | null>(null);
   const [voteTiedMessage, setVoteTiedMessage] = useState(false);
@@ -179,7 +180,12 @@ const Game: React.FC = () => {
     socket.on('vote_started', (data) => { setActiveVote(data); setMyVote(null); });
     socket.on('vote_closed', () => { setActiveVote(null); setMyVote(null); setVoteTiedMessage(false); });
     socket.on('vote_tied', () => { setVoteTiedMessage(true); });
-    socket.on('hint_used', (data) => { setHints(prev => dedupeHints([...prev, data])); setLoading(false); });
+    socket.on('hint_used', (data) => {
+      setHints(prev => dedupeHints([...prev, data]));
+      setActiveHintModal(data);
+      setShowHintsPanel(false);
+      setLoading(false);
+    });
     socket.on('question_repeated', (data) => { setLoading(false); setProcessingUser(null); setQuestionWarning({ kind: 'repeat', text: `Uma pergunta parecida já foi feita: "${data.previous}"`, answer: data.answer }); });
     socket.on('question_needs_reformulation', (data) => { setLoading(false); setProcessingUser(null); setQuestionWarning({ kind: 'reformulate', text: data.message }); });
     socket.on('clarification_added', (data) => setHistory(prev => prev.map(item => item.question?.id === data.questionId ? { ...item, clarification: data.text } : item)));
@@ -899,6 +905,49 @@ const Game: React.FC = () => {
                 <div style={{ marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setAutoSpeak(v => !v)}>
                   <input type="checkbox" checked={autoSpeak} onChange={(e) => setAutoSpeak(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: 'var(--accent-gold)', cursor: 'pointer' }} />
                   <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 500 }}>Ativar leitura automática de respostas</span>
+                </div>
+              </div>
+            )}
+
+            {activeHintModal && (
+              <div
+                className="hint-modal-backdrop"
+                role="presentation"
+                onClick={() => setActiveHintModal(null)}
+              >
+                <div
+                  className="hint-modal"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="hint-modal-title"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    className="hint-modal-close"
+                    aria-label="Fechar dica"
+                    onClick={() => setActiveHintModal(null)}
+                  >
+                    <X size={18} />
+                  </button>
+                  <div className="hint-modal-icon">
+                    <Star size={26} />
+                  </div>
+                  <div>
+                    <div className="hint-modal-eyebrow">Dica desbloqueada</div>
+                    <h2 id="hint-modal-title">Pista {activeHintModal.hintIndex || activeHintModal.hint_index}</h2>
+                  </div>
+                  <p>{activeHintModal.content}</p>
+                  {activeHintModal.penalty !== undefined && (
+                    <div className="hint-modal-penalty">−{activeHintModal.penalty} pontos</div>
+                  )}
+                  <button
+                    type="button"
+                    className="hint-modal-action"
+                    onClick={() => setActiveHintModal(null)}
+                  >
+                    Fechar
+                  </button>
                 </div>
               </div>
             )}
