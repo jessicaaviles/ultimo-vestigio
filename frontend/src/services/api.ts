@@ -71,6 +71,11 @@ export const submitFeedback = async (payload: {
   return res.json();
 };
 
+export const getRoomFeedbackSummary = async (roomId: string) => {
+  const res = await apiFetch(`${API_URL}/rooms/${encodeURIComponent(roomId)}/feedback-summary`, { cache: 'no-store' });
+  return res.json();
+};
+
 export const getProfile = async (userId: string) => {
   const res = await apiFetch(`${API_URL}/profiles/${encodeURIComponent(userId)}?_t=${Date.now()}`, { cache: 'no-store' });
   return res.json();

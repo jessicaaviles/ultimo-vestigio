@@ -141,6 +141,84 @@ export const handleGenerateCaseImage = async (req: Request, res: Response) => {
   }
 };
 
+export const getRoomFeedbackSummary = async (req: Request, res: Response) => {
+  try {
+    const roomId = String(req.params.roomId || '');
+    if (!roomId) return res.status(400).json({ success: false, error: 'Room id is required' });
+
+    const room = await prisma.rooms.findUnique({
+      where: { id: roomId },
+      include: {
+        players: {
+          where: { removed_at: null },
+          include: {
+            user: {
+              select: {
+                profile_photo_data: true,
+                generated_profile_photo_data: true
+              }
+            }
+          },
+          orderBy: { joined_at: 'asc' }
+        },
+        theories: {
+          include: {
+            player: true
+          }
+        }
+      }
+    });
+
+    if (!room) return res.status(404).json({ success: false, error: 'Room not found' });
+
+    const [latestVote, gameResult] = await Promise.all([
+      prisma.votes.findFirst({
+        where: { room_id: roomId, type: 'THEORY_SELECTION', status: 'CLOSED' },
+        orderBy: { closed_at: 'desc' },
+        include: { responses: true }
+      }),
+      prisma.game_results.findUnique({ where: { room_id: roomId } })
+    ]);
+
+    const playersById = new Map(room.players.map((player) => [player.id, player]));
+    const theoriesById = new Map(room.theories.map((theory) => [theory.id, theory]));
+    const voteRows = latestVote?.responses
+      .map((response) => {
+        const player = playersById.get(response.player_id);
+        const selectedTheory = theoriesById.get(response.option_id);
+        const selectedAuthor = selectedTheory ? playersById.get(selectedTheory.player_id) : undefined;
+        if (!player) return null;
+        return {
+          playerId: player.id,
+          userId: player.anonymous_user_id,
+          name: player.display_name,
+          avatar: player.user.profile_photo_data || player.user.generated_profile_photo_data || null,
+          votedTheoryId: response.option_id,
+          votedFor: selectedAuthor?.display_name || 'Teoria selecionada',
+          createdAt: response.created_at
+        };
+      })
+      .filter(Boolean) || [];
+
+    res.json({
+      success: true,
+      data: {
+        playerCount: room.players.length,
+        votes: voteRows,
+        result: gameResult ? {
+          score: gameResult.score,
+          questionCount: gameResult.question_count,
+          hintsUsed: gameResult.hints_used,
+          attempts: gameResult.attempts
+        } : null
+      }
+    });
+  } catch (error) {
+    console.error('[getRoomFeedbackSummary]', error);
+    res.status(500).json({ success: false, error: 'Could not load feedback summary' });
+  }
+};
+
 export const createRoom = async (req: Request, res: Response) => {
   try {
     const { caseId, hostUserId, hostDisplayName, settings: requestedSettings } = req.body;

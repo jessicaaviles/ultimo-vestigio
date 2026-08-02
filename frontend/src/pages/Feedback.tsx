@@ -1,14 +1,26 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CheckCircle2, ChevronRight, FileText, FolderOpen, Share2, Sparkles, Trophy, Users } from 'lucide-react';
-import { submitFeedback } from '../services/api';
+import { getRoomFeedbackSummary, submitFeedback } from '../services/api';
 
-const teamVotes = [
-  { name: 'Investigadora_27', vote: 'Renato Álvares', avatar: '/backgrounds/clara_portrait.png', me: true },
-  { name: 'Verdadeiro_42', vote: 'Renato Álvares', avatar: '/backgrounds/tomas_portrait.png' },
-  { name: 'Curiosa_89', vote: 'Renato Álvares', avatar: '/backgrounds/helena_portrait.png' },
-  { name: 'Analista_18', vote: 'Renato Álvares', avatar: '/backgrounds/ev_photo.png' },
-];
+interface VoteSummary {
+  playerId: string;
+  userId: string;
+  name: string;
+  avatar?: string | null;
+  votedFor: string;
+}
+
+interface RoomFeedbackSummary {
+  playerCount: number;
+  votes: VoteSummary[];
+  result?: {
+    score: number;
+    questionCount: number;
+    hintsUsed: number;
+    attempts: number;
+  } | null;
+}
 
 const Feedback: React.FC = () => {
   const { roomId } = useParams();
@@ -19,9 +31,30 @@ const Feedback: React.FC = () => {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [summary, setSummary] = useState<RoomFeedbackSummary | null>(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
 
   const displayName = localStorage.getItem('userName') || 'Investigadora_27';
+  const currentUserId = localStorage.getItem('userId') || '';
   const progress = 68;
+
+  useEffect(() => {
+    if (!roomId) return;
+    let active = true;
+    setSummaryLoading(true);
+    getRoomFeedbackSummary(roomId)
+      .then((response) => {
+        if (!active) return;
+        if (response.success) setSummary(response.data);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (active) setSummaryLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [roomId]);
 
   const rewardXp = useMemo(() => {
     if (!rating) return 250;
@@ -103,18 +136,22 @@ const Feedback: React.FC = () => {
       <section className="chapter-card chapter-votes">
         <div className="chapter-card-heading">
           <span className="chapter-card-label">Votação da equipe</span>
-          <small>{teamVotes.length}/6 jogadores</small>
+          <small>{summaryLoading ? 'carregando' : `${summary?.votes.length || 0}/${summary?.playerCount || 0} jogadores`}</small>
         </div>
-        {teamVotes.map((player) => (
-          <div className="chapter-vote-row" key={player.name}>
-            <img src={player.avatar} alt="" />
+        {summary?.votes.length ? summary.votes.map((player) => (
+          <div className="chapter-vote-row" key={player.playerId}>
+            {player.avatar ? <img src={player.avatar} alt="" /> : <div className="chapter-vote-avatar-fallback" aria-hidden="true">{player.name.slice(0, 1).toUpperCase()}</div>}
             <div>
-              <strong>{player.me ? displayName : player.name} {player.me && <mark>Você</mark>}</strong>
-              <span>Votou em: {player.vote}</span>
+              <strong>{player.userId === currentUserId ? displayName : player.name} {player.userId === currentUserId && <mark>Você</mark>}</strong>
+              <span>Votou em: {player.votedFor}</span>
             </div>
             <CheckCircle2 size={22} />
           </div>
-        ))}
+        )) : (
+          <p className="chapter-votes-empty">
+            {summaryLoading ? 'Buscando votos da equipe...' : 'Nenhum voto real foi encontrado para esta sala.'}
+          </p>
+        )}
         <button className="chapter-link-button" onClick={() => navigate(`/room/${roomId}/game`)}>
           Ver resultado da votação <ChevronRight size={17} />
         </button>
