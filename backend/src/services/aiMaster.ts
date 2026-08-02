@@ -81,7 +81,7 @@ const buildRuleBasedAnswer = (classification: string, relatedFacts: string[] = [
   const explanation = normalizedClassification === 'YES'
     ? relatedFact || 'Essa linha de investigação é pertinente ao caso.'
     : normalizedClassification === 'NO'
-      ? 'Essa hipótese não se confirma pelos fatos disponíveis.'
+      ? relatedFact || 'Essa hipótese não se confirma pelos fatos disponíveis.'
       : normalizedClassification === 'PARTIAL'
         ? relatedFact || 'Há uma parte correta nessa linha, mas ela ainda não fecha o fato inteiro.'
         : 'O arquivo não confirma essa hipótese neste momento.';
@@ -93,7 +93,7 @@ const buildRuleBasedAnswer = (classification: string, relatedFacts: string[] = [
   };
 };
 
-const processRuleBasedQuestion = (questionText: string, answerRules: any[], facts: Array<{ fact_key: string; statement: string }> = []) => {
+export const processRuleBasedQuestion = (questionText: string, answerRules: any[], facts: Array<{ fact_key: string; statement: string }> = []) => {
   const questionWords = new Set(tokenizeForMatching(questionText));
   if (questionWords.size === 0) return null;
 
@@ -120,9 +120,108 @@ const buildFactBasedAnswer = (classification = 'UNKNOWN', relatedFact = '') => (
   classification,
   rendered_text: classification === 'YES'
     ? `Sim. ${relatedFact || 'Essa linha aparece nos fatos confirmados do caso.'}`
+    : classification === 'NO'
+      ? `Não. ${relatedFact || 'Essa hipótese não se confirma pelos fatos disponíveis.'}`
+      : classification === 'PARTIAL'
+        ? `Parcialmente. ${relatedFact || 'Há uma parte correta, mas ela não fecha o fato inteiro.'}`
     : 'Desconhecido. O arquivo não confirma essa hipótese neste momento.',
   fallback_used: false
 });
+
+const staticRule = (intent_key: string, examples: string[], relatedFactKeys: string[], defaultClassification = 'YES') => ({
+  intent_key,
+  semantic_examples: JSON.stringify(examples),
+  related_fact_keys: JSON.stringify(relatedFactKeys),
+  default_classification: defaultClassification
+});
+
+export const getStaticCaseContext = (slug: string) => {
+  const context: Record<string, { facts: Array<{ fact_key: string; statement: string; is_solution_critical?: boolean }>; rules: any[] }> = {
+    'o-presente-desaparecido': {
+      facts: [
+        { fact_key: 'empty_box_before_party', statement: 'A caixa já estava vazia antes do desaparecimento.' },
+        { fact_key: 'folded_under_tablecloth', statement: 'A embalagem foi dobrada e escondida sob a toalha.' },
+        { fact_key: 'host_staged_game', statement: 'O anfitrião encenou o sumiço para iniciar uma caça ao tesouro.' },
+        { fact_key: 'real_present_elsewhere', statement: 'O presente real estava escondido em outro lugar da casa.' },
+        { fact_key: 'nobody_left_room', statement: 'Ninguém precisou sair do ambiente para a caixa desaparecer.' }
+      ],
+      rules: [
+        staticRule('present_empty', ['A caixa estava vazia?', 'O presente estava dentro da caixa?', 'Tinha algo na caixa?'], ['empty_box_before_party'], 'YES'),
+        staticRule('present_staged', ['Foi encenação?', 'O anfitrião planejou?', 'Era uma brincadeira?'], ['host_staged_game'], 'YES'),
+        staticRule('present_hidden', ['O presente estava em outro lugar?', 'A caixa foi escondida na mesa?', 'Estava debaixo da toalha?'], ['real_present_elsewhere', 'folded_under_tablecloth'], 'YES')
+      ]
+    },
+    'o-quarto-7': {
+      facts: [
+        { fact_key: 'renato_master_key', statement: 'Renato usou a chave mestra para encenar o quarto trancado.' },
+        { fact_key: 'tea_sedative', statement: 'O chá de Helena continha sedativo não letal.' },
+        { fact_key: 'camera_service_stairs', statement: 'A câmera foi virada para ocultar a rota pela escada de serviço.' },
+        { fact_key: 'clock_false_time', statement: 'O relógio quebrado em 23h17 criou uma hora falsa.' },
+        { fact_key: 'father_motive', statement: 'Helena tinha provas ligadas à inocência do pai e aos desvios do hotel.' }
+      ],
+      rules: [
+        staticRule('room_locked_staged', ['A porta foi trancada por dentro?', 'Renato usou chave mestra?', 'O quarto trancado era falso?'], ['renato_master_key'], 'YES'),
+        staticRule('tea_sedative', ['O chá tinha sedativo?', 'A bebida tinha sedativo?', 'Helena foi drogada?', 'A bebida foi adulterada?'], ['tea_sedative'], 'YES'),
+        staticRule('camera_clock', ['A câmera foi mexida?', 'O relógio marcava hora falsa?', 'A escada de serviço importa?'], ['camera_service_stairs', 'clock_false_time'], 'YES'),
+        staticRule('helena_motive', ['O motivo era o pai de Helena?', 'Helena ia denunciar o hotel?', 'Havia desvio de manutenção?'], ['father_motive'], 'YES')
+      ]
+    },
+    'o-elevador-que-nao-parou': {
+      facts: [
+        { fact_key: 'elevator_stopped_between_floors', statement: 'O elevador parou por alguns minutos entre o segundo e o terceiro andar.' },
+        { fact_key: 'elevator_trapdoor_unlocked', statement: 'O alçapão do teto do elevador estava destrancado.' },
+        { fact_key: 'shaft_exit_route', statement: 'A saída ocorreu pela rota de manutenção do poço do elevador.' },
+        { fact_key: 'not_empty_magic', statement: 'O elevador não estava vazio por truque sobrenatural; houve fuga técnica.' }
+      ],
+      rules: [
+        staticRule('elevator_stopped', ['O elevador parou?', 'Ele parou entre andares?', 'Ficou parado no meio?'], ['elevator_stopped_between_floors'], 'YES'),
+        staticRule('elevator_trapdoor', ['Ela saiu pelo teto?', 'O alçapão estava aberto?', 'Usou o poço do elevador?'], ['elevator_trapdoor_unlocked', 'shaft_exit_route'], 'YES'),
+        staticRule('elevator_no_floor_exit', ['Ela saiu em algum andar?', 'A porta abriu no andar?', 'Passou pela recepção?'], ['shaft_exit_route'], 'NO')
+      ]
+    },
+    'a-mensagem-das-23h17': {
+      facts: [
+        { fact_key: 'message_scheduled_script', statement: 'A mensagem das 23h17 foi enviada por automação agendada.' },
+        { fact_key: 'phone_left_charging', statement: 'O celular ficou em casa no carregador.' },
+        { fact_key: 'victim_left_earlier', statement: 'A pessoa desaparecida saiu voluntariamente antes do envio.' },
+        { fact_key: 'computer_sent_message', statement: 'O computador ligado executou o envio sincronizado.' }
+      ],
+      rules: [
+        staticRule('message_scheduled', ['A mensagem foi agendada?', 'Foi script?', 'O computador enviou?'], ['message_scheduled_script', 'computer_sent_message'], 'YES'),
+        staticRule('phone_not_used_live', ['O celular enviou sozinho?', 'A pessoa estava com o celular?', 'Ela mandou a mensagem na hora?'], ['phone_left_charging', 'victim_left_earlier'], 'NO'),
+        staticRule('voluntary_disappearance', ['Ela saiu voluntariamente?', 'Foi sumiço planejado?', 'Ela já tinha saído antes?'], ['victim_left_earlier'], 'YES')
+      ]
+    },
+    'o-retrato-que-piscou': {
+      facts: [
+        { fact_key: 'portrait_reflection_flash', statement: 'O piscar foi reflexo de um flash no vidro ou verniz do retrato.' },
+        { fact_key: 'portrait_no_mechanism', statement: 'O retrato não tinha mecanismo interno.' },
+        { fact_key: 'waiter_near_jewel', statement: 'O garçom estava junto da mesa no instante do clarão.' },
+        { fact_key: 'temporary_blindness_flash', statement: 'O flash cegou os convidados por poucos segundos.' }
+      ],
+      rules: [
+        staticRule('portrait_flash', ['O retrato piscou por reflexo?', 'Tinha flash?', 'Foi luz no vidro?'], ['portrait_reflection_flash'], 'YES'),
+        staticRule('portrait_no_mechanism', ['O quadro tinha mecanismo?', 'Era sobrenatural?', 'O retrato se mexeu sozinho?'], ['portrait_no_mechanism'], 'NO'),
+        staticRule('jewel_waiter', ['O garçom roubou a joia?', 'O clarão ajudou o roubo?', 'Todos ficaram cegos?'], ['waiter_near_jewel', 'temporary_blindness_flash'], 'YES')
+      ]
+    },
+    blackwell: {
+      facts: [
+        { fact_key: 'blackwell_fake_blood', statement: 'O sangue na poltrona era artificial.' },
+        { fact_key: 'clara_helena_escape', statement: 'Clara e Helena fugiram juntas pelos jardins.' },
+        { fact_key: 'tomas_financial_fraud', statement: 'O livro-caixa indica desvio de fundos por Tomás.' },
+        { fact_key: 'staged_kidnapping', statement: 'O sumiço foi encenado para expor os desvios.' }
+      ],
+      rules: [
+        staticRule('blackwell_blood', ['O sangue era falso?', 'O sangue era artificial?', 'Clara morreu na sala?'], ['blackwell_fake_blood'], 'YES'),
+        staticRule('blackwell_escape', ['Clara fugiu com Helena?', 'Elas saíram pelo jardim?', 'Foi sequestro real?'], ['clara_helena_escape', 'staged_kidnapping'], 'YES'),
+        staticRule('blackwell_tomas', ['Tomás desviava dinheiro?', 'O livro-caixa incrimina Tomás?', 'Havia fraude financeira?'], ['tomas_financial_fraud'], 'YES')
+      ]
+    }
+  };
+
+  return context[slug] || { facts: [], rules: [] };
+};
 
 export const processFactBasedQuestion = (questionText: string, facts: Array<{ statement: string }>, opening = '') => {
   const questionWords = new Set(tokenizeForMatching(questionText));
@@ -257,6 +356,7 @@ Regras ESTRITAS:
 4. Se a pergunta estiver perto da solução, responda de forma curta e ainda investigativa. Não entregue a solução de bandeja.
 5. Se a pergunta demonstrar que o jogador investigou corretamente um hotspot ou desvendou uma etapa, defina \`unlockClue\` como true e indique a \`clueIdToUnlock\` ou \`locationId\` apropriada conforme o gabarito das regras especiais.
 6. Se a pergunta for vaga, ampla ou não puder ser confirmada pelo contexto do caso, use "Desconhecido" em vez de inventar uma confirmação.
+7. Responda em uma única frase curta. Não explique além do necessário.
 
 Pergunta do Jogador: "${questionText}"`;
 };
@@ -264,6 +364,17 @@ Pergunta do Jogador: "${questionText}"`;
 const isTooAmbiguousForPlay = (questionText: string) => {
   const questionWords = tokenizeForMatching(questionText);
   return questionWords.length <= 1;
+};
+
+export const toConciseMasterText = (shortAnswer: string, publicExplanation = '') => {
+  const text = `${String(shortAnswer || '').trim()} ${String(publicExplanation || '').trim()}`
+    .replace(/\s+/g, ' ')
+    .trim();
+  const sentences = text.match(/[^.!?]+[.!?]+/g)?.map((sentence) => sentence.trim()) || [];
+  const first = sentences[0] || text || 'Desconhecido.';
+  const firstIsVerdict = /^(Sim|Não|Parcialmente|Irrelevante|Desconhecido)\.$/i.test(first);
+  const concise = firstIsVerdict && sentences[1] ? `${first} ${sentences[1]}` : first;
+  return concise.slice(0, 180).trim();
 };
 
 export const processTutorialQuestion = (questionText: string) => {
@@ -505,14 +616,18 @@ export const processQuestion = async (roomId: string, questionText: string, case
       if (gardenAnswer) return gardenAnswer;
     }
 
-    if (!facts || facts.length === 0) {
+    const staticContext = getStaticCaseContext(caseVersion.case_ref.slug);
+    const contextualFacts = [...facts, ...staticContext.facts];
+    const contextualAnswerRules = [...answerRules, ...staticContext.rules];
+
+    if (!contextualFacts || contextualFacts.length === 0) {
       return { classification: 'UNKNOWN', rendered_text: 'O arquivo do caso não pôde ser acessado agora. Tente novamente em instantes.', fallback_used: true };
     }
 
-    const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, answerRules, facts);
+    const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, contextualAnswerRules, contextualFacts);
     if (ruleBasedAnswer) return ruleBasedAnswer;
 
-    const factBasedAnswer = processFactBasedQuestion(cleanQuestion, facts, caseVersion.opening);
+    const factBasedAnswer = processFactBasedQuestion(cleanQuestion, contextualFacts, caseVersion.opening);
     if (factBasedAnswer) return factBasedAnswer;
 
     const { revealSecret } = await import('../security/secrets');
@@ -546,8 +661,8 @@ export const processQuestion = async (roomId: string, questionText: string, case
       masterStyle: caseVersion.master_style,
       solutionSummary,
       chronology,
-      facts,
-      answerRules,
+      facts: contextualFacts,
+      answerRules: contextualAnswerRules,
       hints: promptHints,
       solutionFields,
       questionText
@@ -573,7 +688,7 @@ export const processQuestion = async (roomId: string, questionText: string, case
 
     return { 
       classification: uppercaseVerdict, 
-      rendered_text: `${logicResult.shortAnswer} ${logicResult.publicExplanation}`.trim(),
+      rendered_text: toConciseMasterText(logicResult.shortAnswer, logicResult.publicExplanation),
       unlockClue: logicResult.unlockClue,
       clueIdToUnlock: logicResult.clueIdToUnlock,
       locationId: logicResult.locationId,

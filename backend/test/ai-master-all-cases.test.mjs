@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { processFactBasedQuestion, processGardenQuestion, processTutorialQuestion } from '../dist/services/aiMaster.js';
+import {
+  getStaticCaseContext,
+  processFactBasedQuestion,
+  processGardenQuestion,
+  processRuleBasedQuestion,
+  processTutorialQuestion,
+  toConciseMasterText
+} from '../dist/services/aiMaster.js';
 
 const normalize = (value) =>
   String(value || '')
@@ -174,4 +181,27 @@ test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reform
 
   assert.equal(result?.classification, 'UNKNOWN');
   assert.match(result?.rendered_text || '', /Desconhecido/);
+});
+
+test('contexto estatico complementa respostas em casos diferentes', () => {
+  const samples = [
+    ['o-quarto-7', 'A bebida tinha sedativo?', 'YES', ['chá', 'sedativo']],
+    ['o-elevador-que-nao-parou', 'Ela saiu pelo teto do elevador?', 'YES', ['alçapão']],
+    ['a-mensagem-das-23h17', 'A mensagem foi agendada por script?', 'YES', ['automação', 'agendada']],
+    ['o-retrato-que-piscou', 'O quadro tinha mecanismo?', 'NO', ['retrato', 'mecanismo']],
+    ['blackwell', 'O sangue era artificial?', 'YES', ['sangue', 'artificial']]
+  ];
+
+  for (const [slug, question, classification, terms] of samples) {
+    const context = getStaticCaseContext(slug);
+    const result = processRuleBasedQuestion(question, context.rules, context.facts);
+    assert.equal(result?.classification, classification, slug);
+    assertIncludesTerms(result?.rendered_text || '', terms, slug);
+  }
+});
+
+test('respostas do mestre sao reduzidas para uma frase curta', () => {
+  const result = toConciseMasterText('Sim.', 'Esse fato aparece no arquivo. Esta segunda frase não deve aparecer.');
+  assert.equal(result, 'Sim. Esse fato aparece no arquivo.');
+  assert.ok(result.length <= 180);
 });
