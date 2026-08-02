@@ -189,7 +189,11 @@ const Game: React.FC = () => {
     socket.on('question_repeated', (data) => { setLoading(false); setProcessingUser(null); setQuestionWarning({ kind: 'repeat', text: `Uma pergunta parecida já foi feita: "${data.previous}"`, answer: data.answer }); });
     socket.on('question_needs_reformulation', (data) => { setLoading(false); setProcessingUser(null); setQuestionWarning({ kind: 'reformulate', text: data.message }); });
     socket.on('clarification_added', (data) => setHistory(prev => prev.map(item => item.question?.id === data.questionId ? { ...item, clarification: data.text } : item)));
-    socket.on('contestation_resolved', (data) => setHistory(prev => prev.map(item => item.question?.id === data.questionId ? { ...item, contestation: data.text } : item)));
+    socket.on('contestation_resolved', (data) => setHistory(prev => prev.map(item => item.question?.id === data.questionId ? {
+      ...item,
+      contestation: data.text,
+      answer: data.correctedAnswer ? { ...(item.answer || {}), ...data.correctedAnswer } : item.answer
+    } : item)));
 
     socket.on('game_over', (data) => {
       setLoading(false);
@@ -639,7 +643,7 @@ const Game: React.FC = () => {
                           <button onClick={() => contestAnswer(item.question?.id)} disabled={!item.question?.id || item.contestation} style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer' }}>Contestar</button>
                         </div>
                         {item.clarification && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Esclarecimento: {item.clarification}</div>}
-                        {item.contestation && <div style={{ marginTop: '6px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Revisão: {item.contestation}</div>}
+                        {item.contestation && <div style={{ marginTop: '6px', fontSize: '13px', color: item.contestation.includes('corrigida') ? 'var(--gold-soft)' : 'rgba(255,255,255,0.5)', fontStyle: 'italic' }}>Revisão: {item.contestation}</div>}
                       </div>
                     </div>
                   );

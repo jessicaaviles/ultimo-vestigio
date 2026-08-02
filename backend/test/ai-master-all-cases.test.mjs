@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  buildClarificationText,
+  buildContestationText,
   getStaticCaseContext,
   processFactBasedQuestion,
   processGardenQuestion,
@@ -224,4 +226,18 @@ test('respostas do mestre sao reduzidas para uma frase curta', () => {
   const result = toConciseMasterText('Sim.', 'Esse fato aparece no arquivo. Esta segunda frase não deve aparecer.');
   assert.equal(result, 'Sim. Esse fato aparece no arquivo.');
   assert.ok(result.length <= 180);
+});
+
+test('esclarecimento e contestacao produzem revisoes uteis', () => {
+  const clarification = buildClarificationText('Nina teve ajuda para desaparecer?', {
+    classification: 'PARTIAL',
+    rendered_text: 'Parcialmente. O arquivo indica interferência de outra pessoa no desaparecimento.'
+  });
+  assertIncludesTerms(clarification, ['parte correta', 'conclusão'], 'Esclarecimento parcial');
+
+  const contestation = buildContestationText(
+    { classification: 'UNKNOWN', rendered_text: 'Desconhecido. O arquivo não confirma essa hipótese neste momento.' },
+    { classification: 'YES', rendered_text: 'Sim. A pessoa ligada à exposição de Nina tem relação relevante com o desaparecimento.' }
+  );
+  assertIncludesTerms(contestation, ['Revisão aceita', 'Resposta corrigida'], 'Contestacao corrigida');
 });

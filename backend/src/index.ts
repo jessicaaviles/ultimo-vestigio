@@ -5,7 +5,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-import { processQuestion, evaluateTheory } from './services/aiMaster';
+import { buildClarificationText, buildContestationText, processQuestion, evaluateTheory } from './services/aiMaster';
 import { revealSecret } from './security/secrets';
 import { normalizeQuestion } from './game/rules';
 
@@ -725,7 +725,7 @@ io.on('connection', (socket) => {
       const player = await prisma.room_players.findFirst({ where: { room_id: roomId, anonymous_user_id: userId } });
       if (!question || !player || question.room_id !== roomId || question.clarification_count >= 1) return socket.emit('room_error', 'Este item já recebeu um esclarecimento.');
       const answer = question.master_answers[0]; if (!answer) return;
-      const clarification = `O Mestre confirma o sentido da resposta anterior: ${answer.rendered_text}`;
+      const clarification = buildClarificationText(question.original_text, answer);
       await prisma.$transaction([
         prisma.question_clarifications.create({ data: { question_id: questionId, requested_by: userId, response_text: clarification } }),
         prisma.questions.update({ where: { id: questionId }, data: { clarification_count: { increment: 1 } } })
@@ -738,11 +738,55 @@ io.on('connection', (socket) => {
   socket.on('contest_answer', async ({ roomId, userId, questionId, reason, comment }) => {
     try {
       const player = await prisma.room_players.findFirst({ where: { room_id: roomId, anonymous_user_id: userId } });
-      const question = await prisma.questions.findUnique({ where: { id: questionId } });
+      const question = await prisma.questions.findUnique({ where: { id: questionId }, include: { master_answers: { orderBy: { created_at: 'desc' } }, room: true } });
       if (!player || !question || question.room_id !== roomId) return;
-      const contestation = await prisma.answer_contestations.create({ data: { question_id: questionId, reported_by: userId, reason: String(reason || 'other').slice(0, 80), comment: String(comment || '').slice(0, 500) || null, status: 'REVIEWED', correction_text: 'A resposta foi revisada e permanece válida com base nos fatos disponíveis.', resolved_at: new Date() } });
-      io.to(roomId).emit('contestation_resolved', { questionId, text: contestation.correction_text, status: contestation.status });
-      await recordRoomEvent(roomId, 'answer_contested', { questionId, reason: contestation.reason });
+
+      const previousAnswer = question.master_answers[0];
+      if (!previousAnswer) return socket.emit('room_error', 'Não há resposta do Mestre para revisar.');
+
+      const reviewedAnswer = await processQuestion(roomId, question.original_text, question.room.case_version_id);
+      const correctionText = buildContestationText(previousAnswer, reviewedAnswer);
+      const changed = String(previousAnswer.classification || '').toUpperCase() !== String(reviewedAnswer.classification || '').toUpperCase()
+        || String(previousAnswer.rendered_text || '').trim() !== String(reviewedAnswer.rendered_text || '').trim();
+      const contestReason = String(reason || 'possible_contradiction').slice(0, 80);
+
+      await prisma.$transaction(async (tx) => {
+        if (changed) {
+          await tx.master_answers.create({
+            data: {
+              question_id: questionId,
+              classification: reviewedAnswer.classification,
+              factual_payload: '{}',
+              rendered_text: reviewedAnswer.rendered_text,
+              validation_status: 'VALID',
+              model_name: 'review',
+              fallback_used: Boolean(reviewedAnswer.fallback_used),
+              is_correction: true,
+              corrected_answer_id: previousAnswer.id
+            }
+          });
+        }
+
+        await tx.answer_contestations.create({
+          data: {
+            question_id: questionId,
+            reported_by: userId,
+            reason: contestReason,
+            comment: String(comment || '').slice(0, 500) || null,
+            status: changed ? 'CORRECTED' : 'REVIEWED',
+            correction_text: correctionText,
+            resolved_at: new Date()
+          }
+        });
+      });
+
+      io.to(roomId).emit('contestation_resolved', {
+        questionId,
+        text: correctionText,
+        status: changed ? 'CORRECTED' : 'REVIEWED',
+        correctedAnswer: changed ? { rendered_text: reviewedAnswer.rendered_text, classification: reviewedAnswer.classification } : null
+      });
+      await recordRoomEvent(roomId, 'answer_contested', { questionId, reason: contestReason, changed });
     } catch { socket.emit('room_error', 'Não foi possível registrar a contestação.'); }
   });
 
