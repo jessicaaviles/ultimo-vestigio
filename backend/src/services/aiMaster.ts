@@ -536,6 +536,7 @@ export const processGardenQuestion = (questionText: string) => {
   const asksExit = asksAbout(['fugiu', 'fuga', 'escapou', 'saiu', 'deixou', 'foi embora', 'voluntariamente', 'sozinha', 'sozinho', 'propria']);
   const asksMethod = asksAbout(['como', 'retirada', 'retirado', 'levada', 'levado', 'removeu', 'carregada', 'rota', 'caminho', 'saiu']);
   const asksEvidence = asksAbout(['pista', 'prova', 'indicio', 'indício', 'importa', 'relevante', 'vestigio', 'vestígio']);
+  const asksLifeState = asksAbout(['viva', 'vivo', 'morta', 'morto', 'morreu', 'sobreviveu', 'sobrevivente']);
 
   const entities = {
     nina: asksAbout(['nina', 'escultora', 'ela']),
@@ -557,7 +558,15 @@ export const processGardenQuestion = (questionText: string) => {
 
   const mentionsAnySuspect = entities.dario || entities.celina || entities.tomas || entities.vitor || entities.gardener;
 
-  if (entities.nina && asksAbout(['humana', 'humano', 'pessoa', 'mulher', 'viva', 'existia'])) {
+  if (entities.nina && asksLifeState) {
+    return {
+      classification: 'UNKNOWN',
+      rendered_text: 'Desconhecido. O arquivo confirma o desaparecimento de Nina, mas não confirma o estado dela.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.nina && asksAbout(['humana', 'humano', 'pessoa', 'mulher', 'existia'])) {
     return {
       classification: 'YES',
       rendered_text: 'Sim. Nina é uma pessoa, a escultora desaparecida.',
