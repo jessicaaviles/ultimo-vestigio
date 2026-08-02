@@ -538,6 +538,7 @@ export const processGardenQuestion = (questionText: string) => {
   const asksEvidence = asksAbout(['pista', 'prova', 'indicio', 'indício', 'evidencia', 'evidência', 'importa', 'relevante', 'vestigio', 'vestígio']);
   const asksLeftEvidence = asksEvidence && asksAbout(['deixou', 'deixar', 'deixada', 'deixado', 'restou', 'sobrou']);
   const asksLifeState = asksAbout(['viva', 'vivo', 'morta', 'morto', 'morreu', 'sobreviveu', 'sobrevivente']);
+  const asksConsciousState = asksAbout(['acordada', 'acordado', 'consciente', 'inconsciente', 'desmaiada', 'desmaiado', 'sedada', 'sedado', 'dopada', 'dopado']);
   const asksCleaningProduct = asksAbout(['limpeza', 'desinfetante', 'detergente', 'sabao', 'sabão', 'alcool', 'álcool', 'higienizacao', 'higienização']);
   const asksProtection = asksAbout(['protegia', 'proteger', 'protegeu', 'protecao', 'proteção', 'cobria', 'cobrir', 'cobertura']);
 
@@ -565,6 +566,14 @@ export const processGardenQuestion = (questionText: string) => {
     return {
       classification: 'UNKNOWN',
       rendered_text: 'Desconhecido. O arquivo confirma o desaparecimento de Nina, mas não confirma o estado dela.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.nina && asksConsciousState) {
+    return {
+      classification: 'UNKNOWN',
+      rendered_text: 'Desconhecido. Há indício de anestésico na cena, mas o arquivo não confirma o estado de consciência de Nina.',
       fallback_used: false
     };
   }
@@ -740,7 +749,7 @@ export const processGardenQuestion = (questionText: string) => {
   if (entities.lona && entities.statue && asksProtection) {
     return {
       classification: 'PARTIAL',
-      rendered_text: 'Parcialmente. A lona cobria a estátua, mas sua importância vem dos vestígios físicos nela.',
+      rendered_text: 'Parcialmente. A lona cobria a estátua, mas não há confirmação de que a função fosse protegê-la.',
       fallback_used: false
     };
   }
