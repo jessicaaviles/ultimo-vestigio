@@ -542,6 +542,7 @@ export const processGardenQuestion = (questionText: string) => {
   const asksCleaningProduct = asksAbout(['limpeza', 'desinfetante', 'detergente', 'sabao', 'sabão', 'alcool', 'álcool', 'higienizacao', 'higienização']);
   const asksProtection = asksAbout(['protegia', 'proteger', 'protegeu', 'protecao', 'proteção', 'cobria', 'cobrir', 'cobertura']);
   const asksOrigin = asksAbout(['era de', 'eram de', 'de nina', 'da nina', 'dela', 'pertencia', 'pertenciam', 'origem', 'dna', 'sangue', 'fio de cabelo', 'cabelo', 'biologico', 'biológico']);
+  const asksForgery = asksAbout(['falsificada', 'falsificadas', 'falsificado', 'falsificados', 'falsa', 'falsas', 'falso', 'falsos']);
 
   const entities = {
     nina: asksAbout(['nina', 'escultora', 'ela']),
@@ -583,6 +584,14 @@ export const processGardenQuestion = (questionText: string) => {
     return {
       classification: 'YES',
       rendered_text: 'Sim. Nina é uma pessoa, a escultora desaparecida.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.nina && asksForgery) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. Nina descobriu vendas de obras falsas atribuídas a ela.',
       fallback_used: false
     };
   }
