@@ -574,8 +574,21 @@ const Game: React.FC = () => {
                 <span style={{ color: 'var(--accent-gold)', fontSize: '14px', lineHeight: 1 }}>{showCaseSummary ? '▲' : '▼'}</span>
               </button>
               {showCaseSummary && (
-                <div style={{ marginTop: '12px', maxHeight: '160px', overflowY: 'auto' }}>
-                  <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', lineHeight: 1.6, margin: 0, fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>{caseSynopsis || caseOpening}</p>
+                <div style={{ marginTop: '12px', maxHeight: '240px', overflowY: 'auto' }}>
+                  <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', lineHeight: 1.6, margin: 0, fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>{caseOpening || caseSynopsis}</p>
+                  {caseSuspects.length > 0 && (
+                    <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(184,153,83,0.18)' }}>
+                      <div style={{ ...labelStyle, marginBottom: '10px', fontSize: '10px' }}>Pessoas citadas</div>
+                      <div style={{ display: 'grid', gap: '8px' }}>
+                        {caseSuspects.filter((suspect: any) => !suspect.isOtherOption).map((suspect: any) => (
+                          <div key={suspect.id || suspect.name} style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '10px', alignItems: 'baseline' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.88)', fontSize: '13px', fontWeight: 700, minWidth: 0 }}>{suspect.name}</span>
+                            <span style={{ color: 'var(--gold-soft)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '.12em', textAlign: 'right' }}>{suspect.role}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

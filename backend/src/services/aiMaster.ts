@@ -492,8 +492,12 @@ export const processGardenQuestion = (questionText: string) => {
   const mentionsAlone = hasAny(['sozinha', 'sozinho', 'propria', 'voluntariamente']);
   const mentionsRemoved = hasAny(['retirada', 'levada', 'removeu', 'carregada', 'desapareceu']);
   const mentionsChemical = hasAny(['spray', 'anestesico', 'produto', 'quimico', 'odor', 'cheiro', 'lona']);
-  const mentionsShears = hasAny(['tesoura', 'poda', 'jardineiro', 'jardineiros']);
+  const mentionsShears = hasAny(['tesoura', 'poda']);
+  const mentionsGardener = hasAny(['jardineiro', 'jardineiros', 'jardinagem']);
   const mentionsDario = hasAny(['dario', 'curador']);
+  const mentionsCelina = hasAny(['celina', 'paisagista']);
+  const mentionsTomas = hasAny(['tomas', 'irmao', 'irmão']);
+  const mentionsVitor = hasAny(['vitor', 'vítor', 'colecionador']);
   const mentionsFakeArt = hasAny(['falsa', 'falsas', 'falso', 'venda', 'vendas', 'denunciar']);
   const mentionsLights = hasAny(['luz', 'luzes', 'iluminacao', 'apagou', 'desligar', 'desligou']);
   const mentionsEscape = hasAny(['fugiu', 'fuga', 'escapou', 'saiu', 'deixou']);
@@ -501,6 +505,8 @@ export const processGardenQuestion = (questionText: string) => {
   const mentionsHelp = hasAny(['ajuda', 'ajudou', 'auxilio', 'auxiliou', 'cumplice', 'alguem']);
   const asksIfDisappeared = hasAny(['desapareceu', 'desaparecer', 'sumiu', 'sumir', 'desaparecimento']);
   const mentionsContractor = hasAny(['contratou', 'contratante', 'organizou', 'organizador', 'curador', 'exposicao']);
+  const asksRelationship = hasAny(['relacao', 'relação', 'envolvido', 'envolvida', 'culpa', 'culpado', 'responsavel', 'responsável', 'tem haver', 'tem a ver']);
+  const asksExistence = hasAny(['tinha', 'havia', 'existia', 'existiam', 'estava', 'estavam']);
 
   if (mentionsNina && mentionsHuman) {
     return {
@@ -513,7 +519,7 @@ export const processGardenQuestion = (questionText: string) => {
   if (mentionsNina && mentionsContractor && asksIfDisappeared) {
     return {
       classification: 'YES',
-      rendered_text: 'Sim. A pessoa ligada à exposição de Nina tem relação relevante com o desaparecimento.',
+      rendered_text: 'Sim. O curador que organizou a exposição tem relação relevante com o desaparecimento.',
       fallback_used: false
     };
   }
@@ -574,10 +580,34 @@ export const processGardenQuestion = (questionText: string) => {
     };
   }
 
+  if (!mentionsShears && mentionsGardener && asksExistence) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. Havia equipe de jardinagem ligada ao labirinto, mas isso não basta para explicar a retirada de Nina.',
+      fallback_used: false
+    };
+  }
+
+  if (!mentionsShears && mentionsGardener) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. A jardinagem aparece na cena, mas pode ser uma direção conveniente demais.',
+      fallback_used: false
+    };
+  }
+
   if (mentionsShears) {
     return {
       classification: 'PARTIAL',
-      rendered_text: 'Parcialmente. A tesoura é relevante, mas não como prova direta contra jardineiros.',
+      rendered_text: 'Parcialmente. A tesoura é relevante, mas parece mais encenação do que prova direta.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsDario && (asksRelationship || mentionsContractor)) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O curador está ligado à organização da exposição e ao conflito com Nina.',
       fallback_used: false
     };
   }
@@ -598,7 +628,39 @@ export const processGardenQuestion = (questionText: string) => {
     };
   }
 
-  if (mentionsGarden || mentionsNina || mentionsStatue || mentionsFootprints || mentionsDario) {
+  if (mentionsCelina && mentionsTracks) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. A paisagista conhecia o labirinto, mas isso não prova participação direta.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsCelina) {
+    return {
+      classification: 'UNKNOWN',
+      rendered_text: 'Desconhecido. O arquivo não confirma participação direta da paisagista.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsTomas) {
+    return {
+      classification: 'UNKNOWN',
+      rendered_text: 'Desconhecido. O conflito familiar não confirma participação no desaparecimento.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsVitor) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. O colecionador se conecta às obras suspeitas, mas não à retirada de Nina.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsGarden || mentionsNina || mentionsStatue || mentionsFootprints || mentionsDario || mentionsGardener) {
     return {
       classification: 'UNKNOWN',
       rendered_text: 'Desconhecido. O arquivo não confirma essa hipótese neste momento.',

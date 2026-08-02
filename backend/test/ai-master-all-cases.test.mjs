@@ -171,7 +171,11 @@ test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', 
 
   const shears = processGardenQuestion('A tesoura incrimina os jardineiros?');
   assert.equal(shears?.classification, 'PARTIAL');
-  assertIncludesTerms(shears?.rendered_text || '', ['tesoura', 'jardineiros'], 'O Jardim Sem Pegadas - tesoura');
+  assertIncludesTerms(shears?.rendered_text || '', ['tesoura', 'encenação'], 'O Jardim Sem Pegadas - tesoura');
+
+  const gardeners = processGardenQuestion('Tinha jardineiro neste labirinto?');
+  assert.equal(gardeners?.classification, 'YES');
+  assertIncludesTerms(gardeners?.rendered_text || '', ['equipe de jardinagem', 'labirinto'], 'O Jardim Sem Pegadas - jardineiros');
 
   const escaped = processGardenQuestion('Ela fugiu pelo labirinto?');
   assert.equal(escaped?.classification, 'NO');
@@ -191,7 +195,7 @@ test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', 
 
   const contractor = processGardenQuestion('Quem contratou a Nina tem haver com o desaparecimento dela?');
   assert.equal(contractor?.classification, 'YES');
-  assertIncludesTerms(contractor?.rendered_text || '', ['exposição', 'Nina', 'desaparecimento'], 'O Jardim Sem Pegadas - contratante');
+  assertIncludesTerms(contractor?.rendered_text || '', ['curador', 'exposição', 'desaparecimento'], 'O Jardim Sem Pegadas - contratante');
 });
 
 test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reformulacao', () => {

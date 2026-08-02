@@ -65,9 +65,17 @@ const roomState = async (roomId: string) => {
   const currentAttemptNumber = priorEvaluation ? priorEvaluation.attempt_number + 1 : 1;
   const activePlayerIds = new Set(room.players.map((player) => player.id));
   const activeTheories = room.theories.filter(t => t.attempt_number === currentAttemptNumber && activePlayerIds.has(t.player_id));
+  const caseSlug = room.case_version?.case_ref?.slug;
+  const clientOpeningBySlug: Record<string, string> = {
+    'o-jardim-sem-pegadas': 'Durante a inauguração de um jardim-labirinto, a escultora Nina Arantes desapareceu entre 20h40 e 21h05. A chuva deixou a terra mole, mas não havia pegadas saindo do centro. Estavam diretamente ligados ao evento: Dario Velloso, curador que organizou a exposição; Celina Prado, paisagista do labirinto; Tomás Arantes, irmão de Nina; e Vítor Leme, colecionador que comprou uma obra suspeita. Uma tesoura de poda estava caída ao lado da estátua principal, recém-lavada pela água.'
+  };
 
   return {
     ...room,
+    case_version: {
+      ...room.case_version,
+      opening: caseSlug && clientOpeningBySlug[caseSlug] ? clientOpeningBySlug[caseSlug] : room.case_version.opening
+    },
     case_version_id: room.case_version_id,
     theories: room.status === 'SOLVING' ? activeTheories.map(({ answers: _answers, ...theory }) => theory) : activeTheories,
     activeVote
