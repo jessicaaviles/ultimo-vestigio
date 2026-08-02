@@ -590,6 +590,14 @@ export const processGardenQuestion = (questionText: string) => {
     };
   }
 
+  if (asksMotive && asksForgery && asksDisappearance) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. A descoberta das obras falsas foi o motivo do desaparecimento de Nina.',
+      fallback_used: false
+    };
+  }
+
   if (entities.nina && asksForgery) {
     return {
       classification: 'YES',
