@@ -775,6 +775,14 @@ export const processGardenQuestion = (questionText: string) => {
   }
 
   if (entities.cart) {
+    if (!entities.nina && !asksDisappearance && !asksTransport && !asksMethod) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. Havia um carrinho de manutenção associado aos trilhos do labirinto.',
+        fallback_used: false
+      };
+    }
+
     return {
       classification: 'YES',
       rendered_text: 'Sim. O carrinho de manutenção foi usado para retirar Nina pelos trilhos sem pisar no barro.',
