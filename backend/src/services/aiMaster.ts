@@ -587,6 +587,14 @@ export const processGardenQuestion = (questionText: string) => {
     };
   }
 
+  if (entities.tomas && entities.dario) {
+    return {
+      classification: 'NO',
+      rendered_text: 'Não. O arquivo não confirma que Tomás ajudasse Dario nas vendas ou no desaparecimento.',
+      fallback_used: false
+    };
+  }
+
   if (entities.dario) {
     if (asksMotive) {
       return {
