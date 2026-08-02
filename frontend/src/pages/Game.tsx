@@ -50,6 +50,47 @@ const Game: React.FC = () => {
   const prevTurnRef = useRef<string | null>(null);
   const hintsMenuRef = useRef<HTMLDivElement>(null);
   const roomMenuRef = useRef<HTMLDivElement>(null);
+  const turnAlertAudioRef = useRef<AudioContext | null>(null);
+
+  const notifyMyTurn = useCallback(() => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate([120, 70, 120]);
+    }
+
+    if (!settings.effects) return;
+
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      const audioContext = turnAlertAudioRef.current || new AudioContextClass();
+      turnAlertAudioRef.current = audioContext;
+      if (audioContext.state === 'suspended') {
+        audioContext.resume().catch(() => {});
+      }
+
+      const now = audioContext.currentTime;
+      const gain = audioContext.createGain();
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.08, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+      gain.connect(audioContext.destination);
+
+      [0, 0.16].forEach((offset, index) => {
+        const oscillator = audioContext.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(index === 0 ? 660 : 880, now + offset);
+        oscillator.connect(gain);
+        oscillator.start(now + offset);
+        oscillator.stop(now + offset + 0.14);
+      });
+
+      window.setTimeout(() => gain.disconnect(), 520);
+    } catch {
+      // Browsers may block audio until a user gesture; vibration still works.
+    }
+  }, [settings.effects]);
+
   const toggleVoice = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
@@ -151,9 +192,13 @@ const Game: React.FC = () => {
       const newTurn = data.turns?.find((t: any) => t.status === 'ACTIVE');
       const newTurnId = newTurn?.id || null;
       if (newTurnId && newTurnId !== prevTurnRef.current) {
+        const hadPreviousTurn = prevTurnRef.current !== null;
         const player = (data.players || []).find((p: any) => p.id === newTurn?.player_id);
         if (player) {
           setHistory(prev => [...prev, { type: 'turn', playerName: player.display_name, playerId: player.id } as any]);
+          if (hadPreviousTurn && player.anonymous_user_id === userId) {
+            notifyMyTurn();
+          }
         }
         prevTurnRef.current = newTurnId;
         // Se mudou o turno, qualquer processamento pendente desse dispositivo finalizou
@@ -250,7 +295,7 @@ const Game: React.FC = () => {
       socket.off('room_progress_reset');
       socket.off('connect', handleConnect);
     };
-  }, [socket, roomId, autoSpeak, speakAnswer, navigate]);
+  }, [socket, roomId, autoSpeak, speakAnswer, navigate, notifyMyTurn]);
 
   const loadingTimeoutRef = useRef<number | null>(null);
   const syncIntervalRef = useRef<number | null>(null);
