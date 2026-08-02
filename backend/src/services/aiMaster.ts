@@ -535,7 +535,8 @@ export const processGardenQuestion = (questionText: string) => {
   const asksDisappearance = asksAbout(['desapareceu', 'desaparecer', 'sumiu', 'sumir', 'desaparecimento']);
   const asksExit = asksAbout(['fugiu', 'fuga', 'escapou', 'saiu', 'deixou', 'foi embora', 'voluntariamente', 'sozinha', 'sozinho', 'propria']);
   const asksMethod = asksAbout(['como', 'retirada', 'retirado', 'levada', 'levado', 'removeu', 'carregada', 'rota', 'caminho', 'saiu']);
-  const asksEvidence = asksAbout(['pista', 'prova', 'indicio', 'indício', 'importa', 'relevante', 'vestigio', 'vestígio']);
+  const asksEvidence = asksAbout(['pista', 'prova', 'indicio', 'indício', 'evidencia', 'evidência', 'importa', 'relevante', 'vestigio', 'vestígio']);
+  const asksLeftEvidence = asksEvidence && asksAbout(['deixou', 'deixar', 'deixada', 'deixado', 'restou', 'sobrou']);
   const asksLifeState = asksAbout(['viva', 'vivo', 'morta', 'morto', 'morreu', 'sobreviveu', 'sobrevivente']);
   const asksCleaningProduct = asksAbout(['limpeza', 'desinfetante', 'detergente', 'sabao', 'sabão', 'alcool', 'álcool', 'higienizacao', 'higienização']);
 
@@ -771,6 +772,14 @@ export const processGardenQuestion = (questionText: string) => {
     return {
       classification: 'PARTIAL',
       rendered_text: 'Parcialmente. O arquivo indica interferência de outra pessoa no desaparecimento.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.nina && asksLeftEvidence) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. Há vestígios ligados ao que ocorreu com Nina, mas não há confirmação de que ela os tenha deixado intencionalmente.',
       fallback_used: false
     };
   }
