@@ -170,6 +170,14 @@ test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', 
   const shears = processGardenQuestion('A tesoura incrimina os jardineiros?');
   assert.equal(shears?.classification, 'PARTIAL');
   assertIncludesTerms(shears?.rendered_text || '', ['tesoura', 'jardineiros'], 'O Jardim Sem Pegadas - tesoura');
+
+  const escaped = processGardenQuestion('Ela fugiu pelo labirinto?');
+  assert.equal(escaped?.classification, 'NO');
+  assertIncludesTerms(escaped?.rendered_text || '', ['Nina', 'não', 'própria'], 'O Jardim Sem Pegadas - fuga');
+
+  const human = processGardenQuestion('Nina é uma humana?');
+  assert.equal(human?.classification, 'YES');
+  assertIncludesTerms(human?.rendered_text || '', ['Nina', 'pessoa', 'escultora'], 'O Jardim Sem Pegadas - identidade');
 });
 
 test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reformulacao', () => {

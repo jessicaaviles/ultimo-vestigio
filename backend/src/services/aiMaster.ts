@@ -496,11 +496,21 @@ export const processGardenQuestion = (questionText: string) => {
   const mentionsDario = hasAny(['dario', 'curador']);
   const mentionsFakeArt = hasAny(['falsa', 'falsas', 'falso', 'venda', 'vendas', 'denunciar']);
   const mentionsLights = hasAny(['luz', 'luzes', 'iluminacao', 'apagou', 'desligar', 'desligou']);
+  const mentionsEscape = hasAny(['fugiu', 'fuga', 'escapou', 'saiu', 'deixou']);
+  const mentionsHuman = hasAny(['humana', 'humano', 'pessoa', 'mulher']);
 
-  if (mentionsNina && mentionsAlone && (mentionsGarden || mentionsRemoved)) {
+  if (mentionsNina && mentionsHuman) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. Nina é uma pessoa, a escultora desaparecida.',
+      fallback_used: false
+    };
+  }
+
+  if (mentionsNina && (mentionsAlone || mentionsEscape) && (mentionsGarden || mentionsRemoved)) {
     return {
       classification: 'NO',
-      rendered_text: 'Não. O arquivo indica que Nina não deixou o jardim por conta própria.',
+      rendered_text: 'Não. Nina não deixou o jardim por conta própria.',
       fallback_used: false
     };
   }
