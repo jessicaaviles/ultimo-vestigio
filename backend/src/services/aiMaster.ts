@@ -541,6 +541,7 @@ export const processGardenQuestion = (questionText: string) => {
   const asksConsciousState = asksAbout(['acordada', 'acordado', 'consciente', 'inconsciente', 'desmaiada', 'desmaiado', 'sedada', 'sedado', 'dopada', 'dopado']);
   const asksCleaningProduct = asksAbout(['limpeza', 'desinfetante', 'detergente', 'sabao', 'sabão', 'alcool', 'álcool', 'higienizacao', 'higienização']);
   const asksProtection = asksAbout(['protegia', 'proteger', 'protegeu', 'protecao', 'proteção', 'cobria', 'cobrir', 'cobertura']);
+  const asksOrigin = asksAbout(['era de', 'eram de', 'pertencia', 'pertenciam', 'origem', 'dna', 'sangue', 'fio de cabelo', 'cabelo', 'biologico', 'biológico']);
 
   const entities = {
     nina: asksAbout(['nina', 'escultora', 'ela']),
@@ -750,6 +751,14 @@ export const processGardenQuestion = (questionText: string) => {
     return {
       classification: 'PARTIAL',
       rendered_text: 'Parcialmente. A lona cobria a estátua, mas não há confirmação de que a função fosse protegê-la.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.lona && entities.nina && asksOrigin) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. A lona se liga à retirada de Nina, mas os vestígios confirmados são odor químico e fibras da própria lona.',
       fallback_used: false
     };
   }
