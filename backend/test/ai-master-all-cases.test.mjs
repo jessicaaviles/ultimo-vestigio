@@ -161,41 +161,32 @@ test('caso tutorial responde protecao do guarda-chuva sem confundir com chuva', 
 });
 
 test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', () => {
-  const alone = processGardenQuestion('Ela saiu sozinha do jardim?');
-  assert.equal(alone?.classification, 'NO');
-  assertIncludesTerms(alone?.rendered_text || '', ['Nina', 'não', 'própria'], 'O Jardim Sem Pegadas - saida sozinha');
+  const samples = [
+    ['Ela saiu sozinha do jardim?', 'NO', ['Nina', 'não', 'própria']],
+    ['Ela fugiu pelo labirinto?', 'NO', ['Nina', 'não', 'própria']],
+    ['Nina é uma humana?', 'YES', ['Nina', 'pessoa', 'escultora']],
+    ['Nina teve ajuda para desaparecer?', 'PARTIAL', ['interferência', 'outra pessoa']],
+    ['Nina desapareceu mesmo?', 'YES', ['desaparecimento', 'Nina']],
+    ['Quem contratou a Nina tem haver com o desaparecimento dela?', 'YES', ['curador', 'exposição', 'desaparecimento']],
+    ['O curador tinha motivo para sumir com Nina?', 'YES', ['curador', 'obras falsas', 'motivo']],
+    ['A paisagista era rival de Nina?', 'NO', ['paisagista', 'rivalidade']],
+    ['A paisagista conhecia os trilhos?', 'PARTIAL', ['paisagista', 'labirinto']],
+    ['O irmão de Nina estava envolvido?', 'PARTIAL', ['irmão', 'conflito familiar']],
+    ['Vitor está envolvido no desaparecimento de Nina?', 'PARTIAL', ['Vítor', 'obras suspeitas']],
+    ['Tinha jardineiro neste labirinto?', 'YES', ['equipe de jardinagem', 'labirinto']],
+    ['A tesoura incrimina os jardineiros?', 'PARTIAL', ['tesoura', 'encenação']],
+    ['A estátua foi feita pela própria escultora?', 'YES', ['estátua', 'Nina']],
+    ['Os trilhos explicam a falta de pegadas?', 'YES', ['trilhos', 'pegadas']],
+    ['Usaram um carrinho de manutenção?', 'YES', ['carrinho', 'trilhos']],
+    ['A lona tinha produto químico?', 'YES', ['lona', 'odor químico']],
+    ['As luzes apagadas importam?', 'YES', ['iluminação', 'janela']]
+  ];
 
-  const statue = processGardenQuestion('A estátua foi feita pela própria escultora?');
-  assert.equal(statue?.classification, 'YES');
-  assertIncludesTerms(statue?.rendered_text || '', ['estátua', 'Nina'], 'O Jardim Sem Pegadas - estatua');
-
-  const shears = processGardenQuestion('A tesoura incrimina os jardineiros?');
-  assert.equal(shears?.classification, 'PARTIAL');
-  assertIncludesTerms(shears?.rendered_text || '', ['tesoura', 'encenação'], 'O Jardim Sem Pegadas - tesoura');
-
-  const gardeners = processGardenQuestion('Tinha jardineiro neste labirinto?');
-  assert.equal(gardeners?.classification, 'YES');
-  assertIncludesTerms(gardeners?.rendered_text || '', ['equipe de jardinagem', 'labirinto'], 'O Jardim Sem Pegadas - jardineiros');
-
-  const escaped = processGardenQuestion('Ela fugiu pelo labirinto?');
-  assert.equal(escaped?.classification, 'NO');
-  assertIncludesTerms(escaped?.rendered_text || '', ['Nina', 'não', 'própria'], 'O Jardim Sem Pegadas - fuga');
-
-  const human = processGardenQuestion('Nina é uma humana?');
-  assert.equal(human?.classification, 'YES');
-  assertIncludesTerms(human?.rendered_text || '', ['Nina', 'pessoa', 'escultora'], 'O Jardim Sem Pegadas - identidade');
-
-  const helped = processGardenQuestion('Nina teve ajuda para desaparecer?');
-  assert.equal(helped?.classification, 'PARTIAL');
-  assertIncludesTerms(helped?.rendered_text || '', ['interferência', 'outra pessoa'], 'O Jardim Sem Pegadas - ajuda');
-
-  const disappeared = processGardenQuestion('Nina desapareceu mesmo?');
-  assert.equal(disappeared?.classification, 'YES');
-  assertIncludesTerms(disappeared?.rendered_text || '', ['desaparecimento', 'Nina'], 'O Jardim Sem Pegadas - desaparecimento');
-
-  const contractor = processGardenQuestion('Quem contratou a Nina tem haver com o desaparecimento dela?');
-  assert.equal(contractor?.classification, 'YES');
-  assertIncludesTerms(contractor?.rendered_text || '', ['curador', 'exposição', 'desaparecimento'], 'O Jardim Sem Pegadas - contratante');
+  for (const [question, classification, terms] of samples) {
+    const result = processGardenQuestion(String(question));
+    assert.equal(result?.classification, classification, String(question));
+    assertIncludesTerms(result?.rendered_text || '', terms, `O Jardim Sem Pegadas - ${question}`);
+  }
 });
 
 test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reformulacao', () => {

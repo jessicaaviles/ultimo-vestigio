@@ -482,33 +482,37 @@ export const processTutorialQuestion = (questionText: string) => {
 export const processGardenQuestion = (questionText: string) => {
   const question = normalizeText(questionText);
   const hasAny = (words: string[]) => words.some((word) => question.includes(word));
-  const mentionsNina = hasAny(['nina', 'escultora', 'ela']);
-  const mentionsGarden = hasAny(['jardim', 'labirinto', 'centro']);
-  const mentionsFootprints = hasAny(['pegada', 'pegadas', 'barro', 'lama']);
-  const mentionsTracks = hasAny(['trilho', 'trilhos', 'drenagem', 'cascalho']);
-  const mentionsCart = hasAny(['carrinho', 'carrinho de manutencao', 'manutencao']);
-  const mentionsStatue = hasAny(['estatua', 'escultura', 'obra']);
-  const mentionsAuthor = hasAny(['feita', 'fez', 'autoria', 'autora', 'propria']);
-  const mentionsAlone = hasAny(['sozinha', 'sozinho', 'propria', 'voluntariamente']);
-  const mentionsRemoved = hasAny(['retirada', 'levada', 'removeu', 'carregada', 'desapareceu']);
-  const mentionsChemical = hasAny(['spray', 'anestesico', 'produto', 'quimico', 'odor', 'cheiro', 'lona']);
-  const mentionsShears = hasAny(['tesoura', 'poda']);
-  const mentionsGardener = hasAny(['jardineiro', 'jardineiros', 'jardinagem']);
-  const mentionsDario = hasAny(['dario', 'curador']);
-  const mentionsCelina = hasAny(['celina', 'paisagista']);
-  const mentionsTomas = hasAny(['tomas', 'irmao', 'irmão']);
-  const mentionsVitor = hasAny(['vitor', 'vítor', 'colecionador']);
-  const mentionsFakeArt = hasAny(['falsa', 'falsas', 'falso', 'venda', 'vendas', 'denunciar']);
-  const mentionsLights = hasAny(['luz', 'luzes', 'iluminacao', 'apagou', 'desligar', 'desligou']);
-  const mentionsEscape = hasAny(['fugiu', 'fuga', 'escapou', 'saiu', 'deixou']);
-  const mentionsHuman = hasAny(['humana', 'humano', 'pessoa', 'mulher']);
-  const mentionsHelp = hasAny(['ajuda', 'ajudou', 'auxilio', 'auxiliou', 'cumplice', 'alguem']);
-  const asksIfDisappeared = hasAny(['desapareceu', 'desaparecer', 'sumiu', 'sumir', 'desaparecimento']);
-  const mentionsContractor = hasAny(['contratou', 'contratante', 'organizou', 'organizador', 'curador', 'exposicao']);
-  const asksRelationship = hasAny(['relacao', 'relação', 'envolvido', 'envolvida', 'culpa', 'culpado', 'responsavel', 'responsável', 'tem haver', 'tem a ver']);
-  const asksExistence = hasAny(['tinha', 'havia', 'existia', 'existiam', 'estava', 'estavam']);
+  const asksAbout = (terms: string[]) => hasAny(terms);
+  const asksExistence = asksAbout(['tinha', 'havia', 'existia', 'existiam', 'estava', 'estavam', 'tem']);
+  const asksRelationship = asksAbout(['relacao', 'relação', 'envolvido', 'envolvida', 'culpa', 'culpado', 'responsavel', 'responsável', 'tem haver', 'tem a ver', 'ligado', 'ligada']);
+  const asksRivalry = asksAbout(['rival', 'rivalidade', 'competia', 'inimiga', 'inimizade']);
+  const asksMotive = asksAbout(['motivo', 'motivacao', 'motivação', 'porque', 'por que', 'vender', 'vendas', 'falsa', 'falsas', 'falso', 'denunciar']);
+  const asksDisappearance = asksAbout(['desapareceu', 'desaparecer', 'sumiu', 'sumir', 'desaparecimento']);
+  const asksExit = asksAbout(['fugiu', 'fuga', 'escapou', 'saiu', 'deixou', 'foi embora', 'voluntariamente', 'sozinha', 'sozinho', 'propria']);
+  const asksMethod = asksAbout(['como', 'retirada', 'retirado', 'levada', 'levado', 'removeu', 'carregada', 'rota', 'caminho', 'saiu']);
+  const asksEvidence = asksAbout(['pista', 'prova', 'indicio', 'indício', 'importa', 'relevante', 'vestigio', 'vestígio']);
 
-  if (mentionsNina && mentionsHuman) {
+  const entities = {
+    nina: asksAbout(['nina', 'escultora', 'ela']),
+    dario: asksAbout(['dario', 'curador', 'contratou', 'contratante', 'organizou', 'organizador', 'exposicao']),
+    celina: asksAbout(['celina', 'paisagista']),
+    tomas: asksAbout(['tomas', 'irmao', 'irmão']),
+    vitor: asksAbout(['vitor', 'vítor', 'colecionador']),
+    gardener: asksAbout(['jardineiro', 'jardineiros', 'jardinagem', 'equipe de jardinagem']),
+    garden: asksAbout(['jardim', 'labirinto', 'centro']),
+    footprints: asksAbout(['pegada', 'pegadas', 'barro', 'lama']),
+    tracks: asksAbout(['trilho', 'trilhos', 'drenagem', 'cascalho']),
+    cart: asksAbout(['carrinho', 'carrinho de manutencao', 'manutencao']),
+    statue: asksAbout(['estatua', 'escultura', 'obra']),
+    shears: asksAbout(['tesoura', 'poda']),
+    lona: asksAbout(['lona', 'tecido', 'fibra', 'fibras']),
+    chemical: asksAbout(['spray', 'anestesico', 'anestésico', 'produto', 'quimico', 'químico', 'odor', 'cheiro']),
+    lights: asksAbout(['luz', 'luzes', 'iluminacao', 'iluminação', 'apagou', 'apagada', 'desligar', 'desligou'])
+  };
+
+  const mentionsAnySuspect = entities.dario || entities.celina || entities.tomas || entities.vitor || entities.gardener;
+
+  if (entities.nina && asksAbout(['humana', 'humano', 'pessoa', 'mulher', 'viva', 'existia'])) {
     return {
       classification: 'YES',
       rendered_text: 'Sim. Nina é uma pessoa, a escultora desaparecida.',
@@ -516,127 +520,55 @@ export const processGardenQuestion = (questionText: string) => {
     };
   }
 
-  if (mentionsNina && mentionsContractor && asksIfDisappeared) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. O curador que organizou a exposição tem relação relevante com o desaparecimento.',
-      fallback_used: false
-    };
-  }
+  if (entities.dario) {
+    if (asksMotive) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. O curador tinha ligação com obras falsas e um motivo para silenciar Nina.',
+        fallback_used: false
+      };
+    }
 
-  if (mentionsNina && mentionsHelp && asksIfDisappeared) {
-    return {
-      classification: 'PARTIAL',
-      rendered_text: 'Parcialmente. O arquivo indica interferência de outra pessoa no desaparecimento.',
-      fallback_used: false
-    };
-  }
+    if (entities.lights) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. O pedido do curador para apagar a iluminação é relevante para a janela do desaparecimento.',
+        fallback_used: false
+      };
+    }
 
-  if (mentionsNina && asksIfDisappeared) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. O desaparecimento de Nina é o evento central do caso.',
-      fallback_used: false
-    };
-  }
+    if (asksRelationship || asksDisappearance || entities.nina) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. O curador está ligado à exposição, ao conflito com Nina e ao desaparecimento.',
+        fallback_used: false
+      };
+    }
 
-  if (mentionsNina && (mentionsAlone || mentionsEscape) && (mentionsGarden || mentionsRemoved)) {
-    return {
-      classification: 'NO',
-      rendered_text: 'Não. Nina não deixou o jardim por conta própria.',
-      fallback_used: false
-    };
-  }
-
-  if (mentionsStatue && mentionsAuthor) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. A estátua fazia parte das obras atribuídas a Nina na exposição.',
-      fallback_used: false
-    };
-  }
-
-  if (mentionsFootprints && mentionsTracks) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. Os trilhos de drenagem explicam por que não havia pegadas no barro.',
-      fallback_used: false
-    };
-  }
-
-  if (mentionsCart || (mentionsRemoved && mentionsTracks)) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. As marcas recentes nos trilhos são compatíveis com o carrinho de manutenção.',
-      fallback_used: false
-    };
-  }
-
-  if (mentionsChemical) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. O odor químico na lona é uma pista relevante.',
-      fallback_used: false
-    };
-  }
-
-  if (!mentionsShears && mentionsGardener && asksExistence) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. Havia equipe de jardinagem ligada ao labirinto, mas isso não basta para explicar a retirada de Nina.',
-      fallback_used: false
-    };
-  }
-
-  if (!mentionsShears && mentionsGardener) {
     return {
       classification: 'PARTIAL',
-      rendered_text: 'Parcialmente. A jardinagem aparece na cena, mas pode ser uma direção conveniente demais.',
+      rendered_text: 'Parcialmente. O curador é uma figura importante do evento, mas pergunte sobre motivo, luzes ou exposição.',
       fallback_used: false
     };
   }
 
-  if (mentionsShears) {
-    return {
-      classification: 'PARTIAL',
-      rendered_text: 'Parcialmente. A tesoura é relevante, mas parece mais encenação do que prova direta.',
-      fallback_used: false
-    };
-  }
+  if (entities.celina) {
+    if (asksRivalry) {
+      return {
+        classification: 'NO',
+        rendered_text: 'Não. A paisagista conhecia o labirinto, mas não há rivalidade confirmada com Nina.',
+        fallback_used: false
+      };
+    }
 
-  if (mentionsDario && (asksRelationship || mentionsContractor)) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. O curador está ligado à organização da exposição e ao conflito com Nina.',
-      fallback_used: false
-    };
-  }
+    if (entities.tracks || entities.garden || asksRelationship) {
+      return {
+        classification: 'PARTIAL',
+        rendered_text: 'Parcialmente. A paisagista conhecia o labirinto, mas isso não prova participação direta.',
+        fallback_used: false
+      };
+    }
 
-  if (mentionsDario && mentionsFakeArt) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. As vendas de obras falsas ligam Dario a um motivo.',
-      fallback_used: false
-    };
-  }
-
-  if (mentionsDario && mentionsLights) {
-    return {
-      classification: 'YES',
-      rendered_text: 'Sim. O pedido para desligar a iluminação é relevante para a linha de tempo.',
-      fallback_used: false
-    };
-  }
-
-  if (mentionsCelina && mentionsTracks) {
-    return {
-      classification: 'PARTIAL',
-      rendered_text: 'Parcialmente. A paisagista conhecia o labirinto, mas isso não prova participação direta.',
-      fallback_used: false
-    };
-  }
-
-  if (mentionsCelina) {
     return {
       classification: 'UNKNOWN',
       rendered_text: 'Desconhecido. O arquivo não confirma participação direta da paisagista.',
@@ -644,23 +576,159 @@ export const processGardenQuestion = (questionText: string) => {
     };
   }
 
-  if (mentionsTomas) {
+  if (entities.tomas) {
+    if (asksMotive || asksRelationship || asksDisappearance) {
+      return {
+        classification: 'PARTIAL',
+        rendered_text: 'Parcialmente. O irmão tinha conflito familiar, mas isso não o liga à retirada de Nina.',
+        fallback_used: false
+      };
+    }
+
     return {
       classification: 'UNKNOWN',
-      rendered_text: 'Desconhecido. O conflito familiar não confirma participação no desaparecimento.',
+      rendered_text: 'Desconhecido. O arquivo não confirma participação do irmão no desaparecimento.',
       fallback_used: false
     };
   }
 
-  if (mentionsVitor) {
+  if (entities.vitor) {
+    if (asksMotive || entities.statue || asksRelationship || asksDisappearance) {
+      return {
+        classification: 'PARTIAL',
+        rendered_text: 'Parcialmente. Vítor se conecta às obras suspeitas, mas não à retirada de Nina.',
+        fallback_used: false
+      };
+    }
+
+    return {
+      classification: 'UNKNOWN',
+      rendered_text: 'Desconhecido. O arquivo não confirma que o colecionador tenha agido no labirinto.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.shears) {
     return {
       classification: 'PARTIAL',
-      rendered_text: 'Parcialmente. O colecionador se conecta às obras suspeitas, mas não à retirada de Nina.',
+      rendered_text: 'Parcialmente. A tesoura é relevante, mas parece mais encenação do que prova direta.',
       fallback_used: false
     };
   }
 
-  if (mentionsGarden || mentionsNina || mentionsStatue || mentionsFootprints || mentionsDario || mentionsGardener) {
+  if (entities.gardener) {
+    if (asksExistence) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. Havia equipe de jardinagem ligada ao labirinto.',
+        fallback_used: false
+      };
+    }
+
+    if (entities.shears || asksRelationship || asksDisappearance) {
+      return {
+        classification: 'PARTIAL',
+        rendered_text: 'Parcialmente. A jardinagem aparece na cena, mas parece uma direção plantada.',
+        fallback_used: false
+      };
+    }
+
+    return {
+      classification: 'UNKNOWN',
+      rendered_text: 'Desconhecido. O arquivo não confirma participação direta de jardineiros.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.footprints || entities.tracks) {
+    if (entities.footprints && asksAbout(['nao', 'não', 'sem', 'ausencia', 'ausência'])) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. A ausência de pegadas é real e se explica por uma rota fora do barro.',
+        fallback_used: false
+      };
+    }
+
+    if (entities.tracks || asksMethod) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. Os trilhos de drenagem explicam como a retirada não deixou pegadas no barro.',
+        fallback_used: false
+      };
+    }
+
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. As pegadas importam porque a ausência delas aponta para outra rota.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.cart) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O carrinho de manutenção é compatível com as marcas nos trilhos.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.lona || entities.chemical) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. A lona e o odor químico são pistas físicas importantes.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.lights) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. A iluminação apagada criou a janela curta do desaparecimento.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.statue) {
+    if (asksAbout(['feita', 'fez', 'autoria', 'autora', 'propria', 'dela'])) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. A estátua fazia parte das obras atribuídas a Nina na exposição.',
+        fallback_used: false
+      };
+    }
+
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. A estátua importa por estar recém-lavada e associada à lona.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.nina && asksAbout(['ajuda', 'ajudou', 'auxilio', 'auxiliou', 'cumplice', 'alguem'])) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. O arquivo indica interferência de outra pessoa no desaparecimento.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.nina && asksDisappearance) {
+    return {
+      classification: 'YES',
+      rendered_text: 'Sim. O desaparecimento de Nina é o evento central do caso.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.nina && asksExit) {
+    return {
+      classification: 'NO',
+      rendered_text: 'Não. Nina não deixou o jardim por conta própria.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.garden || entities.nina || mentionsAnySuspect || asksEvidence || asksMethod) {
     return {
       classification: 'UNKNOWN',
       rendered_text: 'Desconhecido. O arquivo não confirma essa hipótese neste momento.',
