@@ -539,6 +539,7 @@ export const processGardenQuestion = (questionText: string) => {
   const asksLeftEvidence = asksEvidence && asksAbout(['deixou', 'deixar', 'deixada', 'deixado', 'restou', 'sobrou']);
   const asksLifeState = asksAbout(['viva', 'vivo', 'morta', 'morto', 'morreu', 'sobreviveu', 'sobrevivente']);
   const asksCleaningProduct = asksAbout(['limpeza', 'desinfetante', 'detergente', 'sabao', 'sabão', 'alcool', 'álcool', 'higienizacao', 'higienização']);
+  const asksProtection = asksAbout(['protegia', 'proteger', 'protegeu', 'protecao', 'proteção', 'cobria', 'cobrir', 'cobertura']);
 
   const entities = {
     nina: asksAbout(['nina', 'escultora', 'ela']),
@@ -732,6 +733,14 @@ export const processGardenQuestion = (questionText: string) => {
     return {
       classification: 'NO',
       rendered_text: 'Não. O arquivo aponta para spray de restauração com efeito anestésico, não produto de limpeza.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.lona && entities.statue && asksProtection) {
+    return {
+      classification: 'PARTIAL',
+      rendered_text: 'Parcialmente. A lona cobria a estátua, mas sua importância vem dos vestígios físicos nela.',
       fallback_used: false
     };
   }
