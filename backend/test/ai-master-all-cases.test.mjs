@@ -173,13 +173,16 @@ test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', 
     ['A paisagista conhecia os trilhos?', 'PARTIAL', ['paisagista', 'labirinto']],
     ['O irmão de Nina estava envolvido?', 'PARTIAL', ['irmão', 'conflito familiar']],
     ['Vitor está envolvido no desaparecimento de Nina?', 'PARTIAL', ['Vítor', 'obras suspeitas']],
+    ['O comprador da obra tem conexão com o sumiço?', 'PARTIAL', ['Vítor', 'obras suspeitas']],
     ['Tinha jardineiro neste labirinto?', 'YES', ['equipe de jardinagem', 'labirinto']],
     ['A tesoura incrimina os jardineiros?', 'PARTIAL', ['tesoura', 'encenação']],
     ['A estátua foi feita pela própria escultora?', 'YES', ['estátua', 'Nina']],
     ['Os trilhos explicam a falta de pegadas?', 'YES', ['trilhos', 'pegadas']],
+    ['As canaletas explicam a falta de rastros?', 'YES', ['trilhos', 'pegadas']],
     ['Usaram um carrinho de manutenção?', 'YES', ['carrinho', 'trilhos']],
     ['A lona tinha produto químico?', 'YES', ['lona', 'odor químico']],
-    ['As luzes apagadas importam?', 'YES', ['iluminação', 'janela']]
+    ['As luzes apagadas importam?', 'YES', ['iluminação', 'janela']],
+    ['Os refletores desligados importam?', 'YES', ['iluminação', 'janela']]
   ];
 
   for (const [question, classification, terms] of samples) {
@@ -206,7 +209,8 @@ test('contexto estatico complementa respostas em casos diferentes', () => {
     ['o-elevador-que-nao-parou', 'Ela saiu pelo teto do elevador?', 'YES', ['alçapão']],
     ['a-mensagem-das-23h17', 'A mensagem foi agendada por script?', 'YES', ['automação', 'agendada']],
     ['o-retrato-que-piscou', 'O quadro tinha mecanismo?', 'NO', ['retrato', 'mecanismo']],
-    ['blackwell', 'O sangue era artificial?', 'YES', ['sangue', 'artificial']]
+    ['blackwell', 'O sangue era artificial?', 'YES', ['sangue', 'artificial']],
+    ['blackwell', 'O autor usou sangue falso?', 'YES', ['sangue', 'artificial']]
   ];
 
   for (const [slug, question, classification, terms] of samples) {

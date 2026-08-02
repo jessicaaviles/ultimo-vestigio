@@ -63,8 +63,45 @@ const INTERROGATIVE_STOPWORDS = new Set([
   'tinha'
 ]);
 
-const tokenizeForMatching = (value: string) =>
+const SYNONYM_GROUPS = [
+  ['culpado', 'culpada', 'responsavel', 'responsável', 'autor', 'autora', 'causador', 'causadora'],
+  ['envolvido', 'envolvida', 'ligado', 'ligada', 'relacao', 'relação', 'conexao', 'conexão', 'participacao', 'participação'],
+  ['desapareceu', 'desaparecer', 'desaparecimento', 'sumiu', 'sumir', 'sumiço', 'sumico'],
+  ['fugiu', 'fuga', 'escapou', 'saiu', 'deixou'],
+  ['pegada', 'pegadas', 'rastro', 'rastros', 'marca', 'marcas', 'barro', 'lama'],
+  ['pista', 'prova', 'indicio', 'indício', 'vestigio', 'vestígio', 'evidencia', 'evidência'],
+  ['luz', 'luzes', 'iluminacao', 'iluminação', 'refletor', 'refletores', 'lampada', 'lâmpada'],
+  ['apagou', 'apagada', 'apagaram', 'desligou', 'desligar', 'desligada', 'escuro'],
+  ['curador', 'organizador', 'organizou', 'contratou', 'contratante', 'exposicao', 'exposição'],
+  ['colecionador', 'comprador', 'cliente'],
+  ['paisagista', 'arquiteta'],
+  ['jardineiro', 'jardineiros', 'jardinagem', 'jardineira', 'equipe'],
+  ['trilho', 'trilhos', 'drenagem', 'canaleta', 'canaletas', 'canal', 'calha'],
+  ['carrinho', 'carro', 'transporte', 'manutencao', 'manutenção'],
+  ['lona', 'tecido', 'cobertura', 'pano', 'fibra', 'fibras'],
+  ['quimico', 'químico', 'produto', 'odor', 'cheiro', 'spray', 'anestesico', 'anestésico'],
+  ['falso', 'falsa', 'falsas', 'artificial', 'fake'],
+  ['motivo', 'motivacao', 'motivação', 'interesse', 'vantagem', 'razão', 'razao'],
+  ['rival', 'rivalidade', 'inimiga', 'inimizade', 'competia', 'concorrente']
+];
+
+const SYNONYM_LOOKUP = SYNONYM_GROUPS.reduce((lookup, group) => {
+  const normalizedGroup = group.map((word) => normalizeText(word));
+  for (const word of normalizedGroup) {
+    lookup.set(word, normalizedGroup);
+  }
+  return lookup;
+}, new Map<string, string[]>());
+
+const expandSynonyms = (word: string) => SYNONYM_LOOKUP.get(word) || [word];
+
+const baseTokensForMatching = (value: string) =>
   tokenize(value).filter((word) => !INTERROGATIVE_STOPWORDS.has(word));
+
+const tokenizeForMatching = (value: string) => {
+  const words = baseTokensForMatching(value);
+  return [...new Set(words.flatMap(expandSynonyms))];
+};
 
 const verdictPrefix: Record<string, string> = {
   YES: 'Sim.',
@@ -108,7 +145,7 @@ export const processRuleBasedQuestion = (questionText: string, answerRules: any[
 
     const overlap = [...questionWords].filter((word) => exampleWords.has(word)).length;
     const score = overlap / Math.max(1, Math.min(questionWords.size, exampleWords.size));
-    if (overlap >= 2 && score >= 0.35 && (!bestMatch || score > bestMatch.score)) {
+    if (overlap >= 2 && score >= 0.25 && (!bestMatch || score > bestMatch.score)) {
       bestMatch = { score, classification: String(rule.default_classification || 'UNKNOWN'), factKeys };
     }
   }
@@ -225,16 +262,19 @@ export const getStaticCaseContext = (slug: string) => {
 
 export const processFactBasedQuestion = (questionText: string, facts: Array<{ statement: string }>, opening = '') => {
   const questionWords = new Set(tokenizeForMatching(questionText));
+  const exactQuestionWords = new Set(baseTokensForMatching(questionText));
   if (questionWords.size === 0) return null;
 
-  let bestMatch: { score: number; statement: string } | null = null;
+  let bestMatch: { score: number; exactOverlap: number; statement: string } | null = null;
   for (const fact of facts) {
     const factWords = new Set(tokenizeForMatching(fact.statement || ''));
+    const exactFactWords = new Set(baseTokensForMatching(fact.statement || ''));
     if (factWords.size === 0) continue;
     const overlap = [...questionWords].filter((word) => factWords.has(word)).length;
-    const score = overlap / Math.max(1, Math.min(questionWords.size, factWords.size));
-    if (overlap >= 2 && (!bestMatch || score > bestMatch.score)) {
-      bestMatch = { score, statement: fact.statement || '' };
+    const exactOverlap = [...exactQuestionWords].filter((word) => exactFactWords.has(word)).length;
+    const score = overlap / Math.max(1, Math.min(questionWords.size, factWords.size)) + exactOverlap * 0.2;
+    if (overlap >= 2 && (!bestMatch || exactOverlap > bestMatch.exactOverlap || (exactOverlap === bestMatch.exactOverlap && score > bestMatch.score))) {
+      bestMatch = { score, exactOverlap, statement: fact.statement || '' };
     }
   }
 
@@ -481,7 +521,12 @@ export const processTutorialQuestion = (questionText: string) => {
 
 export const processGardenQuestion = (questionText: string) => {
   const question = normalizeText(questionText);
-  const hasAny = (words: string[]) => words.some((word) => question.includes(word));
+  const questionTokens = new Set(tokenizeForMatching(question));
+  const hasAny = (words: string[]) => words.some((word) => {
+    const normalizedTerm = normalizeText(word);
+    if (question.includes(normalizedTerm)) return true;
+    return tokenizeForMatching(normalizedTerm).some((token) => questionTokens.has(token));
+  });
   const asksAbout = (terms: string[]) => hasAny(terms);
   const asksExistence = asksAbout(['tinha', 'havia', 'existia', 'existiam', 'estava', 'estavam', 'tem']);
   const asksRelationship = asksAbout(['relacao', 'relação', 'envolvido', 'envolvida', 'culpa', 'culpado', 'responsavel', 'responsável', 'tem haver', 'tem a ver', 'ligado', 'ligada']);
