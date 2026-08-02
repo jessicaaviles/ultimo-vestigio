@@ -537,12 +537,14 @@ export const processGardenQuestion = (questionText: string) => {
   const asksMethod = asksAbout(['como', 'retirada', 'retirado', 'levada', 'levado', 'removeu', 'carregada', 'rota', 'caminho', 'saiu']);
   const asksEvidence = asksAbout(['pista', 'prova', 'indicio', 'indício', 'evidencia', 'evidência', 'importa', 'relevante', 'vestigio', 'vestígio']);
   const asksLeftEvidence = asksEvidence && asksAbout(['deixou', 'deixar', 'deixada', 'deixado', 'restou', 'sobrou']);
+  const asksTransport = asksAbout(['transportou', 'transportar', 'moveu', 'mover', 'removeu', 'retirou', 'retirar', 'levou', 'carregou', 'carregar']);
   const asksLifeState = asksAbout(['viva', 'vivo', 'morta', 'morto', 'morreu', 'sobreviveu', 'sobrevivente']);
   const asksConsciousState = asksAbout(['acordada', 'acordado', 'consciente', 'inconsciente', 'desmaiada', 'desmaiado', 'sedada', 'sedado', 'dopada', 'dopado']);
   const asksCleaningProduct = asksAbout(['limpeza', 'desinfetante', 'detergente', 'sabao', 'sabão', 'alcool', 'álcool', 'higienizacao', 'higienização']);
   const asksProtection = asksAbout(['protegia', 'proteger', 'protegeu', 'protecao', 'proteção', 'cobria', 'cobrir', 'cobertura']);
   const asksOrigin = asksAbout(['era de', 'eram de', 'de nina', 'da nina', 'dela', 'pertencia', 'pertenciam', 'origem', 'dna', 'sangue', 'fio de cabelo', 'cabelo', 'biologico', 'biológico']);
   const asksForgery = asksAbout(['falsificada', 'falsificadas', 'falsificado', 'falsificados', 'falsa', 'falsas', 'falso', 'falsos']);
+  const asksIntentional = asksAbout(['proposital', 'intencional', 'intencionalmente', 'planejado', 'planejada', 'armado', 'armada']);
 
   const entities = {
     nina: asksAbout(['nina', 'escultora', 'ela']),
@@ -624,7 +626,15 @@ export const processGardenQuestion = (questionText: string) => {
     if (entities.lights) {
       return {
         classification: 'YES',
-        rendered_text: 'Sim. O pedido do curador para apagar a iluminação é relevante para a janela do desaparecimento.',
+        rendered_text: 'Sim. Dario mandou apagar a iluminação por cinco minutos para abrir a janela do desaparecimento.',
+        fallback_used: false
+      };
+    }
+
+    if (entities.nina && (asksTransport || entities.lona || entities.cart || asksMethod)) {
+      return {
+        classification: 'YES',
+        rendered_text: 'Sim. Dario sedou Nina e a retirou no carrinho de manutenção, coberta pela lona.',
         fallback_used: false
       };
     }
@@ -632,7 +642,7 @@ export const processGardenQuestion = (questionText: string) => {
     if (asksRelationship || asksDisappearance || entities.nina) {
       return {
         classification: 'YES',
-        rendered_text: 'Sim. O curador está ligado à exposição, ao conflito com Nina e ao desaparecimento.',
+        rendered_text: 'Sim. Dario é o responsável: tinha motivo, apagou a luz e retirou Nina pelo trajeto de manutenção.',
         fallback_used: false
       };
     }
@@ -759,7 +769,7 @@ export const processGardenQuestion = (questionText: string) => {
   if (entities.cart) {
     return {
       classification: 'YES',
-      rendered_text: 'Sim. O carrinho de manutenção é compatível com as marcas nos trilhos.',
+      rendered_text: 'Sim. O carrinho de manutenção foi usado para retirar Nina pelos trilhos sem pisar no barro.',
       fallback_used: false
     };
   }
@@ -807,7 +817,9 @@ export const processGardenQuestion = (questionText: string) => {
   if (entities.lights) {
     return {
       classification: 'YES',
-      rendered_text: 'Sim. A iluminação apagada criou a janela curta do desaparecimento.',
+      rendered_text: asksIntentional
+        ? 'Sim. A falha foi provocada: Dario mandou apagar a iluminação por cinco minutos.'
+        : 'Sim. A iluminação apagada criou a janela curta do desaparecimento.',
       fallback_used: false
     };
   }
