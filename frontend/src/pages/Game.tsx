@@ -4,7 +4,7 @@ import { Award, BadgeCheck, LogOut, Mic, MoreVertical, Pause, Play, RotateCcw, S
 import { useSocket } from '../contexts/useSocket';
 import { useSettings } from '../contexts/SettingsContext';
 import Loading from '../components/Loading';
-import FinalTheoryForm from '../components/FinalTheoryForm';
+import FinalTheoryForm, { getSuspectPortrait } from '../components/FinalTheoryForm';
 import { clearAllProgressReset } from '../utils/progressReset';
 
 const dedupeHints = (hintsList: any[]) => {
@@ -614,20 +614,23 @@ const Game: React.FC = () => {
                     <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(184,153,83,0.18)' }}>
                       <div style={{ ...labelStyle, marginBottom: '10px', fontSize: '10px' }}>Pessoas citadas</div>
                       <div style={{ display: 'grid', gap: '8px' }}>
-                        {caseSuspects.filter((suspect: any) => !suspect.isOtherOption).map((suspect: any) => (
-                          <div key={suspect.id || suspect.name} style={{ display: 'grid', gridTemplateColumns: '32px minmax(0, 1fr) auto', gap: '10px', alignItems: 'center' }}>
-                            <div style={{
-                              width: '32px',
-                              height: '32px',
-                              borderRadius: '50%',
-                              border: '1px solid rgba(245,214,129,0.38)',
-                              background: suspect.image ? `url(${suspect.image}) center / cover` : 'rgba(245,214,129,0.12)',
-                              boxShadow: '0 0 18px rgba(0,0,0,0.28)'
-                            }} />
-                            <span style={{ color: 'rgba(255,255,255,0.88)', fontSize: '13px', fontWeight: 700, minWidth: 0 }}>{suspect.name}</span>
-                            <span style={{ color: 'var(--gold-soft)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '.12em', textAlign: 'right' }}>{suspect.role}</span>
-                          </div>
-                        ))}
+                        {caseSuspects.filter((suspect: any) => !suspect.isOtherOption).map((suspect: any) => {
+                          const portrait = getSuspectPortrait(suspect);
+                          return (
+                            <div key={suspect.id || suspect.name} style={{ display: 'grid', gridTemplateColumns: '32px minmax(0, 1fr) auto', gap: '10px', alignItems: 'center' }}>
+                              <div style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                border: '1px solid rgba(245,214,129,0.38)',
+                                background: portrait ? `url(${portrait}) center / cover` : 'rgba(245,214,129,0.12)',
+                                boxShadow: '0 0 18px rgba(0,0,0,0.28)'
+                              }} />
+                              <span style={{ color: 'rgba(255,255,255,0.88)', fontSize: '13px', fontWeight: 700, minWidth: 0 }}>{suspect.name}</span>
+                              <span style={{ color: 'var(--gold-soft)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '.12em', textAlign: 'right' }}>{suspect.role}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

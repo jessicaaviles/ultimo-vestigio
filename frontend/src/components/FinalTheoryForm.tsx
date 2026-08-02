@@ -22,6 +22,52 @@ interface FinalTheoryFormProps {
   suspects?: CaseSuspect[];
 }
 
+const suspectPortraits: Record<string, string> = {
+  augusto: '/suspects/augusto-alvarenga.png',
+  'augusto alvarenga': '/suspects/augusto-alvarenga.png',
+  bruno: '/suspects/bruno-tavares.png',
+  'bruno tavares': '/suspects/bruno-tavares.png',
+  cecilia: '/suspects/cecilia-alvarenga.png',
+  'cecília alvarenga': '/suspects/cecilia-alvarenga.png',
+  celina: '/suspects/celina-prado.png',
+  'celina prado': '/suspects/celina-prado.png',
+  dario: '/suspects/dario-velloso.png',
+  'dario velloso': '/suspects/dario-velloso.png',
+  heitor: '/suspects/heitor-campos.png',
+  'heitor campos': '/suspects/heitor-campos.png',
+  helena_duarte: '/suspects/helena-duarte.png',
+  'helena duarte': '/suspects/helena-duarte.png',
+  inae: '/suspects/inae-moura.png',
+  'inae moura': '/suspects/inae-moura.png',
+  lucia: '/suspects/lucia-ferraz.png',
+  'lúcia ferraz': '/suspects/lucia-ferraz.png',
+  marina: '/suspects/marina-reis.png',
+  'marina reis': '/suspects/marina-reis.png',
+  marta: '/suspects/marta-nobrega.png',
+  'marta nóbrega': '/suspects/marta-nobrega.png',
+  otavio: '/suspects/otavio-nunes.png',
+  'otávio nunes': '/suspects/otavio-nunes.png',
+  padre_miguel: '/suspects/padre-miguel.png',
+  'padre miguel': '/suspects/padre-miguel.png',
+  renato: '/suspects/renato-salles.png',
+  'renato salles': '/suspects/renato-salles.png',
+  renato_alvares: '/suspects/renato-alvares.png',
+  'renato álvares': '/suspects/renato-alvares.png',
+  sara: '/suspects/sara-fontes.png',
+  'sara fontes': '/suspects/sara-fontes.png',
+  tomas: '/suspects/tomas-arantes.png',
+  'tomás arantes': '/suspects/tomas-arantes.png',
+  vitor: '/suspects/vitor-leme.png',
+  'vítor leme': '/suspects/vitor-leme.png'
+};
+
+export const getSuspectPortrait = (suspect: Pick<CaseSuspect, 'id' | 'name' | 'image'>) => {
+  if (suspect.image) return suspect.image;
+  const id = String(suspect.id || '').toLowerCase();
+  const name = String(suspect.name || '').toLowerCase();
+  return suspectPortraits[id] || suspectPortraits[name] || '';
+};
+
 const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myTheory, theories, players, suspects = [] }) => {
   const socket = useSocket();
   const [what, setWhat] = useState('');
@@ -106,6 +152,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {suspects.map((suspect) => {
                 const selected = selectedSuspectId === suspect.id;
+                const portrait = getSuspectPortrait(suspect);
                 return (
                   <button
                     key={suspect.id}
@@ -131,13 +178,13 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
                       height: '72px',
                       borderRadius: '8px',
                       border: '1px solid rgba(197,168,128,0.25)',
-                      background: suspect.image ? `url(${suspect.image}) center / cover` : 'linear-gradient(145deg, rgba(197,168,128,0.18), rgba(255,255,255,0.03))',
+                      background: portrait ? `url(${portrait}) center / cover` : 'linear-gradient(145deg, rgba(197,168,128,0.18), rgba(255,255,255,0.03))',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       color: 'var(--eyebrow-gold)'
                     }}>
-                      {!suspect.image && (suspect.isOtherOption ? <UserRound size={28} /> : <Fingerprint size={28} />)}
+                      {!portrait && (suspect.isOtherOption ? <UserRound size={28} /> : <Fingerprint size={28} />)}
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ fontFamily: 'var(--font-serif)', fontSize: '19px', color: '#F8F9FA', lineHeight: 1.15 }}>{suspect.name}</div>
