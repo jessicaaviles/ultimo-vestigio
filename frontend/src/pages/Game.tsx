@@ -796,7 +796,10 @@ const Game: React.FC = () => {
               {theories.map((t: any, idx: number) => {
                 const author = players.find((p: any) => p.id === t.player_id);
                 const answers = JSON.parse(t.answers);
-                const text = answers.theory || (answers.what_happened ? `${answers.what_happened}. ${answers.who}. ${answers.how}. ${answers.why}` : 'Teoria em branco');
+                const theoryParts = answers.what_happened
+                  ? [answers.what_happened, answers.who, answers.how, answers.why && answers.why !== answers.how ? answers.why : ''].filter(Boolean)
+                  : [];
+                const text = answers.theory || (theoryParts.length ? theoryParts.join('. ') : 'Teoria em branco');
                 return (
                   <div key={idx} style={{ ...cardStyle }}>
                     <div style={{ fontWeight: 700, color: 'var(--accent-gold)', marginBottom: '8px', fontSize: '13px' }}>Investigador: {author?.display_name}</div>
