@@ -537,6 +537,7 @@ export const processGardenQuestion = (questionText: string) => {
   const asksMethod = asksAbout(['como', 'retirada', 'retirado', 'levada', 'levado', 'removeu', 'carregada', 'rota', 'caminho', 'saiu']);
   const asksEvidence = asksAbout(['pista', 'prova', 'indicio', 'indício', 'importa', 'relevante', 'vestigio', 'vestígio']);
   const asksLifeState = asksAbout(['viva', 'vivo', 'morta', 'morto', 'morreu', 'sobreviveu', 'sobrevivente']);
+  const asksCleaningProduct = asksAbout(['limpeza', 'desinfetante', 'detergente', 'sabao', 'sabão', 'alcool', 'álcool', 'higienizacao', 'higienização']);
 
   const entities = {
     nina: asksAbout(['nina', 'escultora', 'ela']),
@@ -722,6 +723,14 @@ export const processGardenQuestion = (questionText: string) => {
     return {
       classification: 'YES',
       rendered_text: 'Sim. O carrinho de manutenção é compatível com as marcas nos trilhos.',
+      fallback_used: false
+    };
+  }
+
+  if (entities.chemical && asksCleaningProduct) {
+    return {
+      classification: 'NO',
+      rendered_text: 'Não. O arquivo aponta para spray de restauração com efeito anestésico, não produto de limpeza.',
       fallback_used: false
     };
   }

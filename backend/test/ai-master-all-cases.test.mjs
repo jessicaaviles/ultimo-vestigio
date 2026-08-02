@@ -183,6 +183,8 @@ test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', 
     ['As canaletas explicam a falta de rastros?', 'YES', ['trilhos', 'pegadas']],
     ['Usaram um carrinho de manutenção?', 'YES', ['carrinho', 'trilhos']],
     ['A lona tinha produto químico?', 'YES', ['lona', 'odor químico']],
+    ['Foram encontrados produtos químicos no local?', 'YES', ['lona', 'odor químico']],
+    ['O produto era de limpeza?', 'NO', ['spray de restauração', 'limpeza']],
     ['As luzes apagadas importam?', 'YES', ['iluminação', 'janela']],
     ['Os refletores desligados importam?', 'YES', ['iluminação', 'janela']]
   ];
