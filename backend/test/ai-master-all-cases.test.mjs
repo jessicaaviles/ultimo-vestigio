@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   buildClarificationText,
   buildContestationText,
@@ -34,6 +36,7 @@ const answerWithContext = (question, context) =>
   processFactBasedQuestion(question, context.facts, context.opening || '');
 
 const matrixContext = (slug) => buildStaticContextFromMatrix(getCaseTruthMatrix(slug));
+const repoRoot = path.resolve(process.cwd(), '..');
 
 const caseSamples = [
   {
@@ -345,6 +348,28 @@ test('matriz responde parcialmente para pistas falsas e suspeitos com conexao li
     const result = answerWithContext(String(question), context);
     assert.equal(result?.classification, 'PARTIAL', `${slug} - ${question}`);
     assertIncludesTerms(result?.rendered_text || '', terms, `${slug} - ${question}`);
+  }
+});
+
+test('suspeitos cadastrados usam retratos existentes no frontend', () => {
+  const sources = [
+    path.join(repoRoot, 'backend/prisma/seed.ts'),
+    path.join(repoRoot, 'frontend/src/components/FinalTheoryForm.tsx')
+  ];
+  const imagePaths = new Set();
+
+  for (const sourcePath of sources) {
+    const source = fs.readFileSync(sourcePath, 'utf8');
+    for (const match of source.matchAll(/['"](?<image>\/suspects\/[^'"]+\.png)['"]/g)) {
+      imagePaths.add(match.groups.image);
+    }
+  }
+
+  assert.ok(imagePaths.size > 0, 'deveria encontrar retratos de suspeitos cadastrados');
+
+  for (const imagePath of imagePaths) {
+    const publicPath = path.join(repoRoot, 'frontend/public', String(imagePath));
+    assert.ok(fs.existsSync(publicPath), `Retrato ausente: ${imagePath}`);
   }
 });
 

@@ -78,6 +78,13 @@ Setima entrega concluida:
 - acertos de responsavel ou evento central sao limitados quando o mecanismo esta fraco;
 - testes cobrem o calculo ponderado e a penalizacao por respostas incompletas.
 
+Oitava entrega concluida:
+
+- criada trava editorial para retratos de suspeitos;
+- todo caminho `/suspects/*.png` citado no seed ou no seletor de teoria precisa existir em `frontend/public`;
+- o teste reduz o risco de personagens aparecerem sem avatar no resumo, votacao ou relatorio final;
+- a validacao prepara a Fase 2 de padronizacao editorial dos casos.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
