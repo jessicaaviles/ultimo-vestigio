@@ -504,6 +504,18 @@ test('trava anti-spoiler segura perguntas amplas sem bloquear perguntas especifi
   assertIncludesTerms(broad?.rendered_text || '', ['ampla', 'fato específico'], 'Anti-spoiler amplo');
   assert.equal(isBroadSolutionQuestion('Quem foi o culpado?'), true);
 
+  const solving = processRuleBasedQuestion('Quem foi o culpado?', context.rules, context.facts, 'SOLVING');
+  assert.equal(solving?.classification, 'UNKNOWN');
+  assertIncludesTerms(solving?.rendered_text || '', ['relatório final', 'teoria'], 'Anti-spoiler em formulacao');
+
+  const reveal = processRuleBasedQuestion('Quem foi o culpado?', context.rules, context.facts, 'REVEAL');
+  assert.equal(reveal?.classification, 'UNKNOWN');
+  assertIncludesTerms(reveal?.rendered_text || '', ['relatório final', 'solução'], 'Anti-spoiler em revelacao');
+
+  const completed = processRuleBasedQuestion('Quem foi o culpado?', context.rules, context.facts, 'COMPLETED');
+  assert.equal(completed?.classification, 'UNKNOWN');
+  assertIncludesTerms(completed?.rendered_text || '', ['relatório final', 'solução'], 'Anti-spoiler em caso concluido');
+
   const specific = processRuleBasedQuestion('Lúcia tinha motivo?', context.rules, context.facts);
   assert.equal(specific?.classification, 'YES');
   assertIncludesTerms(specific?.rendered_text || '', ['Lúcia', 'documentos'], 'Pergunta especifica');

@@ -588,7 +588,7 @@ io.on('connection', (socket) => {
       io.to(roomId).emit('question_processing', { userId });
 
       // 1. Processar Pergunta no Mestre IA (Gemini)
-      let aiResponse = await processQuestion(roomId, cleanQuestion, room.case_version_id);
+      let aiResponse = await processQuestion(roomId, cleanQuestion, room.case_version_id, room.status);
 
       // Classificações que pedem reformulação semântica
       if (['AMBIGUOUS', 'MULTI_PREMISE', 'BLOCKED'].includes(aiResponse.classification)) {
@@ -752,7 +752,7 @@ io.on('connection', (socket) => {
       const previousAnswer = question.master_answers[0];
       if (!previousAnswer) return socket.emit('room_error', 'Não há resposta do Mestre para revisar.');
 
-      const reviewedAnswer = await processQuestion(roomId, question.original_text, question.room.case_version_id);
+      const reviewedAnswer = await processQuestion(roomId, question.original_text, question.room.case_version_id, question.room.status);
       const correctionText = buildContestationText(previousAnswer, reviewedAnswer);
       const changed = String(previousAnswer.classification || '').toUpperCase() !== String(reviewedAnswer.classification || '').toUpperCase()
         || String(previousAnswer.rendered_text || '').trim() !== String(reviewedAnswer.rendered_text || '').trim();

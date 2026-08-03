@@ -178,6 +178,8 @@ const BROAD_SOLUTION_WORDS = new Set([
   'solução'
 ]);
 
+type InvestigationPhase = 'IN_PROGRESS' | 'SOLVING' | 'REVEAL' | 'COMPLETED' | 'PAUSED' | string;
+
 export const isBroadSolutionQuestion = (questionText: string) => {
   const normalized = normalizeText(questionText);
   const words = baseTokensForMatching(questionText);
@@ -189,14 +191,20 @@ export const isBroadSolutionQuestion = (questionText: string) => {
   return startsBroad && mentionsBroadSolution && words.length <= 3 && !hasSpecificAnchor;
 };
 
-const buildAntiSpoilerAnswer = () => ({
+const buildAntiSpoilerAnswer = (phase: InvestigationPhase = 'IN_PROGRESS') => ({
   classification: 'UNKNOWN',
-  rendered_text: 'Desconhecido. A pergunta está ampla demais; investigue um fato específico antes de formular a solução.',
+  rendered_text: phase === 'SOLVING'
+    ? 'Desconhecido. Use o relatório final para formular sua teoria; investigue fatos específicos se ainda houver dúvida.'
+    : phase === 'REVEAL' || phase === 'COMPLETED'
+      ? 'Desconhecido. A solução ampla pertence ao relatório final do caso.'
+      : phase === 'PAUSED'
+        ? 'Desconhecido. A investigação está pausada; retome a sala para consultar fatos específicos.'
+        : 'Desconhecido. A pergunta está ampla demais; investigue um fato específico antes de formular a solução.',
   fallback_used: false
 });
 
-export const processRuleBasedQuestion = (questionText: string, answerRules: any[], facts: Array<{ fact_key: string; statement: string }> = []) => {
-  if (isBroadSolutionQuestion(questionText)) return buildAntiSpoilerAnswer();
+export const processRuleBasedQuestion = (questionText: string, answerRules: any[], facts: Array<{ fact_key: string; statement: string }> = [], phase: InvestigationPhase = 'IN_PROGRESS') => {
+  if (isBroadSolutionQuestion(questionText)) return buildAntiSpoilerAnswer(phase);
 
   const questionWords = new Set(tokenizeForMatching(questionText));
   if (questionWords.size === 0) return null;
@@ -1242,7 +1250,7 @@ export const buildContestationText = (
   return `Concluída. A resposta permanece válida: ${reviewedText || previousText}`;
 };
 
-export const processQuestion = async (roomId: string, questionText: string, caseVersionId: string) => {
+export const processQuestion = async (roomId: string, questionText: string, caseVersionId: string, phase: InvestigationPhase = 'IN_PROGRESS') => {
   try {
     const cleanQuestion = String(questionText || '').trim().slice(0, 500);
     if (!cleanQuestion) throw new Error('Empty question');
@@ -1294,7 +1302,7 @@ export const processQuestion = async (roomId: string, questionText: string, case
       return { classification: 'UNKNOWN', rendered_text: 'O arquivo do caso não pôde ser acessado agora. Tente novamente em instantes.', fallback_used: true };
     }
 
-    const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, contextualAnswerRules, contextualFacts);
+    const ruleBasedAnswer = processRuleBasedQuestion(cleanQuestion, contextualAnswerRules, contextualFacts, phase);
     if (ruleBasedAnswer) return ruleBasedAnswer;
 
     const factBasedAnswer = processFactBasedQuestion(cleanQuestion, contextualFacts, caseVersion.opening);

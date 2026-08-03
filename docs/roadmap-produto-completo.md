@@ -64,6 +64,13 @@ Quinta entrega concluida:
 - perguntas sobre casos faceis, medios e dificeis foram cobertas por teste automatizado com respostas parciais;
 - o Mestre ficou menos binario em perguntas investigativas sem entregar a solucao completa.
 
+Sexta entrega concluida:
+
+- o Mestre passou a receber a fase real da sala ao responder perguntas;
+- perguntas amplas de solucao agora recebem orientacoes diferentes em investigacao, formulacao, revelacao e caso concluido;
+- contestacoes tambem usam a fase atual da sala para revisar respostas;
+- testes garantem que a trava anti-spoiler por fase nao bloqueia perguntas especificas.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
