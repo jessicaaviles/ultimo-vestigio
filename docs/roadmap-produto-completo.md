@@ -156,6 +156,14 @@ Decima oitava entrega concluida:
 - logs verbosos de socket, turno e payload HTTP foram removidos do runtime;
 - teste automatizado protege contra retorno de logs de debug e abas sem entrega real.
 
+Decima nona entrega concluida:
+
+- foi criada a tabela real `anonymous_user_friendships` para amizades entre jogadores;
+- o backend passou a listar, adicionar e remover amigos via endpoints `/api/friends`;
+- a pagina de amigos agora carrega rede real, fotos e estatisticas basicas do banco;
+- quando o jogador nao existe, a tela copia o link de convite em vez de criar amigo ficticio;
+- testes automatizados protegem a integracao real de amizades.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

@@ -162,6 +162,7 @@ app.use('/api', (req, res, next) => {
 import userRoutes from './routes/userRoutes';
 import roomRoutes from './routes/roomRoutes';
 import feedbackRoutes from './routes/feedbackRoutes';
+import friendRoutes from './routes/friendRoutes';
 import profileRoutes from './routes/profileRoutes';
 import authRoutes from './routes/authRoutes';
 import aiRoutes from './routes/aiRoutes';
@@ -170,6 +171,7 @@ import aiRoutes from './routes/aiRoutes';
 app.use('/api', userRoutes);
 app.use('/api', roomRoutes);
 app.use('/api', feedbackRoutes);
+app.use('/api', friendRoutes);
 app.use('/api', profileRoutes);
 app.use('/api', authRoutes);
 app.use('/api/ai', aiRoutes);

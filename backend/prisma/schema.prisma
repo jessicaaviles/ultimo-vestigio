@@ -30,6 +30,23 @@ model anonymous_users {
   
   room_players        room_players[]
   rooms_hosted        rooms[]
+  friendships_started anonymous_user_friendships[] @relation("FriendshipRequester")
+  friendships_received anonymous_user_friendships[] @relation("FriendshipAddressee")
+}
+
+model anonymous_user_friendships {
+  id            String   @id @default(uuid())
+  requester_id  String
+  addressee_id  String
+  status        String   @default("ACCEPTED")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  requester     anonymous_users @relation("FriendshipRequester", fields: [requester_id], references: [id])
+  addressee     anonymous_users @relation("FriendshipAddressee", fields: [addressee_id], references: [id])
+
+  @@unique([requester_id, addressee_id])
+  @@index([addressee_id])
 }
 
 model cases {

@@ -504,10 +504,16 @@ test('feedback de conclusao usa metricas reais da sala', () => {
 
 test('pagina de amigos nao cria rede local ficticia', () => {
   const friendsSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/Friends.tsx'), 'utf8');
+  const schemaSource = fs.readFileSync(path.join(repoRoot, 'backend/prisma/schema.prisma'), 'utf8');
+  const apiSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/services/api.ts'), 'utf8');
+  const backendSource = fs.readFileSync(path.join(repoRoot, 'backend/src/controllers/friendController.ts'), 'utf8');
 
   assert.doesNotMatch(friendsSource, /uv_friends|uv_friend_invites|localStorage\.setItem|Convite aceito|Primeiro caso/, 'Amigos nao deve persistir amigos ou conquistas ficticias');
-  assert.match(friendsSource, /const friends: Friend\[\] = \[\]/, 'Amigos deve permanecer vazio ate existir fonte real');
-  assert.match(friendsSource, /rede de amigos será sincronizada quando o serviço estiver ativo/, 'Adicionar amigo deve explicar que a sincronizacao real ainda depende do servico');
+  assert.match(friendsSource, /listFriends\(userId\)/, 'Amigos deve carregar rede real do backend');
+  assert.match(friendsSource, /removeFriend\(userId, friendshipId\)/, 'Amigos deve permitir remover amizade real');
+  assert.match(schemaSource, /model anonymous_user_friendships/, 'Schema deve ter tabela real de amizades');
+  assert.match(apiSource, /export const addFriend/, 'Frontend deve expor chamada real de adicionar amigo');
+  assert.match(backendSource, /anonymous_user_friendships\.findMany/, 'Backend deve listar amizades reais');
 });
 
 test('telas imersivas de blackwell nao vazam para outros casos nem entregam solucao fixa', () => {

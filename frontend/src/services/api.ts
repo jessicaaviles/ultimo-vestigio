@@ -110,6 +110,31 @@ export const resetCaseProgress = async (userId: string, caseSlug: string, token:
   return res.json();
 };
 
+export const listFriends = async (userId: string) => {
+  const params = new URLSearchParams({ userId });
+  const res = await apiFetch(`${API_URL}/friends?${params.toString()}`, { cache: 'no-store' });
+  return res.json();
+};
+
+export const addFriend = async (userId: string, lookup: string) => {
+  const res = await apiFetch(`${API_URL}/friends`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, lookup })
+  });
+  return res.json();
+};
+
+export const removeFriend = async (userId: string, friendshipId: string) => {
+  const params = new URLSearchParams({ userId });
+  const res = await apiFetch(`${API_URL}/friends/${encodeURIComponent(friendshipId)}?${params.toString()}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId })
+  });
+  return res.json();
+};
+
 export const authRegister = async (email: string, password: string, displayName?: string) => {
   const res = await apiFetch(`${API_URL}/auth/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, displayName }) });
   return res.json();

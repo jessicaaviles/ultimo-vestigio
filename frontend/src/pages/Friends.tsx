@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import {
   Copy,
@@ -9,8 +9,10 @@ import {
   Trophy,
   UserPlus,
   Users,
+  Trash2,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { addFriend, listFriends, removeFriend } from '../services/api';
 
 type Friend = {
   id: string;
@@ -24,6 +26,10 @@ type Friend = {
   casesSolved: number;
   achievements: string[];
   avatar: string;
+  stats?: {
+    casesSolved: number;
+    correctTheories: number;
+  };
 };
 
 const getInitials = (name: string) =>
@@ -43,10 +49,11 @@ const statusLabels: Record<Friend['status'], string> = {
 
 const Friends: React.FC = () => {
   const { user } = useAuth();
-  const friends: Friend[] = [];
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [query, setQuery] = useState('');
   const [nameOrEmail, setNameOrEmail] = useState('');
   const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const inviteCode = useMemo(() => {
     const raw = `${user?.userId || localStorage.getItem('userId') || 'UV'}-${user?.displayName || 'investigador'}`;
@@ -54,6 +61,33 @@ const Friends: React.FC = () => {
   }, [user?.displayName, user?.userId]);
 
   const inviteLink = `${window.location.origin}/register?invite=${inviteCode}`;
+
+  useEffect(() => {
+    const userId = user?.userId || localStorage.getItem('userId');
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+    setLoading(true);
+    listFriends(userId)
+      .then((response) => {
+        if (!active) return;
+        if (response.success) setFriends(response.data?.friends || []);
+        else setStatus(response.error || 'Não foi possível carregar sua rede.');
+      })
+      .catch(() => {
+        if (active) setStatus('Não foi possível carregar sua rede.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user?.userId]);
 
   const filteredFriends = friends.filter((friend) => {
     const haystack = `${friend.name} ${friend.handle} ${friend.email}`.toLowerCase();
@@ -70,14 +104,49 @@ const Friends: React.FC = () => {
     event.preventDefault();
     const value = nameOrEmail.trim();
     if (!value) return;
-    navigator.clipboard?.writeText(`${inviteLink}&to=${encodeURIComponent(value)}`).catch(() => {});
-    setNameOrEmail('');
-    setStatus('Link de convite preparado. A rede de amigos será sincronizada quando o serviço estiver ativo.');
+    const userId = user?.userId || localStorage.getItem('userId');
+    if (!userId) {
+      setStatus('Crie ou acesse sua conta para adicionar amigos.');
+      return;
+    }
+
+    setLoading(true);
+    addFriend(userId, value)
+      .then(async (response) => {
+        if (response.success) {
+          setFriends((current) => {
+            const nextFriend = response.data.friend;
+            const withoutDuplicate = current.filter((friend) => friend.id !== nextFriend.id);
+            return [nextFriend, ...withoutDuplicate];
+          });
+          setNameOrEmail('');
+          setStatus('Amigo adicionado à sua rede.');
+          return;
+        }
+        await navigator.clipboard?.writeText(`${inviteLink}&to=${encodeURIComponent(value)}`).catch(() => {});
+        setStatus(response.error || 'Jogador não encontrado. Link de convite copiado.');
+      })
+      .catch(() => setStatus('Não foi possível adicionar agora. Tente novamente.'))
+      .finally(() => setLoading(false));
   };
 
   const handleCopyInvite = async () => {
     await navigator.clipboard?.writeText(inviteLink).catch(() => {});
     setStatus('Link de convite copiado.');
+  };
+
+  const handleRemoveFriend = async (friendshipId: string) => {
+    const userId = user?.userId || localStorage.getItem('userId');
+    if (!userId) return;
+    setLoading(true);
+    const response = await removeFriend(userId, friendshipId).catch(() => ({ success: false, error: 'Não foi possível remover.' }));
+    if (response.success) {
+      setFriends((current) => current.filter((friend) => friend.id !== friendshipId));
+      setStatus('Amigo removido da sua rede.');
+    } else {
+      setStatus(response.error || 'Não foi possível remover.');
+    }
+    setLoading(false);
   };
 
   return (
@@ -126,7 +195,7 @@ const Friends: React.FC = () => {
               aria-label="Nome, usuário ou e-mail do amigo"
             />
             <button className="btn-primary" type="submit">
-              <UserPlus size={16} /> Adicionar
+              <UserPlus size={16} /> {loading ? 'Aguarde' : 'Adicionar'}
             </button>
           </div>
         </form>
@@ -159,6 +228,13 @@ const Friends: React.FC = () => {
         </div>
 
         <div className="friends-grid">
+          {loading && filteredFriends.length === 0 && (
+            <div className="friends-empty">
+              <MailPlus size={30} />
+              <h3>Carregando rede</h3>
+              <p>Estamos buscando seus amigos e estatísticas reais.</p>
+            </div>
+          )}
           {filteredFriends.map((friend) => (
             <article className="friend-card" key={friend.id}>
               <div className="friend-card-top">
@@ -178,16 +254,16 @@ const Friends: React.FC = () => {
 
               <div className="friend-stats">
                 <div>
-                  <strong>LV.{friend.level}</strong>
-                  <span>{friend.xp.toLocaleString('pt-BR')} XP</span>
+                  <strong>{friend.stats?.correctTheories ?? 0}</strong>
+                  <span>deduções</span>
                 </div>
                 <div>
-                  <strong>{friend.casesSolved}</strong>
+                  <strong>{friend.stats?.casesSolved ?? friend.casesSolved}</strong>
                   <span>casos</span>
                 </div>
                 <div>
-                  <strong>{friend.accuracy}%</strong>
-                  <span>precisão</span>
+                  <strong>{friend.achievements.length}</strong>
+                  <span>conquistas</span>
                 </div>
               </div>
 
@@ -204,11 +280,16 @@ const Friends: React.FC = () => {
                   </div>
                 </div>
               )}
+              <div className="friend-actions">
+                <button className="friend-remove" onClick={() => handleRemoveFriend(friend.id)} aria-label={`Excluir ${friend.name}`}>
+                  <Trash2 size={15} />
+                </button>
+              </div>
             </article>
           ))}
         </div>
 
-        {filteredFriends.length === 0 && (
+        {!loading && filteredFriends.length === 0 && (
           <div className="friends-empty">
             <MailPlus size={30} />
             <h3>Nenhum investigador encontrado</h3>
