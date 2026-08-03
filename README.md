@@ -14,6 +14,7 @@ PWA multiplayer para partidas de investigação com uma IA atuando como Mestre d
 
 Ordem principal de leitura:
 
+0. `docs/roadmap-produto-completo.md`
 1. `docs/05-antigravity/prompt-antigravity-mvp-1.md`
 2. `docs/01-planejamento/planejador.md`
 3. `docs/02-produto/prd-mvp-1.md`
