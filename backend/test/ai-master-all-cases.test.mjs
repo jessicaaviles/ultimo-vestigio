@@ -38,6 +38,18 @@ const answerWithContext = (question, context) =>
 const matrixContext = (slug) => buildStaticContextFromMatrix(getCaseTruthMatrix(slug));
 const repoRoot = path.resolve(process.cwd(), '..');
 
+const parseSeedHints = () => {
+  const source = fs.readFileSync(path.join(repoRoot, 'backend/prisma/seed-phase3.ts'), 'utf8');
+  const cases = new Map();
+
+  for (const match of source.matchAll(/slug:\s*'(?<slug>[^']+)'[\s\S]*?hints:\s*\[(?<hints>[\s\S]*?)\]\s*\}/g)) {
+    const hints = [...match.groups.hints.matchAll(/'(?<hint>(?:\\'|[^'])*)'/g)].map((hintMatch) => hintMatch.groups.hint);
+    cases.set(match.groups.slug, hints);
+  }
+
+  return cases;
+};
+
 const caseSamples = [
   {
     title: 'O Presente Desaparecido',
@@ -424,6 +436,38 @@ test('casos com suspeitos apresentam personagens no enunciado com funcao editori
       assert.match(opening, new RegExp(normalize(firstName)), `${caseData.slug} deveria citar ${suspect.name} no enunciado`);
       assert.ok(String(suspect.role || '').trim().length >= 5, `${caseData.slug} - ${suspect.name} precisa de funcao`);
       assert.ok(String(suspect.description || '').trim().length >= 35, `${caseData.slug} - ${suspect.name} precisa de contexto/motivo possivel`);
+    }
+  }
+});
+
+test('pistas seguem quantidade editorial e nao se repetem por caso', () => {
+  const hintsByCase = parseSeedHints();
+  const expectedHintCounts = {
+    'o-presente-desaparecido': 3,
+    'o-guarda-chuva-molhado': 3,
+    'o-elevador-que-nao-parou': 3,
+    'a-mensagem-das-23h17': 3,
+    'o-retrato-que-piscou': 3,
+    blackwell: 3,
+    'o-quarto-7': 5,
+    'a-heranca-de-vidro': 5,
+    'o-sino-das-tres-batidas': 5,
+    'a-fita-sem-rosto': 5,
+    'o-jardim-sem-pegadas': 5
+  };
+
+  for (const [slug, expectedCount] of Object.entries(expectedHintCounts)) {
+    const hints = hintsByCase.get(slug);
+    assert.ok(hints, `${slug} deveria ter pistas cadastradas`);
+    assert.equal(hints.length, expectedCount, `${slug} deveria ter ${expectedCount} pistas`);
+
+    const normalizedHints = hints.map(normalize);
+    assert.equal(new Set(normalizedHints).size, hints.length, `${slug} nao deveria repetir pistas`);
+
+    for (const hint of hints) {
+      const words = normalize(hint).split(/\s+/).filter(Boolean);
+      assert.ok(words.length >= 8, `${slug} tem pista curta demais: ${hint}`);
+      assert.doesNotMatch(normalize(hint), /culpado e|responsavel e|solucao e/, `${slug} nao deve entregar a solucao direto: ${hint}`);
     }
   }
 });

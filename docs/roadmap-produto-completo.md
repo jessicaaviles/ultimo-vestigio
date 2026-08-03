@@ -92,6 +92,13 @@ Nona entrega concluida:
 - corrigido o enunciado de `A Heranca de Vidro` para apresentar Cecilia, Renato e Marta junto de Augusto;
 - o teste reduz o risco de nomes surgirem apenas na resolucao ou na tela de votacao.
 
+Decima entrega concluida:
+
+- criada validacao editorial das pistas cadastradas no seed de fase 3;
+- casos simples ficam protegidos com 3 pistas e casos complexos com 5 pistas;
+- pistas duplicadas, curtas demais ou que entregam a solucao diretamente passam a falhar nos testes;
+- a regra ajuda a manter investigacao justa sem excesso de dicas.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
