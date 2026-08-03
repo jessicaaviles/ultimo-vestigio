@@ -85,6 +85,13 @@ Oitava entrega concluida:
 - o teste reduz o risco de personagens aparecerem sem avatar no resumo, votacao ou relatorio final;
 - a validacao prepara a Fase 2 de padronizacao editorial dos casos.
 
+Nona entrega concluida:
+
+- criada trava editorial para casos com lista formal de suspeitos;
+- suspeitos precisam aparecer no enunciado e ter funcao/contexto suficiente;
+- corrigido o enunciado de `A Heranca de Vidro` para apresentar Cecilia, Renato e Marta junto de Augusto;
+- o teste reduz o risco de nomes surgirem apenas na resolucao ou na tela de votacao.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

@@ -373,6 +373,61 @@ test('suspeitos cadastrados usam retratos existentes no frontend', () => {
   }
 });
 
+test('casos com suspeitos apresentam personagens no enunciado com funcao editorial', () => {
+  const editorialCases = [
+    {
+      slug: 'a-heranca-de-vidro',
+      opening: 'Isadora Vale, restauradora de vitrais e herdeira menor da família, foi encontrada morta no conservatório da Casa Alvarenga. Estavam diretamente ligados à noite: Augusto Alvarenga, tio e administrador da fundação; Cecília Alvarenga, prima que discutiu sobre herança; Dr. Renato Salles, médico da família; e Marta Nóbrega, governanta com acesso às chaves. A porta estava trancada por dentro, o teto de vidro tinha uma rachadura recente e o relógio de bronze parou às 22h46. Horas antes, Isadora avisou que mudaria o testamento e tiraria o controle da fundação das mãos de Augusto.',
+      suspects: [
+        { name: 'Augusto Alvarenga', role: 'Administrador da fundação', description: 'Tio de Isadora. Controlava as contas da família e perderia poder com a nova auditoria.' },
+        { name: 'Cecília Alvarenga', role: 'Prima de Isadora', description: 'Discutiu com Isadora sobre herança e foi vista deixando a casa antes da tempestade.' },
+        { name: 'Dr. Renato Salles', role: 'Médico da família', description: 'Receitava medicamentos cardíacos e conhecia o histórico clínico dos Alvarenga.' },
+        { name: 'Marta Nóbrega', role: 'Governanta', description: 'Tinha acesso às chaves da casa e encontrou o conservatório pouco antes da polícia chegar.' }
+      ]
+    },
+    {
+      slug: 'o-sino-das-tres-batidas',
+      opening: 'Na antiga Escola São Brás, o conselho se reuniu para decidir a venda do prédio histórico. Estavam diretamente ligados à decisão: Lúcia Ferraz, presidente do conselho; Padre Miguel, ex-diretor; Otávio Nunes, comprador interessado; e Marina Reis, professora que liderava protestos. Às 21h, o sino da torre, desativado havia anos, tocou três vezes. O acesso à torre estava trancado, o zelador Elias caiu no pátio interno e a chave da torre estava no bolso dele.',
+      suspects: [
+        { name: 'Lúcia Ferraz', role: 'Presidente do conselho', description: 'Defendia a venda imediata da escola e controlava os documentos da negociação.' },
+        { name: 'Padre Miguel', role: 'Ex-diretor', description: 'Era contra a venda e tinha acesso histórico à torre.' },
+        { name: 'Otávio Nunes', role: 'Comprador interessado', description: 'Representava a empresa que compraria o prédio.' },
+        { name: 'Marina Reis', role: 'Professora', description: 'Organizou protestos contra a reunião do conselho.' }
+      ]
+    },
+    {
+      slug: 'a-fita-sem-rosto',
+      opening: 'No laboratório Nereida, um protótipo de bateria biológica desapareceu às 22h13. Estavam diretamente ligados ao projeto: Bruno Tavares, coordenador técnico; Inae Moura, bioquímica; Sara Fontes, estagiária; e Heitor Campos, investidor. A câmera mostra uma figura de jaleco atravessando o corredor sem rosto identificável. Os quatro apareciam em videoconferência no mesmo horário, com áudio e imagem ativos.',
+      suspects: [
+        { name: 'Bruno Tavares', role: 'Coordenador técnico', description: 'Administrava tokens de manutenção e tinha dívidas recentes.' },
+        { name: 'Inae Moura', role: 'Bioquímica', description: 'Disputava autoria da patente com Bruno.' },
+        { name: 'Sara Fontes', role: 'Estagiária', description: 'Foi vista perto da sala de servidores mais cedo.' },
+        { name: 'Heitor Campos', role: 'Investidor', description: 'Pressionava a equipe por resultados antes da rodada de financiamento.' }
+      ]
+    },
+    {
+      slug: 'o-jardim-sem-pegadas',
+      opening: 'Durante a inauguração de um jardim-labirinto, a escultora Nina Arantes desapareceu entre 20h40 e 21h05. A chuva deixou a terra mole, mas não havia pegadas saindo do centro. Estavam diretamente ligados ao evento: Dario Velloso, curador que organizou a exposição; Celina Prado, paisagista do labirinto; Tomás Arantes, irmão de Nina; e Vítor Leme, colecionador que comprou uma obra suspeita. Uma tesoura de poda estava caída ao lado da estátua principal, recém-lavada pela água.',
+      suspects: [
+        { name: 'Dario Velloso', role: 'Curador', description: 'Organizou a exposição e negociava obras em nome de Nina.' },
+        { name: 'Celina Prado', role: 'Paisagista', description: 'Conhecia o desenho do labirinto e os trilhos de drenagem.' },
+        { name: 'Tomás Arantes', role: 'Irmão de Nina', description: 'Discutiu com Nina sobre direitos autorais da família.' },
+        { name: 'Vítor Leme', role: 'Colecionador', description: 'Comprou uma obra suspeita de autenticidade.' }
+      ]
+    }
+  ];
+
+  for (const caseData of editorialCases) {
+    const opening = normalize(caseData.opening);
+    for (const suspect of caseData.suspects) {
+      const firstName = suspect.name.split(/\s+/)[0];
+      assert.match(opening, new RegExp(normalize(firstName)), `${caseData.slug} deveria citar ${suspect.name} no enunciado`);
+      assert.ok(String(suspect.role || '').trim().length >= 5, `${caseData.slug} - ${suspect.name} precisa de funcao`);
+      assert.ok(String(suspect.description || '').trim().length >= 35, `${caseData.slug} - ${suspect.name} precisa de contexto/motivo possivel`);
+    }
+  }
+});
+
 test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
   const samples = [
     ['A água veio da chuva?', 'NO', ['água', 'chuva']],
