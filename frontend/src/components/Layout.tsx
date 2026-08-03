@@ -14,7 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { notifications, hasAny } = useNotifications();
+  const { notifications, hasAny, clearFriendInvites } = useNotifications();
   const { user: authUser, loading: authLoading } = useAuth();
 
   const isActive = (path: string) => path === '/' ? location.pathname === '/' : path === 'map' ? location.pathname.includes('/cases') : location.pathname.includes(path);
@@ -192,6 +192,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (location.pathname === '/friends') {
+      clearFriendInvites();
+    }
+  }, [clearFriendInvites, location.pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -509,8 +515,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>
             Meu perfil
           </button>
-          <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/friends'); }}>
+          <button className="menu-dropdown-item menu-dropdown-item--with-badge" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/friends'); }}>
             Amigos
+            {notifications.friendInvites > 0 && (
+              <span className="menu-badge">{notifications.friendInvites > 99 ? '99+' : notifications.friendInvites}</span>
+            )}
           </button>
           <button className="menu-dropdown-item" role="menuitem" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>
             Configurações
