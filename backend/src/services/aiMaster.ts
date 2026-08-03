@@ -211,7 +211,147 @@ const staticRule = (intent_key: string, examples: string[], relatedFactKeys: str
   default_classification: defaultClassification
 });
 
+type TruthVerdict = 'YES' | 'NO' | 'PARTIAL' | 'UNKNOWN';
+
+type CaseTruthEntry = {
+  fact_key: string;
+  statement: string;
+  examples: string[];
+  verdict: TruthVerdict;
+  is_solution_critical?: boolean;
+};
+
+type CaseEntityAlias = {
+  canonical: string;
+  aliases: string[];
+};
+
+type CaseTruthMatrix = {
+  opening?: string;
+  entities: CaseEntityAlias[];
+  truths: CaseTruthEntry[];
+};
+
+const truth = (
+  fact_key: string,
+  statement: string,
+  examples: string[],
+  verdict: TruthVerdict = 'YES',
+  is_solution_critical = false
+): CaseTruthEntry => ({ fact_key, statement, examples, verdict, is_solution_critical });
+
+const entity = (canonical: string, aliases: string[] = []): CaseEntityAlias => ({ canonical, aliases });
+
+export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
+  const matrices: Record<string, CaseTruthMatrix> = {
+    'o-presente-desaparecido': {
+      entities: [
+        entity('anfitrião', ['dono da casa', 'organizador', 'host']),
+        entity('presente', ['caixa', 'embrulho', 'embalagem'])
+      ],
+      truths: [
+        truth('empty_box_before_party', 'A caixa já estava vazia antes do desaparecimento.', ['A caixa estava vazia?', 'O presente estava dentro da caixa?', 'Tinha algo na caixa?'], 'YES', true),
+        truth('folded_under_tablecloth', 'A embalagem foi dobrada e escondida sob a toalha.', ['A caixa foi escondida na mesa?', 'Estava debaixo da toalha?', 'A embalagem ficou sob a toalha?'], 'YES', true),
+        truth('host_staged_game', 'O anfitrião encenou o sumiço para iniciar uma caça ao tesouro.', ['Foi encenação?', 'O anfitrião planejou?', 'Era uma brincadeira?', 'Era pegadinha?', 'Foi caça ao tesouro?'], 'YES', true),
+        truth('real_present_elsewhere', 'O presente real estava escondido em outro lugar da casa.', ['O presente estava em outro lugar?', 'O presente real estava escondido?'], 'YES', true),
+        truth('nobody_left_room', 'Ninguém precisou sair do ambiente para a caixa desaparecer.', ['Alguém saiu da sala?', 'Precisaram sair do ambiente?', 'Alguém deixou a sala?'], 'NO'),
+        truth('present_not_stolen', 'Ninguém roubou o presente; o sumiço foi uma encenação planejada.', ['Alguém roubou o presente?', 'Foi roubo?', 'O presente foi furtado?', 'Alguém levou o presente?'], 'NO', true)
+      ]
+    },
+    'o-quarto-7': {
+      entities: [
+        entity('Helena Duarte', ['helena', 'hospede', 'mulher']),
+        entity('Renato Álvares', ['renato', 'gerente']),
+        entity('Hotel Vesper', ['hotel', 'vesper'])
+      ],
+      truths: [
+        truth('renato_master_key', 'Renato usou a chave mestra para encenar o quarto trancado.', ['A porta foi trancada por dentro?', 'Renato usou chave mestra?', 'O quarto trancado era falso?', 'Renato é o responsável?', 'Renato é culpado?'], 'YES', true),
+        truth('door_not_forced', 'A porta não foi arrombada; Renato usou uma chave mestra.', ['A porta foi arrombada?', 'A porta foi forçada?', 'A fechadura foi quebrada?'], 'NO', true),
+        truth('tea_sedative', 'O chá de Helena continha sedativo não letal.', ['O chá tinha sedativo?', 'A bebida tinha sedativo?', 'Helena foi drogada?', 'A bebida foi adulterada?'], 'YES', true),
+        truth('camera_service_stairs', 'A câmera foi virada para ocultar a rota pela escada de serviço.', ['A câmera foi mexida?', 'A escada de serviço importa?', 'A escada era a rota?'], 'YES', true),
+        truth('clock_false_time', 'O relógio quebrado em 23h17 criou uma hora falsa.', ['O relógio marcava hora falsa?', 'O horário 23h17 era falso?', 'O relógio foi usado no álibi?'], 'YES', true),
+        truth('father_motive', 'Helena tinha provas ligadas à inocência do pai e aos desvios do hotel.', ['O motivo era o pai de Helena?', 'Helena ia denunciar o hotel?', 'Havia desvio de manutenção?'], 'YES', true),
+        truth('forged_note', 'O bilhete de despedida foi forjado para simular uma tentativa de suicídio.', ['Helena tentou se matar?', 'Foi suicídio?', 'O bilhete era verdadeiro?', 'A nota era verdadeira?'], 'NO', true)
+      ]
+    },
+    'o-elevador-que-nao-parou': {
+      entities: [
+        entity('mulher desaparecida', ['mulher', 'ela', 'passageira']),
+        entity('elevador', ['cabine']),
+        entity('rota de manutenção', ['poço', 'shaft', 'alçapão', 'escotilha'])
+      ],
+      truths: [
+        truth('elevator_stopped_between_floors', 'O elevador parou por alguns minutos entre o segundo e o terceiro andar.', ['O elevador parou?', 'Ele parou entre andares?', 'Ficou parado no meio?', 'O elevador ficou preso?', 'Travou entre andares?'], 'YES', true),
+        truth('elevator_trapdoor_unlocked', 'O alçapão do teto do elevador estava destrancado.', ['Ela saiu pelo teto?', 'O alçapão estava aberto?', 'Foi pela escotilha?', 'O alçapão estava destrancado?'], 'YES', true),
+        truth('shaft_exit_route', 'A saída ocorreu pela rota de manutenção do poço do elevador.', ['Usou o poço do elevador?', 'Saiu pela rota de manutenção?', 'Ela saiu pelo poço de manutenção?'], 'YES', true),
+        truth('elevator_no_floor_exit', 'Ela não saiu por nenhum andar monitorado; a rota foi o poço de manutenção.', ['Ela saiu em algum andar?', 'A porta abriu no andar?', 'Passou pela recepção?'], 'NO', true),
+        truth('not_empty_magic', 'O elevador não estava vazio por truque sobrenatural; houve fuga técnica.', ['Foi sobrenatural?', 'Foi magia?', 'Desapareceu por fantasma?'], 'NO'),
+        truth('not_vanished', 'A pessoa não evaporou nem desapareceu por magia; ela saiu pela manutenção.', ['Ela evaporou?', 'Ela sumiu por mágica?'], 'NO')
+      ]
+    },
+    'a-mensagem-das-23h17': {
+      entities: [
+        entity('pessoa desaparecida', ['vitima', 'vítima', 'ela']),
+        entity('celular', ['telefone', 'aparelho']),
+        entity('computador', ['notebook', 'pc'])
+      ],
+      truths: [
+        truth('message_scheduled_script', 'A mensagem das 23h17 foi enviada por automação agendada.', ['A mensagem foi agendada?', 'Foi script?', 'Foi automática?', 'Foi automação?', 'Foi programada?'], 'YES', true),
+        truth('computer_sent_message', 'O computador ligado executou a automação agendada de envio sincronizado.', ['O computador enviou?', 'Foi programada no computador?', 'O notebook disparou a mensagem?'], 'YES', true),
+        truth('phone_left_charging', 'O celular ficou em casa no carregador.', ['O celular ficou carregando?'], 'YES', true),
+        truth('phone_not_with_victim', 'A pessoa não estava com o celular; ele ficou em casa no carregador.', ['A pessoa estava com o celular?', 'O celular estava com ela?'], 'NO', true),
+        truth('message_not_sent_live', 'A pessoa desaparecida saiu antes do envio e não mandou a mensagem na hora.', ['Ela mandou a mensagem na hora?', 'A pessoa enviou na hora?', 'Foi enviada ao vivo?'], 'NO', true),
+        truth('victim_left_earlier', 'A pessoa desaparecida saiu voluntariamente antes do envio.', ['Ela saiu voluntariamente?', 'Ela já tinha saído antes?'], 'YES', true)
+      ]
+    },
+    'o-retrato-que-piscou': {
+      entities: [
+        entity('garçom', ['garcom', 'funcionario', 'cúmplice', 'cumplice']),
+        entity('retrato', ['quadro', 'pintura']),
+        entity('joia', ['jóia', 'colar'])
+      ],
+      truths: [
+        truth('portrait_reflection_flash', 'O piscar foi reflexo de um flash no vidro ou verniz do retrato.', ['O retrato piscou por reflexo?', 'Tinha flash?', 'Foi luz no vidro?', 'Foi clarão?', 'O brilho veio do vidro?'], 'YES', true),
+        truth('portrait_no_mechanism', 'O retrato não tinha mecanismo interno.', ['O quadro tinha mecanismo?', 'Tinha mecanismo dentro?', 'O retrato se mexeu sozinho?'], 'NO', true),
+        truth('portrait_not_supernatural', 'Não houve fenômeno sobrenatural; o efeito veio de luz e reflexo.', ['Era sobrenatural?', 'Foi magia?', 'Tinha fantasma?'], 'NO'),
+        truth('waiter_near_jewel', 'O garçom estava junto da mesa no instante do clarão.', ['O garçom roubou a joia?', 'O garçom era cúmplice?', 'O funcionário estava perto da joia?'], 'YES', true),
+        truth('temporary_blindness_flash', 'O flash cegou os convidados por poucos segundos.', ['O clarão ajudou o roubo?', 'Todos ficaram cegos?', 'O flash ofuscou os convidados?', 'A joia sumiu durante a cegueira?'], 'YES', true)
+      ]
+    },
+    blackwell: {
+      entities: [
+        entity('Clara Mendes', ['clara']),
+        entity('Helena Blackwell', ['helena']),
+        entity('Tomás Blackwell', ['tomas', 'tomás']),
+        entity('sangue artificial', ['sangue falso', 'mancha'])
+      ],
+      truths: [
+        truth('blackwell_fake_blood', 'O sangue na poltrona era artificial.', ['O sangue era falso?', 'O sangue era artificial?'], 'YES', true),
+        truth('blackwell_blood_not_real', 'O sangue na poltrona era artificial, não sangue real.', ['O sangue era real?', 'Era sangue de verdade?'], 'NO', true),
+        truth('clara_not_dead_scene', 'Clara não morreu na sala; a cena foi montada com sangue artificial.', ['Clara morreu na sala?', 'Clara foi assassinada?', 'Houve morte na sala?'], 'NO', true),
+        truth('clara_helena_escape', 'Clara e Helena fugiram juntas pelos jardins.', ['Clara fugiu com Helena?', 'Elas saíram pelo jardim?', 'Clara saiu com Helena?'], 'YES', true),
+        truth('tomas_financial_fraud', 'O livro-caixa indica desvio de fundos por Tomás.', ['Tomás desviava dinheiro?', 'O livro-caixa incrimina Tomás?', 'Havia fraude financeira?', 'Tomás desviava fundos?'], 'YES', true),
+        truth('blackwell_kidnapping_not_real', 'O sequestro não foi real; o sumiço foi encenado para expor os desvios.', ['Foi sequestro real?', 'Clara foi sequestrada de verdade?', 'O sequestro aconteceu mesmo?'], 'NO', true),
+        truth('staged_kidnapping', 'O sumiço foi encenado para expor os desvios.', ['O sequestro foi encenado?', 'Foi uma armação?', 'O sumiço foi armado?'], 'YES', true)
+      ]
+    }
+  };
+
+  return matrices[slug] || null;
+};
+
+export const buildStaticContextFromMatrix = (matrix: CaseTruthMatrix | null) => {
+  if (!matrix) return { facts: [], rules: [] };
+  return {
+    facts: matrix.truths.map(({ fact_key, statement, is_solution_critical }) => ({ fact_key, statement, is_solution_critical })),
+    rules: matrix.truths.map(({ fact_key, examples, verdict }) => staticRule(fact_key, examples, [fact_key], verdict))
+  };
+};
+
 export const getStaticCaseContext = (slug: string) => {
+  const matrixContext = buildStaticContextFromMatrix(getCaseTruthMatrix(slug));
+  if (matrixContext.facts.length > 0) return matrixContext;
+
   const context: Record<string, { facts: Array<{ fact_key: string; statement: string; is_solution_critical?: boolean }>; rules: any[] }> = {
     'o-presente-desaparecido': {
       facts: [

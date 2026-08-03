@@ -25,6 +25,17 @@ Cada nova funcionalidade deve responder a uma destas perguntas:
 
 Garantir que perguntas de todos os casos recebam respostas curtas, assertivas, contextualizadas e sem spoilers gratuitos.
 
+### Status
+
+Em andamento.
+
+Primeira entrega concluida:
+
+- criada matriz de verdade inicial para casos faceis e medios;
+- matriz gera fatos e regras estaticas usadas pelo Mestre;
+- casos mapeados agora exigem entidades, fatos confirmados, fatos negados e exemplos;
+- testes automatizados cobrem a estrutura da matriz e perguntas por caso.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

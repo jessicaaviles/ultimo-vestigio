@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   buildClarificationText,
   buildContestationText,
+  buildStaticContextFromMatrix,
+  getCaseTruthMatrix,
   getStaticCaseContext,
   processFactBasedQuestion,
   processGardenQuestion,
@@ -367,6 +369,30 @@ test('caso fita sem rosto cobre sinonimos e suspeitos', () => {
   }
 });
 
+test('matriz de verdade existe para casos faceis e medios com entidades e vereditos variados', () => {
+  const slugs = [
+    'o-presente-desaparecido',
+    'o-quarto-7',
+    'o-elevador-que-nao-parou',
+    'a-mensagem-das-23h17',
+    'o-retrato-que-piscou',
+    'blackwell'
+  ];
+
+  for (const slug of slugs) {
+    const matrix = getCaseTruthMatrix(slug);
+    assert.ok(matrix, `${slug} deveria ter matriz de verdade`);
+    assert.ok(matrix.entities.length >= 2, `${slug} deveria listar entidades e sinonimos`);
+    assert.ok(matrix.truths.some((entry) => entry.verdict === 'YES'), `${slug} deveria ter fatos confirmados`);
+    assert.ok(matrix.truths.some((entry) => entry.verdict === 'NO'), `${slug} deveria ter fatos negados`);
+    assert.ok(matrix.truths.every((entry) => entry.examples.length > 0), `${slug} deveria ter exemplos por fato`);
+
+    const generatedContext = buildStaticContextFromMatrix(matrix);
+    assert.equal(generatedContext.facts.length, matrix.truths.length, `${slug} deveria gerar fatos da matriz`);
+    assert.equal(generatedContext.rules.length, matrix.truths.length, `${slug} deveria gerar regras da matriz`);
+  }
+});
+
 test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
   const samples = [
     ['A água veio da chuva?', 'NO', ['água', 'chuva']],
@@ -438,7 +464,7 @@ test('caso mensagem 23h17 cobre sinonimos e perguntas medias', () => {
   const samples = [
     ['A mensagem foi automática?', 'YES', ['mensagem', 'automação']],
     ['Foi programada no computador?', 'YES', ['computador', 'envio']],
-    ['O celular ficou carregando?', 'NO', ['celular', 'carregador']],
+    ['O celular ficou carregando?', 'YES', ['celular', 'carregador']],
     ['Ela mandou a mensagem na hora?', 'NO', ['saiu', 'antes']],
     ['Ela já tinha saído antes?', 'YES', ['saiu', 'antes']]
   ];
