@@ -71,6 +71,13 @@ Sexta entrega concluida:
 - contestacoes tambem usam a fase atual da sala para revisar respostas;
 - testes garantem que a trava anti-spoiler por fase nao bloqueia perguntas especificas.
 
+Setima entrega concluida:
+
+- a avaliacao do relatorio final ganhou travas locais por campo;
+- campos vazios ou curtos demais nao podem receber nota alta mesmo se o modelo for permissivo;
+- acertos de responsavel ou evento central sao limitados quando o mecanismo esta fraco;
+- testes cobrem o calculo ponderado e a penalizacao por respostas incompletas.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

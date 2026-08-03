@@ -1383,14 +1383,54 @@ export const processQuestion = async (roomId: string, questionText: string, case
   }
 };
 
+type TheoryDimensionKey = 'what_happened' | 'who' | 'how' | 'why';
+type TheoryDimensionScores = Record<TheoryDimensionKey, number>;
+type StructuredTheoryAnswers = Record<TheoryDimensionKey, string>;
+
+const clampTheoryScore = (value: unknown) => {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  return Math.max(0, Math.min(100, Math.round(numeric)));
+};
+
+const wordCount = (value: string) => normalizeText(value).split(/\s+/).filter(Boolean).length;
+
+export const applyTheoryScoreGuards = (scores: TheoryDimensionScores, answers: StructuredTheoryAnswers) => {
+  const guarded = { ...scores };
+  const minimumWords: Record<TheoryDimensionKey, number> = {
+    what_happened: 4,
+    who: 1,
+    how: 5,
+    why: 3
+  };
+
+  for (const key of Object.keys(guarded) as TheoryDimensionKey[]) {
+    const answer = String(answers[key] || '').trim();
+    const words = wordCount(answer);
+    if (!answer) {
+      guarded[key] = 0;
+    } else if (words < minimumWords[key]) {
+      guarded[key] = Math.min(guarded[key], 45);
+    }
+  }
+
+  if (guarded.how < 50) {
+    guarded.what_happened = Math.min(guarded.what_happened, 80);
+    guarded.who = Math.min(guarded.who, 80);
+  }
+
+  return guarded;
+};
+
+export const calculateTheoryScore = (dimensionResults: TheoryDimensionScores) => Math.round(
+  (dimensionResults.what_happened * 0.25)
+  + (dimensionResults.who * 0.25)
+  + (dimensionResults.how * 0.35)
+  + (dimensionResults.why * 0.15)
+);
+
 export const evaluateTheory = async (theoryAnswers: any, trueSolutionText: string) => {
   try {
-    const clampScore = (value: unknown) => {
-      const numeric = Number(value);
-      if (!Number.isFinite(numeric)) return 0;
-      return Math.max(0, Math.min(100, Math.round(numeric)));
-    };
-
     const responseSchema: Schema = {
       type: Type.OBJECT,
       properties: {
@@ -1454,18 +1494,13 @@ Instruções ESTRITAS:
 
     if (!response.text) throw new Error("Resposta vazia da avaliação");
     const result = JSON.parse(response.text);
-    const dimensionResults = {
-      what_happened: clampScore(result.dimensionResults?.what_happened),
-      who: clampScore(result.dimensionResults?.who),
-      how: clampScore(result.dimensionResults?.how),
-      why: clampScore(result.dimensionResults?.why)
-    };
-    const weightedScore = Math.round(
-      (dimensionResults.what_happened * 0.25)
-      + (dimensionResults.who * 0.25)
-      + (dimensionResults.how * 0.35)
-      + (dimensionResults.why * 0.15)
-    );
+    const dimensionResults = applyTheoryScoreGuards({
+      what_happened: clampTheoryScore(result.dimensionResults?.what_happened),
+      who: clampTheoryScore(result.dimensionResults?.who),
+      how: clampTheoryScore(result.dimensionResults?.how),
+      why: clampTheoryScore(result.dimensionResults?.why)
+    }, structuredAnswers);
+    const weightedScore = calculateTheoryScore(dimensionResults);
 
     return {
       score: weightedScore,

@@ -4,6 +4,8 @@ import {
   buildClarificationText,
   buildContestationText,
   buildStaticContextFromMatrix,
+  applyTheoryScoreGuards,
+  calculateTheoryScore,
   getCaseTruthMatrix,
   getStaticCaseContext,
   isBroadSolutionQuestion,
@@ -526,6 +528,42 @@ test('respostas do mestre sao reduzidas para uma frase curta', () => {
   const result = toConciseMasterText('Sim.', 'Esse fato aparece no arquivo. Esta segunda frase não deve aparecer.');
   assert.equal(result, 'Sim. Esse fato aparece no arquivo.');
   assert.ok(result.length <= 180);
+});
+
+test('avaliacao da teoria aplica travas para campos vazios ou curtos demais', () => {
+  const guarded = applyTheoryScoreGuards(
+    { what_happened: 95, who: 100, how: 90, why: 85 },
+    {
+      what_happened: '',
+      who: 'Lúcia',
+      how: 'linha',
+      why: 'venda'
+    }
+  );
+
+  assert.equal(guarded.what_happened, 0);
+  assert.equal(guarded.who, 80);
+  assert.equal(guarded.how, 45);
+  assert.equal(guarded.why, 45);
+  assert.equal(calculateTheoryScore(guarded), 43);
+});
+
+test('avaliacao da teoria limita acertos sem mecanismo coerente', () => {
+  const guarded = applyTheoryScoreGuards(
+    { what_happened: 100, who: 100, how: 40, why: 90 },
+    {
+      what_happened: 'O sino foi acionado de fora da torre',
+      who: 'Lúcia Ferraz',
+      how: 'por alguma coisa',
+      why: 'ocultar a venda fraudulenta da escola'
+    }
+  );
+
+  assert.equal(guarded.what_happened, 80);
+  assert.equal(guarded.who, 80);
+  assert.equal(guarded.how, 40);
+  assert.equal(guarded.why, 90);
+  assert.equal(calculateTheoryScore(guarded), 68);
 });
 
 test('esclarecimento e contestacao produzem revisoes uteis', () => {
