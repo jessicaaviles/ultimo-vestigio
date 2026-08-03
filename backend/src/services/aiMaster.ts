@@ -286,7 +286,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('host_staged_game', 'O anfitrião encenou o sumiço para iniciar uma caça ao tesouro.', ['Foi encenação?', 'O anfitrião planejou?', 'Era uma brincadeira?', 'Era pegadinha?', 'Foi caça ao tesouro?'], 'YES', true),
         truth('real_present_elsewhere', 'O presente real estava escondido em outro lugar da casa.', ['O presente estava em outro lugar?', 'O presente real estava escondido?'], 'YES', true),
         truth('nobody_left_room', 'Ninguém precisou sair do ambiente para a caixa desaparecer.', ['Alguém saiu da sala?', 'Precisaram sair do ambiente?', 'Alguém deixou a sala?'], 'NO'),
-        truth('present_not_stolen', 'Ninguém roubou o presente; o sumiço foi uma encenação planejada.', ['Alguém roubou o presente?', 'Foi roubo?', 'O presente foi furtado?', 'Alguém levou o presente?'], 'NO', true)
+        truth('present_not_stolen', 'Ninguém roubou o presente; o sumiço foi uma encenação planejada.', ['Alguém roubou o presente?', 'Foi roubo?', 'O presente foi furtado?', 'Alguém levou o presente?'], 'NO', true),
+        truth('guests_saw_disappearance', 'Os convidados viram a caixa sumir, mas isso não significa que todos perceberam a dobra sob a toalha.', ['Todos viram o presente sumir?', 'Os convidados perceberam tudo?', 'Todo mundo viu a manobra?'], 'PARTIAL')
       ]
     },
     'o-quarto-7': {
@@ -302,7 +303,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('camera_service_stairs', 'A câmera foi virada para ocultar a rota pela escada de serviço.', ['A câmera foi mexida?', 'A escada de serviço importa?', 'A escada era a rota?'], 'YES', true),
         truth('clock_false_time', 'O relógio quebrado em 23h17 criou uma hora falsa.', ['O relógio marcava hora falsa?', 'O horário 23h17 era falso?', 'O relógio foi usado no álibi?'], 'YES', true),
         truth('father_motive', 'Helena tinha provas ligadas à inocência do pai e aos desvios do hotel.', ['O motivo era o pai de Helena?', 'Helena ia denunciar o hotel?', 'Havia desvio de manutenção?'], 'YES', true),
-        truth('forged_note', 'O bilhete de despedida foi forjado para simular uma tentativa de suicídio.', ['Helena tentou se matar?', 'Foi suicídio?', 'O bilhete era verdadeiro?', 'A nota era verdadeira?'], 'NO', true)
+        truth('forged_note', 'O bilhete de despedida foi forjado para simular uma tentativa de suicídio.', ['Helena tentou se matar?', 'Foi suicídio?', 'O bilhete era verdadeiro?', 'A nota era verdadeira?'], 'NO', true),
+        truth('helena_not_unstable', 'Helena estava sob sedativo e havia uma encenação contra ela; isso não prova instabilidade emocional real.', ['Helena estava instável?', 'Helena parecia perturbada?', 'Helena escreveu algo dramático?'], 'PARTIAL')
       ]
     },
     'o-elevador-que-nao-parou': {
@@ -317,7 +319,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('shaft_exit_route', 'A saída ocorreu pela rota de manutenção do poço do elevador.', ['Usou o poço do elevador?', 'Saiu pela rota de manutenção?', 'Ela saiu pelo poço de manutenção?'], 'YES', true),
         truth('elevator_no_floor_exit', 'Ela não saiu por nenhum andar monitorado; a rota foi o poço de manutenção.', ['Ela saiu em algum andar?', 'A porta abriu no andar?', 'Passou pela recepção?'], 'NO', true),
         truth('not_empty_magic', 'O elevador não estava vazio por truque sobrenatural; houve fuga técnica.', ['Foi sobrenatural?', 'Foi magia?', 'Desapareceu por fantasma?'], 'NO'),
-        truth('not_vanished', 'A pessoa não evaporou nem desapareceu por magia; ela saiu pela manutenção.', ['Ela evaporou?', 'Ela sumiu por mágica?'], 'NO')
+        truth('not_vanished', 'A pessoa não evaporou nem desapareceu por magia; ela saiu pela manutenção.', ['Ela evaporou?', 'Ela sumiu por mágica?'], 'NO'),
+        truth('cameras_limited', 'As câmeras mostram a cabine e os andares, mas não cobrem a rota de manutenção do poço.', ['As câmeras viram tudo?', 'As câmeras provam que ela desapareceu?', 'A gravação mostra toda a rota?'], 'PARTIAL')
       ]
     },
     'a-mensagem-das-23h17': {
@@ -332,7 +335,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('phone_left_charging', 'O celular ficou em casa no carregador.', ['O celular ficou carregando?'], 'YES', true),
         truth('phone_not_with_victim', 'A pessoa não estava com o celular; ele ficou em casa no carregador.', ['A pessoa estava com o celular?', 'O celular estava com ela?'], 'NO', true),
         truth('message_not_sent_live', 'A pessoa desaparecida saiu antes do envio e não mandou a mensagem na hora.', ['Ela mandou a mensagem na hora?', 'A pessoa enviou na hora?', 'Foi enviada ao vivo?'], 'NO', true),
-        truth('victim_left_earlier', 'A pessoa desaparecida saiu voluntariamente antes do envio.', ['Ela saiu voluntariamente?', 'Ela já tinha saído antes?'], 'YES', true)
+        truth('victim_left_earlier', 'A pessoa desaparecida saiu voluntariamente antes do envio.', ['Ela saiu voluntariamente?', 'Ela já tinha saído antes?'], 'YES', true),
+        truth('phone_presence_red_herring', 'O celular em casa faz parecer presença no local, mas a mensagem foi enviada por automação.', ['O celular em casa prova que ela estava lá?', 'O carregador prova presença?', 'O telefone prova que ela não saiu?'], 'PARTIAL')
       ]
     },
     'o-retrato-que-piscou': {
@@ -346,7 +350,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('portrait_no_mechanism', 'O retrato não tinha mecanismo interno.', ['O quadro tinha mecanismo?', 'Tinha mecanismo dentro?', 'O retrato se mexeu sozinho?'], 'NO', true),
         truth('portrait_not_supernatural', 'Não houve fenômeno sobrenatural; o efeito veio de luz e reflexo.', ['Era sobrenatural?', 'Foi magia?', 'Tinha fantasma?'], 'NO'),
         truth('waiter_near_jewel', 'O garçom estava junto da mesa no instante do clarão.', ['O garçom roubou a joia?', 'O garçom era cúmplice?', 'O funcionário estava perto da joia?'], 'YES', true),
-        truth('temporary_blindness_flash', 'O flash cegou os convidados por poucos segundos.', ['O clarão ajudou o roubo?', 'Todos ficaram cegos?', 'O flash ofuscou os convidados?', 'A joia sumiu durante a cegueira?'], 'YES', true)
+        truth('temporary_blindness_flash', 'O flash cegou os convidados por poucos segundos.', ['O clarão ajudou o roubo?', 'Todos ficaram cegos?', 'O flash ofuscou os convidados?', 'A joia sumiu durante a cegueira?'], 'YES', true),
+        truth('portrait_blink_partial', 'O retrato pareceu piscar, mas o movimento era efeito de luz refletida, não ação do quadro.', ['O retrato piscou de verdade?', 'O quadro se moveu?', 'A pintura piscou sozinha?'], 'PARTIAL')
       ]
     },
     blackwell: {
@@ -363,7 +368,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('clara_helena_escape', 'Clara e Helena fugiram juntas pelos jardins.', ['Clara fugiu com Helena?', 'Elas saíram pelo jardim?', 'Clara saiu com Helena?'], 'YES', true),
         truth('tomas_financial_fraud', 'O livro-caixa indica desvio de fundos por Tomás.', ['Tomás desviava dinheiro?', 'O livro-caixa incrimina Tomás?', 'Havia fraude financeira?', 'Tomás desviava fundos?'], 'YES', true),
         truth('blackwell_kidnapping_not_real', 'O sequestro não foi real; o sumiço foi encenado para expor os desvios.', ['Foi sequestro real?', 'Clara foi sequestrada de verdade?', 'O sequestro aconteceu mesmo?'], 'NO', true),
-        truth('staged_kidnapping', 'O sumiço foi encenado para expor os desvios.', ['O sequestro foi encenado?', 'Foi uma armação?', 'O sumiço foi armado?'], 'YES', true)
+        truth('staged_kidnapping', 'O sumiço foi encenado para expor os desvios.', ['O sequestro foi encenado?', 'Foi uma armação?', 'O sumiço foi armado?'], 'YES', true),
+        truth('tomas_red_herring_partial', 'Tomás está ligado aos desvios financeiros, mas isso não prova que ele sequestrou Clara.', ['Tomás sequestrou Clara?', 'Tomás fez o sumiço?', 'Tomás é o sequestrador?'], 'PARTIAL')
       ]
     },
     'a-heranca-de-vidro': {
@@ -385,7 +391,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('glass_staged', 'O vidro do teto foi fragilizado antes da tempestade para parecer a causa do acidente.', ['O vidro quebrado foi armado?', 'O teto foi preparado antes?', 'O vidro era pista falsa?'], 'YES', true),
         truth('storm_not_cause', 'A tempestade reforçou a cena, mas não foi a causa real da morte de Isadora.', ['A tempestade matou Isadora?', 'Ela morreu por causa do vidro?', 'Foi acidente da tempestade?'], 'NO', true),
         truth('dry_footprints', 'As marcas de sapato ao lado do corpo estavam secas sob a camada posterior de água da chuva.', ['As pegadas estavam secas?', 'As marcas foram feitas antes da chuva?', 'A cena foi montada antes?'], 'YES', true),
-        truth('cecilia_not_responsible', 'Cecília discutiu com Isadora, mas saiu antes do vinho ser servido e não tinha acesso ao fio de restauração.', ['Cecília matou Isadora?', 'A prima matou Isadora?', 'Cecília é a culpada?', 'Cecília causou a morte?'], 'NO')
+        truth('cecilia_not_responsible', 'Cecília discutiu com Isadora, mas saiu antes do vinho ser servido e não tinha acesso ao fio de restauração.', ['Cecília matou Isadora?', 'A prima matou Isadora?', 'Cecília é a culpada?', 'Cecília causou a morte?'], 'NO'),
+        truth('medical_red_herring_partial', 'O remédio de Isadora era real, mas não explica a morte sem a digitalina misturada ao vinho.', ['O remédio de Isadora causou a morte?', 'O frasco cardíaco era importante?', 'O medicamento explica tudo?'], 'PARTIAL')
       ]
     },
     'o-sino-das-tres-batidas': {
@@ -405,7 +412,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('sale_motive', 'O motivo estava ligado à pasta da venda fraudulenta da escola, com assinaturas copiadas.', ['O motivo era a venda da escola?', 'Queriam vender a escola?', 'A venda era fraudulenta?'], 'YES', true),
         truth('side_stair_fall', 'As marcas de impacto indicam queda da escada lateral do arquivo, não da torre.', ['Elias caiu da torre?', 'Ele despencou da torre?', 'A queda foi da torre?'], 'NO', true),
         truth('fall_location', 'A queda ocorreu na escada lateral do arquivo.', ['O corpo veio da escada do arquivo?', 'A queda foi na escada lateral?', 'Elias caiu no arquivo?'], 'YES', true),
-        truth('key_staging', 'A chave no bolso de Elias não prova entrada na torre; ela estava ali para sustentar a falsa cena.', ['A chave era encenação?', 'A chave no bolso era pista falsa?', 'A chave prova que ele entrou?'], 'YES', true)
+        truth('key_staging', 'A chave no bolso de Elias não prova entrada na torre; ela estava ali para sustentar a falsa cena.', ['A chave era encenação?', 'A chave no bolso era pista falsa?', 'A chave prova que ele entrou?'], 'YES', true),
+        truth('marina_protest_partial', 'Os protestos de Marina explicam barulho no portão, mas não o acionamento do sino nem a queda de Elias.', ['Marina está envolvida?', 'Os protestos explicam o sino?', 'O barulho do portão incrimina Marina?'], 'PARTIAL')
       ]
     },
     'a-fita-sem-rosto': {
@@ -424,7 +432,8 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('face_overexposed', 'A câmera do corredor não falhou; a exposição foi saturada por material reflexivo.', ['A câmera do corredor falhou?', 'O rosto foi apagado por luz?', 'A exposição apagou o rosto?', 'Por que o rosto não aparece?'], 'YES', true),
         truth('service_stairs', 'A escada de serviço permitia sair da sala de Bruno sem passar pela recepção.', ['Saiu pela escada de serviço?', 'Ele passou pela recepção?', 'Bruno saiu por rota interna?'], 'YES', true),
         truth('debt_motive', 'Bruno acumulava dívidas e recebeu contato de uma concorrente dias antes.', ['Bruno tinha dívida?', 'Bruno tinha motivo financeiro?', 'Ele queria vender o protótipo para concorrente?', 'Havia contato com concorrente?'], 'YES', true),
-        truth('inae_not_thief', 'Inae tinha conflito de autoria, mas permaneceu em câmera real durante todo o intervalo crítico.', ['Inae roubou o protótipo?', 'A bioquímica pegou a bateria?', 'Inae era a invasora?', 'Inae sumiu com o protótipo?'], 'NO')
+        truth('inae_not_thief', 'Inae tinha conflito de autoria, mas permaneceu em câmera real durante todo o intervalo crítico.', ['Inae roubou o protótipo?', 'A bioquímica pegou a bateria?', 'Inae era a invasora?', 'Inae sumiu com o protótipo?'], 'NO'),
+        truth('sara_server_partial', 'Sara esteve na sala de servidores antes do roubo, mas isso se liga a uma impressora de etiquetas, não ao cofre.', ['Sara estava envolvida?', 'A estagiária entrou na sala de servidores?', 'Sara ajudou no roubo?'], 'PARTIAL')
       ]
     }
   };

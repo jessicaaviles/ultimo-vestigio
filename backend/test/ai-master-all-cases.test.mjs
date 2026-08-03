@@ -260,7 +260,7 @@ test('caso sino das tres batidas cobre sinonimos e pistas centrais', () => {
     ['A presidente do conselho tinha motivo?', 'YES', ['Lúcia', 'documentos']],
     ['Elias caiu da torre?', 'NO', ['escada', 'arquivo']],
     ['A chave no bolso era uma pista falsa?', 'YES', ['chave', 'falsa']],
-    ['Marina acionou o sino?', 'UNKNOWN', ['Desconhecido']]
+    ['Marina acionou o sino?', 'PARTIAL', ['Marina', 'não', 'sino']]
   ];
 
   for (const [question, classification, terms] of samples) {
@@ -316,11 +316,33 @@ test('matriz de verdade existe para casos estruturados com entidades e vereditos
     assert.ok(matrix.entities.length >= 2, `${slug} deveria listar entidades e sinonimos`);
     assert.ok(matrix.truths.some((entry) => entry.verdict === 'YES'), `${slug} deveria ter fatos confirmados`);
     assert.ok(matrix.truths.some((entry) => entry.verdict === 'NO'), `${slug} deveria ter fatos negados`);
+    assert.ok(matrix.truths.some((entry) => entry.verdict === 'PARTIAL'), `${slug} deveria ter fatos parciais`);
     assert.ok(matrix.truths.every((entry) => entry.examples.length > 0), `${slug} deveria ter exemplos por fato`);
 
     const generatedContext = buildStaticContextFromMatrix(matrix);
     assert.equal(generatedContext.facts.length, matrix.truths.length, `${slug} deveria gerar fatos da matriz`);
     assert.equal(generatedContext.rules.length, matrix.truths.length, `${slug} deveria gerar regras da matriz`);
+  }
+});
+
+test('matriz responde parcialmente para pistas falsas e suspeitos com conexao limitada', () => {
+  const samples = [
+    ['o-presente-desaparecido', 'Todos viram o presente sumir?', ['convidados', 'toalha']],
+    ['o-quarto-7', 'Helena estava instável?', ['Helena', 'sedativo']],
+    ['o-elevador-que-nao-parou', 'As câmeras viram tudo?', ['câmeras', 'manutenção']],
+    ['a-mensagem-das-23h17', 'O celular em casa prova que ela estava lá?', ['celular', 'automação']],
+    ['o-retrato-que-piscou', 'O retrato piscou de verdade?', ['retrato', 'luz']],
+    ['blackwell', 'Tomás sequestrou Clara?', ['Tomás', 'não prova']],
+    ['a-heranca-de-vidro', 'O remédio de Isadora causou a morte?', ['remédio', 'digitalina']],
+    ['o-sino-das-tres-batidas', 'Marina está envolvida?', ['Marina', 'protestos']],
+    ['a-fita-sem-rosto', 'Sara estava envolvida?', ['Sara', 'servidores']]
+  ];
+
+  for (const [slug, question, terms] of samples) {
+    const context = getStaticCaseContext(String(slug));
+    const result = answerWithContext(String(question), context);
+    assert.equal(result?.classification, 'PARTIAL', `${slug} - ${question}`);
+    assertIncludesTerms(result?.rendered_text || '', terms, `${slug} - ${question}`);
   }
 });
 

@@ -57,6 +57,13 @@ Quarta entrega concluida:
 - perguntas especificas, como "Lucia tinha motivo?", continuam sendo respondidas normalmente;
 - testes garantem que a trava nao bloqueia investigacao contextualizada.
 
+Quinta entrega concluida:
+
+- todos os casos estruturados passaram a ter ao menos um fato parcial para conexoes limitadas;
+- pistas falsas e suspeitos secundarios agora respondem "Parcialmente" quando ha relacao, mas sem prova conclusiva;
+- perguntas sobre casos faceis, medios e dificeis foram cobertas por teste automatizado com respostas parciais;
+- o Mestre ficou menos binario em perguntas investigativas sem entregar a solucao completa.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
