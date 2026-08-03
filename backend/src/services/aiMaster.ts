@@ -87,10 +87,19 @@ const SYNONYM_GROUPS = [
   ['rival', 'rivalidade', 'inimiga', 'inimizade', 'competia', 'concorrente'],
   ['enviou', 'enviada', 'enviado', 'enviar', 'mandou', 'mandada', 'mandado', 'disparou', 'disparada'],
   ['script', 'automacao', 'automação', 'agendada', 'agendado', 'programada', 'programado'],
-  ['brincadeira', 'jogo', 'caca', 'caça', 'tesouro', 'encenacao', 'encenação'],
+  ['brincadeira', 'pegadinha', 'jogo', 'caca', 'caça', 'tesouro', 'encenacao', 'encenação'],
   ['digitalina', 'remedio', 'remédio', 'medicamento', 'cardiaco', 'cardíaco', 'veneno', 'envenenada', 'envenenado', 'adulterado', 'adulterada'],
   ['divida', 'dívida', 'dividas', 'dívidas', 'endividado', 'endividada', 'financeiro', 'financeira', 'dinheiro'],
-  ['prototipo', 'protótipo', 'bateria', 'invento', 'tecnologia']
+  ['prototipo', 'protótipo', 'bateria', 'invento', 'tecnologia'],
+  ['roubo', 'roubar', 'roubou', 'furto', 'furtado', 'furtou', 'levou'],
+  ['arrombada', 'arrombar', 'forcada', 'forçada', 'forcado', 'forçado', 'quebrada'],
+  ['bilhete', 'nota', 'carta', 'recado'],
+  ['alcapao', 'alçapão', 'teto', 'escotilha'],
+  ['poco', 'poço', 'shaft', 'manutencao', 'manutenção'],
+  ['clarao', 'clarão', 'flash', 'brilho', 'ofuscou', 'ofuscados', 'cegou'],
+  ['magia', 'fantasma', 'sobrenatural', 'assombrado', 'assombrada'],
+  ['sangue', 'hemorragia', 'mancha', 'manchas'],
+  ['sequestro', 'sequestrada', 'sequestrado', 'rapto', 'raptada']
 ];
 
 const SYNONYM_LOOKUP = SYNONYM_GROUPS.reduce((lookup, group) => {
@@ -210,12 +219,14 @@ export const getStaticCaseContext = (slug: string) => {
         { fact_key: 'folded_under_tablecloth', statement: 'A embalagem foi dobrada e escondida sob a toalha.' },
         { fact_key: 'host_staged_game', statement: 'O anfitrião encenou o sumiço para iniciar uma caça ao tesouro.' },
         { fact_key: 'real_present_elsewhere', statement: 'O presente real estava escondido em outro lugar da casa.' },
-        { fact_key: 'nobody_left_room', statement: 'Ninguém precisou sair do ambiente para a caixa desaparecer.' }
+        { fact_key: 'nobody_left_room', statement: 'Ninguém precisou sair do ambiente para a caixa desaparecer.' },
+        { fact_key: 'present_not_stolen', statement: 'Ninguém roubou o presente; o sumiço foi uma encenação planejada.' }
       ],
       rules: [
         staticRule('present_empty', ['A caixa estava vazia?', 'O presente estava dentro da caixa?', 'Tinha algo na caixa?'], ['empty_box_before_party'], 'YES'),
-        staticRule('present_staged', ['Foi encenação?', 'O anfitrião planejou?', 'Era uma brincadeira?'], ['host_staged_game'], 'YES'),
-        staticRule('present_hidden', ['O presente estava em outro lugar?', 'A caixa foi escondida na mesa?', 'Estava debaixo da toalha?'], ['real_present_elsewhere', 'folded_under_tablecloth'], 'YES')
+        staticRule('present_staged', ['Foi encenação?', 'O anfitrião planejou?', 'Era uma brincadeira?', 'Era pegadinha?', 'Foi caça ao tesouro?'], ['host_staged_game'], 'YES'),
+        staticRule('present_hidden', ['O presente estava em outro lugar?', 'A caixa foi escondida na mesa?', 'Estava debaixo da toalha?', 'A embalagem ficou sob a toalha?'], ['real_present_elsewhere', 'folded_under_tablecloth'], 'YES'),
+        staticRule('present_not_stolen', ['Alguém roubou o presente?', 'Foi roubo?', 'O presente foi furtado?', 'Alguém levou o presente?'], ['present_not_stolen'], 'NO')
       ]
     },
     'o-quarto-7': {
@@ -224,13 +235,17 @@ export const getStaticCaseContext = (slug: string) => {
         { fact_key: 'tea_sedative', statement: 'O chá de Helena continha sedativo não letal.' },
         { fact_key: 'camera_service_stairs', statement: 'A câmera foi virada para ocultar a rota pela escada de serviço.' },
         { fact_key: 'clock_false_time', statement: 'O relógio quebrado em 23h17 criou uma hora falsa.' },
-        { fact_key: 'father_motive', statement: 'Helena tinha provas ligadas à inocência do pai e aos desvios do hotel.' }
+        { fact_key: 'father_motive', statement: 'Helena tinha provas ligadas à inocência do pai e aos desvios do hotel.' },
+        { fact_key: 'forged_note', statement: 'O bilhete de despedida foi forjado para simular uma tentativa de suicídio.' },
+        { fact_key: 'door_not_forced', statement: 'A porta não foi arrombada; Renato usou uma chave mestra.' }
       ],
       rules: [
-        staticRule('room_locked_staged', ['A porta foi trancada por dentro?', 'Renato usou chave mestra?', 'O quarto trancado era falso?'], ['renato_master_key'], 'YES'),
+        staticRule('room_locked_staged', ['A porta foi trancada por dentro?', 'Renato usou chave mestra?', 'O quarto trancado era falso?', 'Renato é o responsável?', 'Renato é culpado?'], ['renato_master_key', 'father_motive'], 'YES'),
+        staticRule('door_not_forced', ['A porta foi arrombada?', 'A porta foi forçada?', 'A fechadura foi quebrada?'], ['door_not_forced'], 'NO'),
         staticRule('tea_sedative', ['O chá tinha sedativo?', 'A bebida tinha sedativo?', 'Helena foi drogada?', 'A bebida foi adulterada?'], ['tea_sedative'], 'YES'),
         staticRule('camera_clock', ['A câmera foi mexida?', 'O relógio marcava hora falsa?', 'A escada de serviço importa?'], ['camera_service_stairs', 'clock_false_time'], 'YES'),
-        staticRule('helena_motive', ['O motivo era o pai de Helena?', 'Helena ia denunciar o hotel?', 'Havia desvio de manutenção?'], ['father_motive'], 'YES')
+        staticRule('helena_motive', ['O motivo era o pai de Helena?', 'Helena ia denunciar o hotel?', 'Havia desvio de manutenção?'], ['father_motive'], 'YES'),
+        staticRule('forged_note', ['Helena tentou se matar?', 'Foi suicídio?', 'O bilhete era verdadeiro?', 'A nota era verdadeira?'], ['forged_note'], 'NO')
       ]
     },
     'o-elevador-que-nao-parou': {
@@ -238,24 +253,27 @@ export const getStaticCaseContext = (slug: string) => {
         { fact_key: 'elevator_stopped_between_floors', statement: 'O elevador parou por alguns minutos entre o segundo e o terceiro andar.' },
         { fact_key: 'elevator_trapdoor_unlocked', statement: 'O alçapão do teto do elevador estava destrancado.' },
         { fact_key: 'shaft_exit_route', statement: 'A saída ocorreu pela rota de manutenção do poço do elevador.' },
-        { fact_key: 'not_empty_magic', statement: 'O elevador não estava vazio por truque sobrenatural; houve fuga técnica.' }
+        { fact_key: 'not_empty_magic', statement: 'O elevador não estava vazio por truque sobrenatural; houve fuga técnica.' },
+        { fact_key: 'not_vanished', statement: 'A pessoa não evaporou nem desapareceu por magia; ela saiu pela manutenção.' }
       ],
       rules: [
-        staticRule('elevator_stopped', ['O elevador parou?', 'Ele parou entre andares?', 'Ficou parado no meio?'], ['elevator_stopped_between_floors'], 'YES'),
-        staticRule('elevator_trapdoor', ['Ela saiu pelo teto?', 'O alçapão estava aberto?', 'Usou o poço do elevador?'], ['elevator_trapdoor_unlocked', 'shaft_exit_route'], 'YES'),
-        staticRule('elevator_no_floor_exit', ['Ela saiu em algum andar?', 'A porta abriu no andar?', 'Passou pela recepção?'], ['shaft_exit_route'], 'NO')
+        staticRule('elevator_stopped', ['O elevador parou?', 'Ele parou entre andares?', 'Ficou parado no meio?', 'O elevador ficou preso?', 'Travou entre andares?'], ['elevator_stopped_between_floors'], 'YES'),
+        staticRule('elevator_trapdoor', ['Ela saiu pelo teto?', 'O alçapão estava aberto?', 'Usou o poço do elevador?', 'Foi pela escotilha?', 'Saiu pela rota de manutenção?'], ['elevator_trapdoor_unlocked', 'shaft_exit_route'], 'YES'),
+        staticRule('elevator_no_floor_exit', ['Ela saiu em algum andar?', 'A porta abriu no andar?', 'Passou pela recepção?'], ['shaft_exit_route'], 'NO'),
+        staticRule('elevator_not_magic', ['Ela evaporou?', 'Foi sobrenatural?', 'Foi magia?', 'Desapareceu por fantasma?'], ['not_vanished', 'not_empty_magic'], 'NO')
       ]
     },
     'a-mensagem-das-23h17': {
       facts: [
         { fact_key: 'message_scheduled_script', statement: 'A mensagem das 23h17 foi enviada por automação agendada.' },
         { fact_key: 'phone_left_charging', statement: 'O celular ficou em casa no carregador.' },
-        { fact_key: 'victim_left_earlier', statement: 'A pessoa desaparecida saiu voluntariamente antes do envio.' },
+        { fact_key: 'victim_left_earlier', statement: 'A pessoa desaparecida saiu voluntariamente antes do envio e não mandou a mensagem na hora.' },
         { fact_key: 'computer_sent_message', statement: 'O computador ligado executou o envio sincronizado.' }
       ],
       rules: [
-        staticRule('message_scheduled', ['A mensagem foi agendada?', 'Foi script?', 'O computador enviou?'], ['message_scheduled_script', 'computer_sent_message'], 'YES'),
-        staticRule('phone_not_used_live', ['O celular enviou sozinho?', 'A pessoa estava com o celular?', 'Ela mandou a mensagem na hora?'], ['phone_left_charging', 'victim_left_earlier'], 'NO'),
+        staticRule('message_scheduled', ['A mensagem foi agendada?', 'Foi script?', 'O computador enviou?', 'Foi automática?', 'Foi automação?', 'Foi programada?'], ['message_scheduled_script', 'computer_sent_message'], 'YES'),
+        staticRule('message_not_sent_live', ['Ela mandou a mensagem na hora?', 'A pessoa enviou na hora?', 'Foi enviada ao vivo?'], ['victim_left_earlier', 'message_scheduled_script'], 'NO'),
+        staticRule('phone_not_used_live', ['O celular enviou sozinho?', 'A pessoa estava com o celular?', 'O celular ficou carregando?'], ['phone_left_charging', 'victim_left_earlier'], 'NO'),
         staticRule('voluntary_disappearance', ['Ela saiu voluntariamente?', 'Foi sumiço planejado?', 'Ela já tinha saído antes?'], ['victim_left_earlier'], 'YES')
       ]
     },
@@ -268,20 +286,23 @@ export const getStaticCaseContext = (slug: string) => {
         { fact_key: 'temporary_blindness_flash', statement: 'O flash cegou os convidados por poucos segundos.' }
       ],
       rules: [
-        staticRule('portrait_flash', ['O retrato piscou por reflexo?', 'Tinha flash?', 'Foi luz no vidro?'], ['portrait_reflection_flash'], 'YES'),
+        staticRule('portrait_flash', ['O retrato piscou por reflexo?', 'Tinha flash?', 'Foi luz no vidro?', 'Foi clarão?', 'O brilho veio do vidro?'], ['portrait_reflection_flash'], 'YES'),
         staticRule('portrait_no_mechanism', ['O quadro tinha mecanismo?', 'Era sobrenatural?', 'Foi magia?', 'Tinha fantasma?', 'O retrato se mexeu sozinho?'], ['portrait_no_mechanism', 'portrait_not_supernatural'], 'NO'),
-        staticRule('jewel_waiter', ['O garçom roubou a joia?', 'O clarão ajudou o roubo?', 'Todos ficaram cegos?'], ['waiter_near_jewel', 'temporary_blindness_flash'], 'YES')
+        staticRule('jewel_waiter', ['O garçom roubou a joia?', 'O clarão ajudou o roubo?', 'Todos ficaram cegos?', 'O flash ofuscou os convidados?', 'A joia sumiu durante a cegueira?'], ['waiter_near_jewel', 'temporary_blindness_flash'], 'YES')
       ]
     },
     blackwell: {
       facts: [
         { fact_key: 'blackwell_fake_blood', statement: 'O sangue na poltrona era artificial.' },
+        { fact_key: 'clara_not_dead_scene', statement: 'Clara não morreu na sala; a cena foi montada com sangue artificial.' },
         { fact_key: 'clara_helena_escape', statement: 'Clara e Helena fugiram juntas pelos jardins.' },
         { fact_key: 'tomas_financial_fraud', statement: 'O livro-caixa indica desvio de fundos por Tomás.' },
         { fact_key: 'staged_kidnapping', statement: 'O sumiço foi encenado para expor os desvios.' }
       ],
       rules: [
-        staticRule('blackwell_blood', ['O sangue era falso?', 'O sangue era artificial?', 'Clara morreu na sala?'], ['blackwell_fake_blood'], 'YES'),
+        staticRule('blackwell_blood_fake', ['O sangue era falso?', 'O sangue era artificial?'], ['blackwell_fake_blood'], 'YES'),
+        staticRule('blackwell_blood_not_real', ['O sangue era real?', 'Era sangue de verdade?'], ['blackwell_fake_blood'], 'NO'),
+        staticRule('blackwell_clara_not_dead', ['Clara morreu na sala?', 'Clara foi assassinada?', 'Houve morte na sala?'], ['clara_not_dead_scene'], 'NO'),
         staticRule('blackwell_escape', ['Clara fugiu com Helena?', 'Elas saíram pelo jardim?', 'Clara saiu com Helena?'], ['clara_helena_escape', 'staged_kidnapping'], 'YES'),
         staticRule('blackwell_real_kidnapping', ['Foi sequestro real?', 'Clara foi sequestrada de verdade?', 'O sequestro aconteceu mesmo?'], ['staged_kidnapping'], 'NO'),
         staticRule('blackwell_tomas', ['Tomás desviava dinheiro?', 'O livro-caixa incrimina Tomás?', 'Havia fraude financeira?'], ['tomas_financial_fraud'], 'YES')

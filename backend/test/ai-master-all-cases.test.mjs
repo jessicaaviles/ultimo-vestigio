@@ -367,6 +367,123 @@ test('caso fita sem rosto cobre sinonimos e suspeitos', () => {
   }
 });
 
+test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
+  const samples = [
+    ['A água veio da chuva?', 'NO', ['água', 'chuva']],
+    ['Tinha goteira no corredor?', 'YES', ['instalação', 'interna']],
+    ['Era água do ar condicionado?', 'YES', ['instalação', 'interna']],
+    ['O guarda-chuva protegia alguém da chuva?', 'NO', ['proteção', 'chuva']],
+    ['A sala tinha teto?', 'YES', ['sala', 'interna']]
+  ];
+
+  for (const [question, classification, terms] of samples) {
+    const result = processTutorialQuestion(String(question));
+    assert.equal(result?.classification, classification, String(question));
+    assertIncludesTerms(result?.rendered_text || '', terms, `O Guarda-chuva Molhado - ${question}`);
+  }
+});
+
+test('caso presente desaparecido cobre sinonimos e perguntas faceis', () => {
+  const context = getStaticCaseContext('o-presente-desaparecido');
+  const samples = [
+    ['Era pegadinha do anfitrião?', 'YES', ['anfitrião', 'caça ao tesouro']],
+    ['O presente real estava escondido?', 'YES', ['presente real', 'escondido']],
+    ['A embalagem ficou sob a toalha?', 'YES', ['embalagem', 'toalha']],
+    ['Alguém roubou o presente?', 'NO', ['ninguém', 'roubou']]
+  ];
+
+  for (const [question, classification, terms] of samples) {
+    const result = answerWithContext(String(question), context);
+    assert.equal(result?.classification, classification, String(question));
+    assertIncludesTerms(result?.rendered_text || '', terms, `O Presente Desaparecido - ${question}`);
+  }
+});
+
+test('caso quarto 7 cobre sinonimos e perguntas medias', () => {
+  const context = getStaticCaseContext('o-quarto-7');
+  const samples = [
+    ['Renato é o responsável?', 'YES', ['Renato', 'chave mestra']],
+    ['A porta foi arrombada?', 'NO', ['porta', 'não', 'arrombada']],
+    ['Helena tentou se matar?', 'NO', ['bilhete', 'forjado']],
+    ['A bebida foi adulterada?', 'YES', ['chá', 'sedativo']],
+    ['A escada de serviço era a rota?', 'YES', ['escada', 'serviço']]
+  ];
+
+  for (const [question, classification, terms] of samples) {
+    const result = answerWithContext(String(question), context);
+    assert.equal(result?.classification, classification, String(question));
+    assertIncludesTerms(result?.rendered_text || '', terms, `O Quarto 7 - ${question}`);
+  }
+});
+
+test('caso elevador cobre sinonimos e perguntas medias', () => {
+  const context = getStaticCaseContext('o-elevador-que-nao-parou');
+  const samples = [
+    ['O elevador ficou preso entre andares?', 'YES', ['elevador', 'entre']],
+    ['O alçapão do teto estava destrancado?', 'YES', ['alçapão', 'destrancado']],
+    ['Ela saiu pelo poço de manutenção?', 'YES', ['rota', 'manutenção']],
+    ['Ela saiu em algum andar?', 'NO', ['rota', 'manutenção']],
+    ['Ela evaporou?', 'NO', ['não', 'magia']]
+  ];
+
+  for (const [question, classification, terms] of samples) {
+    const result = answerWithContext(String(question), context);
+    assert.equal(result?.classification, classification, String(question));
+    assertIncludesTerms(result?.rendered_text || '', terms, `O Elevador que Não Parou - ${question}`);
+  }
+});
+
+test('caso mensagem 23h17 cobre sinonimos e perguntas medias', () => {
+  const context = getStaticCaseContext('a-mensagem-das-23h17');
+  const samples = [
+    ['A mensagem foi automática?', 'YES', ['mensagem', 'automação']],
+    ['Foi programada no computador?', 'YES', ['computador', 'envio']],
+    ['O celular ficou carregando?', 'NO', ['celular', 'carregador']],
+    ['Ela mandou a mensagem na hora?', 'NO', ['saiu', 'antes']],
+    ['Ela já tinha saído antes?', 'YES', ['saiu', 'antes']]
+  ];
+
+  for (const [question, classification, terms] of samples) {
+    const result = answerWithContext(String(question), context);
+    assert.equal(result?.classification, classification, String(question));
+    assertIncludesTerms(result?.rendered_text || '', terms, `A Mensagem das 23h17 - ${question}`);
+  }
+});
+
+test('caso retrato que piscou cobre sinonimos e perguntas medias', () => {
+  const context = getStaticCaseContext('o-retrato-que-piscou');
+  const samples = [
+    ['Foi clarão no vidro?', 'YES', ['reflexo', 'flash']],
+    ['O quadro tinha mecanismo?', 'NO', ['mecanismo']],
+    ['Foi magia?', 'NO', ['sobrenatural']],
+    ['O garçom roubou a joia?', 'YES', ['garçom', 'clarão']],
+    ['O flash ofuscou os convidados?', 'YES', ['flash', 'cegou']]
+  ];
+
+  for (const [question, classification, terms] of samples) {
+    const result = answerWithContext(String(question), context);
+    assert.equal(result?.classification, classification, String(question));
+    assertIncludesTerms(result?.rendered_text || '', terms, `O Retrato que Piscou - ${question}`);
+  }
+});
+
+test('caso blackwell cobre sinonimos e perguntas medias', () => {
+  const context = getStaticCaseContext('blackwell');
+  const samples = [
+    ['Clara morreu na sala?', 'NO', ['Clara', 'não', 'morreu']],
+    ['O sangue era real?', 'NO', ['sangue', 'artificial']],
+    ['Foi sequestro de verdade?', 'NO', ['sumiço', 'encenado']],
+    ['Clara fugiu com Helena?', 'YES', ['Clara', 'Helena']],
+    ['Tomás desviava fundos?', 'YES', ['Tomás', 'desvio']]
+  ];
+
+  for (const [question, classification, terms] of samples) {
+    const result = answerWithContext(String(question), context);
+    assert.equal(result?.classification, classification, String(question));
+    assertIncludesTerms(result?.rendered_text || '', terms, `Blackwell - ${question}`);
+  }
+});
+
 test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reformulacao', () => {
   const result = processFactBasedQuestion(
     'A porta do quarto foi arrombada?',
