@@ -134,6 +134,13 @@ Decima quinta entrega concluida:
 - a pagina de feedback deixou de usar numeros ficticios de progresso, pistas e teorias;
 - testes automatizados protegem a ausencia de mocks na conclusao e a hidratacao do resultado salvo.
 
+Decima sexta entrega concluida:
+
+- a pagina de amigos deixou de criar rede, convites e conquistas em `localStorage`;
+- adicionar amigo agora prepara/copia convite, sem inventar status, nivel, XP ou badges;
+- a tela permanece vazia ate existir uma fonte real de amigos sincronizados;
+- teste automatizado impede a volta de amigos/conquistas ficticios no runtime.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

@@ -502,6 +502,14 @@ test('feedback de conclusao usa metricas reais da sala', () => {
   assert.doesNotMatch(feedbackSource, /18\/29|4\/6|7\/12|A carta anônima|nova pista desbloqueada/, 'Feedback nao deve exibir mocks de progresso');
 });
 
+test('pagina de amigos nao cria rede local ficticia', () => {
+  const friendsSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/Friends.tsx'), 'utf8');
+
+  assert.doesNotMatch(friendsSource, /uv_friends|uv_friend_invites|localStorage\.setItem|Convite aceito|Primeiro caso/, 'Amigos nao deve persistir amigos ou conquistas ficticias');
+  assert.match(friendsSource, /const friends: Friend\[\] = \[\]/, 'Amigos deve permanecer vazio ate existir fonte real');
+  assert.match(friendsSource, /rede de amigos será sincronizada quando o serviço estiver ativo/, 'Adicionar amigo deve explicar que a sincronizacao real ainda depende do servico');
+});
+
 test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
   const samples = [
     ['A água veio da chuva?', 'NO', ['água', 'chuva']],

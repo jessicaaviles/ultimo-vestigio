@@ -1,21 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import {
-  Award,
-  Check,
   Copy,
   MailPlus,
-  Medal,
-  MessageCircle,
   Search,
   Shield,
   Sparkles,
-  Star,
-  Trash2,
   Trophy,
   UserPlus,
   Users,
-  X,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -31,30 +24,6 @@ type Friend = {
   casesSolved: number;
   achievements: string[];
   avatar: string;
-};
-
-type Invite = {
-  id: string;
-  name: string;
-  handle: string;
-  note: string;
-};
-
-const STORAGE_KEY = 'uv_friends';
-const INVITES_KEY = 'uv_friend_invites';
-
-const readStored = <T,>(key: string, fallback: T): T => {
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : fallback;
-  } catch {
-    return fallback;
-  }
-};
-
-const createId = () => {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
-  return `friend-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 };
 
 const getInitials = (name: string) =>
@@ -74,8 +43,7 @@ const statusLabels: Record<Friend['status'], string> = {
 
 const Friends: React.FC = () => {
   const { user } = useAuth();
-  const [friends, setFriends] = useState<Friend[]>(() => readStored(STORAGE_KEY, []));
-  const [invites, setInvites] = useState<Invite[]>(() => readStored(INVITES_KEY, []));
+  const friends: Friend[] = [];
   const [query, setQuery] = useState('');
   const [nameOrEmail, setNameOrEmail] = useState('');
   const [status, setStatus] = useState('');
@@ -86,16 +54,6 @@ const Friends: React.FC = () => {
   }, [user?.displayName, user?.userId]);
 
   const inviteLink = `${window.location.origin}/register?invite=${inviteCode}`;
-
-  const persistFriends = (next: Friend[]) => {
-    setFriends(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  };
-
-  const persistInvites = (next: Invite[]) => {
-    setInvites(next);
-    localStorage.setItem(INVITES_KEY, JSON.stringify(next));
-  };
 
   const filteredFriends = friends.filter((friend) => {
     const haystack = `${friend.name} ${friend.handle} ${friend.email}`.toLowerCase();
@@ -112,65 +70,14 @@ const Friends: React.FC = () => {
     event.preventDefault();
     const value = nameOrEmail.trim();
     if (!value) return;
-    const exists = friends.some((friend) => friend.email.toLowerCase() === value.toLowerCase() || friend.handle.toLowerCase() === value.toLowerCase());
-    if (exists) {
-      setStatus('Esse investigador já está na sua rede.');
-      return;
-    }
-
-    const name = value.includes('@') ? value.split('@')[0].replace(/[._-]+/g, ' ') : value.replace(/^@/, '');
-    const normalizedName = name.replace(/\b\w/g, (letter) => letter.toUpperCase());
-    const nextFriend: Friend = {
-      id: createId(),
-      name: normalizedName || 'Novo investigador',
-      handle: value.startsWith('@') ? value : `@${normalizedName.toLowerCase().replace(/\s+/g, '') || 'investigador'}`,
-      email: value.includes('@') ? value : '',
-      status: 'online',
-      level: 1,
-      xp: 0,
-      accuracy: 0,
-      casesSolved: 0,
-      achievements: ['Convite aceito'],
-      avatar: '',
-    };
-
-    persistFriends([nextFriend, ...friends]);
+    navigator.clipboard?.writeText(`${inviteLink}&to=${encodeURIComponent(value)}`).catch(() => {});
     setNameOrEmail('');
-    setStatus('Amigo adicionado à sua rede.');
+    setStatus('Link de convite preparado. A rede de amigos será sincronizada quando o serviço estiver ativo.');
   };
 
   const handleCopyInvite = async () => {
     await navigator.clipboard?.writeText(inviteLink).catch(() => {});
     setStatus('Link de convite copiado.');
-  };
-
-  const handleRemoveFriend = (id: string) => {
-    persistFriends(friends.filter((friend) => friend.id !== id));
-    setStatus('Amigo removido da sua rede.');
-  };
-
-  const handleAcceptInvite = (invite: Invite) => {
-    const nextFriend: Friend = {
-      id: invite.id.replace('invite', 'friend'),
-      name: invite.name,
-      handle: invite.handle,
-      email: '',
-      status: 'online',
-      level: 3,
-      xp: 720,
-      accuracy: 50,
-      casesSolved: 2,
-      achievements: ['Primeiro caso'],
-      avatar: '',
-    };
-    persistFriends([nextFriend, ...friends]);
-    persistInvites(invites.filter((item) => item.id !== invite.id));
-    setStatus('Convite aceito.');
-  };
-
-  const handleDeclineInvite = (id: string) => {
-    persistInvites(invites.filter((item) => item.id !== id));
-    setStatus('Convite recusado.');
   };
 
   return (
@@ -239,38 +146,6 @@ const Friends: React.FC = () => {
 
       {status && <div className="friends-status" role="status">{status}</div>}
 
-      {invites.length > 0 && (
-        <section className="friends-section">
-          <div className="friends-section-heading">
-            <div>
-              <span className="eyebrow">Solicitações</span>
-              <h2>Convites pendentes</h2>
-            </div>
-            <span>{invites.length} novo{invites.length > 1 ? 's' : ''}</span>
-          </div>
-          <div className="friends-invite-list">
-            {invites.map((invite) => (
-              <article className="friends-request-card" key={invite.id}>
-                <div className="friends-avatar friends-avatar--initials">{getInitials(invite.name)}</div>
-                <div>
-                  <h3>{invite.name}</h3>
-                  <span>{invite.handle}</span>
-                  <p>{invite.note}</p>
-                </div>
-                <div className="friends-request-actions">
-                  <button aria-label={`Aceitar convite de ${invite.name}`} onClick={() => handleAcceptInvite(invite)}>
-                    <Check size={17} />
-                  </button>
-                  <button aria-label={`Recusar convite de ${invite.name}`} onClick={() => handleDeclineInvite(invite.id)}>
-                    <X size={17} />
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
-
       <section className="friends-section">
         <div className="friends-section-heading">
           <div>
@@ -316,26 +191,19 @@ const Friends: React.FC = () => {
                 </div>
               </div>
 
-              <div className="friend-achievements">
-                <span><Medal size={14} /> Conquistas</span>
-                <div>
-                  {friend.achievements.map((achievement) => (
-                    <span key={achievement}>
-                      {achievement === 'Precisão de elite' ? <Star size={12} /> : achievement === 'Trabalho em equipe' ? <Users size={12} /> : <Award size={12} />}
-                      {achievement}
-                    </span>
-                  ))}
+              {friend.achievements.length > 0 && (
+                <div className="friend-achievements">
+                  <span><Trophy size={14} /> Conquistas</span>
+                  <div>
+                    {friend.achievements.map((achievement) => (
+                      <span key={achievement}>
+                        <Trophy size={12} />
+                        {achievement}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              <div className="friend-actions">
-                <button className="btn-secondary" onClick={() => setStatus(`Mensagem para ${friend.name} preparada para a próxima versão do chat.`)}>
-                  <MessageCircle size={15} /> Mensagem
-                </button>
-                <button className="friend-remove" onClick={() => handleRemoveFriend(friend.id)} aria-label={`Excluir ${friend.name}`}>
-                  <Trash2 size={15} />
-                </button>
-              </div>
+              )}
             </article>
           ))}
         </div>

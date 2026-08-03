@@ -34,7 +34,6 @@ const Feedback: React.FC = () => {
   const [summary, setSummary] = useState<RoomFeedbackSummary | null>(null);
   const [summaryLoading, setSummaryLoading] = useState(false);
 
-  const displayName = localStorage.getItem('userName') || 'Investigadora_27';
   const currentUserId = localStorage.getItem('userId') || '';
   const progress = summary?.result?.score || 0;
   const questionCount = summary?.result?.questionCount || 0;
@@ -147,7 +146,7 @@ const Feedback: React.FC = () => {
           <div className="chapter-vote-row" key={player.playerId}>
             {player.avatar ? <img src={player.avatar} alt="" /> : <div className="chapter-vote-avatar-fallback" aria-hidden="true">{player.name.slice(0, 1).toUpperCase()}</div>}
             <div>
-              <strong>{player.userId === currentUserId ? displayName : player.name} {player.userId === currentUserId && <mark>Você</mark>}</strong>
+              <strong>{player.name} {player.userId === currentUserId && <mark>Você</mark>}</strong>
               <span>Votou em: {player.votedFor}</span>
             </div>
             <CheckCircle2 size={22} />
