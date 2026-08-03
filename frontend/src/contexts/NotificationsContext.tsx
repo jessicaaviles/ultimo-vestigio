@@ -23,6 +23,8 @@ interface NotificationsContextValue {
   clearRooms: () => void;
   /** Zera convites de amizade (chamado ao entrar na tela de amigos) */
   clearFriendInvites: () => void;
+  /** Recarrega a contagem de convites de amizade no backend */
+  refreshFriendInvites: () => Promise<void>;
   /** Retorna true se qualquer notificação estiver ativa */
   hasAny: boolean;
 }
@@ -39,6 +41,7 @@ const NotificationsCtx = createContext<NotificationsContextValue>({
   clearMessages: () => {},
   clearRooms: () => {},
   clearFriendInvites: () => {},
+  refreshFriendInvites: async () => {},
   hasAny: false,
 });
 
@@ -98,34 +101,36 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
     setNotifications(prev => ({ ...prev, friendInvites: 0 }));
   }, []);
 
-  useEffect(() => {
+  const refreshFriendInvites = useCallback(async () => {
     if (!settings.push || !settings.invites) return;
     const userId = user?.userId || localStorage.getItem('userId');
     if (!userId) {
       setNotifications(prev => ({ ...prev, friendInvites: 0 }));
       return;
     }
-
-    let active = true;
-    const refreshFriendInvites = async () => {
-      try {
-        const response = await listFriendInvitations(userId);
-        if (!active) return;
-        if (response.success) {
-          setNotifications(prev => ({ ...prev, friendInvites: (response.data?.invitations || []).length }));
-        }
-      } catch {
-        if (active) setNotifications(prev => ({ ...prev, friendInvites: prev.friendInvites }));
+    try {
+      const response = await listFriendInvitations(userId);
+      if (response.success) {
+        setNotifications(prev => ({ ...prev, friendInvites: (response.data?.invitations || []).length }));
       }
-    };
+    } catch {
+      // keep current count on transient failure
+    }
+  }, [settings.invites, settings.push, user?.userId]);
 
-    refreshFriendInvites();
-    const interval = window.setInterval(refreshFriendInvites, 30_000);
+  useEffect(() => {
+    if (!settings.push || !settings.invites) return;
+    let active = true;
+    const interval = window.setInterval(() => {
+      if (active) void refreshFriendInvites();
+    }, 30_000);
+
+    void refreshFriendInvites();
     return () => {
       active = false;
       window.clearInterval(interval);
     };
-  }, [settings.invites, settings.push, user?.userId]);
+  }, [refreshFriendInvites, settings.invites, settings.push]);
 
   const hasAny = notifications.messages > 0 || notifications.rooms || notifications.friendInvites > 0;
 
@@ -138,6 +143,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
       clearMessages,
       clearRooms,
       clearFriendInvites,
+      refreshFriendInvites,
       hasAny,
     }}>
       {children}

@@ -12,7 +12,7 @@ export const SocketNotificationsBridge: React.FC = () => {
   const socket = useSocket();
   const location = useLocation();
   const { user } = useAuth();
-  const { notifications, setRoomsActivity, setUnreadMessages, setFriendInvites } = useNotifications();
+  const { setRoomsActivity, setUnreadMessages, refreshFriendInvites } = useNotifications();
 
   useEffect(() => {
     if (!socket) return;
@@ -43,36 +43,32 @@ export const SocketNotificationsBridge: React.FC = () => {
       }
     };
 
-    const onFriendInvitationReceived = () => {
-      setFriendInvites(notifications.friendInvites + 1);
-    };
-
-    const onFriendInvitationHandled = () => {
-      setFriendInvites(Math.max(0, notifications.friendInvites - 1));
+    const onFriendInvitationChanged = () => {
+      void refreshFriendInvites();
     };
 
     socket.on('room_state_updated', onRoomStateUpdated);
     socket.on('room_invited', onRoomInvited);
     socket.on('new_message', onNewMessage);
-    socket.on('friend_invitation_received', onFriendInvitationReceived);
-    socket.on('friend_invitation_sent', onFriendInvitationReceived);
-    socket.on('friend_invitation_accepted', onFriendInvitationHandled);
-    socket.on('friend_invitation_declined', onFriendInvitationHandled);
-    socket.on('friend_invitation_cancelled', onFriendInvitationHandled);
-    socket.on('friendship_removed', onFriendInvitationHandled);
+    socket.on('friend_invitation_received', onFriendInvitationChanged);
+    socket.on('friend_invitation_sent', onFriendInvitationChanged);
+    socket.on('friend_invitation_accepted', onFriendInvitationChanged);
+    socket.on('friend_invitation_declined', onFriendInvitationChanged);
+    socket.on('friend_invitation_cancelled', onFriendInvitationChanged);
+    socket.on('friendship_removed', onFriendInvitationChanged);
 
     return () => {
       socket.off('room_state_updated', onRoomStateUpdated);
       socket.off('room_invited', onRoomInvited);
       socket.off('new_message', onNewMessage);
-      socket.off('friend_invitation_received', onFriendInvitationReceived);
-      socket.off('friend_invitation_sent', onFriendInvitationReceived);
-      socket.off('friend_invitation_accepted', onFriendInvitationHandled);
-      socket.off('friend_invitation_declined', onFriendInvitationHandled);
-      socket.off('friend_invitation_cancelled', onFriendInvitationHandled);
-      socket.off('friendship_removed', onFriendInvitationHandled);
+      socket.off('friend_invitation_received', onFriendInvitationChanged);
+      socket.off('friend_invitation_sent', onFriendInvitationChanged);
+      socket.off('friend_invitation_accepted', onFriendInvitationChanged);
+      socket.off('friend_invitation_declined', onFriendInvitationChanged);
+      socket.off('friend_invitation_cancelled', onFriendInvitationChanged);
+      socket.off('friendship_removed', onFriendInvitationChanged);
     };
-  }, [socket, location.pathname, notifications.friendInvites, setRoomsActivity, setUnreadMessages, setFriendInvites, user?.userId]);
+  }, [socket, location.pathname, refreshFriendInvites, setRoomsActivity, setUnreadMessages, user?.userId]);
 
   return null;
 };
