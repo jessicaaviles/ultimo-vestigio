@@ -73,12 +73,13 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
   const [what, setWhat] = useState('');
   const [who, setWho] = useState('');
   const [how, setHow] = useState('');
+  const [why, setWhy] = useState('');
   const [selectedSuspectId, setSelectedSuspectId] = useState('');
   const hasSuspects = suspects.length > 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!socket || !what || !who || !how) return;
+    if (!socket || !what || !who || !how || !why) return;
 
     socket.emit('submit_theory', {
       roomId,
@@ -87,7 +88,7 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
         what_happened: what,
         who: who,
         how: how,
-        why: how
+        why: why
       }
     });
   };
@@ -235,15 +236,28 @@ const FinalTheoryForm: React.FC<FinalTheoryFormProps> = ({ roomId, userId, myThe
           )}
         </div>
 
-        {/* Como / Por quê */}
+        {/* Como */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Target size={14} /> 3. Como e por quê?
+            <Target size={14} /> 3. Como foi possível?
           </label>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Explique o mecanismo e, se houver ação humana, a intenção ou motivo por trás dele.</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Explique o mecanismo, sequência ou condição escondida que torna a cena possível.</p>
           <textarea 
-            required rows={4} value={how} onChange={e => setHow(e.target.value)}
-            placeholder="Como a aparente impossibilidade se explica? Qual era o motivo?"
+            required rows={3} value={how} onChange={e => setHow(e.target.value)}
+            placeholder="Como a aparente impossibilidade se explica?"
+            style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', resize: 'vertical', fontFamily: 'inherit' }} 
+          />
+        </div>
+
+        {/* Por quê */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label style={{ color: 'var(--eyebrow-gold)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1.5px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <AlertTriangle size={14} /> 4. Por que isso aconteceu?
+          </label>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 8px 0' }}>Aponte o motivo, intenção ou finalidade por trás do evento. Em enigmas sem culpado humano, explique a causa da confusão.</p>
+          <textarea 
+            required rows={3} value={why} onChange={e => setWhy(e.target.value)}
+            placeholder="Qual era o motivo, intenção ou finalidade?"
             style={{ padding: '16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#fff', fontSize: '15px', resize: 'vertical', fontFamily: 'inherit' }} 
           />
         </div>

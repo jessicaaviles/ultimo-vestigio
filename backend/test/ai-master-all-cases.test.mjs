@@ -472,6 +472,15 @@ test('pistas seguem quantidade editorial e nao se repetem por caso', () => {
   }
 });
 
+test('formulario final envia quatro campos de resolucao sem duplicar como e porque', () => {
+  const formSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/components/FinalTheoryForm.tsx'), 'utf8');
+
+  assert.match(formSource, /const \[why, setWhy\] = useState\(''\)/, 'formulario deve ter estado separado para why');
+  assert.match(formSource, /4\. Por que isso aconteceu\?/, 'formulario deve exibir o quarto campo');
+  assert.match(formSource, /why:\s*why/, 'envio deve usar why separado');
+  assert.doesNotMatch(formSource, /why:\s*how/, 'why nao deve duplicar how');
+});
+
 test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
   const samples = [
     ['A água veio da chuva?', 'NO', ['água', 'chuva']],

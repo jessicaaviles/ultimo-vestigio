@@ -99,6 +99,13 @@ Decima entrega concluida:
 - pistas duplicadas, curtas demais ou que entregam a solucao diretamente passam a falhar nos testes;
 - a regra ajuda a manter investigacao justa sem excesso de dicas.
 
+Decima primeira entrega concluida:
+
+- o formulario de relatorio final voltou a usar os 4 campos oficiais da resolucao;
+- `como` e `por que` agora sao campos separados no frontend e no envio ao backend;
+- removida a duplicacao tecnica que enviava `why` com o mesmo texto de `how`;
+- teste automatizado protege o formulario contra voltar a esconder o quarto campo.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
