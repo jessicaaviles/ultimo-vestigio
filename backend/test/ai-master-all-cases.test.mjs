@@ -481,6 +481,13 @@ test('formulario final envia quatro campos de resolucao sem duplicar como e porq
   assert.doesNotMatch(formSource, /why:\s*how/, 'why nao deve duplicar how');
 });
 
+test('tela de jogo renderiza encerramento para status completed', () => {
+  const gameSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/Game.tsx'), 'utf8');
+
+  assert.match(gameSource, /const isGameFinished = status === 'GAME_OVER' \|\| status === 'COMPLETED'/, 'Game deve tratar COMPLETED como fim');
+  assert.match(gameSource, /\{isGameFinished && gameResult && \(/, 'Tela final deve renderizar para COMPLETED e GAME_OVER');
+});
+
 test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
   const samples = [
     ['A água veio da chuva?', 'NO', ['água', 'chuva']],

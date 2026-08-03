@@ -120,6 +120,13 @@ Decima terceira entrega concluida:
 - teste automatizado protege o fluxo de finalizacao contra votacoes presas apos a resolucao;
 - a regra reforca que caso resolvido nao deve continuar parecendo sala ativa.
 
+Decima quarta entrega concluida:
+
+- a tela de jogo passou a tratar `COMPLETED` como fim de jogo tambem no render da conclusao;
+- o resultado final nao depende mais apenas do status legado `GAME_OVER`;
+- a limpeza local de sala e a exibicao de recompensas usam a mesma nocao de jogo encerrado;
+- teste automatizado protege a tela final para `COMPLETED` e `GAME_OVER`.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

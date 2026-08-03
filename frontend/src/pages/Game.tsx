@@ -419,6 +419,7 @@ const Game: React.FC = () => {
   console.log('[Game] userId:', userId, 'activePlayer.anonymous_user_id:', activePlayer?.anonymous_user_id, 'all players:', players.map((p: any) => ({ id: p.id, anonId: p.anonymous_user_id, name: p.display_name })), 'isMyTurn:', isMyTurn);
   const isHost = roomData?.host_user_id === userId;
   const status = roomData?.status;
+  const isGameFinished = status === 'GAME_OVER' || status === 'COMPLETED';
   const theories = roomData?.theories || [];
   const myTheory = theories.find((t: any) => { const p = players.find((pl: any) => pl.id === t.player_id); return p?.anonymous_user_id === userId; });
   const caseTitle = roomData?.case_version?.case_ref?.title || 'Investigação';
@@ -455,7 +456,7 @@ const Game: React.FC = () => {
   }, [history, loading, processingUser, typingPlayer]);
 
   useEffect(() => {
-    if (status === 'GAME_OVER' || status === 'COMPLETED') {
+    if (isGameFinished) {
       localStorage.removeItem('currentRoomId');
       localStorage.removeItem('currentRoomCode');
 
@@ -468,7 +469,7 @@ const Game: React.FC = () => {
         }
       }
     }
-  }, [status, roomData?.case_version?.case_ref?.slug, userId]);
+  }, [isGameFinished, roomData?.case_version?.case_ref?.slug, userId]);
 
   if (!roomData) return <Loading message="Recuperando o estado oficial da sala..." />;
 
@@ -793,7 +794,7 @@ const Game: React.FC = () => {
             </>
           )}
 
-          {/* Outros status (SOLVING, REVEAL, GAME_OVER) */}
+          {/* Outros status (SOLVING, REVEAL, fim de jogo) */}
           {status === 'SOLVING' && (
             <FinalTheoryForm 
               roomId={roomId!} 
@@ -835,7 +836,7 @@ const Game: React.FC = () => {
             </div>
           )}
 
-          {status === 'GAME_OVER' && gameResult && (
+          {isGameFinished && gameResult && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'center', paddingTop: '28px' }}>
               <div>
                 <div style={{ ...labelStyle, color: 'var(--eyebrow-gold)' }}>Fim da investigação</div>
