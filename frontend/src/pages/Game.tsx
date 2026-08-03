@@ -430,7 +430,6 @@ const Game: React.FC = () => {
   const activeTurn = roomData?.turns?.find((t: any) => t.status === 'ACTIVE');
   const activePlayer = players.find((p: any) => p.id === activeTurn?.player_id);
   const isMyTurn = activePlayer?.anonymous_user_id === userId;
-  console.log('[Game] userId:', userId, 'activePlayer.anonymous_user_id:', activePlayer?.anonymous_user_id, 'all players:', players.map((p: any) => ({ id: p.id, anonId: p.anonymous_user_id, name: p.display_name })), 'isMyTurn:', isMyTurn);
   const isHost = roomData?.host_user_id === userId;
   const status = roomData?.status;
   const isGameFinished = status === 'GAME_OVER' || status === 'COMPLETED';

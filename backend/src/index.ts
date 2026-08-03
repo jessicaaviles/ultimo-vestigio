@@ -152,10 +152,6 @@ app.use((req, res, next) => {
   });
   next();
 });
-app.use((req, res, next) => {
-  console.log(`[HTTP] ${req.method} ${req.url}`, req.body);
-  next();
-});
 app.use('/api', (req, res, next) => {
   const key = req.ip || 'unknown'; const now = Date.now(); const current = requestWindows.get(key);
   if (!current || now - current.startedAt > 60_000) requestWindows.set(key, { startedAt: now, count: 1 });
@@ -191,8 +187,6 @@ app.get('/version', (req, res) => {
 
 // Socket.io
 io.on('connection', (socket) => {
-  console.log('Socket connected');
-
   socket.on('join_room', async ({ roomId, userId }) => {
     try {
       const cleanRoomId = String(roomId || '');
@@ -222,7 +216,6 @@ io.on('connection', (socket) => {
       socket.data.roomId = cleanRoomId;
       socket.data.userId = cleanUserId;
       socket.join(cleanRoomId);
-      console.log('Player joined a room');
 
       await prisma.room_players.updateMany({
         where: { room_id: cleanRoomId, anonymous_user_id: cleanUserId, removed_at: null },
@@ -238,12 +231,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('typing', ({ roomId, userId, typing }) => {
-    console.log(`[typing] room: ${roomId}, user: ${userId}, typing: ${typing}`);
     socket.to(roomId).emit('player_typing', { userId, typing });
   });
 
   socket.on('broadcast_to_room', ({ roomId, event, data }) => {
-    console.log(`[broadcast_to_room] room: ${roomId}, event: ${event}`);
     socket.to(roomId).emit(event, data);
   });
 
@@ -251,7 +242,6 @@ io.on('connection', (socket) => {
     try {
       const room = await prisma.rooms.findUnique({ where: { id: roomId }, include: { players: { where: { removed_at: null } } } });
       if (!room || room.host_user_id !== userId) return;
-      console.log('[start_game] players:', room.players.map(p => ({ id: p.anonymous_user_id, name: p.display_name, conn: p.connection_status })));
       const activePlayers = room.players.filter(p => p.connection_status === 'CONNECTED');
       if (activePlayers.length < 2) {
         socket.emit('room_error', `A sala precisa ter pelo menos dois jogadores conectados. Atualmente: ${room.players.length} jogador(es), ${activePlayers.length} conectado(s).`);
@@ -489,26 +479,22 @@ io.on('connection', (socket) => {
   });
 
   socket.on('pass_turn', async ({ roomId, userId, turnId }) => {
-    console.log(`[PASS_TURN] Recebido para room=${roomId}, user=${userId}, turnId=${turnId}`);
     try {
       const room = await prisma.rooms.findUnique({
         where: { id: roomId },
         include: { players: { orderBy: { turn_order: 'asc' } } }
       });
       if (!room || room.status !== 'IN_PROGRESS' || !room.current_turn_id) {
-        console.log(`[PASS_TURN] Falhou: sala inválida ou não IN_PROGRESS`);
         return;
       }
 
       // Se foi fornecido um turnId, garante que só passa se for o turno atual
       if (turnId && room.current_turn_id !== turnId) {
-        console.log(`[PASS_TURN] Falhou: turnId diverge (${room.current_turn_id} != ${turnId})`);
         return;
       }
 
       const currentTurn = await prisma.turns.findUnique({ where: { id: room.current_turn_id } });
       if (!currentTurn) {
-        console.log(`[PASS_TURN] Falhou: turno atual não encontrado`);
         return;
       }
 
@@ -520,16 +506,11 @@ io.on('connection', (socket) => {
       const timeElapsed = (Date.now() - startedAt) / 1000;
       const isTimeUp = timeElapsed >= turnTimer;
 
-      console.log(`[PASS_TURN] isTimeUp=${isTimeUp}, timeElapsed=${timeElapsed}, turnTimer=${turnTimer}`);
-
       if (!currentPlayer || (currentPlayer.anonymous_user_id !== userId && !isTimeUp && room.host_user_id !== userId)) {
-        console.log(`[PASS_TURN] Rejeitado: Não é a vez e o tempo não esgotou.`);
         socket.emit('room_error', 'Não é a sua vez. Aguarde o jogador atual concluir.');
         return;
       }
       
-      console.log(`[PASS_TURN] Iniciando transação para passar o turno...`);
-
       await prisma.$transaction(async (tx) => {
         // Finaliza turno atual
         await tx.turns.update({

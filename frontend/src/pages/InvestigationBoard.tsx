@@ -8,7 +8,6 @@ const InvestigationBoard: React.FC = () => {
   const navigate = useNavigate();
   const { caseId } = useParams();
   const { unlockedClues } = useInvestigation();
-  const [activeTab, setActiveTab] = useState('mural');
   const [showResolution, setShowResolution] = useState(false);
 
   if (caseId !== 'blackwell') {
@@ -91,21 +90,19 @@ const InvestigationBoard: React.FC = () => {
           )}
         </div>
 
-        {/* Tabs */}
         <div style={{ display: 'flex', overflowX: 'auto', padding: '0 24px', gap: '32px', borderBottom: '1px solid rgba(255,255,255,0.05)', marginTop: '16px', WebkitOverflowScrolling: 'touch' }}>
-          {['mural', 'pistas', 'pessoas', 'locais', 'linha do tempo'].map((tab) => (
-            <button 
-              key={tab} 
-              onClick={() => setActiveTab(tab)}
-              style={{ 
-                background: 'none', border: 'none', padding: '0 0 16px 0', color: activeTab === tab ? '#C5A880' : '#8E989F',
-                fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', whiteSpace: 'nowrap',
-                borderBottom: activeTab === tab ? '2px solid #C5A880' : '2px solid transparent',
-              }}
-            >
-              {tab}
-            </button>
-          ))}
+          <div style={{
+            padding: '0 0 16px',
+            color: '#C5A880',
+            fontSize: '11px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            whiteSpace: 'nowrap',
+            borderBottom: '2px solid #C5A880'
+          }}>
+            Mural
+          </div>
         </div>
       </div>
 
@@ -115,52 +112,38 @@ const InvestigationBoard: React.FC = () => {
         {/* Overlay escuro sobre a cortiça */}
         <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(20, 15, 10, 0.8)' }} />
 
-        {activeTab === 'mural' ? (
-          <>
-            {/* SVG Strings layer */}
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }}>
-              <filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.5"/></filter>
-              <line x1="28%" y1="20%" x2="45%" y2="25%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-              <line x1="75%" y1="25%" x2="55%" y2="52%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-              <line x1="25%" y1="38%" x2="45%" y2="55%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-              <line x1="15%" y1="65%" x2="35%" y2="58%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-              <line x1="80%" y1="65%" x2="65%" y2="58%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-              <line x1="50%" y1="75%" x2="50%" y2="65%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
-            </svg>
+        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none' }}>
+          <filter id="shadow"><feDropShadow dx="2" dy="2" stdDeviation="2" floodOpacity="0.5"/></filter>
+          <line x1="28%" y1="20%" x2="45%" y2="25%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+          <line x1="75%" y1="25%" x2="55%" y2="52%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+          <line x1="25%" y1="38%" x2="45%" y2="55%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+          <line x1="15%" y1="65%" x2="35%" y2="58%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+          <line x1="80%" y1="65%" x2="65%" y2="58%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+          <line x1="50%" y1="75%" x2="50%" y2="65%" stroke="#991b1b" strokeWidth="2" filter="url(#shadow)" />
+        </svg>
 
-            {/* Cards */}
-            {visibleCards.map((card) => (
-              <div key={card.id} style={{ position: 'absolute', top: card.top, left: card.left, transform: `rotate(${card.rotation})`, zIndex: 2, width: '90px' }}>
-                {card.type === 'note' ? (
-                  <div style={{ backgroundColor: '#d4c790', padding: '12px 10px', boxShadow: '2px 4px 10px rgba(0,0,0,0.5)', fontFamily: '"Kalam", cursive', fontSize: '10px', color: '#1a1a1a', lineHeight: 1.4, position: 'relative' }}>
-                    {renderTape()}
-                    {card.text}
-                  </div>
-                ) : (
-                  <div style={{ backgroundColor: '#e5e5e5', padding: '6px 6px 16px 6px', boxShadow: '4px 6px 12px rgba(0,0,0,0.6)', position: 'relative', borderRadius: '2px' }}>
-                    {renderPin()}
-                    <div style={{ width: '100%', height: '80px', backgroundImage: `url(${card.image})`, backgroundSize: 'cover', backgroundPosition: 'center', marginBottom: '8px', filter: 'sepia(0.3)' }} />
-                    <div style={{ fontFamily: '"Kalam", cursive', fontSize: '11px', color: '#1a1a1a', textAlign: 'center', lineHeight: 1 }}>{card.title}</div>
-                  </div>
-                )}
+        {visibleCards.map((card) => (
+          <div key={card.id} style={{ position: 'absolute', top: card.top, left: card.left, transform: `rotate(${card.rotation})`, zIndex: 2, width: '90px' }}>
+            {card.type === 'note' ? (
+              <div style={{ backgroundColor: '#d4c790', padding: '12px 10px', boxShadow: '2px 4px 10px rgba(0,0,0,0.5)', fontFamily: '"Kalam", cursive', fontSize: '10px', color: '#1a1a1a', lineHeight: 1.4, position: 'relative' }}>
+                {renderTape()}
+                {card.text}
               </div>
-            ))}
-            {visibleCards.length <= 1 && (
-              <div style={{ position: 'absolute', inset: '24px', zIndex: 3, display: 'grid', placeItems: 'center', textAlign: 'center', pointerEvents: 'none' }}>
-                <div style={{ maxWidth: 280 }}>
-                  <div style={{ color: '#C5A880', fontSize: '42px', marginBottom: '14px', opacity: 0.55 }}>?</div>
-                  <h3 style={{ color: '#F8F9FA', fontSize: '18px', margin: '0 0 8px' }}>Nenhuma conexão aberta</h3>
-                  <p style={{ color: '#8E989F', fontSize: '13px', lineHeight: 1.45, margin: 0 }}>As evidências aparecerão aqui conforme forem desbloqueadas na investigação.</p>
-                </div>
+            ) : (
+              <div style={{ backgroundColor: '#e5e5e5', padding: '6px 6px 16px 6px', boxShadow: '4px 6px 12px rgba(0,0,0,0.6)', position: 'relative', borderRadius: '2px' }}>
+                {renderPin()}
+                <div style={{ width: '100%', height: '80px', backgroundImage: `url(${card.image})`, backgroundSize: 'cover', backgroundPosition: 'center', marginBottom: '8px', filter: 'sepia(0.3)' }} />
+                <div style={{ fontFamily: '"Kalam", cursive', fontSize: '11px', color: '#1a1a1a', textAlign: 'center', lineHeight: 1 }}>{card.title}</div>
               </div>
             )}
-          </>
-        ) : (
-          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, padding: '24px', textAlign: 'center' }}>
-            <div>
-              <div style={{ color: '#C5A880', fontSize: '48px', marginBottom: '16px', opacity: 0.5 }}>?</div>
-              <h3 style={{ color: '#F8F9FA', fontSize: '18px', marginBottom: '8px' }}>Conteúdo em construção</h3>
-              <p style={{ color: '#8E989F', fontSize: '13px' }}>A aba "{activeTab}" será implementada na próxima versão do sistema.</p>
+          </div>
+        ))}
+        {visibleCards.length <= 1 && (
+          <div style={{ position: 'absolute', inset: '24px', zIndex: 3, display: 'grid', placeItems: 'center', textAlign: 'center', pointerEvents: 'none' }}>
+            <div style={{ maxWidth: 280 }}>
+              <div style={{ color: '#C5A880', fontSize: '42px', marginBottom: '14px', opacity: 0.55 }}>?</div>
+              <h3 style={{ color: '#F8F9FA', fontSize: '18px', margin: '0 0 8px' }}>Nenhuma conexão aberta</h3>
+              <p style={{ color: '#8E989F', fontSize: '13px', lineHeight: 1.45, margin: 0 }}>As evidências aparecerão aqui conforme forem desbloqueadas na investigação.</p>
             </div>
           </div>
         )}

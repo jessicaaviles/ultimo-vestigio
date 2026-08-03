@@ -523,6 +523,16 @@ test('telas imersivas de blackwell nao vazam para outros casos nem entregam solu
   assert.doesNotMatch(filesSource, /Coletada em \{item\.date\}|12\/05|13\/05|14\/05|15\/05/, 'Inventario nao deve exibir datas ficticias');
 });
 
+test('runtime nao exibe abas em construcao nem logs verbosos de debug', () => {
+  const boardSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/InvestigationBoard.tsx'), 'utf8');
+  const gameSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/Game.tsx'), 'utf8');
+  const backendSource = fs.readFileSync(path.join(repoRoot, 'backend/src/index.ts'), 'utf8');
+
+  assert.doesNotMatch(boardSource, /Conteúdo em construção|será implementada na próxima versão|pistas', 'pessoas', 'locais'/, 'Quadro nao deve expor abas sem funcionalidade real');
+  assert.doesNotMatch(gameSource, /console\.log\('\[Game\]/, 'Game nao deve manter log de debug com dados de jogadores');
+  assert.doesNotMatch(backendSource, /console\.log\(`\[HTTP\]|console\.log\('\[start_game\]|console\.log\(`\[PASS_TURN\]|console\.log\(`\[typing\]/, 'Backend nao deve logar payloads ou eventos verbosos de sala');
+});
+
 test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
   const samples = [
     ['A água veio da chuva?', 'NO', ['água', 'chuva']],

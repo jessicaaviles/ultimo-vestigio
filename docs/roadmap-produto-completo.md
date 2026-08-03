@@ -149,6 +149,13 @@ Decima setima entrega concluida:
 - inventario deixou de mostrar datas ficticias de coleta;
 - testes automatizados protegem as telas imersivas contra vazamento de mocks e spoilers.
 
+Decima oitava entrega concluida:
+
+- o quadro de investigacao deixou de exibir abas sem conteudo funcional;
+- foi removida a tela interna de "conteudo em construcao" do fluxo real;
+- logs verbosos de socket, turno e payload HTTP foram removidos do runtime;
+- teste automatizado protege contra retorno de logs de debug e abas sem entrega real.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
