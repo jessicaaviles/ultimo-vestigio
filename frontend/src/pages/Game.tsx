@@ -16,6 +16,15 @@ const dedupeHints = (hintsList: any[]) => {
     return true;
   });
 };
+
+const buildPersistedGameResult = (data: any) => {
+  if (!data?.game_result) return null;
+  return {
+    groupScore: data.game_result.score,
+    evaluations: data.final_evaluations || [],
+    persisted: true
+  };
+};
 const Game: React.FC = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -202,6 +211,11 @@ const Game: React.FC = () => {
 
     socket.on('room_state_updated', (data) => {
       setRoomData(data);
+      const persistedGameResult = buildPersistedGameResult(data);
+      if ((data.status === 'COMPLETED' || data.status === 'GAME_OVER') && persistedGameResult) {
+        setGameResult(persistedGameResult);
+        setTrueSolution(data.case_version?.full_solution || null);
+      }
       if (data.activeVote !== undefined) setActiveVote(data.activeVote);
       if (data.questions?.length) {
         setHistory(data.questions.map((q: any) => ({
@@ -501,18 +515,20 @@ const Game: React.FC = () => {
     borderRadius: '12px',
     padding: '16px'
   };
-  const playerResults = (gameResult?.evaluations || []).map((ev: any) => {
+  const effectiveGameResult = gameResult || buildPersistedGameResult(roomData);
+  const playerResults = (effectiveGameResult?.evaluations || []).map((ev: any) => {
     const author = players.find((p: any) => p.id === ev.playerId);
     const score = Math.round(Number(ev.score) || 0);
     return {
       ...ev,
       authorName: author?.display_name || 'Investigador',
+      authorAvatar: author?.user?.generated_profile_photo_data || author?.user?.profile_photo_data || null,
       score,
       xp: Math.max(25, Math.round(score * 2)),
       badge: score >= 90 ? 'Mestre da dedução' : score >= 70 ? 'Boa leitura' : 'Em evolução',
     };
   });
-  const teamXp = gameResult ? Math.max(50, Math.round((Number(gameResult.groupScore) || 0) * 2.5)) : 0;
+  const teamXp = effectiveGameResult ? Math.max(50, Math.round((Number(effectiveGameResult.groupScore) || 0) * 2.5)) : 0;
 
   return (
     <div className="immersive-page is-fixed-height" style={{
@@ -836,7 +852,7 @@ const Game: React.FC = () => {
             </div>
           )}
 
-          {isGameFinished && gameResult && (
+          {isGameFinished && effectiveGameResult && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', textAlign: 'center', paddingTop: '28px' }}>
               <div>
                 <div style={{ ...labelStyle, color: 'var(--eyebrow-gold)' }}>Fim da investigação</div>
@@ -853,7 +869,7 @@ const Game: React.FC = () => {
               <div style={{ ...cardStyle, padding: '32px', borderColor: 'rgba(184,153,83,0.3)' }}>
                 <div style={labelStyle}>Precisão Geral da Equipe</div>
                 <div style={{ fontSize: '64px', fontFamily: 'var(--font-serif)', color: '#fff', lineHeight: 1, marginTop: '8px' }}>
-                  {Math.round(gameResult.groupScore)}<span style={{ fontSize: '28px', color: 'rgba(255,255,255,0.5)' }}>%</span>
+                  {Math.round(effectiveGameResult.groupScore)}<span style={{ fontSize: '28px', color: 'rgba(255,255,255,0.5)' }}>%</span>
                 </div>
               </div>
 
@@ -870,7 +886,7 @@ const Game: React.FC = () => {
                 </div>
                 <div className="game-reward-card">
                   <Trophy size={20} />
-                  <strong>{Math.round(gameResult.groupScore) >= 80 ? '+1' : '0'}</strong>
+                  <strong>{Math.round(effectiveGameResult.groupScore) >= 80 ? '+1' : '0'}</strong>
                   <span>desempenho alto</span>
                 </div>
               </div>
@@ -880,9 +896,13 @@ const Game: React.FC = () => {
                 {playerResults.map((ev: any, idx: number) => {
                   return (
                     <div key={idx} className="game-player-result">
-                      <div className="game-player-result-medal" aria-hidden="true">
-                        <BadgeCheck size={21} />
-                      </div>
+                      {ev.authorAvatar ? (
+                        <img className="game-player-result-avatar" src={ev.authorAvatar} alt="" />
+                      ) : (
+                        <div className="game-player-result-medal" aria-hidden="true">
+                          <BadgeCheck size={21} />
+                        </div>
+                      )}
                       <div className="game-player-result-main">
                         <div className="game-player-result-header">
                           <div>

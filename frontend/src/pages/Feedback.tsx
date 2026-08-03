@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CheckCircle2, ChevronRight, FileText, FolderOpen, Share2, Sparkles, Trophy, Users } from 'lucide-react';
+import { CheckCircle2, ChevronRight, FileText, FolderOpen, HelpCircle, Share2, Trophy } from 'lucide-react';
 import { getRoomFeedbackSummary, submitFeedback } from '../services/api';
 
 interface VoteSummary {
@@ -36,7 +36,10 @@ const Feedback: React.FC = () => {
 
   const displayName = localStorage.getItem('userName') || 'Investigadora_27';
   const currentUserId = localStorage.getItem('userId') || '';
-  const progress = 68;
+  const progress = summary?.result?.score || 0;
+  const questionCount = summary?.result?.questionCount || 0;
+  const hintsUsed = summary?.result?.hintsUsed || 0;
+  const attempts = summary?.result?.attempts || 0;
 
   useEffect(() => {
     if (!roomId) return;
@@ -57,9 +60,11 @@ const Feedback: React.FC = () => {
   }, [roomId]);
 
   const rewardXp = useMemo(() => {
-    if (!rating) return 250;
+    const score = summary?.result?.score;
+    if (typeof score === 'number') return Math.max(50, Math.round(score * 2.5));
+    if (!rating) return 0;
     return 200 + rating * 25;
-  }, [rating]);
+  }, [rating, summary?.result?.score]);
 
   const send = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -82,7 +87,7 @@ const Feedback: React.FC = () => {
   };
 
   const shareProgress = async () => {
-    const text = `Concluí um capítulo em Último Vestígio com ${progress}% de progresso na investigação.`;
+    const text = `Concluí um capítulo em Último Vestígio com ${progress}% de precisão na investigação.`;
     if (navigator.share) {
       await navigator.share({ title: 'Último Vestígio', text }).catch(() => {});
       return;
@@ -105,22 +110,22 @@ const Feedback: React.FC = () => {
 
       <section className="chapter-card chapter-progress-card">
         <div>
-          <span className="chapter-card-label">Progresso da investigação</span>
+          <span className="chapter-card-label">Precisão da investigação</span>
           <div className="chapter-progress-ring" style={{ '--progress': `${progress * 3.6}deg` } as React.CSSProperties}>
             <span>{progress}%</span>
           </div>
         </div>
         <div className="chapter-progress-stats">
-          <span><FolderOpen size={19} /> <strong>18/29</strong> pistas encontradas</span>
-          <span><Users size={19} /> <strong>4/6</strong> suspeitos identificados</span>
-          <span><FileText size={19} /> <strong>7/12</strong> teorias formuladas</span>
+          <span><HelpCircle size={19} /> <strong>{questionCount}</strong> perguntas feitas</span>
+          <span><FolderOpen size={19} /> <strong>{hintsUsed}</strong> pistas usadas</span>
+          <span><FileText size={19} /> <strong>{attempts}</strong> tentativas finais</span>
         </div>
         <div className="chapter-next">
-          <span className="chapter-card-label">Próximo capítulo</span>
+          <span className="chapter-card-label">Próxima investigação</span>
           <div className="chapter-next-image" />
-          <small>Capítulo 02</small>
-          <strong>A carta anônima</strong>
-          <em>Em breve</em>
+          <small>Arquivo aberto</small>
+          <strong>Escolha outro caso</strong>
+          <em>No arquivo municipal</em>
         </div>
       </section>
 
@@ -129,7 +134,7 @@ const Feedback: React.FC = () => {
         <div className="chapter-reward-grid">
           <div><strong>+{rewardXp}</strong><span>XP experiência</span></div>
           <div><strong>+1</strong><span>ponto de dedução</span></div>
-          <div><Sparkles size={32} /><span>nova pista desbloqueada</span></div>
+          <div><Trophy size={32} /><span>caso concluído</span></div>
         </div>
       </section>
 

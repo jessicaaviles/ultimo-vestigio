@@ -54,18 +54,27 @@ const roomState = async (roomId: string) => {
       players: { where: { removed_at: null }, orderBy: { turn_order: 'asc' }, include: { user: { select: { id: true, default_display_name: true, profile_photo_data: true, generated_profile_photo_data: true } } } },
       turns: { where: { status: 'ACTIVE' } },
       theories: { select: { id: true, player_id: true, attempt_number: true, answers: true, status: true, submitted_at: true } },
-      case_version: { select: { opening: true, master_style: true, case_ref: { select: { slug: true, title: true, short_synopsis: true, difficulty: true, estimated_duration_minutes: true } } } },
+      case_version: { select: { opening: true, master_style: true, full_solution_encrypted: true, case_ref: { select: { slug: true, title: true, short_synopsis: true, difficulty: true, estimated_duration_minutes: true } } } },
       questions: { orderBy: { sequence_number: 'asc' }, include: { master_answers: { orderBy: { created_at: 'asc' } }, interpretation: true } }
     }
   });
   if (!room) return null;
   const activeVote = await prisma.votes.findFirst({ where: { room_id: roomId, status: 'OPEN' } });
   
-  const priorEvaluation = await prisma.theory_evaluations.findFirst({ where: { room_id: roomId }, orderBy: { attempt_number: 'desc' } });
+  const [priorEvaluation, gameResult, finalEvaluations] = await Promise.all([
+    prisma.theory_evaluations.findFirst({ where: { room_id: roomId }, orderBy: { attempt_number: 'desc' } }),
+    prisma.game_results.findUnique({ where: { room_id: roomId } }),
+    prisma.theory_evaluations.findMany({
+      where: { room_id: roomId },
+      orderBy: { created_at: 'desc' },
+      include: { theory: { select: { player_id: true, attempt_number: true } } }
+    })
+  ]);
   const currentAttemptNumber = priorEvaluation ? priorEvaluation.attempt_number + 1 : 1;
   const activePlayerIds = new Set(room.players.map((player) => player.id));
   const activeTheories = room.theories.filter(t => t.attempt_number === currentAttemptNumber && activePlayerIds.has(t.player_id));
   const caseSlug = room.case_version?.case_ref?.slug;
+  const { full_solution_encrypted: _fullSolutionEncrypted, ...publicCaseVersion } = room.case_version;
   const clientOpeningBySlug: Record<string, string> = {
     'o-jardim-sem-pegadas': 'Durante a inauguração de um jardim-labirinto, a escultora Nina Arantes desapareceu entre 20h40 e 21h05. A chuva deixou a terra mole, mas não havia pegadas saindo do centro. Estavam diretamente ligados ao evento: Dario Velloso, curador que organizou a exposição; Celina Prado, paisagista do labirinto; Tomás Arantes, irmão de Nina; e Vítor Leme, colecionador que comprou uma obra suspeita. Uma tesoura de poda estava caída ao lado da estátua principal, recém-lavada pela água.'
   };
@@ -73,12 +82,33 @@ const roomState = async (roomId: string) => {
   return {
     ...room,
     case_version: {
-      ...room.case_version,
-      opening: caseSlug && clientOpeningBySlug[caseSlug] ? clientOpeningBySlug[caseSlug] : room.case_version.opening
+      ...publicCaseVersion,
+      opening: caseSlug && clientOpeningBySlug[caseSlug] ? clientOpeningBySlug[caseSlug] : room.case_version.opening,
+      full_solution: ['COMPLETED', 'GAME_OVER'].includes(room.status) ? revealSecret(room.case_version.full_solution_encrypted) : undefined
     },
     case_version_id: room.case_version_id,
     theories: room.status === 'SOLVING' ? activeTheories.map(({ answers: _answers, ...theory }) => theory) : activeTheories,
-    activeVote
+    activeVote,
+    game_result: gameResult ? {
+      score: gameResult.score,
+      title: gameResult.title,
+      questionCount: gameResult.question_count,
+      repeatedQuestionCount: gameResult.repeated_question_count,
+      hintsUsed: gameResult.hints_used,
+      attempts: gameResult.attempts,
+      completedAt: gameResult.completed_at
+    } : null,
+    final_evaluations: gameResult ? finalEvaluations
+      .filter((evaluation) => evaluation.attempt_number === gameResult.attempts)
+      .map((evaluation) => ({
+        playerId: evaluation.theory.player_id,
+        attemptNumber: evaluation.attempt_number,
+        result: evaluation.result,
+        score: evaluation.score_delta,
+        feedback: evaluation.feedback,
+        dimensionResults: evaluation.dimension_results
+      }))
+      .reverse() : []
   };
 };
 

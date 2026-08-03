@@ -609,6 +609,7 @@
 .game-reward-card strong { color: var(--paper); font: 30px var(--serif); line-height: 1; }
 .game-reward-card span { color: rgba(242,238,229,.66); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-align: center; text-transform: uppercase; }
 .game-player-result { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 13px; padding: 14px; border: 1px solid rgba(132,147,107,.34); border-radius: 8px; background: rgba(15,20,23,.55); text-align: left; }
+.game-player-result-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(209,187,134,.42); background: rgba(242,238,229,.06); }
 .game-player-result-medal { width: 46px; height: 52px; display: grid; place-items: center; clip-path: polygon(50% 0, 92% 24%, 92% 76%, 50% 100%, 8% 76%, 8% 24%); color: #14110a; background: linear-gradient(145deg, #e6d79b 0%, #84936b 58%, #3d4b37 100%); }
 .game-player-result-main { min-width: 0; display: grid; gap: 8px; }
 .game-player-result-header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }

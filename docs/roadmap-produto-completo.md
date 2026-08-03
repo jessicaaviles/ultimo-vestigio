@@ -127,6 +127,13 @@ Decima quarta entrega concluida:
 - a limpeza local de sala e a exibicao de recompensas usam a mesma nocao de jogo encerrado;
 - teste automatizado protege a tela final para `COMPLETED` e `GAME_OVER`.
 
+Decima quinta entrega concluida:
+
+- o estado da sala passou a enviar `game_result`, avaliacoes finais e solucao somente quando o caso ja esta encerrado;
+- a tela final consegue reconstruir resultado real apos reload, usando jogadores e avatares da sala;
+- a pagina de feedback deixou de usar numeros ficticios de progresso, pistas e teorias;
+- testes automatizados protegem a ausencia de mocks na conclusao e a hidratacao do resultado salvo.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

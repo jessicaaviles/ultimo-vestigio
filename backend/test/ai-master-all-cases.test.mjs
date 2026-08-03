@@ -483,9 +483,23 @@ test('formulario final envia quatro campos de resolucao sem duplicar como e porq
 
 test('tela de jogo renderiza encerramento para status completed', () => {
   const gameSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/Game.tsx'), 'utf8');
+  const backendSource = fs.readFileSync(path.join(repoRoot, 'backend/src/index.ts'), 'utf8');
 
   assert.match(gameSource, /const isGameFinished = status === 'GAME_OVER' \|\| status === 'COMPLETED'/, 'Game deve tratar COMPLETED como fim');
-  assert.match(gameSource, /\{isGameFinished && gameResult && \(/, 'Tela final deve renderizar para COMPLETED e GAME_OVER');
+  assert.match(gameSource, /buildPersistedGameResult/, 'Game deve hidratar resultado salvo da sala');
+  assert.match(gameSource, /\{isGameFinished && effectiveGameResult && \(/, 'Tela final deve renderizar para COMPLETED e GAME_OVER');
+  assert.match(backendSource, /game_result:/, 'Estado da sala deve enviar resultado salvo');
+  assert.match(backendSource, /final_evaluations:/, 'Estado da sala deve enviar avaliacoes finais reais');
+  assert.match(backendSource, /full_solution_encrypted: _fullSolutionEncrypted/, 'Estado publico deve remover a solucao criptografada bruta');
+});
+
+test('feedback de conclusao usa metricas reais da sala', () => {
+  const feedbackSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/Feedback.tsx'), 'utf8');
+
+  assert.match(feedbackSource, /summary\?\.result\?\.score \|\| 0/, 'Feedback deve usar score real');
+  assert.match(feedbackSource, /summary\?\.result\?\.questionCount \|\| 0/, 'Feedback deve usar perguntas reais');
+  assert.match(feedbackSource, /summary\?\.result\?\.hintsUsed \|\| 0/, 'Feedback deve usar pistas reais');
+  assert.doesNotMatch(feedbackSource, /18\/29|4\/6|7\/12|A carta anônima|nova pista desbloqueada/, 'Feedback nao deve exibir mocks de progresso');
 });
 
 test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
