@@ -54,8 +54,8 @@ export const listFriends = async (req: Request, res: Response) => {
       where: {
         status: 'ACCEPTED',
         OR: [{ requester_id: userId }, { addressee_id: userId }],
-        requester: { deleted_at: null },
-        addressee: { deleted_at: null }
+        requester: { is: { deleted_at: null } },
+        addressee: { is: { deleted_at: null } }
       },
       include: { requester: true, addressee: true },
       orderBy: { created_at: 'desc' }
