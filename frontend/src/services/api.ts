@@ -116,6 +116,12 @@ export const listFriends = async (userId: string) => {
   return res.json();
 };
 
+export const listFriendInvitations = async (userId: string) => {
+  const params = new URLSearchParams({ userId });
+  const res = await apiFetch(`${API_URL}/friends/invitations?${params.toString()}`, { cache: 'no-store' });
+  return res.json();
+};
+
 export const addFriend = async (userId: string, lookup: string) => {
   const res = await apiFetch(`${API_URL}/friends`, {
     method: 'POST',
@@ -129,6 +135,26 @@ export const removeFriend = async (userId: string, friendshipId: string) => {
   const params = new URLSearchParams({ userId });
   const res = await apiFetch(`${API_URL}/friends/${encodeURIComponent(friendshipId)}?${params.toString()}`, {
     method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId })
+  });
+  return res.json();
+};
+
+export const acceptFriendInvitation = async (userId: string, friendshipId: string) => {
+  const params = new URLSearchParams({ userId });
+  const res = await apiFetch(`${API_URL}/friends/${encodeURIComponent(friendshipId)}/accept?${params.toString()}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId })
+  });
+  return res.json();
+};
+
+export const declineFriendInvitation = async (userId: string, friendshipId: string) => {
+  const params = new URLSearchParams({ userId });
+  const res = await apiFetch(`${API_URL}/friends/${encodeURIComponent(friendshipId)}/decline?${params.toString()}`, {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ userId })
   });

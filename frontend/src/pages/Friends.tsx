@@ -7,12 +7,21 @@ import {
   Shield,
   Sparkles,
   Trophy,
+  Check,
+  X,
   UserPlus,
   Users,
   Trash2,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { addFriend, listFriends, removeFriend } from '../services/api';
+import {
+  acceptFriendInvitation,
+  addFriend,
+  declineFriendInvitation,
+  listFriendInvitations,
+  listFriends,
+  removeFriend
+} from '../services/api';
 
 type Friend = {
   id: string;
@@ -20,16 +29,15 @@ type Friend = {
   handle: string;
   email: string;
   status: 'online' | 'investigando' | 'ausente';
-  level: number;
-  xp: number;
-  accuracy: number;
-  casesSolved: number;
   achievements: string[];
   avatar: string;
   stats?: {
     casesSolved: number;
     correctTheories: number;
   };
+  direction?: 'incoming' | 'outgoing';
+  friendshipStatus?: 'PENDING' | 'ACCEPTED';
+  pending?: boolean;
 };
 
 const getInitials = (name: string) =>
@@ -50,6 +58,7 @@ const statusLabels: Record<Friend['status'], string> = {
 const Friends: React.FC = () => {
   const { user } = useAuth();
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [invitations, setInvitations] = useState<Friend[]>([]);
   const [query, setQuery] = useState('');
   const [nameOrEmail, setNameOrEmail] = useState('');
   const [status, setStatus] = useState('');
@@ -71,11 +80,12 @@ const Friends: React.FC = () => {
 
     let active = true;
     setLoading(true);
-    listFriends(userId)
-      .then((response) => {
+    Promise.all([listFriends(userId), listFriendInvitations(userId)])
+      .then(([friendsResponse, invitationsResponse]) => {
         if (!active) return;
-        if (response.success) setFriends(response.data?.friends || []);
-        else setStatus(response.error || 'Não foi possível carregar sua rede.');
+        if (friendsResponse.success) setFriends(friendsResponse.data?.friends || []);
+        else setStatus(friendsResponse.error || 'Não foi possível carregar sua rede.');
+        if (invitationsResponse.success) setInvitations(invitationsResponse.data?.invitations || []);
       })
       .catch(() => {
         if (active) setStatus('Não foi possível carregar sua rede.');
@@ -94,11 +104,14 @@ const Friends: React.FC = () => {
     return haystack.includes(query.toLowerCase().trim());
   });
 
+  const filteredInvitations = invitations.filter((friend) => {
+    const haystack = `${friend.name} ${friend.handle} ${friend.email}`.toLowerCase();
+    return haystack.includes(query.toLowerCase().trim());
+  });
+
   const totalAchievements = friends.reduce((total, friend) => total + friend.achievements.length, 0);
-  const averageAccuracy = friends.length
-    ? Math.round(friends.reduce((total, friend) => total + friend.accuracy, 0) / friends.length)
-    : 0;
   const activeFriends = friends.filter((friend) => friend.status !== 'ausente').length;
+  const pendingInvitations = invitations.length;
 
   const handleAddFriend = (event: FormEvent) => {
     event.preventDefault();
@@ -114,13 +127,22 @@ const Friends: React.FC = () => {
     addFriend(userId, value)
       .then(async (response) => {
         if (response.success) {
-          setFriends((current) => {
-            const nextFriend = response.data.friend;
-            const withoutDuplicate = current.filter((friend) => friend.id !== nextFriend.id);
-            return [nextFriend, ...withoutDuplicate];
-          });
+          if (response.data?.friend) {
+            setFriends((current) => {
+              const nextFriend = response.data.friend;
+              const withoutDuplicate = current.filter((friend) => friend.id !== nextFriend.id);
+              return [nextFriend, ...withoutDuplicate];
+            });
+            setStatus('Amigo adicionado à sua rede.');
+          } else if (response.data?.invitation) {
+            setInvitations((current) => {
+              const nextInvite = response.data.invitation;
+              const withoutDuplicate = current.filter((friend) => friend.id !== nextInvite.id);
+              return [nextInvite, ...withoutDuplicate];
+            });
+            setStatus('Convite enviado.');
+          }
           setNameOrEmail('');
-          setStatus('Amigo adicionado à sua rede.');
           return;
         }
         await navigator.clipboard?.writeText(`${inviteLink}&to=${encodeURIComponent(value)}`).catch(() => {});
@@ -142,9 +164,45 @@ const Friends: React.FC = () => {
     const response = await removeFriend(userId, friendshipId).catch(() => ({ success: false, error: 'Não foi possível remover.' }));
     if (response.success) {
       setFriends((current) => current.filter((friend) => friend.id !== friendshipId));
+      setInvitations((current) => current.filter((friend) => friend.id !== friendshipId));
       setStatus('Amigo removido da sua rede.');
     } else {
       setStatus(response.error || 'Não foi possível remover.');
+    }
+    setLoading(false);
+  };
+
+  const handleAcceptInvitation = async (friendshipId: string) => {
+    const userId = user?.userId || localStorage.getItem('userId');
+    if (!userId) return;
+    setLoading(true);
+    const response = await acceptFriendInvitation(userId, friendshipId).catch(() => ({ success: false, error: 'Não foi possível aceitar.' }));
+    if (response.success) {
+      setInvitations((current) => current.filter((friend) => friend.id !== friendshipId));
+      if (response.data?.friend) {
+        setFriends((current) => {
+          const nextFriend = response.data.friend;
+          const withoutDuplicate = current.filter((friend) => friend.id !== nextFriend.id);
+          return [nextFriend, ...withoutDuplicate];
+        });
+      }
+      setStatus('Convite aceito.');
+    } else {
+      setStatus(response.error || 'Não foi possível aceitar.');
+    }
+    setLoading(false);
+  };
+
+  const handleDeclineInvitation = async (friendshipId: string) => {
+    const userId = user?.userId || localStorage.getItem('userId');
+    if (!userId) return;
+    setLoading(true);
+    const response = await declineFriendInvitation(userId, friendshipId).catch(() => ({ success: false, error: 'Não foi possível recusar.' }));
+    if (response.success) {
+      setInvitations((current) => current.filter((friend) => friend.id !== friendshipId));
+      setStatus('Convite recusado.');
+    } else {
+      setStatus(response.error || 'Não foi possível recusar.');
     }
     setLoading(false);
   };
@@ -175,8 +233,8 @@ const Friends: React.FC = () => {
         </div>
         <div>
           <Shield size={20} />
-          <strong>{averageAccuracy}%</strong>
-          <span>precisão média</span>
+          <strong>{pendingInvitations}</strong>
+          <span>convites pendentes</span>
         </div>
       </section>
 
@@ -252,15 +310,15 @@ const Friends: React.FC = () => {
                 </div>
               </div>
 
-              <div className="friend-stats">
-                <div>
-                  <strong>{friend.stats?.correctTheories ?? 0}</strong>
-                  <span>deduções</span>
-                </div>
-                <div>
-                  <strong>{friend.stats?.casesSolved ?? friend.casesSolved}</strong>
-                  <span>casos</span>
-                </div>
+                <div className="friend-stats">
+                  <div>
+                    <strong>{friend.stats?.correctTheories ?? 0}</strong>
+                    <span>deduções</span>
+                  </div>
+                  <div>
+                    <strong>{friend.stats?.casesSolved ?? 0}</strong>
+                    <span>casos</span>
+                  </div>
                 <div>
                   <strong>{friend.achievements.length}</strong>
                   <span>conquistas</span>
@@ -296,6 +354,56 @@ const Friends: React.FC = () => {
             <p>Use o convite rápido ou adicione alguém por nome, usuário ou e-mail.</p>
           </div>
         )}
+
+        <div className="friends-invite-list">
+          {filteredInvitations.length > 0 && (
+            <div className="friends-section-heading" style={{ marginTop: '26px' }}>
+              <div>
+                <span className="eyebrow">Convites</span>
+                <h2>Recebidos e enviados</h2>
+              </div>
+            </div>
+          )}
+          {filteredInvitations.map((invite) => (
+            <article className="friends-request-card" key={invite.id}>
+              {invite.avatar ? (
+                <img className="friends-avatar" src={invite.avatar} alt="" />
+              ) : (
+                <div className="friends-avatar friends-avatar--initials">{getInitials(invite.name)}</div>
+              )}
+              <div>
+                <div className="friend-name-row">
+                  <h3>{invite.name}</h3>
+                  <span className={`friend-status friend-status--investigando`}>
+                    {invite.direction === 'incoming' ? 'Recebido' : 'Enviado'}
+                  </span>
+                </div>
+                <span>{invite.handle}</span>
+                <p>
+                  {invite.direction === 'incoming'
+                    ? 'Esse investigador quer entrar na sua rede.'
+                    : 'Seu convite ainda está aguardando resposta.'}
+                </p>
+              </div>
+              <div className="friends-request-actions">
+                {invite.direction === 'incoming' ? (
+                  <>
+                    <button type="button" onClick={() => handleAcceptInvitation(invite.id)} aria-label={`Aceitar ${invite.name}`}>
+                      <Check size={16} />
+                    </button>
+                    <button type="button" onClick={() => handleDeclineInvitation(invite.id)} aria-label={`Recusar ${invite.name}`}>
+                      <X size={16} />
+                    </button>
+                  </>
+                ) : (
+                  <button type="button" onClick={() => handleDeclineInvitation(invite.id)} aria-label={`Cancelar convite para ${invite.name}`}>
+                    <X size={16} />
+                  </button>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
     </div>
   );

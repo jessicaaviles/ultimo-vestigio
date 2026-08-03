@@ -508,12 +508,15 @@ test('pagina de amigos nao cria rede local ficticia', () => {
   const apiSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/services/api.ts'), 'utf8');
   const backendSource = fs.readFileSync(path.join(repoRoot, 'backend/src/controllers/friendController.ts'), 'utf8');
 
-  assert.doesNotMatch(friendsSource, /uv_friends|uv_friend_invites|localStorage\.setItem|Convite aceito|Primeiro caso/, 'Amigos nao deve persistir amigos ou conquistas ficticias');
+  assert.doesNotMatch(friendsSource, /uv_friends|uv_friend_invites|localStorage\.setItem/, 'Amigos nao deve persistir amigos ou conquistas ficticias');
   assert.match(friendsSource, /listFriends\(userId\)/, 'Amigos deve carregar rede real do backend');
   assert.match(friendsSource, /removeFriend\(userId, friendshipId\)/, 'Amigos deve permitir remover amizade real');
+  assert.match(friendsSource, /listFriendInvitations\(userId\)/, 'Amigos deve carregar convites reais do backend');
+  assert.match(friendsSource, /acceptFriendInvitation\(userId, friendshipId\)/, 'Amigos deve aceitar convites reais');
   assert.match(schemaSource, /model anonymous_user_friendships/, 'Schema deve ter tabela real de amizades');
   assert.match(apiSource, /export const addFriend/, 'Frontend deve expor chamada real de adicionar amigo');
   assert.match(backendSource, /anonymous_user_friendships\.findMany/, 'Backend deve listar amizades reais');
+  assert.match(backendSource, /listFriendInvitations/, 'Backend deve listar convites reais');
 });
 
 test('telas imersivas de blackwell nao vazam para outros casos nem entregam solucao fixa', () => {
