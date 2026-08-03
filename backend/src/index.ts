@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import { buildClarificationText, buildContestationText, processQuestion, evaluateTheory } from './services/aiMaster';
 import { revealSecret } from './security/secrets';
-import { normalizeQuestion } from './game/rules';
+import { normalizeQuestion, theoryIsComplete } from './game/rules';
 
 dotenv.config();
 
@@ -885,6 +885,11 @@ io.on('connection', (socket) => {
 
       const player = room.players.find(p => p.anonymous_user_id === userId);
       if (!player) return;
+
+      const requiredTheoryFields = ['what_happened', 'who', 'how', 'why'];
+      if (!theoryIsComplete(answers || {}, requiredTheoryFields)) {
+        return socket.emit('room_error', 'Preencha os 4 campos do relatório final antes de enviar.');
+      }
 
       const priorEvaluation = await prisma.theory_evaluations.findFirst({ where: { room_id: roomId }, orderBy: { attempt_number: 'desc' } });
       const attemptNumber = priorEvaluation ? priorEvaluation.attempt_number + 1 : 1;

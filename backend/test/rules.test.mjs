@@ -16,6 +16,9 @@ test('aplica maioria simples e não cria vencedor em empate', () => {
 test('valida todos os campos obrigatórios da teoria', () => {
   assert.equal(theoryIsComplete({ who: 'A', how: 'B' }, ['who', 'how']), true);
   assert.equal(theoryIsComplete({ who: 'A', how: '' }, ['who', 'how']), false);
+  const finalFields = ['what_happened', 'who', 'how', 'why'];
+  assert.equal(theoryIsComplete({ what_happened: 'A', who: 'B', how: 'C', why: 'D' }, finalFields), true);
+  assert.equal(theoryIsComplete({ what_happened: 'A', who: 'B', how: 'C' }, finalFields), false);
 });
 
 test('protege e recupera conteúdo secreto sem expor texto em repouso', () => {

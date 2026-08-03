@@ -106,6 +106,13 @@ Decima primeira entrega concluida:
 - removida a duplicacao tecnica que enviava `why` com o mesmo texto de `how`;
 - teste automatizado protege o formulario contra voltar a esconder o quarto campo.
 
+Decima segunda entrega concluida:
+
+- o backend passou a rejeitar relatorios finais incompletos antes de gravar a teoria;
+- os 4 campos oficiais (`what_happened`, `who`, `how`, `why`) sao obrigatorios tambem no submit via socket;
+- a mensagem de erro orienta preencher todos os campos do relatorio final;
+- testes unitarios cobrem a validacao dos 4 campos obrigatorios.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
