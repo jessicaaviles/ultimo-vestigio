@@ -26,87 +26,11 @@ const assertIncludesTerms = (text, terms, label) => {
   }
 };
 
-const rule = (intent_key, examples, relatedFactKeys, defaultClassification = 'YES') => ({
-  intent_key,
-  semantic_examples: JSON.stringify(examples),
-  related_fact_keys: JSON.stringify(relatedFactKeys),
-  default_classification: defaultClassification
-});
-
 const answerWithContext = (question, context) =>
   processRuleBasedQuestion(question, context.rules, context.facts) ||
   processFactBasedQuestion(question, context.facts, context.opening || '');
 
-const hardCaseContexts = {
-  heranca: {
-    opening: 'Isadora Vale foi encontrada morta no conservatório da Casa Alvarenga.',
-    facts: [
-      { fact_key: 'testament_change', statement: 'Isadora pretendia alterar o testamento e retirar Augusto da gestão da fundação.' },
-      { fact_key: 'fake_receipts', statement: 'Os recibos de restauração no envelope lacrado eram falsos e beneficiavam empresas ligadas a Augusto.' },
-      { fact_key: 'digitalis_wine', statement: 'A taça de Isadora continha traços de digitalina misturados ao vinho.' },
-      { fact_key: 'augusto_administered_wine', statement: 'Augusto foi a última pessoa confirmada a servir vinho a Isadora.' },
-      { fact_key: 'clock_fast', statement: 'O relógio do conservatório estava adiantado em 18 minutos desde a manutenção da tarde.' },
-      { fact_key: 'false_time', statement: 'A hora de 22h46 foi usada para deslocar a morte para o período da chamada de vídeo de Augusto.' },
-      { fact_key: 'restoration_thread', statement: 'Um fio de restauração passou pela fresta inferior da porta e deixou fibras presas na grelha de drenagem.' },
-      { fact_key: 'locked_room_trick', statement: 'A porta foi trancada por dentro usando o fio, que depois foi puxado para fora pela drenagem.' },
-      { fact_key: 'glass_staged', statement: 'O vidro do teto foi fragilizado antes da tempestade para parecer a causa do acidente.' },
-      { fact_key: 'dry_footprints', statement: 'As marcas de sapato ao lado do corpo estavam secas sob a camada posterior de água da chuva.' },
-      { fact_key: 'glue_on_cuff', statement: 'O punho do casaco de Augusto tinha resíduo da mesma cola usada na restauração do vitral.' },
-      { fact_key: 'medical_red_herring', statement: 'O frasco de remédio de Isadora era real, mas a dosagem regular não explicava uma morte súbita sem a digitalina no vinho.' },
-      { fact_key: 'cousin_red_herring', statement: 'Cecília discutiu com Isadora sobre herança, mas saiu antes do vinho ser servido e não tinha acesso ao fio de restauração.' }
-    ],
-    rules: [
-      rule('motive_financial_foundation', ['Augusto desviava dinheiro da fundação?', 'O motivo era impedir a auditoria?', 'Isadora ia mudar o testamento?', 'Havia recibos falsos?', 'A fundação era o motivo?'], ['testament_change', 'fake_receipts'], 'YES'),
-      rule('poisoned_wine', ['Isadora foi envenenada pelo vinho?', 'A taça tinha algum medicamento?', 'A digitalina causou a morte?', 'Augusto serviu vinho?', 'O vinho estava adulterado?'], ['digitalis_wine', 'augusto_administered_wine'], 'YES'),
-      rule('false_clock_alibi', ['O relógio estava adiantado?', 'A hora da morte foi falsificada?', 'A chamada de vídeo era álibi falso?', '22h46 era horário falso?'], ['clock_fast', 'false_time'], 'YES'),
-      rule('locked_room_thread', ['A porta foi trancada com um fio?', 'O fio saiu pela drenagem?', 'O conservatório não estava realmente impossível?', 'Usaram linha para fechar a porta?', 'A sala trancada era encenação?'], ['restoration_thread', 'locked_room_trick'], 'YES'),
-      rule('glass_as_staging', ['O vidro quebrado foi encenação?', 'A tempestade não matou Isadora?', 'O teto foi preparado antes?', 'O vidro era pista falsa?'], ['glass_staged', 'dry_footprints'], 'YES'),
-      rule('cecilia_not_responsible', ['Cecília matou Isadora?', 'A prima matou Isadora?', 'Cecília é a culpada?', 'Cecília causou a morte?'], ['cousin_red_herring'], 'NO')
-    ]
-  },
-  sino: {
-    opening: 'O sino da torre desativado tocou três vezes durante reunião do conselho.',
-    facts: [
-      { fact_key: 'tower_dust_intact', statement: 'A poeira na fechadura e no batente da torre estava intacta; ninguém abriu a porta naquela noite.' },
-      { fact_key: 'transparent_line', statement: 'Uma fibra transparente ficou presa no badalo do sino.' },
-      { fact_key: 'archive_conduit', statement: 'Um conduíte antigo liga o arquivo morto à torre do sino.' },
-      { fact_key: 'forged_sale_docs', statement: 'A pasta da venda continha assinaturas copiadas de atas antigas.' },
-      { fact_key: 'lucia_controlled_docs', statement: 'Lúcia era a responsável por guardar e apresentar os documentos da venda.' },
-      { fact_key: 'side_stair_fall', statement: 'As marcas de impacto indicam queda da escada lateral do arquivo, não da torre.' },
-      { fact_key: 'key_staging', statement: 'A chave no bolso de Elias não prova entrada na torre; ela estava ali para sustentar a falsa cena.' }
-    ],
-    rules: [
-      rule('bell_not_tower', ['Alguém entrou na torre?', 'O sino foi tocado de dentro da torre?', 'A poeira da torre foi mexida?', 'A porta da torre foi aberta?'], ['tower_dust_intact', 'transparent_line'], 'NO'),
-      rule('line_mechanism', ['O sino foi acionado por fio?', 'O conduíte liga o arquivo à torre?', 'Dava para tocar o sino à distância?', 'Usaram linha de pesca no badalo?'], ['transparent_line', 'archive_conduit'], 'YES'),
-      rule('document_motive', ['O motivo era a venda da escola?', 'Havia documentos falsos?', 'Elias descobriu uma fraude?', 'A pasta tinha assinatura copiada?'], ['forged_sale_docs'], 'YES'),
-      rule('lucia_responsible', ['Lúcia foi responsável?', 'Quem controlava os documentos?', 'Lúcia tinha motivo?', 'A presidente do conselho matou Elias?'], ['lucia_controlled_docs', 'forged_sale_docs'], 'YES'),
-      rule('fall_not_tower', ['Elias caiu da torre?', 'Ele despencou da torre?', 'A queda foi da torre?'], ['side_stair_fall'], 'NO'),
-      rule('fall_location', ['O corpo veio da escada do arquivo?', 'A chave era encenação?', 'A queda foi na escada lateral?'], ['side_stair_fall', 'key_staging'], 'YES')
-    ]
-  },
-  fita: {
-    opening: 'A câmera mostra uma figura de jaleco atravessando o corredor sem rosto identificável.',
-    facts: [
-      { fact_key: 'virtual_camera_log', statement: 'O notebook de Bruno registrou uso de câmera virtual entre 22h06 e 22h19.' },
-      { fact_key: 'repeated_audio_delay', statement: 'A fala de Bruno na chamada repetia o mesmo atraso de milissegundos em dois trechos.' },
-      { fact_key: 'manual_token', statement: 'Um token manual de manutenção foi emitido por Bruno às 22h11.' },
-      { fact_key: 'reflective_mask', statement: 'Fragmentos de filme reflexivo foram encontrados na lixeira técnica.' },
-      { fact_key: 'face_overexposed', statement: 'A câmera do corredor não falhou; a exposição foi saturada por material reflexivo.' },
-      { fact_key: 'service_stairs', statement: 'A escada de serviço permitia sair da sala de Bruno sem passar pela recepção.' },
-      { fact_key: 'debt_motive', statement: 'Bruno acumulava dívidas e recebeu contato de uma concorrente dias antes.' },
-      { fact_key: 'prototype_access', statement: 'O cofre exigia cartão e senha temporária, ambos dentro das permissões de Bruno.' },
-      { fact_key: 'patent_red_herring', statement: 'Inae tinha conflito de autoria, mas permaneceu em câmera real durante todo o intervalo crítico.' }
-    ],
-    rules: [
-      rule('video_alibi_fake', ['A videoconferência era falsa?', 'Bruno usou gravação?', 'O álibi digital dele falha?', 'A chamada era vídeo gravado?'], ['virtual_camera_log', 'repeated_audio_delay'], 'YES'),
-      rule('faceless_mask', ['Por que o rosto não aparece?', 'Foi máscara reflexiva?', 'A câmera falhou?', 'O rosto foi apagado por luz?', 'O rosto foi apagado pela exposição?'], ['face_overexposed', 'reflective_mask'], 'YES'),
-      rule('maintenance_access', ['Quem podia abrir o cofre?', 'O token foi de manutenção?', 'Bruno tinha acesso?', 'A senha temporária era dele?'], ['manual_token', 'prototype_access'], 'YES'),
-      rule('bruno_motive', ['Bruno tinha motivo financeiro?', 'Ele queria vender o protótipo?', 'Havia contato com concorrente?', 'Bruno estava endividado?'], ['debt_motive', 'manual_token'], 'YES'),
-      rule('route_escape', ['Como ele saiu da sala?', 'A escada de serviço importa?', 'Ele passou pela recepção?', 'Bruno saiu por rota interna?'], ['service_stairs', 'virtual_camera_log'], 'YES'),
-      rule('inae_not_thief', ['Inae roubou o protótipo?', 'A bioquímica pegou a bateria?', 'Inae era a invasora?', 'Inae sumiu com o protótipo?'], ['patent_red_herring'], 'NO')
-    ]
-  }
-};
+const matrixContext = (slug) => buildStaticContextFromMatrix(getCaseTruthMatrix(slug));
 
 const caseSamples = [
   {
@@ -293,6 +217,7 @@ test('caso jardim responde perguntas centrais sem cair sempre em desconhecido', 
 });
 
 test('caso heranca de vidro cobre sinonimos e perguntas dificeis', () => {
+  const context = matrixContext('a-heranca-de-vidro');
   const samples = [
     ['Augusto desviava dinheiro da fundação?', 'YES', ['Augusto', 'fundação']],
     ['O motivo era impedir a auditoria?', 'YES', ['testamento', 'Augusto']],
@@ -307,18 +232,19 @@ test('caso heranca de vidro cobre sinonimos e perguntas dificeis', () => {
     ['O fio saiu pela drenagem?', 'YES', ['fio', 'drenagem']],
     ['A sala trancada era encenação?', 'YES', ['porta', 'fio']],
     ['O vidro quebrado foi armado?', 'YES', ['vidro', 'fragilizado']],
-    ['A tempestade matou Isadora?', 'YES', ['vidro', 'fragilizado']],
+    ['A tempestade matou Isadora?', 'NO', ['tempestade', 'não']],
     ['Cecília matou Isadora?', 'NO', ['Cecília', 'não']]
   ];
 
   for (const [question, classification, terms] of samples) {
-    const result = answerWithContext(String(question), hardCaseContexts.heranca);
+    const result = answerWithContext(String(question), context);
     assert.equal(result?.classification, classification, String(question));
     assertIncludesTerms(result?.rendered_text || '', terms, `A Herança de Vidro - ${question}`);
   }
 });
 
 test('caso sino das tres batidas cobre sinonimos e pistas centrais', () => {
+  const context = matrixContext('o-sino-das-tres-batidas');
   const samples = [
     ['Alguém abriu a porta da torre?', 'NO', ['poeira', 'torre']],
     ['O sino foi tocado lá dentro?', 'NO', ['fibra', 'badalo']],
@@ -337,13 +263,14 @@ test('caso sino das tres batidas cobre sinonimos e pistas centrais', () => {
   ];
 
   for (const [question, classification, terms] of samples) {
-    const result = answerWithContext(String(question), hardCaseContexts.sino);
+    const result = answerWithContext(String(question), context);
     assert.equal(result?.classification, classification, String(question));
     assertIncludesTerms(result?.rendered_text || '', terms, `O Sino das Três Batidas - ${question}`);
   }
 });
 
 test('caso fita sem rosto cobre sinonimos e suspeitos', () => {
+  const context = matrixContext('a-fita-sem-rosto');
   const samples = [
     ['A videoconferência era falsa?', 'YES', ['câmera virtual']],
     ['Bruno usou vídeo gravado?', 'YES', ['câmera virtual']],
@@ -363,20 +290,23 @@ test('caso fita sem rosto cobre sinonimos e suspeitos', () => {
   ];
 
   for (const [question, classification, terms] of samples) {
-    const result = answerWithContext(String(question), hardCaseContexts.fita);
+    const result = answerWithContext(String(question), context);
     assert.equal(result?.classification, classification, String(question));
     assertIncludesTerms(result?.rendered_text || '', terms, `A Fita Sem Rosto - ${question}`);
   }
 });
 
-test('matriz de verdade existe para casos faceis e medios com entidades e vereditos variados', () => {
+test('matriz de verdade existe para casos estruturados com entidades e vereditos variados', () => {
   const slugs = [
     'o-presente-desaparecido',
     'o-quarto-7',
     'o-elevador-que-nao-parou',
     'a-mensagem-das-23h17',
     'o-retrato-que-piscou',
-    'blackwell'
+    'blackwell',
+    'a-heranca-de-vidro',
+    'o-sino-das-tres-batidas',
+    'a-fita-sem-rosto'
   ];
 
   for (const slug of slugs) {

@@ -36,6 +36,13 @@ Primeira entrega concluida:
 - casos mapeados agora exigem entidades, fatos confirmados, fatos negados e exemplos;
 - testes automatizados cobrem a estrutura da matriz e perguntas por caso.
 
+Segunda entrega concluida:
+
+- migrados casos dificeis `A Heranca de Vidro`, `O Sino das Tres Batidas` e `A Fita Sem Rosto` para a matriz;
+- testes desses casos agora usam a matriz oficial em vez de contexto duplicado;
+- corrigida expectativa editorial da pergunta "A tempestade matou Isadora?" para resposta negativa;
+- reforcada separacao entre pistas falsas, fatos negados e fatos confirmados.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

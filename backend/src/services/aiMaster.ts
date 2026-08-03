@@ -334,6 +334,67 @@ export const getCaseTruthMatrix = (slug: string): CaseTruthMatrix | null => {
         truth('blackwell_kidnapping_not_real', 'O sequestro não foi real; o sumiço foi encenado para expor os desvios.', ['Foi sequestro real?', 'Clara foi sequestrada de verdade?', 'O sequestro aconteceu mesmo?'], 'NO', true),
         truth('staged_kidnapping', 'O sumiço foi encenado para expor os desvios.', ['O sequestro foi encenado?', 'Foi uma armação?', 'O sumiço foi armado?'], 'YES', true)
       ]
+    },
+    'a-heranca-de-vidro': {
+      entities: [
+        entity('Isadora Vale', ['isadora', 'herdeira', 'restauradora']),
+        entity('Augusto Alvarenga', ['augusto', 'tio', 'administrador']),
+        entity('Cecília Alvarenga', ['cecilia', 'cecília', 'prima']),
+        entity('conservatório', ['conservatorio', 'sala de vidro'])
+      ],
+      truths: [
+        truth('testament_change', 'Isadora pretendia alterar o testamento e retirar Augusto da gestão da fundação.', ['Augusto desviava dinheiro da fundação?', 'O motivo era impedir a auditoria?', 'Isadora ia mudar o testamento?', 'A fundação era o motivo?'], 'YES', true),
+        truth('fake_receipts', 'Os recibos de restauração eram falsos e beneficiavam empresas ligadas a Augusto.', ['Havia recibos falsos?', 'Os recibos de restauração eram falsos?', 'As empresas eram ligadas a Augusto?'], 'YES', true),
+        truth('digitalis_wine', 'A taça de Isadora continha traços de digitalina misturados ao vinho.', ['Isadora foi envenenada pelo vinho?', 'A taça tinha digitalina?', 'A bebida tinha remédio cardíaco?', 'O vinho estava adulterado?'], 'YES', true),
+        truth('augusto_administered_wine', 'Augusto foi a última pessoa confirmada a servir vinho a Isadora.', ['Augusto serviu vinho?', 'Quem serviu a bebida?', 'Augusto deu a taça?'], 'YES', true),
+        truth('clock_fast', 'O relógio do conservatório estava adiantado em 18 minutos, criando o horário falso de 22h46 para combinar com a chamada de Augusto.', ['O relógio estava adiantado?', 'O relógio foi mexido?', 'O horário 22h46 era falso?'], 'YES', true),
+        truth('false_time', 'A hora de 22h46 foi usada para deslocar a morte para o período da chamada de vídeo de Augusto.', ['A hora da morte foi falsificada?', 'A chamada de vídeo era álibi falso?', '22h46 era horário falso?'], 'YES', true),
+        truth('restoration_thread', 'Um fio de restauração passou pela fresta inferior da porta e deixou fibras presas na grelha de drenagem.', ['A porta foi trancada com um fio?', 'Usaram linha para fechar a porta?', 'O fio saiu pela drenagem?'], 'YES', true),
+        truth('locked_room_trick', 'A porta foi trancada por dentro usando o fio, que depois foi puxado para fora pela drenagem.', ['A sala trancada era encenação?', 'O conservatório era impossível?', 'A porta realmente ficou impossível?'], 'YES', true),
+        truth('glass_staged', 'O vidro do teto foi fragilizado antes da tempestade para parecer a causa do acidente.', ['O vidro quebrado foi armado?', 'O teto foi preparado antes?', 'O vidro era pista falsa?'], 'YES', true),
+        truth('storm_not_cause', 'A tempestade reforçou a cena, mas não foi a causa real da morte de Isadora.', ['A tempestade matou Isadora?', 'Ela morreu por causa do vidro?', 'Foi acidente da tempestade?'], 'NO', true),
+        truth('dry_footprints', 'As marcas de sapato ao lado do corpo estavam secas sob a camada posterior de água da chuva.', ['As pegadas estavam secas?', 'As marcas foram feitas antes da chuva?', 'A cena foi montada antes?'], 'YES', true),
+        truth('cecilia_not_responsible', 'Cecília discutiu com Isadora, mas saiu antes do vinho ser servido e não tinha acesso ao fio de restauração.', ['Cecília matou Isadora?', 'A prima matou Isadora?', 'Cecília é a culpada?', 'Cecília causou a morte?'], 'NO')
+      ]
+    },
+    'o-sino-das-tres-batidas': {
+      entities: [
+        entity('Lúcia Ferraz', ['lucia', 'lúcia', 'presidente do conselho']),
+        entity('Elias', ['zelador']),
+        entity('torre do sino', ['torre', 'sino']),
+        entity('arquivo morto', ['arquivo'])
+      ],
+      truths: [
+        truth('tower_dust_intact', 'A poeira na fechadura e no batente da torre estava intacta; ninguém abriu a porta naquela noite.', ['Alguém entrou na torre?', 'A poeira da torre foi mexida?', 'A porta da torre foi aberta?'], 'NO', true),
+        truth('bell_not_inside_tower', 'O sino não foi tocado por alguém dentro da torre; a fibra no badalo aponta para acionamento externo.', ['O sino foi tocado de dentro da torre?', 'Alguém tocou o sino lá dentro?'], 'NO', true),
+        truth('transparent_line', 'Uma fibra transparente ficou presa no badalo do sino.', ['Tinha linha de pesca no badalo?', 'Tinha fibra transparente no sino?', 'A fibra no badalo importa?'], 'YES', true),
+        truth('archive_conduit', 'Um conduíte antigo ligava o arquivo à torre, e a fibra no badalo permitia acionar o sino à distância.', ['O conduíte liga o arquivo à torre?', 'Dava para tocar o sino à distância?', 'O sino podia ser acionado à distância?', 'O arquivo se ligava à torre?'], 'YES', true),
+        truth('forged_sale_docs', 'A pasta da venda continha assinaturas copiadas de atas antigas.', ['Havia documentos falsos?', 'A pasta tinha assinaturas copiadas?', 'Elias descobriu uma fraude?'], 'YES', true),
+        truth('lucia_controlled_docs', 'Lúcia era a responsável por guardar e apresentar os documentos da venda.', ['Lúcia foi responsável?', 'Quem controlava os documentos?', 'Lúcia tinha motivo?', 'A presidente do conselho tinha motivo?'], 'YES', true),
+        truth('sale_motive', 'O motivo estava ligado à pasta da venda fraudulenta da escola, com assinaturas copiadas.', ['O motivo era a venda da escola?', 'Queriam vender a escola?', 'A venda era fraudulenta?'], 'YES', true),
+        truth('side_stair_fall', 'As marcas de impacto indicam queda da escada lateral do arquivo, não da torre.', ['Elias caiu da torre?', 'Ele despencou da torre?', 'A queda foi da torre?'], 'NO', true),
+        truth('fall_location', 'A queda ocorreu na escada lateral do arquivo.', ['O corpo veio da escada do arquivo?', 'A queda foi na escada lateral?', 'Elias caiu no arquivo?'], 'YES', true),
+        truth('key_staging', 'A chave no bolso de Elias não prova entrada na torre; ela estava ali para sustentar a falsa cena.', ['A chave era encenação?', 'A chave no bolso era pista falsa?', 'A chave prova que ele entrou?'], 'YES', true)
+      ]
+    },
+    'a-fita-sem-rosto': {
+      entities: [
+        entity('Bruno Tavares', ['bruno', 'coordenador técnico']),
+        entity('Inae Moura', ['inae', 'bioquimica', 'bioquímica']),
+        entity('protótipo', ['prototipo', 'bateria']),
+        entity('câmera virtual', ['camera virtual', 'vídeo gravado', 'video gravado'])
+      ],
+      truths: [
+        truth('virtual_camera_log', 'O notebook de Bruno registrou uso de câmera virtual entre 22h06 e 22h19.', ['A videoconferência era falsa?', 'Bruno usou vídeo gravado?', 'Bruno usou câmera virtual?', 'O álibi digital dele falha?'], 'YES', true),
+        truth('repeated_audio_delay', 'A fala de Bruno na chamada repetia o mesmo atraso de milissegundos em dois trechos.', ['A chamada tinha atraso repetido?', 'O áudio repetia atraso?', 'O vídeo era gravação?'], 'YES', true),
+        truth('manual_token', 'Um token manual de manutenção gerou a senha temporária do cofre emitida por Bruno às 22h11.', ['O token foi emitido manualmente?', 'O token era de manutenção?', 'A senha temporária era de manutenção?', 'Bruno emitiu o token?'], 'YES', true),
+        truth('prototype_access', 'O cofre exigia cartão e senha temporária, ambos dentro das permissões de Bruno.', ['Bruno tinha acesso ao cofre?', 'Quem podia abrir o cofre?', 'A senha temporária era dele?'], 'YES', true),
+        truth('reflective_mask', 'Fragmentos de filme reflexivo foram encontrados na lixeira técnica.', ['O invasor usou máscara reflexiva?', 'Foi máscara reflexiva?', 'Havia filme reflexivo?'], 'YES', true),
+        truth('face_overexposed', 'A câmera do corredor não falhou; a exposição foi saturada por material reflexivo.', ['A câmera do corredor falhou?', 'O rosto foi apagado por luz?', 'A exposição apagou o rosto?', 'Por que o rosto não aparece?'], 'YES', true),
+        truth('service_stairs', 'A escada de serviço permitia sair da sala de Bruno sem passar pela recepção.', ['Saiu pela escada de serviço?', 'Ele passou pela recepção?', 'Bruno saiu por rota interna?'], 'YES', true),
+        truth('debt_motive', 'Bruno acumulava dívidas e recebeu contato de uma concorrente dias antes.', ['Bruno tinha dívida?', 'Bruno tinha motivo financeiro?', 'Ele queria vender o protótipo para concorrente?', 'Havia contato com concorrente?'], 'YES', true),
+        truth('inae_not_thief', 'Inae tinha conflito de autoria, mas permaneceu em câmera real durante todo o intervalo crítico.', ['Inae roubou o protótipo?', 'A bioquímica pegou a bateria?', 'Inae era a invasora?', 'Inae sumiu com o protótipo?'], 'NO')
+      ]
     }
   };
 
