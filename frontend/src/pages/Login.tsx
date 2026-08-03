@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authLogin, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
-
-declare global {
-  interface Window { google?: any; }
-}
+import { Capacitor } from '@capacitor/core';
+import { initializeWebGoogleButton, signInWithGoogle } from '../services/googleAuth';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -17,12 +15,14 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const isWebPlatform = Capacitor.getPlatform() === 'web';
 
-  const handleGoogleResponse = useCallback(async (response: any) => {
+  const handleGoogleCredential = useCallback(async (credential: string) => {
     setLoading(true);
     setError('');
     try {
-      const res = await authGoogle(response.credential);
+      const res = await authGoogle(credential);
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
@@ -37,6 +37,19 @@ const Login: React.FC = () => {
       setLoading(false);
     }
   }, [navigate, refresh, returnUrl]);
+
+  const handleGoogleClick = useCallback(async () => {
+    if (loading) return;
+    setLoading(true);
+    setError('');
+    try {
+      const credential = await signInWithGoogle(import.meta.env.VITE_GOOGLE_CLIENT_ID);
+      await handleGoogleCredential(credential);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao autenticar com Google.');
+      setLoading(false);
+    }
+  }, [handleGoogleCredential, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,23 +74,14 @@ const Login: React.FC = () => {
   };
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.onload = () => {
-      window.google?.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: handleGoogleResponse,
-        cancel_on_tap_outside: false,
-      });
-      window.google?.accounts.id.renderButton(
-        document.getElementById('google-signin-button'),
-        { theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', width: 380 }
-      );
-    };
-    document.body.appendChild(script);
-    return () => { document.body.removeChild(script); };
-  }, [handleGoogleResponse]);
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const container = googleButtonRef.current;
+    if (!clientId || !container) return;
+
+    if (isWebPlatform) {
+      void initializeWebGoogleButton(container, clientId, 'signin', handleGoogleCredential);
+    }
+  }, [handleGoogleCredential, isWebPlatform]);
 
   return (
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -87,7 +91,31 @@ const Login: React.FC = () => {
 
         {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
           <>
-            <div id="google-signin-button" style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }} />
+            {isWebPlatform ? (
+              <div ref={googleButtonRef} style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }} />
+            ) : (
+              <button
+                type="button"
+                onClick={handleGoogleClick}
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  maxWidth: 380,
+                  margin: '0 auto 24px',
+                  display: 'block',
+                  borderRadius: 999,
+                  border: '1px solid var(--line)',
+                  background: '#11181c',
+                  color: '#F8F9FA',
+                  padding: '14px 20px',
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {loading ? 'Conectando...' : 'Continuar com Google'}
+              </button>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
               <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
               <span style={{ color: 'var(--muted)', fontSize: 12 }}>ou</span>
