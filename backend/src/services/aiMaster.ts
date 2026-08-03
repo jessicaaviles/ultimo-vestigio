@@ -166,7 +166,38 @@ const buildRuleBasedAnswer = (classification: string, relatedFacts: string[] = [
   };
 };
 
+const BROAD_SOLUTION_WORDS = new Set([
+  'aconteceu',
+  'culpado',
+  'culpada',
+  'feito',
+  'motivo',
+  'responsavel',
+  'responsável',
+  'solucao',
+  'solução'
+]);
+
+export const isBroadSolutionQuestion = (questionText: string) => {
+  const normalized = normalizeText(questionText);
+  const words = baseTokensForMatching(questionText);
+  const startsBroad = /^(quem|como|qual|quais|o que|por que|porque)\b/.test(normalized);
+  const mentionsBroadSolution = words.some((word) => BROAD_SOLUTION_WORDS.has(word))
+    || /\b(quem matou|matou|sumiu|desapareceu|fez isso|fez tudo|por tras|por trás)\b/.test(normalized);
+  const hasSpecificAnchor = words.some((word) => word.length >= 8 && !BROAD_SOLUTION_WORDS.has(word));
+
+  return startsBroad && mentionsBroadSolution && words.length <= 3 && !hasSpecificAnchor;
+};
+
+const buildAntiSpoilerAnswer = () => ({
+  classification: 'UNKNOWN',
+  rendered_text: 'Desconhecido. A pergunta está ampla demais; investigue um fato específico antes de formular a solução.',
+  fallback_used: false
+});
+
 export const processRuleBasedQuestion = (questionText: string, answerRules: any[], facts: Array<{ fact_key: string; statement: string }> = []) => {
+  if (isBroadSolutionQuestion(questionText)) return buildAntiSpoilerAnswer();
+
   const questionWords = new Set(tokenizeForMatching(questionText));
   if (questionWords.size === 0) return null;
 

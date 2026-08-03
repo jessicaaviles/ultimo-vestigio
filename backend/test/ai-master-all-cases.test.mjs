@@ -6,6 +6,7 @@ import {
   buildStaticContextFromMatrix,
   getCaseTruthMatrix,
   getStaticCaseContext,
+  isBroadSolutionQuestion,
   processFactBasedQuestion,
   processGardenQuestion,
   processRuleBasedQuestion,
@@ -472,6 +473,19 @@ test('contexto estatico complementa respostas em casos diferentes', () => {
     assert.equal(result?.classification, classification, slug);
     assertIncludesTerms(result?.rendered_text || '', terms, slug);
   }
+});
+
+test('trava anti-spoiler segura perguntas amplas sem bloquear perguntas especificas', () => {
+  const context = getStaticCaseContext('o-sino-das-tres-batidas');
+  const broad = processRuleBasedQuestion('Quem foi o culpado?', context.rules, context.facts);
+  assert.equal(broad?.classification, 'UNKNOWN');
+  assertIncludesTerms(broad?.rendered_text || '', ['ampla', 'fato específico'], 'Anti-spoiler amplo');
+  assert.equal(isBroadSolutionQuestion('Quem foi o culpado?'), true);
+
+  const specific = processRuleBasedQuestion('Lúcia tinha motivo?', context.rules, context.facts);
+  assert.equal(specific?.classification, 'YES');
+  assertIncludesTerms(specific?.rendered_text || '', ['Lúcia', 'documentos'], 'Pergunta especifica');
+  assert.equal(isBroadSolutionQuestion('Lúcia tinha motivo?'), false);
 });
 
 test('respostas do mestre sao reduzidas para uma frase curta', () => {

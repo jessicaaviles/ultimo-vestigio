@@ -50,6 +50,13 @@ Terceira entrega concluida:
 - removida duplicacao visual de prefixos no chat do jogo;
 - testes cobrem esclarecimento positivo, negativo, parcial e contestacao corrigida.
 
+Quarta entrega concluida:
+
+- criada trava anti-spoiler para perguntas amplas de solucao;
+- perguntas como "Quem foi o culpado?" pedem investigacao de um fato especifico antes de formular solucao;
+- perguntas especificas, como "Lucia tinha motivo?", continuam sendo respondidas normalmente;
+- testes garantem que a trava nao bloqueia investigacao contextualizada.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
