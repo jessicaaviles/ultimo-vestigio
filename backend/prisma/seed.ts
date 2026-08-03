@@ -454,7 +454,7 @@ async function main() {
     },
     {
       intent_key: 'poisoned_wine',
-      examples: ['Isadora foi envenenada pelo vinho?', 'A taça tinha algum medicamento?', 'A digitalina causou a morte?'],
+      examples: ['Isadora foi envenenada pelo vinho?', 'A taça tinha algum medicamento?', 'A bebida tinha remédio cardíaco?', 'A digitalina causou a morte?', 'O vinho estava adulterado?'],
       facts: ['digitalis_wine', 'augusto_administered_wine'],
       classification: 'YES'
     },
@@ -466,7 +466,7 @@ async function main() {
     },
     {
       intent_key: 'locked_room_thread',
-      examples: ['A porta foi trancada com um fio?', 'O fio saiu pela drenagem?', 'O conservatório não estava realmente impossível?'],
+      examples: ['A porta foi trancada com um fio?', 'O fio saiu pela drenagem?', 'O conservatório não estava realmente impossível?', 'A sala trancada era encenação?', 'Usaram linha para fechar a porta?'],
       facts: ['restoration_thread', 'locked_room_trick'],
       classification: 'YES'
     },
@@ -475,6 +475,12 @@ async function main() {
       examples: ['O vidro quebrado foi encenação?', 'A tempestade não matou Isadora?', 'O teto foi preparado antes?'],
       facts: ['glass_staged', 'dry_footprints'],
       classification: 'YES'
+    },
+    {
+      intent_key: 'cecilia_not_responsible',
+      examples: ['Cecília matou Isadora?', 'A prima matou Isadora?', 'Cecília é a culpada?', 'Cecília causou a morte?'],
+      facts: ['cousin_red_herring'],
+      classification: 'NO'
     }
   ];
 
@@ -541,7 +547,8 @@ async function main() {
         ['line_mechanism', ['O sino foi acionado por fio?', 'O conduíte liga o arquivo à torre?', 'Dava para tocar o sino à distância?'], ['transparent_line', 'archive_conduit'], 'YES'],
         ['document_motive', ['O motivo era a venda da escola?', 'Havia documentos falsos?', 'Elias descobriu uma fraude?'], ['forged_sale_docs', 'elias_found_folder'], 'YES'],
         ['lucia_responsible', ['Lúcia foi responsável?', 'Quem controlava os documentos?', 'Lúcia tinha motivo?'], ['lucia_controlled_docs', 'forged_sale_docs'], 'YES'],
-        ['fall_location', ['Elias caiu da torre?', 'O corpo veio da escada do arquivo?', 'A chave era encenação?'], ['side_stair_fall', 'key_staging'], 'YES']
+        ['fall_not_tower', ['Elias caiu da torre?', 'Ele despencou da torre?', 'A queda foi da torre?'], ['side_stair_fall'], 'NO'],
+        ['fall_location', ['O corpo veio da escada do arquivo?', 'A queda foi na escada lateral?', 'A chave era encenação?'], ['side_stair_fall', 'key_staging'], 'YES']
       ]
     },
     {
@@ -583,10 +590,11 @@ async function main() {
       ],
       rules: [
         ['video_alibi_fake', ['A videoconferência era falsa?', 'Bruno usou gravação?', 'O álibi digital dele falha?'], ['virtual_camera_log', 'repeated_audio_delay'], 'YES'],
-        ['faceless_mask', ['Por que o rosto não aparece?', 'Foi máscara reflexiva?', 'A câmera falhou?'], ['reflective_mask', 'face_overexposed'], 'YES'],
+        ['faceless_mask', ['Por que o rosto não aparece?', 'Foi máscara reflexiva?', 'A câmera falhou?', 'O rosto foi apagado por luz?', 'A exposição apagou o rosto?'], ['face_overexposed', 'reflective_mask'], 'YES'],
         ['maintenance_access', ['Quem podia abrir o cofre?', 'O token foi de manutenção?', 'Bruno tinha acesso?'], ['manual_token', 'prototype_access'], 'YES'],
-        ['bruno_motive', ['Bruno tinha motivo financeiro?', 'Ele queria vender o protótipo?', 'Havia contato com concorrente?'], ['debt_motive', 'manual_token'], 'YES'],
-        ['route_escape', ['Como ele saiu da sala?', 'A escada de serviço importa?', 'Ele passou pela recepção?'], ['service_stairs', 'virtual_camera_log'], 'YES']
+        ['bruno_motive', ['Bruno tinha motivo financeiro?', 'Ele queria vender o protótipo?', 'Havia contato com concorrente?', 'Bruno estava endividado?'], ['debt_motive', 'manual_token'], 'YES'],
+        ['route_escape', ['Como ele saiu da sala?', 'A escada de serviço importa?', 'Ele passou pela recepção?', 'Bruno saiu por rota interna?'], ['service_stairs', 'virtual_camera_log'], 'YES'],
+        ['inae_not_thief', ['Inae roubou o protótipo?', 'A bioquímica pegou a bateria?', 'Inae era a invasora?', 'Inae sumiu com o protótipo?'], ['patent_red_herring'], 'NO']
       ]
     },
     {

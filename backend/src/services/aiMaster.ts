@@ -71,6 +71,7 @@ const SYNONYM_GROUPS = [
   ['pegada', 'pegadas', 'rastro', 'rastros', 'marca', 'marcas', 'barro', 'lama'],
   ['pista', 'prova', 'indicio', 'indício', 'vestigio', 'vestígio', 'evidencia', 'evidência'],
   ['luz', 'luzes', 'iluminacao', 'iluminação', 'refletor', 'refletores', 'lampada', 'lâmpada'],
+  ['luz', 'exposicao', 'exposição', 'claridade', 'reflexo', 'reflexiva', 'reflexivo'],
   ['apagou', 'apagada', 'apagaram', 'desligou', 'desligar', 'desligada', 'escuro'],
   ['curador', 'organizador', 'organizou', 'contratou', 'contratante', 'exposicao', 'exposição'],
   ['colecionador', 'comprador', 'cliente'],
@@ -86,7 +87,10 @@ const SYNONYM_GROUPS = [
   ['rival', 'rivalidade', 'inimiga', 'inimizade', 'competia', 'concorrente'],
   ['enviou', 'enviada', 'enviado', 'enviar', 'mandou', 'mandada', 'mandado', 'disparou', 'disparada'],
   ['script', 'automacao', 'automação', 'agendada', 'agendado', 'programada', 'programado'],
-  ['brincadeira', 'jogo', 'caca', 'caça', 'tesouro', 'encenacao', 'encenação']
+  ['brincadeira', 'jogo', 'caca', 'caça', 'tesouro', 'encenacao', 'encenação'],
+  ['digitalina', 'remedio', 'remédio', 'medicamento', 'cardiaco', 'cardíaco', 'veneno', 'envenenada', 'envenenado', 'adulterado', 'adulterada'],
+  ['divida', 'dívida', 'dividas', 'dívidas', 'endividado', 'endividada', 'financeiro', 'financeira', 'dinheiro'],
+  ['prototipo', 'protótipo', 'bateria', 'invento', 'tecnologia']
 ];
 
 const SYNONYM_LOOKUP = SYNONYM_GROUPS.reduce((lookup, group) => {
@@ -117,13 +121,18 @@ const verdictPrefix: Record<string, string> = {
 
 const pickBestRelatedFact = (questionText: string, relatedFacts: string[] = []) => {
   const questionWords = new Set(tokenizeForMatching(questionText));
-  let best: { score: number; statement: string } | null = null;
+  const exactQuestionWords = new Set(baseTokensForMatching(questionText));
+  let best: { score: number; exactOverlap: number; statement: string } | null = null;
 
   for (const statement of relatedFacts.filter(Boolean)) {
     const factWords = new Set(tokenizeForMatching(statement));
+    const exactFactWords = new Set(baseTokensForMatching(statement));
     const overlap = [...questionWords].filter((word) => factWords.has(word)).length;
-    const score = overlap / Math.max(1, Math.min(questionWords.size, factWords.size));
-    if (!best || score > best.score) best = { score, statement };
+    const exactOverlap = [...exactQuestionWords].filter((word) => exactFactWords.has(word)).length;
+    const score = overlap / Math.max(1, Math.min(questionWords.size, factWords.size)) + exactOverlap * 0.2;
+    if (!best || exactOverlap > best.exactOverlap || (exactOverlap === best.exactOverlap && score > best.score)) {
+      best = { score, exactOverlap, statement };
+    }
   }
 
   return best?.statement || relatedFacts.find(Boolean) || '';
