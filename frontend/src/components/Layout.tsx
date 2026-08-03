@@ -121,7 +121,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       } else {
         setLobbyError(res.error || 'Erro ao criar sala.');
       }
-    } catch (e) {
+    } catch {
       setLobbyError('Erro de conexão com o servidor.');
     } finally {
       setLoadingLobby(false);
@@ -149,7 +149,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       } else {
         setLobbyError(res.error || 'Código de sala inválido.');
       }
-    } catch (e) {
+    } catch {
       setLobbyError('Erro ao conectar na sala.');
     } finally {
       setLoadingLobby(false);
@@ -280,11 +280,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <button className="home-header-profile" onClick={() => navigate('/profile')} aria-label="Abrir perfil">
           <span className="home-header-profile-avatar">
             <img
-              src={authUser?.photo || '/backgrounds/helena_portrait.png'}
+              src={authUser?.photo || '/backgrounds/guest-investigator-avatar.png'}
               alt=""
               onError={(event) => {
                 event.currentTarget.onerror = null;
-                event.currentTarget.src = '/backgrounds/helena_portrait.png';
+                event.currentTarget.src = '/backgrounds/guest-investigator-avatar.png';
               }}
             />
           </span>

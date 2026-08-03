@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { SocketProvider } from './contexts/SocketContext';
 import { NotificationsProvider } from './contexts/NotificationsContext';
@@ -5,36 +6,39 @@ import { AuthProvider } from './contexts/AuthContext';
 import { InvestigationProvider } from './contexts/InvestigationContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Home from './pages/Home';
-import CreateRoom from './pages/CreateRoom';
-import JoinRoom from './pages/JoinRoom';
-import Lobby from './pages/Lobby';
-import Game from './pages/Game';
-import Cases from './pages/Cases';
-import Messages from './pages/Messages';
-import Profile from './pages/Profile';
-import Friends from './pages/Friends';
-import Settings from './pages/Settings';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Onboarding from './pages/Onboarding';
-import LobbyList from './pages/LobbyList';
-import Feedback from './pages/Feedback';
-import Tutorial from './pages/Tutorial';
-import RecoveryCode from './pages/RecoveryCode';
-import Briefing from './pages/Briefing';
-import RoomEntry from './pages/RoomEntry';
-import MapOverview from './pages/MapOverview';
-import SceneExplorer from './pages/SceneExplorer';
-import InvestigationBoard from './pages/InvestigationBoard';
-import CaseFiles from './pages/CaseFiles';
-import EvidenceAnalysis from './pages/EvidenceAnalysis';
-import ResetCaseProgress from './pages/ResetCaseProgress';
+import Loading from './components/Loading';
 import Layout from './components/Layout';
+import AmbientMusicPlayer from './components/AmbientMusicPlayer';
 import { SocketNotificationsBridge } from './contexts/SocketNotificationsBridge';
 import './App.css';
+
+const Home = lazy(() => import('./pages/Home'));
+const CreateRoom = lazy(() => import('./pages/CreateRoom'));
+const JoinRoom = lazy(() => import('./pages/JoinRoom'));
+const Lobby = lazy(() => import('./pages/Lobby'));
+const Game = lazy(() => import('./pages/Game'));
+const Cases = lazy(() => import('./pages/Cases'));
+const Messages = lazy(() => import('./pages/Messages'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Friends = lazy(() => import('./pages/Friends'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const LobbyList = lazy(() => import('./pages/LobbyList'));
+const Feedback = lazy(() => import('./pages/Feedback'));
+const Tutorial = lazy(() => import('./pages/Tutorial'));
+const RecoveryCode = lazy(() => import('./pages/RecoveryCode'));
+const Briefing = lazy(() => import('./pages/Briefing'));
+const RoomEntry = lazy(() => import('./pages/RoomEntry'));
+const MapOverview = lazy(() => import('./pages/MapOverview'));
+const SceneExplorer = lazy(() => import('./pages/SceneExplorer'));
+const InvestigationBoard = lazy(() => import('./pages/InvestigationBoard'));
+const CaseFiles = lazy(() => import('./pages/CaseFiles'));
+const EvidenceAnalysis = lazy(() => import('./pages/EvidenceAnalysis'));
+const ResetCaseProgress = lazy(() => import('./pages/ResetCaseProgress'));
 
 function App() {
   return (
@@ -46,6 +50,8 @@ function App() {
         <BrowserRouter>
           <InvestigationProvider>
             <SocketNotificationsBridge />
+            <AmbientMusicPlayer />
+            <Suspense fallback={<Loading message="Carregando página..." />}>
             <Routes>
               {/* Rotas públicas */}
               <Route path="/" element={<Layout><Home /></Layout>} />
@@ -63,8 +69,8 @@ function App() {
               <Route path="/friends" element={<Layout><ProtectedRoute><Friends /></ProtectedRoute></Layout>} />
               <Route path="/settings" element={<Layout><ProtectedRoute><Settings /></ProtectedRoute></Layout>} />
               <Route path="/reset-case/:caseSlug" element={<Layout><ProtectedRoute><ResetCaseProgress /></ProtectedRoute></Layout>} />
-              <Route path="/privacy" element={<Layout><ProtectedRoute><Privacy /></ProtectedRoute></Layout>} />
-              <Route path="/terms" element={<Layout><ProtectedRoute><Terms /></ProtectedRoute></Layout>} />
+              <Route path="/privacy" element={<Layout><Privacy /></Layout>} />
+              <Route path="/terms" element={<Layout><Terms /></Layout>} />
               <Route path="/lobby" element={<Layout><ProtectedRoute><LobbyList /></ProtectedRoute></Layout>} />
               <Route path="/room/:roomId/lobby" element={<Layout><ProtectedRoute><Lobby /></ProtectedRoute></Layout>} />
               <Route path="/room/:roomCode" element={<Layout><ProtectedRoute><RoomEntry /></ProtectedRoute></Layout>} />
@@ -81,6 +87,7 @@ function App() {
               <Route path="/case-files/:caseId" element={<Layout><ProtectedRoute><CaseFiles /></ProtectedRoute></Layout>} />
               <Route path="/evidence/:evidenceId" element={<Layout><ProtectedRoute><EvidenceAnalysis /></ProtectedRoute></Layout>} />
             </Routes>
+            </Suspense>
           </InvestigationProvider>
         </BrowserRouter>
       </div>

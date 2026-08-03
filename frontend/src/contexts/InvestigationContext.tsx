@@ -1,20 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useSocket } from './useSocket';
-
-export interface UnlockedClue {
-  clueId: string;
-  discoveredAt: string;
-  discoveredBy: string;
-}
-
-interface InvestigationContextData {
-  activeCaseId: string | null;
-  unlockedLocations: string[];
-  unlockedClues: UnlockedClue[];
-  hasClue: (clueId: string) => boolean;
-  hasLocation: (locId: string) => boolean;
-}
+import type { InvestigationContextData, UnlockedClue } from './investigationTypes';
 
 const InvestigationContext = createContext<InvestigationContextData | undefined>(undefined);
 

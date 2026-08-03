@@ -45,7 +45,7 @@ const publicFriendship = async (viewerId: string, friendship: any, mode: 'friend
     id: friendship.id,
     userId: friend.id,
     ...baseFriendData(friend),
-    status: 'online',
+    status: friend.profile_active ? 'active' : 'ausente',
     isRequester: friendship.requester_id === viewerId,
     friendshipStatus: friendship.status,
     direction: friendship.requester_id === viewerId ? 'outgoing' : 'incoming',

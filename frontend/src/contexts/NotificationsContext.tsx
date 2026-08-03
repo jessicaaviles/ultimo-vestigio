@@ -2,35 +2,9 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { useAuth } from './AuthContext';
 import { useSettings } from './SettingsContext';
 import { listFriendInvitations } from '../services/api';
-
-export interface NotificationsState {
-  messages: number;   // count of unread messages
-  rooms: boolean;     // has new available room activity
-  friendInvites: number; // count of pending friend invites
-}
-
-interface NotificationsContextValue {
-  notifications: NotificationsState;
-  /** Incrementa ou define a contagem de mensagens não lidas */
-  setUnreadMessages: (count: number) => void;
-  /** Sinaliza que há atividade nova em salas */
-  setRoomsActivity: (hasActivity: boolean) => void;
-  /** Atualiza a contagem de convites de amizade */
-  setFriendInvites: (count: number) => void;
-  /** Zera mensagens (chamado ao entrar na tela de messages) */
-  clearMessages: () => void;
-  /** Zera rooms (chamado ao entrar na tela de lobby) */
-  clearRooms: () => void;
-  /** Zera convites de amizade (chamado ao entrar na tela de amigos) */
-  clearFriendInvites: () => void;
-  /** Recarrega a contagem de convites de amizade no backend */
-  refreshFriendInvites: () => Promise<void>;
-  /** Retorna true se qualquer notificação estiver ativa */
-  hasAny: boolean;
-}
+import type { NotificationsContextValue, NotificationsState } from './notificationsTypes';
 
 const STORAGE_KEY = 'uv_notifications';
-
 const defaultState: NotificationsState = { messages: 0, rooms: false, friendInvites: 0 };
 
 const NotificationsCtx = createContext<NotificationsContextValue>({

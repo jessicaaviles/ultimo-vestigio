@@ -28,7 +28,7 @@ type Friend = {
   name: string;
   handle: string;
   email: string;
-  status: 'online' | 'investigando' | 'ausente';
+  status: 'active' | 'ausente';
   achievements: string[];
   avatar: string;
   stats?: {
@@ -50,8 +50,7 @@ const getInitials = (name: string) =>
     .toUpperCase();
 
 const statusLabels: Record<Friend['status'], string> = {
-  online: 'Online',
-  investigando: 'Investigando',
+  active: 'Ativo',
   ausente: 'Ausente',
 };
 

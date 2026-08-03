@@ -7,6 +7,8 @@ import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
 import { applyProgressReset } from '../utils/progressReset';
 
+const guestAvatar = '/backgrounds/guest-investigator-avatar.png';
+
 interface ProfileData {
   id: string;
   displayName: string;
@@ -57,6 +59,7 @@ const Profile: React.FC = () => {
   const bioInputRef = useRef<HTMLTextAreaElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
+  const portraitRefreshTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (editing && bioInputRef.current) {
@@ -65,6 +68,14 @@ const Profile: React.FC = () => {
       el.style.height = el.scrollHeight + 'px';
     }
   }, [editing]);
+
+  useEffect(() => {
+    return () => {
+      if (portraitRefreshTimerRef.current) {
+        window.clearTimeout(portraitRefreshTimerRef.current);
+      }
+    };
+  }, []);
 
   const stopCamera = () => {
     cameraStreamRef.current?.getTracks().forEach(track => track.stop());
@@ -245,6 +256,15 @@ const Profile: React.FC = () => {
       await refresh();
       const genStatus = (response as any).portraitStatus;
       if (hasPhoto && genStatus === 'READY') setStatus('Perfil salvo! Retrato gerado com sucesso.');
+      else if (hasPhoto && genStatus === 'GENERATING') {
+        setStatus('Perfil salvo. O retrato será atualizado em instantes.');
+        if (portraitRefreshTimerRef.current) window.clearTimeout(portraitRefreshTimerRef.current);
+        portraitRefreshTimerRef.current = window.setTimeout(() => {
+          void refresh().then((fresh) => {
+            if (fresh) setProfile((current) => current ? { ...current, photo: fresh.photo } : current);
+          });
+        }, 6000);
+      }
       else if (hasPhoto && genStatus === 'UNAVAILABLE') setStatus('Perfil salvo, mas o retrato não pôde ser gerado no momento.');
       else setStatus('Perfil salvo com sucesso!');
     } catch (error) {
@@ -284,6 +304,15 @@ const Profile: React.FC = () => {
           await refresh();
           const genStatus = (response as any).portraitStatus;
           if (genStatus === 'READY') setStatus('Retrato gerado com sucesso!');
+          else if (genStatus === 'GENERATING') {
+            setStatus('Sua selfie foi enviada. O retrato aparecerá em instantes.');
+            if (portraitRefreshTimerRef.current) window.clearTimeout(portraitRefreshTimerRef.current);
+            portraitRefreshTimerRef.current = window.setTimeout(() => {
+              void refresh().then((fresh) => {
+                if (fresh) setProfile((current) => current ? { ...current, photo: fresh.photo } : current);
+              });
+            }, 6000);
+          }
           else if (genStatus === 'UNAVAILABLE') setStatus('Não foi possível gerar o retrato no momento.');
           else setStatus('Perfil salvo com sucesso!');
         } catch (error) {
@@ -440,7 +469,7 @@ const Profile: React.FC = () => {
         <div className="profile-hero" style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
           <div className="profile-avatar-wrap">
             <div className="profile-avatar">
-              <Camera size={32} strokeWidth={1.3} />
+              <img src={guestAvatar} alt="Visitante" />
             </div>
           </div>
           <h1 style={{ margin: 0 }}>Último Vestígio</h1>

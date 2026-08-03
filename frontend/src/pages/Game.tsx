@@ -7,6 +7,8 @@ import Loading from '../components/Loading';
 import FinalTheoryForm, { getSuspectPortrait } from '../components/FinalTheoryForm';
 import { clearAllProgressReset } from '../utils/progressReset';
 
+import { speakMasterResponse } from '../services/voice';
+
 const dedupeHints = (hintsList: any[]) => {
   const seen = new Set();
   return hintsList.filter(h => {
@@ -25,6 +27,7 @@ const buildPersistedGameResult = (data: any) => {
     persisted: true
   };
 };
+
 const Game: React.FC = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
@@ -174,28 +177,10 @@ const Game: React.FC = () => {
   }, [showHintsPanel, showRoomMenu]);
 
   const speakAnswer = useCallback((text: string) => {
-    try {
-      if (!settings.voices || !window.speechSynthesis || !text) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'pt-BR';
-      utterance.rate = 1.1;
-      utterance.pitch = 1.0;
-      const voices = window.speechSynthesis.getVoices();
-      
-      // Lista de vozes que costumam ser mais naturais/humanizadas
-      const preferredVoiceNames = ['Luciana', 'Raquel', 'Felipe', 'Google português do Brasil', 'Microsoft Maria'];
-      
-      let ptVoice = voices.find(v => preferredVoiceNames.some(name => v.name.includes(name) && v.lang.includes('pt')));
-      if (!ptVoice) ptVoice = voices.find(v => v.lang === 'pt-BR' || v.lang === 'pt_BR');
-      if (!ptVoice) ptVoice = voices.find(v => v.lang.startsWith('pt'));
-      
-      if (ptVoice) utterance.voice = ptVoice;
-      window.speechSynthesis.speak(utterance);
-    } catch (err) {
-      console.warn("Fala automática falhou (comum em mobile sem interação direta):", err);
-    }
-  }, [settings.voices]);
+    void speakMasterResponse(text, settings).catch(err => {
+      console.warn('Fala automática falhou (comum em mobile sem interação direta):', err);
+    });
+  }, [settings]);
 
   useEffect(() => {
     if (!socket || !roomId) return;

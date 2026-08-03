@@ -411,7 +411,7 @@
 .friend-name-row h3, .friends-request-card h3 { min-width: 0; margin: 0; color: var(--paper); font: 24px/1.05 var(--serif); overflow-wrap: anywhere; }
 .friend-card-top span, .friends-request-card span { color: rgba(242,238,229,.58); font-size: 12px; }
 .friend-status { flex: 0 0 auto; padding: 4px 7px; border-radius: 999px; font-size: 8px !important; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
-.friend-status--online { color: #d9f3c0 !important; background: rgba(143,161,118,.18); }
+.friend-status--active, .friend-status--online { color: #d9f3c0 !important; background: rgba(143,161,118,.18); }
 .friend-status--investigando { color: var(--gold-soft) !important; background: rgba(184,153,83,.18); }
 .friend-status--ausente { color: rgba(242,238,229,.62) !important; background: rgba(242,238,229,.08); }
 .friend-stats { display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 8px; }

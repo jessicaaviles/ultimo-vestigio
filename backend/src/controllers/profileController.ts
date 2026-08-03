@@ -90,15 +90,12 @@ export const updateProfile = async (req: Request, res: Response) => {
     }
   }
 
-  let generatedPortrait: string | null | undefined;
-  let portraitStatus: string;
-  if (current.generated_profile_photo_data) {
-    portraitStatus = 'READY';
-  } else if (photoData && generatePortrait) {
-    portraitStatus = 'GENERATING';
-  } else {
-    portraitStatus = 'NOT_REQUESTED';
-  }
+  const shouldGeneratePortrait = Boolean(photoData && generatePortrait);
+  const portraitStatus = current.generated_profile_photo_data
+    ? 'READY'
+    : shouldGeneratePortrait
+      ? 'GENERATING'
+      : 'NOT_REQUESTED';
 
   // Save profile data immediately
   const user = await prisma.anonymous_users.update({
@@ -110,33 +107,27 @@ export const updateProfile = async (req: Request, res: Response) => {
       profile_photo_data: photoData ? String(photoData) : undefined,
       generated_profile_photo_data: photoData ? null : undefined,
       profile_photo_updated_at: photoData ? new Date() : undefined,
+      portrait_generations: shouldGeneratePortrait ? { increment: 1 } : undefined,
     }
   });
 
-  // Generate portrait synchronously so it's ready in the response
-  if (photoData && generatePortrait) {
-    try {
-      generatedPortrait = await generateProfilePortrait(String(photoData), current.id);
-      portraitStatus = 'READY';
-      await prisma.anonymous_users.update({
-        where: { id: current.id },
-        data: {
-          generated_profile_photo_data: generatedPortrait,
-          portrait_generations: { increment: 1 },
-        }
-      });
-    } catch (error) {
-      portraitStatus = 'UNAVAILABLE';
-      console.error('Profile portrait generation failed:', error);
-    }
+  if (shouldGeneratePortrait) {
+    void (async () => {
+      try {
+        const generatedPortrait = await generateProfilePortrait(String(photoData), current.id);
+        await prisma.anonymous_users.update({
+          where: { id: current.id },
+          data: {
+            generated_profile_photo_data: generatedPortrait,
+          }
+        });
+      } catch (error) {
+        console.error('Profile portrait generation failed:', error);
+      }
+    })();
   }
 
-  // Re-fetch to return updated data
-  const updated = generatedPortrait
-    ? await prisma.anonymous_users.findUnique({ where: { id: current.id } })
-    : user;
-
-  res.json({ success: true, portraitStatus, data: publicProfile(updated ?? user) });
+  res.json({ success: true, portraitStatus, data: publicProfile(user) });
 };
 
 export const deleteProfile = async (req: Request, res: Response) => {

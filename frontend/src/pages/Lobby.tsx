@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSocket } from '../contexts/useSocket';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -64,21 +64,28 @@ const Lobby: React.FC = () => {
   }, [socket, roomId, navigate]);
 
   const [profileCache, setProfileCache] = useState<Record<string, any>>({});
+  const loadPlayerProfile = useCallback(async (uid: string) => {
+    if (profileCache[uid]) return;
+    try {
+      const res = await getProfile(uid);
+      if (res.success) {
+        setProfileCache(prev => {
+          if (prev[uid]) return prev;
+          return { ...prev, [uid]: res.data };
+        });
+      }
+    } catch {
+      // keep lobby usable even if a profile fetch fails
+    }
+  }, [profileCache]);
+
   useEffect(() => {
     if (!roomData?.players) return;
     roomData.players.forEach((p: any) => {
       const uid = p.anonymous_user_id;
-      if (profileCache[uid]) return; // já buscou, não busca de novo
-      getProfile(uid).then((res: any) => {
-        if (res.success) {
-          setProfileCache(prev => {
-            if (prev[uid]) return prev;
-            return { ...prev, [uid]: res.data };
-          });
-        }
-      }).catch(() => {});
+      void loadPlayerProfile(uid);
     });
-  }, [roomData?.players]);
+  }, [loadPlayerProfile, roomData?.players]);
 
   const getPlayerDisplayName = (p: any) => {
     // Primeiro: cache fresco da API /profiles/:id

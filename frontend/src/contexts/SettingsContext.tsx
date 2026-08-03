@@ -1,40 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-
-export type SettingsState = {
-  language: string;
-  theme: string;
-  textSize: string;
-  accessibility: string;
-  music: boolean;
-  effects: boolean;
-  voices: boolean;
-  push: boolean;
-  invites: boolean;
-  updates: boolean;
-  weekly: boolean;
-};
-
-type SettingsContextValue = {
-  settings: SettingsState;
-  updateSetting: <K extends keyof SettingsState>(key: K, value: SettingsState[K]) => void;
-  resetSettings: () => void;
-};
-
-export const SETTINGS_STORAGE_KEY = 'uv_settings';
-
-export const defaultSettings: SettingsState = {
-  language: 'Português (Brasil)',
-  theme: 'Escuro',
-  textSize: 'Médio',
-  accessibility: 'Padrão',
-  music: true,
-  effects: true,
-  voices: true,
-  push: true,
-  invites: true,
-  updates: true,
-  weekly: false,
-};
+import type { SettingsContextValue } from './settingsContextValue';
+import type { SettingsState } from './settingsTypes';
+import { SETTINGS_STORAGE_KEY, defaultSettings } from './settingsTypes';
 
 const SettingsCtx = createContext<SettingsContextValue>({
   settings: defaultSettings,
@@ -89,7 +56,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [settings]);
 
   const updateSetting = useCallback(<K extends keyof SettingsState>(key: K, value: SettingsState[K]) => {
-    setSettings((current) => ({ ...current, [key]: value }));
+    setSettings((current: SettingsState) => ({ ...current, [key]: value }));
   }, []);
 
   const resetSettings = useCallback(() => {
