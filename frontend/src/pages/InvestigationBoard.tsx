@@ -1,25 +1,45 @@
 import React, { useState } from 'react';
 import { Brain, CheckCircle2 } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useInvestigation } from '../contexts/InvestigationContext';
 import CaseResolutionModal from '../components/CaseResolutionModal';
 
 const InvestigationBoard: React.FC = () => {
+  const navigate = useNavigate();
+  const { caseId } = useParams();
   const { unlockedClues } = useInvestigation();
   const [activeTab, setActiveTab] = useState('mural');
   const [showResolution, setShowResolution] = useState(false);
 
-  // Cards de evidência para o novo roteiro expandido
+  if (caseId !== 'blackwell') {
+    return (
+      <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', color: '#F8F9FA', padding: '112px 24px 120px' }}>
+        <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '8px' }}>Quadro indisponível</span>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '34px', margin: '0 0 12px', fontWeight: 400 }}>Sem quadro imersivo</h1>
+        <p style={{ color: '#8E989F', fontSize: '14px', lineHeight: 1.55, margin: '0 0 24px' }}>
+          Este caso usa o modo clássico. O quadro imersivo aparece apenas quando há pistas e locais próprios cadastrados.
+        </p>
+        <button
+          onClick={() => navigate('/cases')}
+          style={{ background: 'var(--accent-gold)', color: '#0A0D10', border: 'none', borderRadius: '10px', padding: '14px 18px', fontWeight: 800 }}
+        >
+          Voltar aos casos
+        </button>
+      </div>
+    );
+  }
+
   const cards = [
-    { id: 'clara', type: 'person', image: '/backgrounds/clara_portrait.png', title: 'Clara Mendes', label: 'Forjou a própria morte', top: '10%', left: '15%', rotation: '-5deg' },
-    { id: 'letter', type: 'note', text: 'Bilhete forjado\n\nA caligrafia imita o Sr. Tomás, mas a tinta é da caneta que Clara usa.', top: '12%', left: '40%', rotation: '2deg' },
-    { id: 'tomas', type: 'person', image: '/backgrounds/tomas_portrait.png', title: 'Sr. Tomás Blackwell', label: 'O alvo da armação', top: '15%', left: '70%', rotation: '4deg' },
+    { id: 'window', type: 'person', image: '/backgrounds/clara_portrait.png', title: 'Clara Mendes', top: '10%', left: '15%', rotation: '-5deg' },
+    { id: 'table', type: 'note', text: 'Bilhete encontrado\n\nA caligrafia e a tinta precisam ser comparadas com outros registros.', top: '12%', left: '40%', rotation: '2deg' },
+    { id: 'desk_letter', type: 'person', image: '/backgrounds/tomas_portrait.png', title: 'Sr. Tomás Blackwell', top: '15%', left: '70%', rotation: '4deg' },
     { id: 'house', type: 'location', image: '/backgrounds/map_blackwell.png', title: 'Mansão Blackwell', top: '45%', left: '35%', rotation: '-2deg' },
-    { id: 'flight', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Passagem p/ Buenos Aires', label: 'Comprada por C.M.', top: '55%', left: '5%', rotation: '-8deg' },
-    { id: 'helena', type: 'person', image: '/backgrounds/helena_portrait.png', title: 'Helena', label: 'Ajudou na fuga', top: '65%', left: '38%', rotation: '3deg' },
-    { id: 'ledger', type: 'item', image: '/backgrounds/ev_diary.png', title: 'Livro-caixa Desenterrado', label: 'O motivo: Desvios da família', top: '80%', left: '72%', rotation: '-4deg' },
-    { id: 'mirror_msg', type: 'note', text: 'O jardim esconde a verdade', top: '35%', left: '80%', rotation: '5deg' },
-    { id: 'mud', type: 'item', image: '/backgrounds/ev_mud.png', title: 'Pegadas Duplas', label: 'Fugiram pelo portão', top: '85%', left: '15%', rotation: '2deg' },
+    { id: 'suitcase', type: 'item', image: '/backgrounds/ev_photo.png', title: 'Registro de viagem', top: '55%', left: '5%', rotation: '-8deg' },
+    { id: 'safe', type: 'item', image: '/backgrounds/ev_diary.png', title: 'Livro-caixa', top: '80%', left: '72%', rotation: '-4deg' },
+    { id: 'mirror_msg', type: 'note', text: 'Mensagem no espelho\n\nUma frase curta foi deixada no quarto principal.', top: '35%', left: '80%', rotation: '5deg' },
+    { id: 'mud', type: 'item', image: '/backgrounds/ev_mud.png', title: 'Marcas no jardim', top: '85%', left: '15%', rotation: '2deg' },
   ];
+  const visibleCards = cards.filter((card) => card.id === 'house' || unlockedClues.some((clue) => clue.clueId === card.id));
 
   const totalClues = 14;
   const cluesFound = unlockedClues.length;
@@ -33,12 +53,6 @@ const InvestigationBoard: React.FC = () => {
 
   const renderTape = () => (
     <div style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%) rotate(-3deg)', width: '60px', height: '20px', backgroundColor: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(2px)', zIndex: 10, border: '1px solid rgba(255,255,255,0.1)' }} />
-  );
-
-  const renderLabel = (text: string) => (
-    <div style={{ position: 'absolute', bottom: '-15px', right: '-15px', backgroundColor: '#d4c790', padding: '6px 10px', transform: 'rotate(-4deg)', boxShadow: '2px 4px 8px rgba(0,0,0,0.3)', fontFamily: '"Kalam", cursive', fontSize: '10px', color: '#1a1a1a', zIndex: 5, maxWidth: '80px', textAlign: 'center', lineHeight: 1.2 }}>
-      {text}
-    </div>
   );
 
   return (
@@ -115,7 +129,7 @@ const InvestigationBoard: React.FC = () => {
             </svg>
 
             {/* Cards */}
-            {cards.map((card) => (
+            {visibleCards.map((card) => (
               <div key={card.id} style={{ position: 'absolute', top: card.top, left: card.left, transform: `rotate(${card.rotation})`, zIndex: 2, width: '90px' }}>
                 {card.type === 'note' ? (
                   <div style={{ backgroundColor: '#d4c790', padding: '12px 10px', boxShadow: '2px 4px 10px rgba(0,0,0,0.5)', fontFamily: '"Kalam", cursive', fontSize: '10px', color: '#1a1a1a', lineHeight: 1.4, position: 'relative' }}>
@@ -127,11 +141,19 @@ const InvestigationBoard: React.FC = () => {
                     {renderPin()}
                     <div style={{ width: '100%', height: '80px', backgroundImage: `url(${card.image})`, backgroundSize: 'cover', backgroundPosition: 'center', marginBottom: '8px', filter: 'sepia(0.3)' }} />
                     <div style={{ fontFamily: '"Kalam", cursive', fontSize: '11px', color: '#1a1a1a', textAlign: 'center', lineHeight: 1 }}>{card.title}</div>
-                    {card.label && renderLabel(card.label)}
                   </div>
                 )}
               </div>
             ))}
+            {visibleCards.length <= 1 && (
+              <div style={{ position: 'absolute', inset: '24px', zIndex: 3, display: 'grid', placeItems: 'center', textAlign: 'center', pointerEvents: 'none' }}>
+                <div style={{ maxWidth: 280 }}>
+                  <div style={{ color: '#C5A880', fontSize: '42px', marginBottom: '14px', opacity: 0.55 }}>?</div>
+                  <h3 style={{ color: '#F8F9FA', fontSize: '18px', margin: '0 0 8px' }}>Nenhuma conexão aberta</h3>
+                  <p style={{ color: '#8E989F', fontSize: '13px', lineHeight: 1.45, margin: 0 }}>As evidências aparecerão aqui conforme forem desbloqueadas na investigação.</p>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10, padding: '24px', textAlign: 'center' }}>

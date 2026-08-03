@@ -1,13 +1,31 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Search, ArrowRight, LayoutGrid, ChevronRight } from 'lucide-react';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
 const MapOverview: React.FC = () => {
   const navigate = useNavigate();
+  const { caseId } = useParams();
   const [selectedPin, setSelectedPin] = useState<string | null>('living_room');
 
   const { unlockedLocations, unlockedClues } = useInvestigation();
+  if (caseId !== 'blackwell') {
+    return (
+      <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', color: '#F8F9FA', padding: '112px 24px 120px' }}>
+        <span style={{ display: 'block', color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600, marginBottom: '8px' }}>Mapa indisponível</span>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '34px', margin: '0 0 12px', fontWeight: 400 }}>Sem mapa imersivo</h1>
+        <p style={{ color: '#8E989F', fontSize: '14px', lineHeight: 1.55, margin: '0 0 24px' }}>
+          Este caso usa o modo clássico. O mapa imersivo aparece apenas em investigações que possuem locais cadastrados.
+        </p>
+        <button
+          onClick={() => navigate('/cases')}
+          style={{ background: 'var(--accent-gold)', color: '#0A0D10', border: 'none', borderRadius: '10px', padding: '14px 18px', fontWeight: 800 }}
+        >
+          Voltar aos casos
+        </button>
+      </div>
+    );
+  }
   const libraryUnlocked = unlockedLocations.includes('library');
   const bedroomUnlocked = unlockedLocations.includes('bedroom');
   const gardenUnlocked = unlockedLocations.includes('garden');

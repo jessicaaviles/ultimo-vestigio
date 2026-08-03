@@ -1,20 +1,21 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useInvestigation } from '../contexts/InvestigationContext';
 
 const CaseFiles: React.FC = () => {
   const navigate = useNavigate();
+  const { caseId } = useParams();
   const { unlockedClues } = useInvestigation();
 
   const allEvidences = [
-    { id: 'fireplace', title: 'Restos na Lareira', type: 'Vestígio', date: '12/05', image: '/backgrounds/ev_matches.png' },
-    { id: 'armchair', title: 'Chave do quarto 7', type: 'Item Físico', date: '13/05', image: '/backgrounds/ev_key_7.png' },
-    { id: 'window', title: 'Foto da Família', type: 'Foto', date: '13/05', image: '/backgrounds/ev_photo.png' },
-    { id: 'table', title: 'Bilhete Forjado', type: 'Documento', date: '14/05', image: '/backgrounds/ev_letter.png' },
-    { id: 'blood', title: 'Sangue Artificial', type: 'Vestígio', date: '15/05', image: '/backgrounds/ev_blood.png' },
+    { id: 'fireplace', title: 'Restos na Lareira', type: 'Vestígio', image: '/backgrounds/ev_matches.png' },
+    { id: 'armchair', title: 'Chave do quarto 7', type: 'Item Físico', image: '/backgrounds/ev_key_7.png' },
+    { id: 'window', title: 'Foto da Família', type: 'Foto', image: '/backgrounds/ev_photo.png' },
+    { id: 'table', title: 'Bilhete Forjado', type: 'Documento', image: '/backgrounds/ev_letter.png' },
+    { id: 'blood', title: 'Sangue Artificial', type: 'Vestígio', image: '/backgrounds/ev_blood.png' },
   ];
 
-  const foundEvidences = allEvidences.filter(e => unlockedClues.some(c => c.clueId === e.id));
+  const foundEvidences = caseId === 'blackwell' ? allEvidences.filter(e => unlockedClues.some(c => c.clueId === e.id)) : [];
 
   return (
     <div style={{ backgroundColor: '#0A0D10', minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '96px' }}>
@@ -41,7 +42,7 @@ const CaseFiles: React.FC = () => {
                 <div>
                   <div style={{ color: 'var(--eyebrow-gold)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600, marginBottom: '4px' }}>{item.type}</div>
                   <div style={{ color: '#F8F9FA', fontSize: '16px', fontWeight: 600 }}>{item.title}</div>
-                  <div style={{ color: '#8E989F', fontSize: '11px' }}>Coletada em {item.date}</div>
+                  <div style={{ color: '#8E989F', fontSize: '11px' }}>Arquivo desbloqueado na investigação</div>
                 </div>
               </div>
             ))}

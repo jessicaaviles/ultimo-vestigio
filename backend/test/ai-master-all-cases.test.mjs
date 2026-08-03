@@ -510,6 +510,19 @@ test('pagina de amigos nao cria rede local ficticia', () => {
   assert.match(friendsSource, /rede de amigos será sincronizada quando o serviço estiver ativo/, 'Adicionar amigo deve explicar que a sincronizacao real ainda depende do servico');
 });
 
+test('telas imersivas de blackwell nao vazam para outros casos nem entregam solucao fixa', () => {
+  const mapSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/MapOverview.tsx'), 'utf8');
+  const filesSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/CaseFiles.tsx'), 'utf8');
+  const boardSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/InvestigationBoard.tsx'), 'utf8');
+
+  assert.match(mapSource, /caseId !== 'blackwell'/, 'Mapa deve bloquear casos sem mapa imersivo proprio');
+  assert.match(filesSource, /caseId === 'blackwell' \? allEvidences\.filter/, 'Inventario deve filtrar evidencias apenas para Blackwell');
+  assert.match(boardSource, /caseId !== 'blackwell'/, 'Quadro deve bloquear casos sem quadro imersivo proprio');
+  assert.match(boardSource, /visibleCards = cards\.filter/, 'Quadro deve mostrar apenas evidencias desbloqueadas');
+  assert.doesNotMatch(boardSource, /Forjou a própria morte|Ajudou na fuga|O motivo:|Fugiram pelo portão/, 'Quadro nao deve exibir spoilers fixos de solucao');
+  assert.doesNotMatch(filesSource, /Coletada em \{item\.date\}|12\/05|13\/05|14\/05|15\/05/, 'Inventario nao deve exibir datas ficticias');
+});
+
 test('caso guarda-chuva cobre sinonimos e perguntas faceis', () => {
   const samples = [
     ['A água veio da chuva?', 'NO', ['água', 'chuva']],

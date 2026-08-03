@@ -141,6 +141,14 @@ Decima sexta entrega concluida:
 - a tela permanece vazia ate existir uma fonte real de amigos sincronizados;
 - teste automatizado impede a volta de amigos/conquistas ficticios no runtime.
 
+Decima setima entrega concluida:
+
+- mapa, inventario e quadro imersivo foram travados para Blackwell, evitando conteudo da mansao em outros casos;
+- o quadro de investigacao deixou de exibir cards fixos com spoilers da solucao;
+- evidencias do quadro agora aparecem apenas quando a pista correspondente foi desbloqueada;
+- inventario deixou de mostrar datas ficticias de coleta;
+- testes automatizados protegem as telas imersivas contra vazamento de mocks e spoilers.
+
 ### Entregaveis
 
 - matriz de fatos por caso:
