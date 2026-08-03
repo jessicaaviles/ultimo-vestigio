@@ -19,6 +19,7 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Onboarding from './pages/Onboarding';
 import LobbyList from './pages/LobbyList';
 import Feedback from './pages/Feedback';
 import Tutorial from './pages/Tutorial';
@@ -50,6 +51,7 @@ function App() {
               <Route path="/" element={<Layout><Home /></Layout>} />
               <Route path="/login" element={<Layout><Login /></Layout>} />
               <Route path="/register" element={<Layout><Register /></Layout>} />
+              <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
               <Route path="/tutorial" element={<Layout><Tutorial /></Layout>} />
 
               {/* Rotas protegidas */}

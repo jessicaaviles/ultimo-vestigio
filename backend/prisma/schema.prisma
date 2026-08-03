@@ -23,6 +23,7 @@ model anonymous_users {
   generated_profile_photo_data String?
   portrait_generations    Int       @default(0)
   profile_photo_updated_at DateTime?
+  onboarding_completed    Boolean   @default(false)
   created_at          DateTime  @default(now())
   updated_at          DateTime  @updatedAt
   last_active_at      DateTime  @default(now())

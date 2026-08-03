@@ -621,6 +621,26 @@
 .game-player-result p { margin: 0; color: rgba(242,238,229,.68); font-size: 13px; font-style: italic; line-height: 1.5; }
 .game-empty { min-height: calc(100dvh - 180px); display: grid; align-content: center; gap: 8px; max-width: 460px; margin: 0 auto; }.game-empty h1 { font-size: 38px; }.game-empty p { color: var(--muted); }
 .feedback-page, .tutorial-page { max-width: 650px; margin: 0 auto; padding: 24px 0 24px; }.tutorial-page { padding-bottom: 0; }.feedback-page h1, .tutorial-page h1 { font-size: clamp(38px, 7vw, 64px); line-height: 1; margin: 10px 0 16px; }.feedback-page > p, .tutorial-page > p { color: var(--muted); max-width: 480px; }.feedback-form { display: grid; gap: 20px; margin-top: 32px; }.feedback-form fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 18px; }.feedback-form legend { padding: 0 8px; color: var(--gold-soft); font-size: 11px; letter-spacing: .15em; text-transform: uppercase; }.rating-row { display: flex; justify-content: space-between; max-width: 280px; }.rating-row button { border: 0; background: none; color: rgba(242,238,229,.25); font-size: 32px; }.rating-row button.selected { color: var(--gold); }.check-row { display: flex; align-items: center; gap: 10px; color: var(--paper); }.check-row input { width: 18px; height: 18px; accent-color: var(--olive); }.form-error { color: #d79b8e; }.tutorial-steps { display: grid; gap: 1px; margin: 32px 0 24px; border-top: 1px solid var(--line); }.tutorial-steps div { display: flex; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--line); }.tutorial-steps span { color: var(--gold-soft); font-family: var(--serif); }.tutorial-steps strong { font-weight: 500; }
+.onboarding-page { min-height: 100vh; padding: calc(96px + env(safe-area-inset-top)) 24px calc(96px + env(safe-area-inset-bottom)); background: radial-gradient(circle at top, rgba(197,168,128,.12) 0%, rgba(15,20,23,0) 42%), linear-gradient(180deg, #0f1417 0%, #121a1f 100%); color: var(--paper); }
+.onboarding-hero, .onboarding-grid, .onboarding-example, .onboarding-footer { max-width: 960px; margin-left: auto; margin-right: auto; }
+.onboarding-hero { display: grid; gap: 14px; margin-bottom: 24px; }
+.onboarding-hero h1 { margin: 0; font: 400 clamp(40px, 7vw, 68px)/.96 var(--serif); max-width: 680px; }
+.onboarding-hero p { margin: 0; max-width: 560px; color: rgba(242,238,229,.72); font-size: 15px; line-height: 1.6; }
+.onboarding-cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.onboarding-cta-row .btn-primary, .onboarding-cta-row .btn-secondary { width: auto; min-height: 46px; }
+.onboarding-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 24px; }
+.onboarding-card { display: grid; grid-template-columns: auto 1fr; gap: 14px; padding: 18px; border: 1px solid rgba(242,238,229,.1); border-radius: 8px; background: rgba(10,13,16,.62); box-shadow: 0 16px 38px rgba(0,0,0,.18); backdrop-filter: blur(12px); }
+.onboarding-card svg { color: var(--gold-soft); margin-top: 2px; }
+.onboarding-card h2 { margin: 0 0 6px; font: 400 22px/1.05 var(--serif); }
+.onboarding-card p { margin: 0; color: rgba(242,238,229,.68); font-size: 13px; line-height: 1.55; }
+.onboarding-example { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap: 14px; align-items: start; margin-top: 24px; }
+.onboarding-example h2 { margin: 8px 0 8px; font: 400 30px/1 var(--serif); }
+.onboarding-example p { margin: 0; color: rgba(242,238,229,.68); max-width: 520px; line-height: 1.55; }
+.onboarding-example-box { display: grid; gap: 10px; padding: 18px; border: 1px solid rgba(184,153,83,.26); border-radius: 8px; background: rgba(184,153,83,.08); }
+.onboarding-example-box strong { font: 400 26px/1.05 var(--serif); }
+.onboarding-example-box span { display: flex; align-items: center; gap: 8px; color: var(--gold-soft); font-size: 13px; }
+.onboarding-footer { display: flex; justify-content: flex-start; margin-top: 28px; }
+.onboarding-footer .btn-secondary { min-height: 46px; display: inline-flex; align-items: center; gap: 8px; width: auto; }
 .recovery-page { max-width: 600px; margin: 0 auto; padding: 70px 0; }.recovery-page h1 { font-size: clamp(38px, 7vw, 62px); line-height: 1; margin: 12px 0 16px; }.recovery-page p { color: var(--muted); max-width: 470px; }.recovery-code { margin: 32px 0; padding: 24px; border: 1px solid var(--gold); border-radius: 12px; color: var(--gold-soft); background: rgba(184,153,83,.08); font: 500 clamp(28px, 7vw, 48px)/1 var(--serif); letter-spacing: .2em; text-align: center; }.recovery-actions { display: flex; flex-wrap: wrap; gap: 12px; }.recovery-actions button { flex: 1; }
 .invite-panel { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px; margin-bottom: 24px; border: 1px solid var(--line); border-radius: 12px; background: rgba(44,48,46,.68); }.invite-panel strong { display: block; margin: 8px 0 12px; font: 28px var(--serif); letter-spacing: .14em; }.invite-panel .btn-secondary { min-height: 40px; font-size: 11px; padding: 0 14px; }
 .lobby-invite { display: flex; align-items: center; gap: 16px; margin-top: 20px; padding: 14px; width: min(100%, 420px); background: rgba(255,255,255,.04); border: 1px solid var(--line); border-radius: 12px; }.lobby-invite p { color: var(--muted); font-size: 12px; margin: 5px 0 10px; }.lobby-invite .btn-secondary { min-height: 36px; padding: 0 12px; font-size: 10px; }.lobby-ready { width: 100%; margin-bottom: 12px; }
@@ -671,6 +691,10 @@
   .friends-request-card { align-items: flex-start; }
   .friends-request-actions { flex-direction: column; gap: 8px; }
   .friend-name-row { flex-direction: column; gap: 6px; }
+  .onboarding-page { padding-left: 16px; padding-right: 16px; }
+  .onboarding-grid, .onboarding-example { grid-template-columns: 1fr; }
+  .onboarding-footer { justify-content: stretch; }
+  .onboarding-footer .btn-secondary { width: 100%; justify-content: center; }
   .chapter-complete-page { margin-top: -76px; margin-bottom: calc(-92px - env(safe-area-inset-bottom)); padding: calc(90px + env(safe-area-inset-top)) 24px calc(116px + env(safe-area-inset-bottom)); }
   .chapter-complete-hero { min-height: 318px; }
   .chapter-progress-card { grid-template-columns: 1fr; }

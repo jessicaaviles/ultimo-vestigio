@@ -110,6 +110,14 @@ export const resetCaseProgress = async (userId: string, caseSlug: string, token:
   return res.json();
 };
 
+export const completeOnboarding = async (userId: string, token: string) => {
+  const res = await apiFetch(`${API_URL}/profiles/${encodeURIComponent(userId)}/onboarding-complete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+};
+
 export const listFriends = async (userId: string) => {
   const params = new URLSearchParams({ userId });
   const res = await apiFetch(`${API_URL}/friends?${params.toString()}`, { cache: 'no-store' });

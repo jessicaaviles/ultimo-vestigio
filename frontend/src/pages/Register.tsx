@@ -30,8 +30,8 @@ const Register: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
-        await refresh();
-        navigate(returnUrl || '/cases');
+        const refreshed = await refresh();
+        navigate(refreshed?.onboardingCompleted ? (returnUrl || '/cases') : `/onboarding?return=${encodeURIComponent(returnUrl || '/cases')}`);
       } else {
         setError(res.error || 'Erro ao autenticar com Google.');
       }
@@ -56,8 +56,8 @@ const Register: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
-        await refresh();
-        navigate(returnUrl || '/cases');
+        const refreshed = await refresh();
+        navigate(refreshed?.onboardingCompleted ? (returnUrl || '/cases') : `/onboarding?return=${encodeURIComponent(returnUrl || '/cases')}`);
       } else {
         setError(res.error || 'Erro ao criar conta.');
       }

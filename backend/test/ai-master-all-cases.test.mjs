@@ -519,6 +519,21 @@ test('pagina de amigos nao cria rede local ficticia', () => {
   assert.match(backendSource, /listFriendInvitations/, 'Backend deve listar convites reais');
 });
 
+test('onboarding de primeiro acesso usa estado persistido do usuario', () => {
+  const schemaSource = fs.readFileSync(path.join(repoRoot, 'backend/prisma/schema.prisma'), 'utf8');
+  const profileSource = fs.readFileSync(path.join(repoRoot, 'backend/src/controllers/profileController.ts'), 'utf8');
+  const appSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/App.tsx'), 'utf8');
+  const authSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/contexts/AuthContext.tsx'), 'utf8');
+  const routeSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/components/ProtectedRoute.tsx'), 'utf8');
+
+  assert.match(schemaSource, /onboarding_completed\s+Boolean\s+@default\(false\)/, 'Schema deve persistir onboarding');
+  assert.match(profileSource, /onboardingCompleted:\s*Boolean\(user\.onboarding_completed\)/, 'Perfil deve expor onboardingCompleted');
+  assert.match(profileSource, /completeOnboarding/, 'Perfil deve concluir onboarding via API');
+  assert.match(appSource, /path="\/onboarding"/, 'App deve registrar rota de onboarding');
+  assert.match(authSource, /onboardingCompleted:\s*profileRes\.data\.onboardingCompleted/, 'Auth deve carregar onboardingCompleted');
+  assert.match(routeSource, /!user\.onboardingCompleted/, 'ProtectedRoute deve redirecionar novo usuario');
+});
+
 test('telas imersivas de blackwell nao vazam para outros casos nem entregam solucao fixa', () => {
   const mapSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/MapOverview.tsx'), 'utf8');
   const filesSource = fs.readFileSync(path.join(repoRoot, 'frontend/src/pages/CaseFiles.tsx'), 'utf8');

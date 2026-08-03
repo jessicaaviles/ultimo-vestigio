@@ -20,6 +20,7 @@ const publicProfile = (user: any, stats?: any) => ({
   photo: user.generated_profile_photo_data || user.profile_photo_data || null,
   hasGeneratedPortrait: Boolean(user.generated_profile_photo_data),
   hasProfile: Boolean(user.default_display_name) || Boolean(user.bio) || Boolean(user.profile_photo_data) || Boolean(user.generated_profile_photo_data),
+  onboardingCompleted: Boolean(user.onboarding_completed),
   photoUpdatedAt: user.profile_photo_updated_at,
   portraitGenerations: user.portrait_generations ?? 0,
   portraitGenerationsRemaining: Math.max(0, MAX_PORTRAIT_GENERATIONS - (user.portrait_generations ?? 0)),
@@ -342,5 +343,35 @@ export const resetCaseProgress = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error resetting case progress:', error);
     res.status(500).json({ success: false, error: 'Erro interno ao resetar progresso do caso.' });
+  }
+};
+
+export const completeOnboarding = async (req: Request, res: Response) => {
+  try {
+    const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Token não fornecido.' });
+    }
+
+    const token = authHeader.slice(7);
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await prisma.anonymous_users.findFirst({
+      where: { id: userId, auth_token_hash: tokenHash, deleted_at: null },
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Perfil não encontrado ou token inválido.' });
+    }
+
+    const updated = await prisma.anonymous_users.update({
+      where: { id: user.id },
+      data: { onboarding_completed: true },
+    });
+
+    res.json({ success: true, data: publicProfile(updated) });
+  } catch (error) {
+    console.error('Error completing onboarding:', error);
+    res.status(500).json({ success: false, error: 'Erro interno ao concluir onboarding.' });
   }
 };
