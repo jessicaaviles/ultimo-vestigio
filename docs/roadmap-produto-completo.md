@@ -43,6 +43,13 @@ Segunda entrega concluida:
 - corrigida expectativa editorial da pergunta "A tempestade matou Isadora?" para resposta negativa;
 - reforcada separacao entre pistas falsas, fatos negados e fatos confirmados.
 
+Terceira entrega concluida:
+
+- esclarecimentos passaram a explicar o fato central da resposta em vez de texto generico;
+- contestacoes passaram a usar copy mais direta para respostas corrigidas ou mantidas;
+- removida duplicacao visual de prefixos no chat do jogo;
+- testes cobrem esclarecimento positivo, negativo, parcial e contestacao corrigida.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

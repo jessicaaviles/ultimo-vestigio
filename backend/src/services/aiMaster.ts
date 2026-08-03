@@ -1153,32 +1153,36 @@ export const processGardenQuestion = (questionText: string) => {
   return null;
 };
 
+const stripVerdictPrefix = (value: string) =>
+  String(value || '').trim().replace(/^(Sim|Não|Nao|Parcialmente|Irrelevante|Desconhecido|Ambíguo|Ambiguo)\.\s*/i, '');
+
 export const buildClarificationText = (questionText: string, answer: { classification?: string; rendered_text?: string }) => {
   const classification = String(answer.classification || '').toUpperCase();
   const rendered = String(answer.rendered_text || '').trim();
+  const core = stripVerdictPrefix(rendered);
   const cleanQuestion = String(questionText || '').trim();
 
   if (classification === 'YES') {
-    return `Esclarecimento: o Mestre está confirmando a hipótese perguntada, dentro do limite exato da pergunta: "${cleanQuestion}".`;
+    return `Confirma a hipótese perguntada: ${core || cleanQuestion}.`;
   }
 
   if (classification === 'NO') {
-    return `Esclarecimento: o Mestre está negando essa hipótese específica, não o assunto inteiro relacionado à pergunta.`;
+    return `Nega essa hipótese específica. ${core || 'Isso não invalida outras perguntas sobre o mesmo assunto.'}`;
   }
 
   if (classification === 'PARTIAL') {
-    return `Esclarecimento: há algo relevante na pergunta, mas a formulação mistura uma parte correta com uma conclusão ainda não comprovada.`;
+    return `Há uma parte correta, mas a conclusão ainda não fica comprovada. ${core}`;
   }
 
   if (classification === 'IRRELEVANT') {
-    return `Esclarecimento: essa linha de investigação não se conecta aos fatos centrais confirmados até agora.`;
+    return `Essa linha não se conecta aos fatos centrais confirmados até agora.`;
   }
 
   if (classification === 'UNKNOWN') {
-    return `Esclarecimento: o arquivo não confirma essa hipótese do jeito que ela foi formulada. Tente separar a pergunta em um fato mais específico.`;
+    return `O arquivo não confirma essa hipótese do jeito que ela foi formulada. Tente perguntar por um fato mais específico.`;
   }
 
-  return `Esclarecimento: ${rendered || 'o Mestre não encontrou um fato confirmado para detalhar melhor essa resposta.'}`;
+  return rendered || 'O Mestre não encontrou um fato confirmado para detalhar melhor essa resposta.';
 };
 
 export const buildContestationText = (
@@ -1192,10 +1196,10 @@ export const buildContestationText = (
   const changed = previousClassification !== reviewedClassification || previousText !== reviewedText;
 
   if (changed) {
-    return `Revisão aceita. Resposta corrigida: ${reviewedText}`;
+    return `Aceita. Resposta corrigida: ${reviewedText}`;
   }
 
-  return `Revisão concluída. A resposta permanece válida: ${reviewedText || previousText}`;
+  return `Concluída. A resposta permanece válida: ${reviewedText || previousText}`;
 };
 
 export const processQuestion = async (roomId: string, questionText: string, caseVersionId: string) => {

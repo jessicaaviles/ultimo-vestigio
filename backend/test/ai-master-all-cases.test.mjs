@@ -481,15 +481,27 @@ test('respostas do mestre sao reduzidas para uma frase curta', () => {
 });
 
 test('esclarecimento e contestacao produzem revisoes uteis', () => {
+  const yesClarification = buildClarificationText('O relógio estava adiantado?', {
+    classification: 'YES',
+    rendered_text: 'Sim. O relógio do conservatório estava adiantado em 18 minutos.'
+  });
+  assertIncludesTerms(yesClarification, ['Confirma', 'relógio', 'adiantado'], 'Esclarecimento positivo');
+
+  const noClarification = buildClarificationText('A tempestade matou Isadora?', {
+    classification: 'NO',
+    rendered_text: 'Não. A tempestade reforçou a cena, mas não foi a causa real da morte.'
+  });
+  assertIncludesTerms(noClarification, ['Nega', 'tempestade', 'não'], 'Esclarecimento negativo');
+
   const clarification = buildClarificationText('Nina teve ajuda para desaparecer?', {
     classification: 'PARTIAL',
     rendered_text: 'Parcialmente. O arquivo indica interferência de outra pessoa no desaparecimento.'
   });
-  assertIncludesTerms(clarification, ['parte correta', 'conclusão'], 'Esclarecimento parcial');
+  assertIncludesTerms(clarification, ['parte correta', 'interferência'], 'Esclarecimento parcial');
 
   const contestation = buildContestationText(
     { classification: 'UNKNOWN', rendered_text: 'Desconhecido. O arquivo não confirma essa hipótese neste momento.' },
     { classification: 'YES', rendered_text: 'Sim. A pessoa ligada à exposição de Nina tem relação relevante com o desaparecimento.' }
   );
-  assertIncludesTerms(contestation, ['Revisão aceita', 'Resposta corrigida'], 'Contestacao corrigida');
+  assertIncludesTerms(contestation, ['Aceita', 'Resposta corrigida'], 'Contestacao corrigida');
 });
