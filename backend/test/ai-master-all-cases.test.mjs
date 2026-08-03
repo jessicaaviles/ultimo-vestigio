@@ -222,11 +222,16 @@ test('pergunta relacionada mas nao confirmada vira desconhecido em vez de reform
 test('contexto estatico complementa respostas em casos diferentes', () => {
   const samples = [
     ['o-quarto-7', 'A bebida tinha sedativo?', 'YES', ['chá', 'sedativo']],
+    ['o-quarto-7', 'O relógio marcava hora falsa?', 'YES', ['relógio', 'hora falsa']],
     ['o-elevador-que-nao-parou', 'Ela saiu pelo teto do elevador?', 'YES', ['alçapão']],
+    ['o-presente-desaparecido', 'Foi uma brincadeira?', 'YES', ['anfitrião', 'caça ao tesouro']],
     ['a-mensagem-das-23h17', 'A mensagem foi agendada por script?', 'YES', ['automação', 'agendada']],
+    ['a-mensagem-das-23h17', 'Foi enviada por script?', 'YES', ['automação', 'agendada']],
     ['o-retrato-que-piscou', 'O quadro tinha mecanismo?', 'NO', ['retrato', 'mecanismo']],
+    ['o-retrato-que-piscou', 'Era sobrenatural?', 'NO', ['sobrenatural', 'luz']],
     ['blackwell', 'O sangue era artificial?', 'YES', ['sangue', 'artificial']],
-    ['blackwell', 'O autor usou sangue falso?', 'YES', ['sangue', 'artificial']]
+    ['blackwell', 'O autor usou sangue falso?', 'YES', ['sangue', 'artificial']],
+    ['blackwell', 'Foi sequestro real?', 'NO', ['encenado']]
   ];
 
   for (const [slug, question, classification, terms] of samples) {

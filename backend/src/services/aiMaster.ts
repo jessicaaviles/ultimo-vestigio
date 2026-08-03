@@ -81,8 +81,12 @@ const SYNONYM_GROUPS = [
   ['lona', 'tecido', 'cobertura', 'pano', 'fibra', 'fibras'],
   ['quimico', 'químico', 'produto', 'odor', 'cheiro', 'spray', 'anestesico', 'anestésico'],
   ['falso', 'falsa', 'falsas', 'artificial', 'fake'],
+  ['encenado', 'encenada', 'simulado', 'simulada', 'forjado', 'forjada', 'falso', 'falsa'],
   ['motivo', 'motivacao', 'motivação', 'interesse', 'vantagem', 'razão', 'razao'],
-  ['rival', 'rivalidade', 'inimiga', 'inimizade', 'competia', 'concorrente']
+  ['rival', 'rivalidade', 'inimiga', 'inimizade', 'competia', 'concorrente'],
+  ['enviou', 'enviada', 'enviado', 'enviar', 'mandou', 'mandada', 'mandado', 'disparou', 'disparada'],
+  ['script', 'automacao', 'automação', 'agendada', 'agendado', 'programada', 'programado'],
+  ['brincadeira', 'jogo', 'caca', 'caça', 'tesouro', 'encenacao', 'encenação']
 ];
 
 const SYNONYM_LOOKUP = SYNONYM_GROUPS.reduce((lookup, group) => {
@@ -111,10 +115,24 @@ const verdictPrefix: Record<string, string> = {
   UNKNOWN: 'Desconhecido.'
 };
 
-const buildRuleBasedAnswer = (classification: string, relatedFacts: string[] = []) => {
+const pickBestRelatedFact = (questionText: string, relatedFacts: string[] = []) => {
+  const questionWords = new Set(tokenizeForMatching(questionText));
+  let best: { score: number; statement: string } | null = null;
+
+  for (const statement of relatedFacts.filter(Boolean)) {
+    const factWords = new Set(tokenizeForMatching(statement));
+    const overlap = [...questionWords].filter((word) => factWords.has(word)).length;
+    const score = overlap / Math.max(1, Math.min(questionWords.size, factWords.size));
+    if (!best || score > best.score) best = { score, statement };
+  }
+
+  return best?.statement || relatedFacts.find(Boolean) || '';
+};
+
+const buildRuleBasedAnswer = (classification: string, relatedFacts: string[] = [], questionText = '') => {
   const normalizedClassification = classification.toUpperCase();
   const prefix = verdictPrefix[normalizedClassification] || 'Desconhecido.';
-  const relatedFact = relatedFacts.find(Boolean);
+  const relatedFact = pickBestRelatedFact(questionText, relatedFacts);
   const explanation = normalizedClassification === 'YES'
     ? relatedFact || 'Essa linha de investigação é pertinente ao caso.'
     : normalizedClassification === 'NO'
@@ -145,12 +163,15 @@ export const processRuleBasedQuestion = (questionText: string, answerRules: any[
 
     const overlap = [...questionWords].filter((word) => exampleWords.has(word)).length;
     const score = overlap / Math.max(1, Math.min(questionWords.size, exampleWords.size));
-    if (overlap >= 2 && score >= 0.25 && (!bestMatch || score > bestMatch.score)) {
+    const hasSpecificSingleToken = questionWords.size === 1 && [...questionWords][0].length >= 8;
+    const minimumOverlap = (questionWords.size <= 2 && baseTokensForMatching(questionText).length >= 2) || hasSpecificSingleToken ? 1 : 2;
+    const minimumScore = minimumOverlap === 1 ? 0.5 : 0.25;
+    if (overlap >= minimumOverlap && score >= minimumScore && (!bestMatch || score > bestMatch.score)) {
       bestMatch = { score, classification: String(rule.default_classification || 'UNKNOWN'), factKeys };
     }
   }
 
-  return bestMatch ? buildRuleBasedAnswer(bestMatch.classification, bestMatch.factKeys.map((key) => factMap.get(key) || '')) : null;
+  return bestMatch ? buildRuleBasedAnswer(bestMatch.classification, bestMatch.factKeys.map((key) => factMap.get(key) || ''), questionText) : null;
 };
 
 const buildFactBasedAnswer = (classification = 'UNKNOWN', relatedFact = '') => ({
@@ -233,12 +254,13 @@ export const getStaticCaseContext = (slug: string) => {
       facts: [
         { fact_key: 'portrait_reflection_flash', statement: 'O piscar foi reflexo de um flash no vidro ou verniz do retrato.' },
         { fact_key: 'portrait_no_mechanism', statement: 'O retrato não tinha mecanismo interno.' },
+        { fact_key: 'portrait_not_supernatural', statement: 'Não houve fenômeno sobrenatural; o efeito veio de luz e reflexo.' },
         { fact_key: 'waiter_near_jewel', statement: 'O garçom estava junto da mesa no instante do clarão.' },
         { fact_key: 'temporary_blindness_flash', statement: 'O flash cegou os convidados por poucos segundos.' }
       ],
       rules: [
         staticRule('portrait_flash', ['O retrato piscou por reflexo?', 'Tinha flash?', 'Foi luz no vidro?'], ['portrait_reflection_flash'], 'YES'),
-        staticRule('portrait_no_mechanism', ['O quadro tinha mecanismo?', 'Era sobrenatural?', 'O retrato se mexeu sozinho?'], ['portrait_no_mechanism'], 'NO'),
+        staticRule('portrait_no_mechanism', ['O quadro tinha mecanismo?', 'Era sobrenatural?', 'Foi magia?', 'Tinha fantasma?', 'O retrato se mexeu sozinho?'], ['portrait_no_mechanism', 'portrait_not_supernatural'], 'NO'),
         staticRule('jewel_waiter', ['O garçom roubou a joia?', 'O clarão ajudou o roubo?', 'Todos ficaram cegos?'], ['waiter_near_jewel', 'temporary_blindness_flash'], 'YES')
       ]
     },
@@ -251,7 +273,8 @@ export const getStaticCaseContext = (slug: string) => {
       ],
       rules: [
         staticRule('blackwell_blood', ['O sangue era falso?', 'O sangue era artificial?', 'Clara morreu na sala?'], ['blackwell_fake_blood'], 'YES'),
-        staticRule('blackwell_escape', ['Clara fugiu com Helena?', 'Elas saíram pelo jardim?', 'Foi sequestro real?'], ['clara_helena_escape', 'staged_kidnapping'], 'YES'),
+        staticRule('blackwell_escape', ['Clara fugiu com Helena?', 'Elas saíram pelo jardim?', 'Clara saiu com Helena?'], ['clara_helena_escape', 'staged_kidnapping'], 'YES'),
+        staticRule('blackwell_real_kidnapping', ['Foi sequestro real?', 'Clara foi sequestrada de verdade?', 'O sequestro aconteceu mesmo?'], ['staged_kidnapping'], 'NO'),
         staticRule('blackwell_tomas', ['Tomás desviava dinheiro?', 'O livro-caixa incrimina Tomás?', 'Havia fraude financeira?'], ['tomas_financial_fraud'], 'YES')
       ]
     }
