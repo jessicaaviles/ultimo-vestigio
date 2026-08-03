@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { getSocketServer } from '../realtime/socketHub';
 
 const prisma = new PrismaClient();
 
@@ -56,6 +57,12 @@ const publicFriendship = async (viewerId: string, friendship: any, mode: 'friend
     pending: mode === 'invite' ? friendship.status === 'PENDING' : false,
     createdAt: friendship.created_at
   };
+};
+
+const emitFriendEvent = (userId: string, event: string, payload: object) => {
+  const io = getSocketServer();
+  if (!io || !userId) return;
+  io.to(`user:${userId}`).emit(event, payload);
 };
 
 export const listFriends = async (req: Request, res: Response) => {
@@ -186,7 +193,10 @@ export const addFriend = async (req: Request, res: Response) => {
       include: { requester: true, addressee: true }
     });
 
-    res.json({ success: true, data: { invitation: await publicFriendship(userId, invitation, 'invite') } });
+    const publicInvitation = await publicFriendship(userId, invitation, 'invite');
+    emitFriendEvent(addressee.id, 'friend_invitation_received', { invitation: publicInvitation });
+    emitFriendEvent(userId, 'friend_invitation_sent', { invitation: publicInvitation });
+    res.json({ success: true, data: { invitation: publicInvitation } });
   } catch (error) {
     console.error('Error adding friend:', error);
     res.status(500).json({ success: false, error: 'Could not add friend' });
@@ -214,7 +224,10 @@ export const acceptFriendInvitation = async (req: Request, res: Response) => {
       include: { requester: true, addressee: true }
     });
 
-    res.json({ success: true, data: { friend: await publicFriendship(userId, accepted, 'friend') } });
+    const publicFriend = await publicFriendship(userId, accepted, 'friend');
+    emitFriendEvent(invitation.requester_id, 'friend_invitation_accepted', { friendshipId, friend: publicFriend });
+    emitFriendEvent(invitation.addressee_id, 'friendship_accepted', { friendshipId, friend: publicFriend });
+    res.json({ success: true, data: { friend: publicFriend } });
   } catch (error) {
     console.error('Error accepting friend invitation:', error);
     res.status(500).json({ success: false, error: 'Could not accept invitation' });
@@ -233,6 +246,9 @@ export const declineFriendInvitation = async (req: Request, res: Response) => {
     }
 
     await prisma.anonymous_user_friendships.delete({ where: { id: friendshipId } });
+    const otherUserId = invitation.requester_id === userId ? invitation.addressee_id : invitation.requester_id;
+    emitFriendEvent(otherUserId, 'friend_invitation_declined', { friendshipId });
+    emitFriendEvent(userId, 'friend_invitation_cancelled', { friendshipId });
     res.json({ success: true });
   } catch (error) {
     console.error('Error declining friend invitation:', error);
@@ -252,6 +268,8 @@ export const removeFriend = async (req: Request, res: Response) => {
     }
 
     await prisma.anonymous_user_friendships.delete({ where: { id: friendshipId } });
+    const otherUserId = friendship.requester_id === userId ? friendship.addressee_id : friendship.requester_id;
+    emitFriendEvent(otherUserId, 'friendship_removed', { friendshipId });
     res.json({ success: true });
   } catch (error) {
     console.error('Error removing friend:', error);

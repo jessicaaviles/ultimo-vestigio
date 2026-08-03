@@ -8,6 +8,7 @@ import { PrismaClient } from '@prisma/client';
 import { buildClarificationText, buildContestationText, processQuestion, evaluateTheory } from './services/aiMaster';
 import { revealSecret } from './security/secrets';
 import { normalizeQuestion, theoryIsComplete } from './game/rules';
+import { setSocketServer } from './realtime/socketHub';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ const io = new Server(server, {
 const prisma = new PrismaClient();
 const requestWindows = new Map<string, { startedAt: number; count: number }>();
 app.disable('etag');
+setSocketServer(io);
 
 const initialRoomSettings = (existingSettings?: string | null) => {
   let parsed: any = {};
@@ -189,6 +191,11 @@ app.get('/version', (req, res) => {
 
 // Socket.io
 io.on('connection', (socket) => {
+  socket.on('join_user', ({ userId }) => {
+    const cleanUserId = String(userId || '');
+    if (cleanUserId) socket.join(`user:${cleanUserId}`);
+  });
+
   socket.on('join_room', async ({ roomId, userId }) => {
     try {
       const cleanRoomId = String(roomId || '');
