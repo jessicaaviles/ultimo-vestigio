@@ -113,6 +113,13 @@ Decima segunda entrega concluida:
 - a mensagem de erro orienta preencher todos os campos do relatorio final;
 - testes unitarios cobrem a validacao dos 4 campos obrigatorios.
 
+Decima terceira entrega concluida:
+
+- o encerramento do caso agora fecha votacoes abertas da sala junto com a mudanca para `COMPLETED`;
+- a sala concluida tambem limpa o turno atual para evitar continuidade indevida;
+- teste automatizado protege o fluxo de finalizacao contra votacoes presas apos a resolucao;
+- a regra reforca que caso resolvido nao deve continuar parecendo sala ativa.
+
 ### Entregaveis
 
 - matriz de fatos por caso:

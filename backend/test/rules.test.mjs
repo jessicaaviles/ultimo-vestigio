@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { majorityWinner, normalizeQuestion, theoryIsComplete } from '../dist/game/rules.js';
 import { revealSecret, sealSecret } from '../dist/security/secrets.js';
 
@@ -25,4 +27,10 @@ test('protege e recupera conteúdo secreto sem expor texto em repouso', () => {
   const sealed = sealSecret('solução privada');
   assert.notEqual(sealed, 'solução privada');
   assert.equal(revealSecret(sealed), 'solução privada');
+});
+
+test('encerramento do jogo fecha sala e votacoes abertas', () => {
+  const source = fs.readFileSync(path.resolve(process.cwd(), 'src/index.ts'), 'utf8');
+  assert.match(source, /status:\s*'COMPLETED'[\s\S]*current_turn_id:\s*null/, 'finish_game deve limpar turno e marcar sala como concluida');
+  assert.match(source, /prisma\.votes\.updateMany\(\{[\s\S]*status:\s*'OPEN'[\s\S]*status:\s*'CLOSED'/, 'finish_game deve fechar votacoes abertas');
 });

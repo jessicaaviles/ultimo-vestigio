@@ -987,6 +987,10 @@ io.on('connection', (socket) => {
         where: { id: roomId },
         data: { status: 'COMPLETED', completed_at: new Date(), current_turn_id: null }
       });
+      await prisma.votes.updateMany({
+        where: { room_id: roomId, status: 'OPEN' },
+        data: { status: 'CLOSED', closed_at: new Date() }
+      });
 
       const [questionCount, repeatedQuestionCount, hintsUsed] = await Promise.all([
         prisma.questions.count({ where: { room_id: roomId } }),
