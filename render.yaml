@@ -4,5 +4,5 @@ services:
     env: node
     rootDir: backend
     buildCommand: npm ci && npm run build
-    startCommand: npm start
+    startCommand: npm run db:sync-auth && npm start
     healthCheckPath: /health

@@ -9,6 +9,7 @@
     "start": "node dist/index.js",
     "test": "tsc && node --test test/*.test.mjs",
     "db:migrate": "prisma migrate deploy",
+    "db:sync-auth": "tsx prisma/sync-auth-schema.ts",
     "db:seed": "tsx prisma/seed.ts && tsx prisma/seed-phase3.ts",
     "profile:reset-portraits": "node prisma/reset-profile-portrait-generations.mjs"
   },

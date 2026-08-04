@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { authRegister, authLink, authGoogle } from '../services/api';
+import { authRegister, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
 import { Capacitor } from '@capacitor/core';
@@ -23,11 +23,6 @@ const Register: React.FC = () => {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const googleConfigured = Boolean(googleClientId);
   const isWebPlatform = Capacitor.getPlatform() === 'web';
-
-  const shouldRetryAsFreshAccount = (message?: string) => {
-    const normalized = String(message || '').toLowerCase();
-    return !normalized.includes('email já está cadastrado') && !normalized.includes('e-mail já está cadastrado');
-  };
 
   const handleGoogleCredential = useCallback(async (credential: string) => {
     setLoading(true);
@@ -69,15 +64,7 @@ const Register: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const existingUserId = localStorage.getItem('userId');
-      let res = existingUserId
-        ? await authLink(email, password, existingUserId)
-        : await authRegister(email, password, displayName || undefined);
-      if (!res.success && existingUserId && shouldRetryAsFreshAccount(res.error)) {
-        localStorage.removeItem('userId');
-        localStorage.removeItem('authToken');
-        res = await authRegister(email, password, displayName || undefined);
-      }
+      const res = await authRegister(email, password, displayName || undefined);
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
