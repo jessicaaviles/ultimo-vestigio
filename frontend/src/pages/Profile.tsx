@@ -45,6 +45,7 @@ const Profile: React.FC = () => {
   const [status, setStatus] = useState('');
   const [photoViewer, setPhotoViewer] = useState(false);
   const [generatingPortrait, setGeneratingPortrait] = useState(false);
+  const [portraitLoadingMessage, setPortraitLoadingMessage] = useState('');
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [resettingPortraits, setResettingPortraits] = useState(false);
@@ -233,6 +234,13 @@ const Profile: React.FC = () => {
 
   const schedulePortraitRefresh = (userId: string, attempt = 1) => {
     if (portraitRefreshTimerRef.current) window.clearTimeout(portraitRefreshTimerRef.current);
+    const messages = [
+      'Analisando selfie',
+      'Criando retrato',
+      'Ajustando luz',
+      'Finalizando imagem',
+    ];
+    setPortraitLoadingMessage(messages[Math.min(messages.length - 1, Math.floor((attempt - 1) / 3))]);
     portraitRefreshTimerRef.current = window.setTimeout(() => {
       void (async () => {
         const profileRes = await getProfile(userId);
@@ -244,6 +252,7 @@ const Profile: React.FC = () => {
           setActive(visibleProfile.active);
           if (visibleProfile.hasGeneratedPortrait) {
             setGeneratingPortrait(false);
+            setPortraitLoadingMessage('');
             setStatus('Retrato gerado com sucesso!');
             await refresh();
             return;
@@ -253,20 +262,24 @@ const Profile: React.FC = () => {
           schedulePortraitRefresh(userId, attempt + 1);
         } else {
           setGeneratingPortrait(false);
+          setPortraitLoadingMessage('');
           setStatus('Sua selfie foi salva. O retrato ainda está sendo processado.');
           await refresh();
         }
       })();
-    }, attempt === 1 ? 3000 : 4000);
+    }, attempt <= 4 ? 1500 : 3000);
   };
 
   const save = async (event?: FormEvent) => {
     if (event) event.preventDefault();
     if (!profile?.id || !authToken) return;
-    const hasPhoto = Boolean(photoData || preview && !profile.photo);
+    const hasPhoto = Boolean(photoData || preview);
     setSaving(true);
     setStatus(hasPhoto ? 'Gerando retrato…' : 'Salvando perfil…');
-    if (hasPhoto) setGeneratingPortrait(true);
+    if (hasPhoto) {
+      setGeneratingPortrait(true);
+      setPortraitLoadingMessage('Enviando selfie');
+    }
     let keepPortraitLoading = false;
     try {
       const response = await updateProfile(profile.id, {
@@ -298,6 +311,7 @@ const Profile: React.FC = () => {
     } finally {
       setSaving(false);
       if (!keepPortraitLoading) setGeneratingPortrait(false);
+      if (!keepPortraitLoading) setPortraitLoadingMessage('');
     }
   };
 
@@ -309,41 +323,45 @@ const Profile: React.FC = () => {
       return;
     }
     setPhotoSheetOpen(false);
-      setPhotoData(value);
-      setPreview(value);
-      setStatus('Gerando retrato…');
-      setGeneratingPortrait(true);
-      if (profile?.id && authToken) {
-        let keepPortraitLoading = false;
-        try {
-          const response = await updateProfile(profile.id, {
-            displayName: name, bio, active,
-            photoData: value,
-            generatePortrait: true,
-          });
-          if (!response.success) throw new Error(response.error);
-          setProfile(response.data);
-          setName(response.data.displayName);
-          setBio(response.data.bio);
-          setActive(response.data.active);
-          setPhotoData('');
-          setPreview('');
-          await refresh();
-          const genStatus = (response as any).portraitStatus;
-          if (genStatus === 'READY') setStatus('Retrato gerado com sucesso!');
-          else if (genStatus === 'GENERATING') {
-            setStatus('Sua selfie foi enviada. O retrato aparecerá em instantes.');
-            keepPortraitLoading = true;
-            schedulePortraitRefresh(profile.id);
-          }
-          else if (genStatus === 'UNAVAILABLE') setStatus('Não foi possível gerar o retrato no momento.');
-          else setStatus('Perfil salvo com sucesso!');
-        } catch (error) {
-          setStatus(error instanceof Error ? error.message : 'Erro ao gerar retrato.');
-        } finally {
-          if (!keepPortraitLoading) setGeneratingPortrait(false);
+    setPhotoData(value);
+    setPreview(value);
+    setStatus('Gerando retrato…');
+    setGeneratingPortrait(true);
+    setPortraitLoadingMessage('Enviando selfie');
+    if (profile?.id && authToken) {
+      let keepPortraitLoading = false;
+      try {
+        const response = await updateProfile(profile.id, {
+          displayName: name, bio, active,
+          photoData: value,
+          generatePortrait: true,
+        });
+        if (!response.success) throw new Error(response.error);
+        setProfile(response.data);
+        setName(response.data.displayName);
+        setBio(response.data.bio);
+        setActive(response.data.active);
+        setPhotoData('');
+        setPreview('');
+        await refresh();
+        const genStatus = (response as any).portraitStatus;
+        if (genStatus === 'READY') setStatus('Retrato gerado com sucesso!');
+        else if (genStatus === 'GENERATING') {
+          setStatus('Sua selfie foi enviada. O retrato aparecerá em instantes.');
+          keepPortraitLoading = true;
+          schedulePortraitRefresh(profile.id);
+        }
+        else if (genStatus === 'UNAVAILABLE') setStatus('Não foi possível gerar o retrato no momento.');
+        else setStatus('Perfil salvo com sucesso!');
+      } catch (error) {
+        setStatus(error instanceof Error ? error.message : 'Erro ao gerar retrato.');
+      } finally {
+        if (!keepPortraitLoading) {
+          setGeneratingPortrait(false);
+          setPortraitLoadingMessage('');
         }
       }
+    }
   };
 
   const choosePhoto = (event: ChangeEvent<HTMLInputElement>) => {
@@ -527,7 +545,12 @@ const Profile: React.FC = () => {
             }}
           >
             {image ? <img src={image} alt={`Retrato de ${name}`} /> : <Upload size={24} strokeWidth={1.3} />}
-            {generatingPortrait && <div className="profile-avatar-spinner" />}
+            {generatingPortrait && (
+              <div className="profile-avatar-loading" aria-live="polite">
+                <div className="profile-avatar-spinner" />
+                <span>{portraitLoadingMessage || 'Gerando'}</span>
+              </div>
+            )}
           </div>
           {profile?.hasGeneratedPortrait && <span className="portrait-badge" title="Retrato gerado pela IA"><Check size={12} /></span>}
           {profile?.portraitGenerationsRemaining !== undefined && (
