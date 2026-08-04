@@ -3,6 +3,7 @@ const originalAttrs = new WeakMap<Element, Record<string, string>>();
 
 let observer: MutationObserver | null = null;
 let applying = false;
+let refreshTimers: number[] = [];
 
 const translations: Record<string, string> = {
   'Acessar': 'Sign in',
@@ -21,16 +22,26 @@ const translations: Record<string, string> = {
   'Áudio': 'Audio',
   'Buscar amigo': 'Search friend',
   'Cancelar': 'Cancel',
+  'Carregando investigação em destaque': 'Loading featured investigation',
   'Carregando página...': 'Loading page...',
   'Carregando rede': 'Loading network',
+  'Casos com diferentes ritmos, cenários e níveis de desafio.': 'Cases with different rhythms, settings and challenge levels.',
   'Casos': 'Cases',
   'CASOS': 'CASES',
   'Casos disponíveis': 'Available cases',
+  'CASOS DISPONÍVEIS': 'AVAILABLE CASES',
+  'Caso em andamento': 'Active case',
+  'CASO EM ANDAMENTO': 'ACTIVE CASE',
+  'Caso em destaque': 'Featured case',
+  'CASO EM DESTAQUE': 'FEATURED CASE',
+  'Cerca de 30 min': 'About 30 min',
   'Como funciona': 'How it works',
   'Configurações': 'Settings',
   'CONFIGURAÇÕES': 'SETTINGS',
   'Conta': 'Account',
+  'Conta sincronizada': 'Account synced',
   'Conta sincronizada com seu progresso': 'Account synced with your progress',
+  'Conclua uma investigação para registrar sua precisão, tempo em campo e subir de patente na agência.': 'Complete an investigation to record your accuracy, time in the field and rise through the agency ranks.',
   'Convite rápido': 'Quick invite',
   'Convites de amigos': 'Friend invites',
   'Convites pendentes': 'pending invites',
@@ -42,13 +53,22 @@ const translations: Record<string, string> = {
   'English': 'English',
   'Entrar': 'Sign in',
   'Escolha sua próxima': 'Choose your next one',
+  'Escolha sua próxima investigação': 'Choose your next investigation',
+  'Escolher caso': 'Choose case',
   'Esse alias já está em uso.': 'This alias is already taken.',
   'Escuro': 'Dark',
+  'Explorar casos': 'Explore cases',
   'Idioma': 'Language',
   'Início': 'Home',
   'INÍCIO': 'HOME',
+  'Investigações jogadas': 'Investigations played',
+  'INVESTIGAÇÕES JOGADAS': 'INVESTIGATIONS PLAYED',
   'Investigadores': 'Investigators',
+  'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell.': "Investigate Clara Mendes' mysterious disappearance at the Blackwell family mansion.",
+  'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell. Analise todas as evidências e encontre a verdade.': "Investigate Clara Mendes' mysterious disappearance at the Blackwell family mansion. Analyze every piece of evidence and uncover the truth.",
+  'Jogar esse caso': 'Play this case',
   'Marcas de campo': 'Field marks',
+  'Média': 'Medium',
   'Mensagens': 'Messages',
   'MENSAGENS': 'MESSAGES',
   'Meu perfil': 'My profile',
@@ -62,6 +82,8 @@ const translations: Record<string, string> = {
   'Perfil': 'Profile',
   'PERFIL': 'PROFILE',
   'Perfil ativo para a equipe': 'Profile active for the team',
+  'Precisão das teorias': 'Theory accuracy',
+  'PRECISÃO DAS TEORIAS': 'THEORY ACCURACY',
   'Personalize sua experiência': 'Personalize your experience',
   'Política de privacidade': 'Privacy policy',
   'Português (Brasil)': 'Portuguese (Brazil)',
@@ -80,24 +102,64 @@ const translations: Record<string, string> = {
   'Sobre': 'About',
   'Sua rede': 'Your network',
   'Suas estatísticas': 'Your statistics',
+  'SUAS ESTATÍSTICAS': 'YOUR STATISTICS',
+  'Seu histórico não pôde ser consultado agora.': 'Your history could not be checked right now.',
+  'Seu primeiro caso espera por você': 'Your first case is waiting for you',
+  'Sem dados': 'No data',
+  'Sem teorias': 'No theories',
+  'Sinopse não disponível.': 'Synopsis unavailable.',
   'Tema': 'Theme',
   'Termos de uso': 'Terms of use',
+  'Teorias registradas': 'Theories submitted',
+  'TEORIAS REGISTRADAS': 'THEORIES SUBMITTED',
+  'Tentar novamente': 'Try again',
   'Use apenas letras, números e underline.': 'Use only letters, numbers and underscore.',
   'Use letras, números e underline.': 'Use letters, numbers and underscore.',
   'Use no máximo 24 caracteres.': 'Use up to 24 characters.',
   'Use pelo menos 3 caracteres.': 'Use at least 3 characters.',
   'Verificando alias...': 'Checking alias...',
+  'Ver todos': 'View all',
   'Versão do jogo': 'Game version',
   'Voz dos personagens': 'Character voices',
   'Você será desconectado desta conta neste dispositivo.': 'You will be signed out of this account on this device.',
+  'Você já resolveu todos os casos disponíveis. Novas investigações aparecerão aqui.': 'You have solved every available case. New investigations will appear here.',
+  'acertos': 'correct',
+  'jogador': 'player',
+  'jogadores': 'players',
+  'investigador': 'investigator',
+  'investigadores': 'investigators',
+  'marcos': 'milestones',
+  'sessões': 'sessions',
+  'teorias': 'theories',
 };
 
+const regexTranslations: Array<[RegExp, (match: RegExpMatchArray) => string]> = [
+  [/^Dificuldade (.+)$/i, (match) => `Difficulty ${translateValue(match[1]).toLocaleLowerCase('en')}`],
+  [/^(\d+)\s+a\s+(\d+)\s+investigadores$/i, (match) => `${match[1]} to ${match[2]} investigators`],
+  [/^(\d+)\s+a\s+(\d+)\s+jogadores$/i, (match) => `${match[1]} to ${match[2]} players`],
+  [/^(\d+)-(\d+)\s+jogadores$/i, (match) => `${match[1]}-${match[2]} players`],
+  [/^(\d+)\s+\/\s+(\d+)\s+marcos$/i, (match) => `${match[1]} / ${match[2]} milestones`],
+  [/^(\d+)\s+\/\s+(\d+)\s+sessões$/i, (match) => `${match[1]} / ${match[2]} sessions`],
+  [/^(\d+)\s+\/\s+(\d+)\s+teorias$/i, (match) => `${match[1]} / ${match[2]} theories`],
+  [/^(\d+)\s+acertos$/i, (match) => `${match[1]} correct`],
+];
+
 const translatableAttrs = ['placeholder', 'aria-label', 'title'];
-const skipTags = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT']);
+const skipTextTags = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT']);
+const skipAttrTags = new Set(['SCRIPT', 'STYLE']);
 
 const normalize = (value: string) => value.replace(/\s+/g, ' ').trim();
 
-const translateValue = (value: string) => translations[normalize(value)] || value;
+const translateValue = (value: string) => {
+  const normalized = normalize(value);
+  const exact = translations[normalized];
+  if (exact) return exact;
+  for (const [pattern, translate] of regexTranslations) {
+    const match = normalized.match(pattern);
+    if (match) return translate(match);
+  }
+  return value;
+};
 
 const restoreAttrs = (element: Element) => {
   const attrs = originalAttrs.get(element);
@@ -146,7 +208,7 @@ const walk = (root: ParentNode, language: 'pt-BR' | 'en') => {
   const elements = root instanceof Element ? [root, ...Array.from(root.querySelectorAll('*'))] : Array.from(root.querySelectorAll('*'));
 
   elements.forEach((element) => {
-    if (skipTags.has(element.tagName)) return;
+    if (skipAttrTags.has(element.tagName)) return;
     if (language === 'pt-BR') restoreAttrs(element);
     else translateElementAttrs(element);
   });
@@ -154,7 +216,7 @@ const walk = (root: ParentNode, language: 'pt-BR' | 'en') => {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(node) {
       const parent = node.parentElement;
-      if (!parent || skipTags.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+      if (!parent || skipTextTags.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
       return normalize(node.nodeValue || '') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
     },
   });
@@ -175,6 +237,8 @@ const walk = (root: ParentNode, language: 'pt-BR' | 'en') => {
 export const applyDocumentLanguage = (selectedLanguage: string) => {
   if (typeof document === 'undefined' || !document.body) return;
   const language = selectedLanguage === 'English' ? 'en' : 'pt-BR';
+  refreshTimers.forEach((timer) => window.clearTimeout(timer));
+  refreshTimers = [];
 
   observer?.disconnect();
   applying = true;
@@ -198,4 +262,11 @@ export const applyDocumentLanguage = (selectedLanguage: string) => {
     childList: true,
     subtree: true,
   });
+
+  refreshTimers = [150, 600, 1200].map((delay) => window.setTimeout(() => {
+    if (!document.body) return;
+    applying = true;
+    walk(document.body, language);
+    applying = false;
+  }, delay));
 };
