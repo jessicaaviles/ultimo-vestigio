@@ -28,8 +28,8 @@ const Login: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
-        const refreshed = await refresh();
-        navigate(refreshed?.onboardingCompleted ? (returnUrl || '/profile') : `/onboarding?return=${encodeURIComponent(returnUrl || '/profile')}`);
+        await refresh();
+        navigate(returnUrl || '/profile');
       } else {
         setError(res.error || 'Erro ao autenticar com Google.');
       }
@@ -63,8 +63,8 @@ const Login: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
-        const refreshed = await refresh();
-        navigate(refreshed?.onboardingCompleted ? (returnUrl || '/profile') : `/onboarding?return=${encodeURIComponent(returnUrl || '/profile')}`);
+        await refresh();
+        navigate(returnUrl || '/profile');
       } else {
         setError(res.error || 'Erro ao fazer login.');
       }
