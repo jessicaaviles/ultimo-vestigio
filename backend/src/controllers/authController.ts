@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import type { LoginTicket, TokenPayload } from 'google-auth-library';
 import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
@@ -32,6 +32,10 @@ function createAuthToken() {
   const authToken = crypto.randomUUID();
   const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
   return { authToken, authTokenHash };
+}
+
+function isPrismaUniqueConstraint(error: unknown) {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002';
 }
 
 export const register = async (req: Request, res: Response) => {
@@ -88,6 +92,9 @@ export const register = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error registering user:', error);
+    if (isPrismaUniqueConstraint(error)) {
+      return res.status(409).json({ success: false, error: 'Este email já está cadastrado.' });
+    }
     res.status(500).json({ success: false, error: 'Erro interno ao registrar.' });
   }
 };
@@ -164,6 +171,9 @@ export const linkProfile = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error linking profile:', error);
+    if (isPrismaUniqueConstraint(error)) {
+      return res.status(409).json({ success: false, error: 'Este email já está cadastrado.' });
+    }
     res.status(500).json({ success: false, error: 'Erro interno ao vincular perfil.' });
   }
 };
@@ -276,6 +286,9 @@ export const googleLogin = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Google login error:', error);
+    if (isPrismaUniqueConstraint(error)) {
+      return res.status(409).json({ success: false, error: 'Este email já está cadastrado.' });
+    }
     res.status(500).json({ success: false, error: 'Erro interno ao autenticar com Google.' });
   }
 };

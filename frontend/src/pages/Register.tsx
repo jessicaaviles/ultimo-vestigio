@@ -26,7 +26,7 @@ const Register: React.FC = () => {
 
   const shouldRetryAsFreshAccount = (message?: string) => {
     const normalized = String(message || '').toLowerCase();
-    return normalized.includes('perfil local não encontrado') || normalized.includes('perfil não encontrado');
+    return !normalized.includes('email já está cadastrado') && !normalized.includes('e-mail já está cadastrado');
   };
 
   const handleGoogleCredential = useCallback(async (credential: string) => {
