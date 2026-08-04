@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Loading from './components/Loading';
 import Layout from './components/Layout';
 import AmbientMusicPlayer from './components/AmbientMusicPlayer';
+import StartupSplash from './components/StartupSplash';
 import { SocketNotificationsBridge } from './contexts/SocketNotificationsBridge';
 import './App.css';
 
@@ -49,6 +50,7 @@ function App() {
       <div className="app-container">
         <BrowserRouter>
           <InvestigationProvider>
+            <StartupSplash />
             <SocketNotificationsBridge />
             <AmbientMusicPlayer />
             <Suspense fallback={<Loading message="Carregando página..." />}>

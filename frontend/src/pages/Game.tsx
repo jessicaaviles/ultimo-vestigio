@@ -63,19 +63,15 @@ const Game: React.FC = () => {
   const hintsMenuRef = useRef<HTMLDivElement>(null);
   const roomMenuRef = useRef<HTMLDivElement>(null);
   const turnAlertAudioRef = useRef<AudioContext | null>(null);
-  const vibrationPrimedRef = useRef(false);
 
   const triggerTurnVibration = useCallback(() => {
     const vibrate = navigator.vibrate?.bind(navigator);
     if (!vibrate) return false;
 
     vibrate(0);
-    const pattern = vibrationPrimedRef.current
-      ? [360, 120, 360, 120, 520]
-      : [520, 140, 520, 140, 650];
+    const pattern = [18, 24, 18];
     const firstTry = vibrate(pattern);
-    window.setTimeout(() => vibrate(pattern), 450);
-    window.setTimeout(() => vibrate([650]), 1200);
+    window.setTimeout(() => vibrate([14]), 240);
     return firstTry;
   }, []);
 
@@ -97,20 +93,20 @@ const Game: React.FC = () => {
       const now = audioContext.currentTime;
       const gain = audioContext.createGain();
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.08, now + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+      gain.gain.exponentialRampToValueAtTime(0.035, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
       gain.connect(audioContext.destination);
 
-      [0, 0.16].forEach((offset, index) => {
+      [0, 0.14].forEach((offset, index) => {
         const oscillator = audioContext.createOscillator();
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(index === 0 ? 660 : 880, now + offset);
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(index === 0 ? 523.25 : 659.25, now + offset);
         oscillator.connect(gain);
         oscillator.start(now + offset);
-        oscillator.stop(now + offset + 0.14);
+        oscillator.stop(now + offset + 0.1);
       });
 
-      window.setTimeout(() => gain.disconnect(), 520);
+      window.setTimeout(() => gain.disconnect(), 340);
     } catch {
       // Browsers may block audio until a user gesture; vibration still works.
     }
@@ -118,10 +114,9 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     const primeVibration = () => {
-      if (vibrationPrimedRef.current) return;
       const vibrate = navigator.vibrate?.bind(navigator);
       if (!vibrate) return;
-      vibrationPrimedRef.current = vibrate(8);
+      vibrate(8);
     };
 
     window.addEventListener('pointerdown', primeVibration, { passive: true });

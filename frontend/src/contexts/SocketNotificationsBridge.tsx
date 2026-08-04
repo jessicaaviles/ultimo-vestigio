@@ -12,7 +12,18 @@ export const SocketNotificationsBridge: React.FC = () => {
   const socket = useSocket();
   const location = useLocation();
   const { user } = useAuth();
-  const { setRoomsActivity, setUnreadMessages, refreshFriendInvites } = useNotifications();
+  const { setRoomsActivity, refreshFriendInvites } = useNotifications();
+
+  const shouldSurfaceRoomActivity = () => {
+    const path = location.pathname;
+    return !(path === '/lobby' || path === '/messages' || path.startsWith('/room/'));
+  };
+
+  const markRoomActivity = () => {
+    if (shouldSurfaceRoomActivity()) {
+      setRoomsActivity(true);
+    }
+  };
 
   useEffect(() => {
     if (!socket) return;
@@ -21,35 +32,36 @@ export const SocketNotificationsBridge: React.FC = () => {
       socket.emit('join_user', { userId });
     }
 
-    // Sinaliza nova atividade em sala quando o estado da sala é atualizado
-    // e o usuário NÃO está já na tela de salas
-    const onRoomStateUpdated = () => {
-      const isOnLobbyPage = location.pathname === '/lobby' || location.pathname.includes('/room/');
-      if (!isOnLobbyPage) {
-        setRoomsActivity(true);
-      }
-    };
-
-    // Convite direto para sala (futuro: backend pode emitir 'room_invited')
-    const onRoomInvited = () => {
-      setRoomsActivity(true);
-    };
-
-    // Nova mensagem recebida (futuro: backend pode emitir 'new_message')
-    const onNewMessage = (data: { count?: number }) => {
-      const isOnMessagesPage = location.pathname === '/messages';
-      if (!isOnMessagesPage) {
-        setUnreadMessages(data.count ?? 1);
-      }
-    };
+    // Eventos reais de jogo que representam novidade para quem está fora do fluxo ativo
+    const onGameStarted = () => markRoomActivity();
+    const onVoteStarted = () => markRoomActivity();
+    const onVoteClosed = () => markRoomActivity();
+    const onVoteTied = () => markRoomActivity();
+    const onQuestionProcessed = () => markRoomActivity();
+    const onQuestionNeedsReformulation = () => markRoomActivity();
+    const onQuestionRepeated = () => markRoomActivity();
+    const onClueUnlocked = () => markRoomActivity();
+    const onLocationUnlocked = () => markRoomActivity();
+    const onTheoriesRevealed = () => markRoomActivity();
+    const onRoomPaused = () => markRoomActivity();
+    const onRoomResumed = () => markRoomActivity();
 
     const onFriendInvitationChanged = () => {
       void refreshFriendInvites();
     };
 
-    socket.on('room_state_updated', onRoomStateUpdated);
-    socket.on('room_invited', onRoomInvited);
-    socket.on('new_message', onNewMessage);
+    socket.on('game_started', onGameStarted);
+    socket.on('vote_started', onVoteStarted);
+    socket.on('vote_closed', onVoteClosed);
+    socket.on('vote_tied', onVoteTied);
+    socket.on('question_processed', onQuestionProcessed);
+    socket.on('question_needs_reformulation', onQuestionNeedsReformulation);
+    socket.on('question_repeated', onQuestionRepeated);
+    socket.on('clue_unlocked', onClueUnlocked);
+    socket.on('location_unlocked', onLocationUnlocked);
+    socket.on('theories_revealed', onTheoriesRevealed);
+    socket.on('room_paused', onRoomPaused);
+    socket.on('room_resumed', onRoomResumed);
     socket.on('friend_invitation_received', onFriendInvitationChanged);
     socket.on('friend_invitation_sent', onFriendInvitationChanged);
     socket.on('friend_invitation_accepted', onFriendInvitationChanged);
@@ -58,9 +70,18 @@ export const SocketNotificationsBridge: React.FC = () => {
     socket.on('friendship_removed', onFriendInvitationChanged);
 
     return () => {
-      socket.off('room_state_updated', onRoomStateUpdated);
-      socket.off('room_invited', onRoomInvited);
-      socket.off('new_message', onNewMessage);
+      socket.off('game_started', onGameStarted);
+      socket.off('vote_started', onVoteStarted);
+      socket.off('vote_closed', onVoteClosed);
+      socket.off('vote_tied', onVoteTied);
+      socket.off('question_processed', onQuestionProcessed);
+      socket.off('question_needs_reformulation', onQuestionNeedsReformulation);
+      socket.off('question_repeated', onQuestionRepeated);
+      socket.off('clue_unlocked', onClueUnlocked);
+      socket.off('location_unlocked', onLocationUnlocked);
+      socket.off('theories_revealed', onTheoriesRevealed);
+      socket.off('room_paused', onRoomPaused);
+      socket.off('room_resumed', onRoomResumed);
       socket.off('friend_invitation_received', onFriendInvitationChanged);
       socket.off('friend_invitation_sent', onFriendInvitationChanged);
       socket.off('friend_invitation_accepted', onFriendInvitationChanged);
@@ -68,7 +89,7 @@ export const SocketNotificationsBridge: React.FC = () => {
       socket.off('friend_invitation_cancelled', onFriendInvitationChanged);
       socket.off('friendship_removed', onFriendInvitationChanged);
     };
-  }, [socket, location.pathname, refreshFriendInvites, setRoomsActivity, setUnreadMessages, user?.userId]);
+  }, [socket, location.pathname, refreshFriendInvites, setRoomsActivity, user?.userId]);
 
   return null;
 };

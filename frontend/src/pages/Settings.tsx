@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Accessibility,
@@ -26,8 +26,9 @@ const cycle = <T,>(values: T[], current: T) => values[(values.indexOf(current) +
 
 const Settings: React.FC = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const { settings, updateSetting, resetSettings } = useSettings();
+  const [confirmAction, setConfirmAction] = useState<'reset' | 'logout' | null>(null);
 
   const update = <K extends keyof typeof settings>(key: K, value: typeof settings[K]) => {
     updateSetting(key, value);
@@ -46,6 +47,18 @@ const Settings: React.FC = () => {
     await logout();
     navigate('/login', { replace: true });
   };
+
+  const accountInitials = useMemo(() => {
+    const source = user?.displayName || 'Investigador';
+    return source
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase())
+      .join('');
+  }, [user?.displayName]);
+
+  const accountSubtitle = user?.email || 'Conta sincronizada com seu progresso';
 
   const preferenceRows = [
     {
@@ -103,6 +116,24 @@ const Settings: React.FC = () => {
           <h1>Personalize sua experiência</h1>
           <p>Ajuste o jogo do seu jeito.</p>
         </div>
+      </section>
+
+      <section className="settings-section">
+        <span className="eyebrow">Conta</span>
+        <button className="settings-account-card" onClick={() => navigate('/profile')}>
+          <div className="settings-account-avatar">
+            {user?.photo ? (
+              <img src={user.photo} alt={user.displayName || 'Seu perfil'} />
+            ) : (
+              <span className="settings-account-initials">{accountInitials || 'UV'}</span>
+            )}
+          </div>
+          <span className="settings-account-copy">
+            <strong>{user?.displayName || 'Investigador'}</strong>
+            <span>{accountSubtitle}</span>
+          </span>
+          <ChevronRight size={17} />
+        </button>
       </section>
 
       <section className="settings-section">
@@ -178,13 +209,56 @@ const Settings: React.FC = () => {
         </div>
       </section>
 
-      <button className="settings-reset" onClick={resetSettings}>
+      <button className="settings-reset" onClick={() => setConfirmAction('reset')}>
         Restaurar configurações padrão
       </button>
 
-      <button className="settings-logout" onClick={handleLogout}>
+      <button className="settings-logout" onClick={() => setConfirmAction('logout')}>
         <LogOut size={17} /> Sair da conta
       </button>
+
+      {confirmAction && (
+        <div className="settings-confirm-backdrop" role="presentation" onClick={() => setConfirmAction(null)}>
+          <div
+            className="settings-confirm-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={confirmAction === 'reset' ? 'Confirmar restauração' : 'Confirmar saída da conta'}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="settings-confirm-modal-icon">
+              {confirmAction === 'reset' ? <ShieldCheck size={22} /> : <LogOut size={22} />}
+            </div>
+            <div>
+              <h2>{confirmAction === 'reset' ? 'Restaurar configurações?' : 'Sair da conta?'}</h2>
+              <p>
+                {confirmAction === 'reset'
+                  ? 'Isso vai voltar áudio, tema, acessibilidade e notificações para o padrão do jogo.'
+                  : 'Você será desconectado desta conta neste dispositivo.'}
+              </p>
+            </div>
+            <div className="settings-confirm-actions">
+              <button className="btn-secondary" onClick={() => setConfirmAction(null)}>
+                Cancelar
+              </button>
+              <button
+                className={confirmAction === 'reset' ? 'btn-danger settings-confirm-primary' : 'btn-danger settings-confirm-primary'}
+                onClick={async () => {
+                  if (confirmAction === 'reset') {
+                    resetSettings();
+                    setConfirmAction(null);
+                    return;
+                  }
+                  setConfirmAction(null);
+                  await handleLogout();
+                }}
+              >
+                {confirmAction === 'reset' ? 'Restaurar' : 'Sair'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

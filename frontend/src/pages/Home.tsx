@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowRight, Target, ArrowUpRight, Clock3, Users, Trophy, FileText, Crosshair
@@ -43,6 +43,7 @@ const Home: React.FC = () => {
   const [solvedCount, setSolvedCount] = useState<number | null>(null);
   const [featuredCases, setFeaturedCases] = useState<FeaturedCase[]>([]);
   const [activeInvestigation, setActiveInvestigation] = useState<ActiveInvestigation | null>(null);
+  const homeReadySignalSentRef = useRef(false);
   
   const mapCase = useCallback((item: any): FeaturedCase => {
     const minPlayers = Number(item.min_players) || 1;
@@ -104,6 +105,14 @@ const Home: React.FC = () => {
         .catch(() => undefined);
     }
   }, [authLoading, refresh, user?.userId]);
+
+  useEffect(() => {
+    if (homeReadySignalSentRef.current) return;
+    if (authLoading || profileLoading || casesLoading) return;
+    homeReadySignalSentRef.current = true;
+    window.dispatchEvent(new CustomEvent('ultimo-vestigio:home-ready'));
+    window.dispatchEvent(new CustomEvent('ultimo-vestigio:app-ready'));
+  }, [authLoading, casesLoading, profileLoading]);
 
   const loadCases = useCallback(async () => {
     setCasesLoading(true);
