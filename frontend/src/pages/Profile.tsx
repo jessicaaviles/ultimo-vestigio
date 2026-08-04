@@ -484,6 +484,11 @@ const Profile: React.FC = () => {
   };
 
   const image = preview || profile?.photo;
+  const aliasHelperColor = !aliasAvailable
+    ? '#f2b0a7'
+    : aliasStatus === 'Alias disponível.'
+      ? '#9fcf9f'
+      : 'var(--muted)';
   const stats = profile?.stats;
   const playedRoomsCount = stats?.playedRoomsCount ?? 0;
   const hostedRoomsCount = stats?.hostedRoomsCount ?? 0;
@@ -653,7 +658,7 @@ const Profile: React.FC = () => {
                   aria-label="Alias público"
                 />
               </div>
-              <span style={{ display: 'block', marginTop: 7, color: aliasAvailable ? 'var(--muted)' : '#f2b0a7', fontSize: 12 }}>
+              <span style={{ display: 'block', marginTop: 7, color: aliasHelperColor, fontSize: 12 }}>
                 {aliasChecking ? 'Verificando alias...' : aliasStatus || 'Use letras, números e underline.'}
               </span>
             </label>
