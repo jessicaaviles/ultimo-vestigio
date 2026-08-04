@@ -33,6 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [discoveredClueNotification, setDiscoveredClueNotification] = useState<{ title: string; desc: string } | null>(null);
   const [roomId, setRoomId] = useState<string | null>(() => localStorage.getItem('currentRoomId'));
   const [roomCode, setRoomCode] = useState<string | null>(() => localStorage.getItem('currentRoomCode'));
+  const [roomStatus, setRoomStatus] = useState<string | null>(() => localStorage.getItem('currentRoomStatus'));
   const [players, setPlayers] = useState<any[]>([]);
   const [joinCodeInput, setJoinCodeInput] = useState('');
   const [loadingLobby, setLoadingLobby] = useState(false);
@@ -55,9 +56,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const clearStaleRoom = () => {
       setRoomId(null);
       setRoomCode(null);
+      setRoomStatus(null);
       setPlayers([]);
       localStorage.removeItem('currentRoomId');
       localStorage.removeItem('currentRoomCode');
+      localStorage.removeItem('currentRoomStatus');
     };
     socket.emit('join_room', { roomId, userId });
 
@@ -70,6 +73,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       if (!stillInRoom) {
         clearStaleRoom();
         return;
+      }
+      const nextStatus = String(data?.status || '');
+      if (nextStatus) {
+        setRoomStatus(nextStatus);
+        localStorage.setItem('currentRoomStatus', nextStatus);
       }
       setPlayers(data.players || []);
       if (data.public_code) {
@@ -116,8 +124,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       if (res.success) {
         setRoomId(res.roomId);
         setRoomCode(res.publicCode);
+        setRoomStatus('LOBBY');
         localStorage.setItem('currentRoomId', res.roomId);
         localStorage.setItem('currentRoomCode', res.publicCode);
+        localStorage.setItem('currentRoomStatus', 'LOBBY');
       } else {
         setLobbyError(res.error || 'Erro ao criar sala.');
       }
@@ -141,8 +151,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         const cleanCode = joinCodeInput.toUpperCase();
         setRoomId(res.data.roomId);
         setRoomCode(cleanCode);
+        setRoomStatus(String(res.data.status || 'LOBBY'));
         localStorage.setItem('currentRoomId', res.data.roomId);
         localStorage.setItem('currentRoomCode', cleanCode);
+        localStorage.setItem('currentRoomStatus', String(res.data.status || 'LOBBY'));
         setJoinCodeInput('');
         const startedStatuses = new Set(['IN_PROGRESS', 'PAUSED', 'SOLVING', 'REVEAL']);
         if (startedStatuses.has(String(res.data.status || '').toUpperCase())) navigate(`/room/${res.data.roomId}/game`);
@@ -159,13 +171,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleLeaveRoom = () => {
     setRoomId(null);
     setRoomCode(null);
+    setRoomStatus(null);
     setPlayers([]);
     localStorage.removeItem('currentRoomId');
     localStorage.removeItem('currentRoomCode');
+    localStorage.removeItem('currentRoomStatus');
     // Se estiver em uma rota de sala específica (/room/.../game), navegar para a home
     if (location.pathname.includes('/room/')) {
       navigate('/');
     }
+  };
+
+  const handleReturnToRoom = () => {
+    const activeRoomId = roomId || localStorage.getItem('currentRoomId');
+    if (!activeRoomId) return;
+    const status = String(roomStatus || localStorage.getItem('currentRoomStatus') || '').toUpperCase();
+    const lobbyStatuses = new Set(['', 'LOBBY', 'CREATED', 'WAITING', 'READY']);
+    setLobbyOpen(false);
+    navigate(lobbyStatuses.has(status) ? `/room/${activeRoomId}/lobby` : `/room/${activeRoomId}/game`);
   };
 
   const handleNav = (route: string) => {
@@ -452,6 +475,30 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       <Copy size={12} />
                     </button>
                   </div>
+
+                  <button
+                    onClick={handleReturnToRoom}
+                    style={{
+                      width: '100%',
+                      minHeight: '42px',
+                      background: 'var(--accent-gold)',
+                      border: '1px solid rgba(245,214,129,0.55)',
+                      borderRadius: '8px',
+                      padding: '10px 12px',
+                      color: '#0A0D10',
+                      fontSize: '12px',
+                      fontWeight: 800,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    <LogIn size={14} /> Voltar para a sala
+                  </button>
 
                   <div style={{ maxHeight: '120px', overflowY: 'auto', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '8px' }}>
                     <div style={{ fontSize: '10px', color: 'var(--eyebrow-gold)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Investigadores Conectados ({players.length})</div>

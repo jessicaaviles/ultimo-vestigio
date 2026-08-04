@@ -90,6 +90,7 @@ const translations: Record<string, string> = {
   'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell. Analise todas as evidências e encontre a verdade.': "Investigate Clara Mendes' mysterious disappearance at the Blackwell family mansion. Analyze every piece of evidence and uncover the truth.",
   'Investigue o sumiço misterioso de Clara Mendes na mansão da família Blackwell.': "Investigate Clara Mendes' mysterious disappearance at the Blackwell family mansion.",
   'Investigador consistente': 'Consistent investigator',
+  'Investigadores Conectados': 'Connected investigators',
   'INVESTIGATOR FILE': 'INVESTIGATOR FILE',
   'Jornada concluída': 'Journey completed',
   'JORNADA CONCLUÍDA': 'JOURNEY COMPLETED',
@@ -139,6 +140,7 @@ const translations: Record<string, string> = {
   'Sair da conta?': 'Sign out?',
   'Sobre': 'About',
   'Sua rede': 'Your network',
+  'Sua Sala': 'Your room',
   'Suas estatísticas': 'Your statistics',
   'SUAS ESTATÍSTICAS': 'YOUR STATISTICS',
   'Seu histórico não pôde ser consultado agora.': 'Your history could not be checked right now.',
@@ -185,6 +187,7 @@ const translations: Record<string, string> = {
   'Use pelo menos 3 caracteres.': 'Use at least 3 characters.',
   'Verificando alias...': 'Checking alias...',
   'Ver todos': 'View all',
+  'Voltar para a sala': 'Return to room',
   'Versão do jogo': 'Game version',
   'Voz dos personagens': 'Character voices',
   'Você será desconectado desta conta neste dispositivo.': 'You will be signed out of this account on this device.',
@@ -211,6 +214,7 @@ const regexTranslations: Array<[RegExp, (match: RegExpMatchArray) => string]> = 
   [/^(\d+)\s+\/\s+(\d+)\s+sessões$/i, (match) => `${match[1]} / ${match[2]} sessions`],
   [/^(\d+)\s+\/\s+(\d+)\s+teorias$/i, (match) => `${match[1]} / ${match[2]} theories`],
   [/^(\d+)\s+acertos$/i, (match) => `${match[1]} correct`],
+  [/^Investigadores Conectados\s+\((\d+)\)$/i, (match) => `Connected investigators (${match[1]})`],
 ];
 
 const translatableAttrs = ['placeholder', 'aria-label', 'title'];
