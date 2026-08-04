@@ -109,7 +109,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setLobbyError('');
     try {
       const userId = localStorage.getItem('userId') || 'anon_user';
-      const userName = localStorage.getItem('userName') || 'Investigador';
+      const userName = localStorage.getItem('userName') || 'Agente';
       const caseId = 'blackwell'; // Caso padrão
       
       const res = await createRoom(caseId, userId, userName);
@@ -134,7 +134,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setLobbyError('');
     try {
       const userId = localStorage.getItem('userId') || 'anon_user';
-      const userName = localStorage.getItem('userName') || 'Investigador';
+      const userName = localStorage.getItem('userName') || 'Agente';
       
       const res = await joinRoom(joinCodeInput.toUpperCase(), userId, userName);
       if (res.success && res.data) {
@@ -289,7 +289,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             />
           </span>
           <span className="home-header-profile-copy">
-            <strong className="home-header-profile-name">{authUser?.displayName || 'Investigador'}</strong>
+            <strong className="home-header-profile-name">{authUser?.displayName || 'Agente'}</strong>
             <span className={`home-header-profile-status${authUser?.email ? ' home-header-profile-status--account' : ''}`}>
               {homeIdentityLabel}
             </span>
@@ -462,7 +462,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
                             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: p.connection_status === 'CONNECTED' ? '#48BB78' : '#A0AEC0' }} />
                             <span style={{ color: '#E2E8F0', fontWeight: isMe ? 600 : 400 }}>
-                              {p.display_name || p.user?.default_display_name || 'Investigador'} {isMe && '(Você)'}
+                              {p.display_name || p.user?.default_display_name || 'Agente'} {isMe && '(Você)'}
                             </span>
                           </div>
                         );

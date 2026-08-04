@@ -49,7 +49,7 @@ const Settings: React.FC = () => {
   };
 
   const accountInitials = useMemo(() => {
-    const source = user?.displayName || 'Investigador';
+    const source = user?.displayName || 'Agente';
     return source
       .split(' ')
       .filter(Boolean)
@@ -129,7 +129,7 @@ const Settings: React.FC = () => {
             )}
           </div>
           <span className="settings-account-copy">
-            <strong>{user?.displayName || 'Investigador'}</strong>
+            <strong>{user?.displayName || 'Agente'}</strong>
             <span>{accountSubtitle}</span>
           </span>
           <ChevronRight size={17} />

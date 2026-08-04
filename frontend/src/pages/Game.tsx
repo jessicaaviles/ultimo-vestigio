@@ -435,7 +435,7 @@ const Game: React.FC = () => {
     p.anonymous_user_id === item.askedBy
   ));
   const getPlayerPhoto = (player: any) => player?.user?.generated_profile_photo_data || player?.user?.profile_photo_data || null;
-  const getPlayerInitial = (player: any) => String(player?.display_name || 'Investigador').trim().charAt(0).toUpperCase() || 'I';
+  const getPlayerInitial = (player: any) => String(player?.display_name || 'Agente').trim().charAt(0).toUpperCase() || 'I';
 
   useEffect(() => {
     if (!timerSeconds || !activeTurn?.started_at) { setRemainingSeconds(null); return; }
@@ -500,7 +500,7 @@ const Game: React.FC = () => {
     const score = Math.round(Number(ev.score) || 0);
     return {
       ...ev,
-      authorName: author?.display_name || 'Investigador',
+      authorName: author?.display_name || 'Agente',
       authorAvatar: author?.user?.generated_profile_photo_data || author?.user?.profile_photo_data || null,
       score,
       xp: Math.max(25, Math.round(score * 2)),
@@ -700,7 +700,7 @@ const Game: React.FC = () => {
                     <div key={p.id} style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', borderRadius: '20px', border: `1px solid ${isActive ? 'var(--accent-gold)' : 'rgba(255,255,255,0.1)'}`, background: isActive ? 'rgba(184,153,83,0.15)' : 'rgba(255,255,255,0.04)' }}>
                       <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: isActive ? 'var(--accent-gold)' : 'rgba(255,255,255,0.2)' }} />
                       <span style={{ fontSize: '12px', color: isActive ? 'var(--accent-gold)' : 'rgba(255,255,255,0.6)', fontWeight: isActive ? 700 : 400 }}>
-                        {p.display_name || 'Investigador'}{isMe ? ' (você)' : ''}
+                        {p.display_name || 'Agente'}{isMe ? ' (você)' : ''}
                       </span>
                     </div>
                   );
@@ -727,7 +727,7 @@ const Game: React.FC = () => {
                       </div>
                       <div style={{ paddingLeft: '12px', borderLeft: '2px solid rgba(184,153,83,0.35)', minWidth: 0 }}>
                         <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.4px', fontWeight: 700, marginBottom: '4px' }}>
-                          {questionPlayer?.display_name || 'Investigador'}
+                          {questionPlayer?.display_name || 'Agente'}
                         </div>
                         <div style={{ fontWeight: 600, marginBottom: '6px', color: '#fff', fontSize: '14px', fontStyle: 'italic' }}>
                           "{item.question?.original_text || item.questionText}"

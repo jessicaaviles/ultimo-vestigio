@@ -725,7 +725,7 @@ io.on('connection', (socket) => {
 
       // Emissões de destravamento em tempo real
       if (aiResponse.unlockClue && aiResponse.clueIdToUnlock) {
-        io.to(roomId).emit('clue_unlocked', { clueId: aiResponse.clueIdToUnlock, discoveredAt: new Date().toISOString(), discoveredBy: currentPlayer?.display_name || 'Investigador' });
+        io.to(roomId).emit('clue_unlocked', { clueId: aiResponse.clueIdToUnlock, discoveredAt: new Date().toISOString(), discoveredBy: currentPlayer?.display_name || 'Agente' });
       }
       if (aiResponse.locationId) {
         io.to(roomId).emit('location_unlocked', { locationId: aiResponse.locationId });

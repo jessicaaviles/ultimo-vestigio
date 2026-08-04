@@ -14,7 +14,7 @@ const PORTRAIT_RESET_EMAILS = (process.env.PORTRAIT_RESET_EMAILS || 'jessica.avi
 
 const publicProfile = (user: any, stats?: any) => ({
   id: user.id,
-  displayName: user.default_display_name || 'Investigador',
+  displayName: user.default_display_name || 'Agente',
   bio: user.bio || '',
   active: user.profile_active,
   photo: user.generated_profile_photo_data || user.profile_photo_data || null,
@@ -77,7 +77,7 @@ export const updateProfile = async (req: Request, res: Response) => {
   const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
   const current = await prisma.anonymous_users.findUnique({ where: { id: userId } });
   if (!current || current.deleted_at) return res.status(404).json({ success: false, error: 'Profile not found' });
-  const cleanName = String(displayName ?? current.default_display_name ?? 'Investigador').trim().slice(0, 32);
+  const cleanName = String(displayName ?? current.default_display_name ?? 'Agente').trim().slice(0, 32);
   if (!cleanName) return res.status(400).json({ success: false, error: 'Display name is required' });
   if (bio !== undefined && String(bio).length > 280) return res.status(400).json({ success: false, error: 'Bio is too long' });
 

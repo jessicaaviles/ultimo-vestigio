@@ -95,7 +95,7 @@ const Register: React.FC = () => {
   return (
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div style={{ maxWidth: 400, margin: '0 auto' }}>
-        <span className="eyebrow">Novo investigador</span>
+        <span className="eyebrow">Novo acesso</span>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '0 0 24px' }}>Criar Conta</h1>
         <p style={{ color: 'var(--muted)', fontSize: 14, marginBottom: 24, lineHeight: 1.5 }}>
           Crie sua conta para participar das investigações e salvar seu progresso.
@@ -142,7 +142,7 @@ const Register: React.FC = () => {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
-            Nome de investigador
+            Nome de exibição
             <input className="input-field" type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={32} placeholder="Como você quer ser chamado?" required />
           </label>
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>

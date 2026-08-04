@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             localStorage.setItem('userId', validateRes.data.userId);
             setUser({
               userId: validateRes.data.userId,
-              displayName: profileRes.data.displayName || 'Investigador',
+              displayName: profileRes.data.displayName || 'Agente',
               email: validateRes.data.email || null,
               hasProfile: profileRes.data.hasProfile || false,
               onboardingCompleted: profileRes.data.onboardingCompleted || false,
@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setLoading(false);
             return {
               userId: validateRes.data.userId,
-              displayName: profileRes.data.displayName || 'Investigador',
+              displayName: profileRes.data.displayName || 'Agente',
               email: validateRes.data.email || null,
               hasProfile: profileRes.data.hasProfile || false,
               onboardingCompleted: profileRes.data.onboardingCompleted || false,
@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (profileRes.success) {
           setUser({
             userId: anonId,
-            displayName: profileRes.data.displayName || 'Investigador',
+            displayName: profileRes.data.displayName || 'Agente',
             email: null,
             hasProfile: profileRes.data.hasProfile || false,
             onboardingCompleted: profileRes.data.onboardingCompleted || false,
@@ -62,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setLoading(false);
           return {
             userId: anonId,
-            displayName: profileRes.data.displayName || 'Investigador',
+            displayName: profileRes.data.displayName || 'Agente',
             email: null,
             hasProfile: profileRes.data.hasProfile || false,
             onboardingCompleted: profileRes.data.onboardingCompleted || false,

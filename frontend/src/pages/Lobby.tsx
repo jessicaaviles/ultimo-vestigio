@@ -97,7 +97,7 @@ const Lobby: React.FC = () => {
       if (localName) return localName;
     }
     // Terceiro: dados incluídos via socket
-    return p.user?.default_display_name || p.display_name || 'Investigador';
+    return p.user?.default_display_name || p.display_name || 'Agente';
   };
 
   const getPlayerPhoto = (p: any) => {

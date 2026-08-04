@@ -53,7 +53,7 @@ const Onboarding: React.FC = () => {
     <div className="onboarding-page">
       <section className="onboarding-hero">
         <span className="eyebrow">Primeiro acesso</span>
-        <h1>Bem-vinda, investigadora.</h1>
+        <h1>Boas-vindas ao Último Vestígio.</h1>
         <p>Vamos mostrar o essencial para você entrar no jogo com segurança e sem manual técnico.</p>
         <div className="onboarding-cta-row">
           <button className="btn-primary" onClick={handleContinue} disabled={loading}>

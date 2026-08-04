@@ -60,7 +60,7 @@ export const register = async (req: Request, res: Response) => {
             email: normalizedEmail,
             password_hash: hashPassword(String(password)),
             auth_token_hash: authTokenHash,
-            default_display_name: displayName || existing.default_display_name || 'Investigador',
+            default_display_name: displayName || existing.default_display_name || 'Agente',
             profile_active: true,
             profile_photo_data: null,
             generated_profile_photo_data: null,
@@ -77,7 +77,7 @@ export const register = async (req: Request, res: Response) => {
             email: normalizedEmail,
             password_hash: hashPassword(String(password)),
             auth_token_hash: authTokenHash,
-            default_display_name: displayName || 'Investigador',
+            default_display_name: displayName || 'Agente',
           }
         });
 
@@ -252,7 +252,7 @@ export const googleLogin = async (req: Request, res: Response) => {
         data: {
           email,
           auth_token_hash: authTokenHash,
-          default_display_name: displayName || payload.name || user.default_display_name || 'Investigador',
+          default_display_name: displayName || payload.name || user.default_display_name || 'Agente',
           deleted_at: null,
           profile_active: true,
           password_hash: null,
@@ -277,7 +277,7 @@ export const googleLogin = async (req: Request, res: Response) => {
         device_token_hash: deviceTokenHash,
         email,
         auth_token_hash: authTokenHash,
-        default_display_name: displayName || payload.name || 'Investigador',
+        default_display_name: displayName || payload.name || 'Agente',
       },
     });
 

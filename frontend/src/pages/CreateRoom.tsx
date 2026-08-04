@@ -90,7 +90,7 @@ const CreateRoom: React.FC = () => {
           hostName = profileRes.data.displayName;
           localStorage.setItem('userName', hostName);
         } else {
-          hostName = 'Investigador';
+          hostName = 'Agente';
         }
       }
 

@@ -35,7 +35,7 @@ const Profile: React.FC = () => {
   const [authEmail, setAuthEmail] = useState<string | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState('Investigador');
+  const [name, setName] = useState('Agente');
   const [bio, setBio] = useState('');
   const [active, setActive] = useState(true);
   const [photoData, setPhotoData] = useState('');
@@ -474,7 +474,7 @@ const Profile: React.FC = () => {
           </div>
           <h1 style={{ margin: 0 }}>Último Vestígio</h1>
           <p style={{ color: '#94A3B8', maxWidth: 400 }}>
-            Crie sua conta para participar das investigações e salvar seu progresso como investigador.
+            Crie sua conta para participar das investigações e salvar seu progresso no jogo.
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
             <button className="btn-primary" onClick={() => navigate('/register')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -540,7 +540,7 @@ const Profile: React.FC = () => {
           <button className="btn-primary" onClick={save} disabled={saving}>
             {saving ? (photoData ? 'Gerando retrato…' : 'Salvando…') : 'Salvar perfil'}
           </button>
-          <button type="button" className="btn-secondary" onClick={() => { setEditing(false); setName(profile?.displayName || 'Investigador'); setBio(profile?.bio || ''); setPhotoData(''); setPreview(''); }} disabled={saving}>
+          <button type="button" className="btn-secondary" onClick={() => { setEditing(false); setName(profile?.displayName || 'Agente'); setBio(profile?.bio || ''); setPhotoData(''); setPreview(''); }} disabled={saving}>
             Cancelar
           </button>
         </div>

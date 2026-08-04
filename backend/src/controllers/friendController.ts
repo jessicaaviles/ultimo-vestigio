@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 const normalizeLookup = (value: unknown) => String(value || '').trim().toLowerCase();
 
 const baseFriendData = (friend: any) => ({
-  name: friend.default_display_name || 'Investigador',
+  name: friend.default_display_name || 'Agente',
   email: friend.email || '',
   handle: friend.email
     ? `@${friend.email.split('@')[0]}`

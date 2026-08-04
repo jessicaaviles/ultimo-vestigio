@@ -366,7 +366,7 @@ export const joinRoom = async (req: Request, res: Response) => {
         }
       },
       update: {
-        display_name: cleanName || user.default_display_name || 'Investigador',
+        display_name: cleanName || user.default_display_name || 'Agente',
         connection_status: 'CONNECTED',
         ready_status: isLobby && room.host_user_id !== userId ? 'NOT_READY' : 'READY',
         ...(shouldAssignTurnOrder ? { turn_order: nextTurnOrder } : {}),
@@ -377,7 +377,7 @@ export const joinRoom = async (req: Request, res: Response) => {
       create: {
         room_id: room.id,
         anonymous_user_id: userId,
-        display_name: cleanName || user.default_display_name || 'Investigador',
+        display_name: cleanName || user.default_display_name || 'Agente',
         is_host: room.host_user_id === userId,
         connection_status: 'CONNECTED',
         ready_status: isLobby && room.host_user_id !== userId ? 'NOT_READY' : 'READY',
