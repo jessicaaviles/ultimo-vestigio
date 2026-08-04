@@ -3,6 +3,7 @@ import crypto from 'crypto';
 
 const MAX_ALIAS_LENGTH = 24;
 const MIN_ALIAS_LENGTH = 3;
+const ALIAS_PATTERN = /^[a-z0-9_]{3,24}$/;
 
 export function normalizeAliasSource(value: unknown): string {
   const normalized = String(value || '')
@@ -18,6 +19,50 @@ export function normalizeAliasSource(value: unknown): string {
 
   if (normalized.length >= MIN_ALIAS_LENGTH) return normalized;
   return `investigador${normalized ? `_${normalized}` : ''}`.slice(0, MAX_ALIAS_LENGTH);
+}
+
+export function normalizeAliasInput(value: unknown): string {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/^@+/, '')
+    .replace(/[^a-z0-9_]/g, '')
+    .slice(0, MAX_ALIAS_LENGTH);
+}
+
+export function validateAlias(alias: string): string | null {
+  if (!alias) return 'Digite um alias.';
+  if (alias.length < MIN_ALIAS_LENGTH) return 'Use pelo menos 3 caracteres.';
+  if (alias.length > MAX_ALIAS_LENGTH) return 'Use no máximo 24 caracteres.';
+  if (!ALIAS_PATTERN.test(alias)) return 'Use apenas letras, números e underline.';
+  return null;
+}
+
+export async function getAliasAvailability(
+  prisma: PrismaClient,
+  aliasValue: unknown,
+  excludeUserId?: string
+) {
+  const alias = normalizeAliasInput(aliasValue);
+  const error = validateAlias(alias);
+  if (error) return { alias, available: false, error };
+
+  const existing = await prisma.anonymous_users.findFirst({
+    where: {
+      alias,
+      deleted_at: null,
+      ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
+    },
+    select: { id: true },
+  });
+
+  return {
+    alias,
+    available: !existing,
+    error: existing ? 'Esse alias já está em uso.' : null,
+  };
 }
 
 export async function generateUniqueAlias(

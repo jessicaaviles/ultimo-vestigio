@@ -1,8 +1,9 @@
 import express from 'express';
-import { completeOnboarding, deleteProfile, getProfile, resetCaseProgress, resetPortraitGenerations, updateProfile } from '../controllers/profileController';
+import { checkAliasAvailability, completeOnboarding, deleteProfile, getProfile, resetCaseProgress, resetPortraitGenerations, updateProfile } from '../controllers/profileController';
 
 const router = express.Router();
 router.get('/profiles/:userId', getProfile);
+router.get('/profiles/:userId/alias/check', checkAliasAvailability);
 router.put('/profiles/:userId', updateProfile);
 router.delete('/profiles/:userId', deleteProfile);
 router.post('/profiles/:userId/onboarding-complete', completeOnboarding);

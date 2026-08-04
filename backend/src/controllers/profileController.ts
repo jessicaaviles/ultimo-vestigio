@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import { generateProfilePortrait } from '../services/profilePortrait';
 import { hashToken } from '../security/secrets';
-import { ensureUserAlias } from '../services/userAlias';
+import { ensureUserAlias, getAliasAvailability, normalizeAliasInput } from '../services/userAlias';
 
 const prisma = new PrismaClient();
 
@@ -77,13 +77,20 @@ export const getProfile = async (req: Request, res: Response) => {
 };
 
 export const updateProfile = async (req: Request, res: Response) => {
-  const { displayName, bio, active, photoData, generatePortrait = true } = req.body;
+  const { displayName, alias, bio, active, photoData, generatePortrait = true } = req.body;
   const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
   const current = await prisma.anonymous_users.findUnique({ where: { id: userId } });
   if (!current || current.deleted_at) return res.status(404).json({ success: false, error: 'Profile not found' });
   const cleanName = String(displayName ?? current.default_display_name ?? 'Agente').trim().slice(0, 32);
   if (!cleanName) return res.status(400).json({ success: false, error: 'Display name is required' });
   if (bio !== undefined && String(bio).length > 280) return res.status(400).json({ success: false, error: 'Bio is too long' });
+  const cleanAlias = alias !== undefined ? normalizeAliasInput(alias) : current.alias;
+  if (alias !== undefined) {
+    const availability = await getAliasAvailability(prisma, cleanAlias, current.id);
+    if (!availability.available) {
+      return res.status(400).json({ success: false, error: availability.error || 'Alias indisponível.', alias: availability.alias });
+    }
+  }
 
   if (photoData) {
     if (!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(String(photoData)) || Buffer.byteLength(String(photoData).split(',')[1], 'base64') > 4 * 1024 * 1024)
@@ -106,6 +113,7 @@ export const updateProfile = async (req: Request, res: Response) => {
     where: { id: current.id },
     data: {
       default_display_name: cleanName,
+      alias: cleanAlias || undefined,
       bio: String(bio ?? current.bio ?? '').trim().slice(0, 280),
       profile_active: active !== false,
       profile_photo_data: photoData ? String(photoData) : undefined,
@@ -132,6 +140,20 @@ export const updateProfile = async (req: Request, res: Response) => {
   }
 
   res.json({ success: true, portraitStatus, data: publicProfile(user) });
+};
+
+export const checkAliasAvailability = async (req: Request, res: Response) => {
+  try {
+    const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
+    const user = await prisma.anonymous_users.findUnique({ where: { id: userId } });
+    if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Profile not found' });
+
+    const availability = await getAliasAvailability(prisma, req.query.alias, user.id);
+    res.json({ success: true, data: availability });
+  } catch (error) {
+    console.error('Error checking alias:', error);
+    res.status(500).json({ success: false, error: 'Não foi possível validar o alias.' });
+  }
 };
 
 export const deleteProfile = async (req: Request, res: Response) => {

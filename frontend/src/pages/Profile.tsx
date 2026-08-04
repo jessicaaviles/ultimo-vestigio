@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowLeft, Camera, Check, Download, Edit3, LogOut, Mail, Trash2, Upload, UserPlus, X, Medal, Shield, Search, Star, Trophy, Lock, FileText, Crosshair, RotateCcw } from 'lucide-react';
-import { getProfile, updateProfile, deleteProfile, authValidate, authLogout, resetProfilePortraitGenerations } from '../services/api';
+import { checkProfileAlias, getProfile, updateProfile, deleteProfile, authValidate, authLogout, resetProfilePortraitGenerations } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
 import { applyProgressReset } from '../utils/progressReset';
@@ -37,6 +37,10 @@ const Profile: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('Agente');
+  const [alias, setAlias] = useState('');
+  const [aliasStatus, setAliasStatus] = useState('');
+  const [aliasAvailable, setAliasAvailable] = useState(true);
+  const [aliasChecking, setAliasChecking] = useState(false);
   const [bio, setBio] = useState('');
   const [active, setActive] = useState(true);
   const [photoData, setPhotoData] = useState('');
@@ -146,6 +150,7 @@ const Profile: React.FC = () => {
             const visibleProfile = applyProgressReset(profileRes.data, res.data.userId);
             setProfile(visibleProfile);
             setName(visibleProfile.displayName);
+            setAlias(visibleProfile.alias || '');
             localStorage.setItem('userName', visibleProfile.displayName);
             setBio(visibleProfile.bio);
             setActive(visibleProfile.active);
@@ -165,6 +170,49 @@ const Profile: React.FC = () => {
       }
     })();
   }, [authToken]);
+
+  useEffect(() => {
+    if (!editing || !profile?.id) return;
+    const normalized = alias.trim().replace(/^@+/, '').toLowerCase();
+    if (!normalized) {
+      setAliasAvailable(false);
+      setAliasStatus('Digite um alias.');
+      return;
+    }
+    if (normalized === profile.alias) {
+      setAliasAvailable(true);
+      setAliasStatus('Alias atual.');
+      return;
+    }
+
+    setAliasChecking(true);
+    setAliasStatus('Verificando alias...');
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const response = await checkProfileAlias(profile.id, normalized);
+          if (response.success) {
+            setAlias(response.data.alias);
+            setAliasAvailable(Boolean(response.data.available));
+            setAliasStatus(response.data.available ? 'Alias disponível.' : response.data.error || 'Alias indisponível.');
+          } else {
+            setAliasAvailable(false);
+            setAliasStatus(response.error || 'Não foi possível validar o alias.');
+          }
+        } catch {
+          setAliasAvailable(false);
+          setAliasStatus('Não foi possível validar o alias.');
+        } finally {
+          setAliasChecking(false);
+        }
+      })();
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timer);
+      setAliasChecking(false);
+    };
+  }, [alias, editing, profile?.alias, profile?.id]);
 
   const handleLogout = async () => {
     if (authToken) await authLogout(authToken);
@@ -249,6 +297,7 @@ const Profile: React.FC = () => {
           const visibleProfile = applyProgressReset(profileRes.data, userId);
           setProfile(visibleProfile);
           setName(visibleProfile.displayName);
+          setAlias(visibleProfile.alias || '');
           setBio(visibleProfile.bio);
           setActive(visibleProfile.active);
           if (visibleProfile.hasGeneratedPortrait) {
@@ -274,6 +323,10 @@ const Profile: React.FC = () => {
   const save = async (event?: FormEvent) => {
     if (event) event.preventDefault();
     if (!profile?.id || !authToken) return;
+    if (!aliasAvailable || aliasChecking) {
+      setStatus(aliasStatus || 'Escolha um alias disponível.');
+      return;
+    }
     const hasPhoto = Boolean(photoData || preview);
     setSaving(true);
     setStatus(hasPhoto ? 'Gerando retrato…' : 'Salvando perfil…');
@@ -284,13 +337,14 @@ const Profile: React.FC = () => {
     let keepPortraitLoading = false;
     try {
       const response = await updateProfile(profile.id, {
-        displayName: name, bio, active,
+        displayName: name, alias, bio, active,
         photoData: photoData || undefined,
         generatePortrait: Boolean(photoData),
       });
       if (!response.success) throw new Error(response.error);
       setProfile(response.data);
       setName(response.data.displayName);
+      setAlias(response.data.alias || '');
       localStorage.setItem('userName', response.data.displayName);
       setBio(response.data.bio);
       setActive(response.data.active);
@@ -338,13 +392,14 @@ const Profile: React.FC = () => {
       let keepPortraitLoading = false;
       try {
         const response = await updateProfile(profile.id, {
-          displayName: name, bio, active,
+          displayName: name, alias, bio, active,
           photoData: value,
           generatePortrait: true,
         });
         if (!response.success) throw new Error(response.error);
         setProfile(response.data);
         setName(response.data.displayName);
+        setAlias(response.data.alias || '');
         setBio(response.data.bio);
         setActive(response.data.active);
         setPhotoData('');
@@ -418,8 +473,11 @@ const Profile: React.FC = () => {
   const startEditing = () => {
     if (profile) {
       setName(profile.displayName);
+      setAlias(profile.alias || '');
       setBio(profile.bio);
       setActive(profile.active);
+      setAliasAvailable(true);
+      setAliasStatus('');
     }
     setEditing(true);
     setStatus('');
@@ -576,10 +634,29 @@ const Profile: React.FC = () => {
           ) : (
             <h1 style={{ margin: '0 0 5px', lineHeight: 1.2, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{profile?.displayName || name}</h1>
           )}
-          {profile?.alias && (
+          {!editing && profile?.alias && (
             <div style={{ margin: '0 0 10px', color: 'var(--gold-soft)', fontSize: 13, fontWeight: 700, letterSpacing: '.08em' }}>
               @{profile.alias}
             </div>
+          )}
+          {editing && (
+            <label style={{ display: 'block', margin: '4px 0 12px', maxWidth: 440 }}>
+              <span className="eyebrow" style={{ display: 'block', marginBottom: 8 }}>Alias público</span>
+              <div style={{ display: 'flex', alignItems: 'center', border: `1px solid ${aliasAvailable ? 'rgba(245,214,129,.42)' : 'rgba(220,92,78,.7)'}`, borderRadius: 8, background: 'rgba(7,10,12,.34)', overflow: 'hidden' }}>
+                <span style={{ color: 'var(--gold-soft)', paddingLeft: 14, fontWeight: 800 }}>@</span>
+                <input
+                  value={alias}
+                  onChange={(event) => setAlias(event.target.value.replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 24))}
+                  maxLength={24}
+                  required
+                  style={{ flex: 1, minWidth: 0, height: 44, border: 'none', outline: 'none', background: 'transparent', color: '#F8F9FA', padding: '0 14px 0 4px', fontSize: 14, fontWeight: 700, letterSpacing: '.04em' }}
+                  aria-label="Alias público"
+                />
+              </div>
+              <span style={{ display: 'block', marginTop: 7, color: aliasAvailable ? 'var(--muted)' : '#f2b0a7', fontSize: 12 }}>
+                {aliasChecking ? 'Verificando alias...' : aliasStatus || 'Use letras, números e underline.'}
+              </span>
+            </label>
           )}
           {editing ? (
             <textarea ref={bioInputRef} value={bio} onChange={(e) => { setBio(e.target.value); const el = e.target; el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }} maxLength={280} rows={1} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, margin: 0, padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', resize: 'none', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box', overflow: 'hidden' }} />
@@ -598,10 +675,10 @@ const Profile: React.FC = () => {
 
       {editing && (
         <div style={{ display: 'flex', gap: 12 }}>
-          <button className="btn-primary" onClick={save} disabled={saving}>
+          <button className="btn-primary" onClick={save} disabled={saving || aliasChecking || !aliasAvailable}>
             {saving ? (photoData ? 'Gerando retrato…' : 'Salvando…') : 'Salvar perfil'}
           </button>
-          <button type="button" className="btn-secondary" onClick={() => { setEditing(false); setName(profile?.displayName || 'Agente'); setBio(profile?.bio || ''); setPhotoData(''); setPreview(''); }} disabled={saving}>
+          <button type="button" className="btn-secondary" onClick={() => { setEditing(false); setName(profile?.displayName || 'Agente'); setAlias(profile?.alias || ''); setAliasAvailable(true); setAliasStatus(''); setBio(profile?.bio || ''); setPhotoData(''); setPreview(''); }} disabled={saving}>
             Cancelar
           </button>
         </div>

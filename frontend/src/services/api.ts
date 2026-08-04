@@ -81,8 +81,14 @@ export const getProfile = async (userId: string) => {
   return res.json();
 };
 
-export const updateProfile = async (userId: string, payload: { displayName: string; bio: string; active: boolean; photoData?: string; generatePortrait: boolean }) => {
+export const updateProfile = async (userId: string, payload: { displayName: string; alias?: string; bio: string; active: boolean; photoData?: string; generatePortrait: boolean }) => {
   const res = await apiFetch(`${API_URL}/profiles/${encodeURIComponent(userId)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  return res.json();
+};
+
+export const checkProfileAlias = async (userId: string, alias: string) => {
+  const params = new URLSearchParams({ alias });
+  const res = await apiFetch(`${API_URL}/profiles/${encodeURIComponent(userId)}/alias/check?${params.toString()}`, { cache: 'no-store' });
   return res.json();
 };
 
