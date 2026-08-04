@@ -679,7 +679,7 @@ const Profile: React.FC = () => {
 
 
       {editing && (
-        <div style={{ display: 'flex', gap: 12 }}>
+        <div className="profile-edit-actions">
           <button className="btn-primary" onClick={save} disabled={saving || aliasChecking || !aliasAvailable}>
             {saving ? (photoData ? 'Gerando retrato…' : 'Salvando…') : 'Salvar perfil'}
           </button>
