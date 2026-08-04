@@ -689,8 +689,8 @@
   .settings-hero { min-height: 276px; margin-top: -76px; padding-top: calc(100px + env(safe-area-inset-top)); background-position: center top; }
   .settings-hero h1 { max-width: 330px; }
   .settings-row-value { max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
-  .friends-page { margin-top: -76px; margin-bottom: calc(-92px - env(safe-area-inset-bottom)); padding-top: calc(100px + env(safe-area-inset-top)); padding-bottom: calc(116px + env(safe-area-inset-bottom)); background-attachment: scroll; }
-  .friends-hero { padding-top: 0; }
+  .friends-page { margin-top: -76px; margin-bottom: calc(-92px - env(safe-area-inset-bottom)); padding-top: 0; padding-bottom: calc(116px + env(safe-area-inset-bottom)); background-attachment: scroll; }
+  .friends-hero { min-height: 352px; padding-top: calc(100px + env(safe-area-inset-top)); background-position: center top; }
   .friends-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .friends-summary > div { min-height: 92px; border-right: 1px solid rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.08); }
   .friends-summary > div:nth-child(even) { border-right: 0; }
