@@ -173,7 +173,7 @@ const walk = (root: ParentNode, language: 'pt-BR' | 'en') => {
 };
 
 export const applyDocumentLanguage = (selectedLanguage: string) => {
-  if (typeof document === 'undefined') return;
+  if (typeof document === 'undefined' || !document.body) return;
   const language = selectedLanguage === 'English' ? 'en' : 'pt-BR';
 
   observer?.disconnect();
@@ -190,16 +190,12 @@ export const applyDocumentLanguage = (selectedLanguage: string) => {
           walk(node as ParentNode, language);
         }
       });
-      if (mutation.type === 'characterData' && mutation.target.nodeType === Node.TEXT_NODE) {
-        translateTextNode(mutation.target as Text);
-      }
     });
     applying = false;
   });
 
   observer.observe(document.body, {
     childList: true,
-    characterData: true,
     subtree: true,
   });
 };
