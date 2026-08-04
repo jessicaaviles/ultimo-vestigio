@@ -91,10 +91,10 @@ export const updateProfile = async (req: Request, res: Response) => {
   }
 
   const shouldGeneratePortrait = Boolean(photoData && generatePortrait);
-  const portraitStatus = current.generated_profile_photo_data
-    ? 'READY'
-    : shouldGeneratePortrait
-      ? 'GENERATING'
+  const portraitStatus = shouldGeneratePortrait
+    ? 'GENERATING'
+    : current.generated_profile_photo_data
+      ? 'READY'
       : 'NOT_REQUESTED';
 
   // Save profile data immediately

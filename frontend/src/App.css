@@ -731,7 +731,7 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes portrait-pulse { 0% { box-shadow: 0 0 0 0 rgba(184,153,83,.5); } 70% { box-shadow: 0 0 0 16px rgba(184,153,83,0); } 100% { box-shadow: 0 0 0 0 rgba(184,153,83,0); } }
 .profile-avatar--generating { animation: portrait-pulse 1.6s ease-in-out infinite; position: relative; }
-.profile-avatar-spinner { position: absolute; inset: 0; border-radius: 50%; border: 3px solid rgba(184,153,83,.25); border-top-color: var(--gold-soft); animation: spin .8s linear infinite; }
+.profile-avatar-spinner { position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: 50%; border: 3px solid rgba(184,153,83,.25); border-top-color: var(--gold-soft); animation: spin .8s linear infinite; }
 
 .loading-page {
   min-height: 100vh;
