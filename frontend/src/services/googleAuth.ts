@@ -13,10 +13,32 @@ type SocialLoginModule = typeof import('@capgo/capacitor-social-login');
 
 const GOOGLE_SCRIPT_ID = 'google-gis-script';
 const isWebPlatform = () => Capacitor.getPlatform() === 'web';
+let googleIdentityScriptPromise: Promise<void> | null = null;
+
+const googleIdentityIsReady = () => Boolean(window.google?.accounts?.id);
+
+const waitForGoogleIdentity = async () => {
+  const startedAt = Date.now();
+  while (!googleIdentityIsReady()) {
+    if (Date.now() - startedAt > 5000) {
+      throw new Error('Google Identity Services carregou, mas não ficou disponível na página.');
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+  }
+};
 
 const loadGoogleIdentityScript = async () => {
-  if (!document.getElementById(GOOGLE_SCRIPT_ID)) {
-    await new Promise<void>((resolve, reject) => {
+  if (googleIdentityIsReady()) return;
+
+  if (!googleIdentityScriptPromise) {
+    googleIdentityScriptPromise = new Promise<void>((resolve, reject) => {
+      const existingScript = document.getElementById(GOOGLE_SCRIPT_ID) as HTMLScriptElement | null;
+      if (existingScript) {
+        resolve();
+        existingScript.addEventListener('error', () => reject(new Error('Falha ao carregar o Google Identity Services.')), { once: true });
+        return;
+      }
+
       const script = document.createElement('script');
       script.id = GOOGLE_SCRIPT_ID;
       script.src = 'https://accounts.google.com/gsi/client';
@@ -27,6 +49,9 @@ const loadGoogleIdentityScript = async () => {
       document.body.appendChild(script);
     });
   }
+
+  await googleIdentityScriptPromise;
+  await waitForGoogleIdentity();
 };
 
 export const initializeWebGoogleButton = async (
@@ -37,7 +62,13 @@ export const initializeWebGoogleButton = async (
 ) => {
   await loadGoogleIdentityScript();
 
-  window.google?.accounts.id.initialize({
+  if (!googleIdentityIsReady()) {
+    throw new Error('Google Identity Services indisponível.');
+  }
+
+  container.replaceChildren();
+
+  window.google.accounts.id.initialize({
     client_id: clientId,
     callback: (response: { credential?: string }) => {
       if (response?.credential) {
@@ -47,7 +78,7 @@ export const initializeWebGoogleButton = async (
     cancel_on_tap_outside: false,
   });
 
-  window.google?.accounts.id.renderButton(container, {
+  window.google.accounts.id.renderButton(container, {
     theme: 'outline',
     size: 'large',
     text: mode === 'signin' ? 'signin_with' : 'signup_with',

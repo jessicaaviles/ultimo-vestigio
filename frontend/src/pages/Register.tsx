@@ -20,6 +20,8 @@ const Register: React.FC = () => {
   const location = useLocation();
   const returnUrl = new URLSearchParams(location.search).get('return') || '';
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const googleConfigured = Boolean(googleClientId);
   const isWebPlatform = Capacitor.getPlatform() === 'web';
 
   const handleGoogleCredential = useCallback(async (credential: string) => {
@@ -82,14 +84,16 @@ const Register: React.FC = () => {
   };
 
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     const container = googleButtonRef.current;
-    if (!clientId || !container) return;
+    if (!googleClientId || !container) return;
 
     if (isWebPlatform) {
-      void initializeWebGoogleButton(container, clientId, 'signup', handleGoogleCredential);
+      void initializeWebGoogleButton(container, googleClientId, 'signup', handleGoogleCredential)
+        .catch((err) => {
+          setError(err instanceof Error ? err.message : 'Erro ao carregar cadastro com Google.');
+        });
     }
-  }, [handleGoogleCredential, isWebPlatform]);
+  }, [googleClientId, handleGoogleCredential, isWebPlatform]);
 
   return (
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -100,7 +104,7 @@ const Register: React.FC = () => {
           Crie sua conta para participar das investigações e salvar seu progresso.
         </p>
 
-        {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+        {googleConfigured ? (
           <>
             {isWebPlatform ? (
               <div ref={googleButtonRef} style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }} />
@@ -133,6 +137,10 @@ const Register: React.FC = () => {
               <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
             </div>
           </>
+        ) : (
+          <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>
+            Cadastro com Google ainda não foi configurado neste ambiente.
+          </p>
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

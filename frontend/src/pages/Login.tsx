@@ -16,6 +16,8 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const googleConfigured = Boolean(googleClientId);
   const isWebPlatform = Capacitor.getPlatform() === 'web';
 
   const handleGoogleCredential = useCallback(async (credential: string) => {
@@ -74,14 +76,16 @@ const Login: React.FC = () => {
   };
 
   useEffect(() => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     const container = googleButtonRef.current;
-    if (!clientId || !container) return;
+    if (!googleClientId || !container) return;
 
     if (isWebPlatform) {
-      void initializeWebGoogleButton(container, clientId, 'signin', handleGoogleCredential);
+      void initializeWebGoogleButton(container, googleClientId, 'signin', handleGoogleCredential)
+        .catch((err) => {
+          setError(err instanceof Error ? err.message : 'Erro ao carregar login com Google.');
+        });
     }
-  }, [handleGoogleCredential, isWebPlatform]);
+  }, [googleClientId, handleGoogleCredential, isWebPlatform]);
 
   return (
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -89,7 +93,7 @@ const Login: React.FC = () => {
         <span className="eyebrow">Acesso</span>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, margin: '0 0 24px' }}>Entrar</h1>
 
-        {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+        {googleConfigured ? (
           <>
             {isWebPlatform ? (
               <div ref={googleButtonRef} style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }} />
@@ -122,6 +126,10 @@ const Login: React.FC = () => {
               <div style={{ flex: 1, height: 1, background: 'var(--line)' }} />
             </div>
           </>
+        ) : (
+          <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 24 }}>
+            Login com Google ainda não foi configurado neste ambiente.
+          </p>
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

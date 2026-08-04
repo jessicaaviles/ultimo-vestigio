@@ -3,7 +3,12 @@ import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const googleClientIds = String(process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_WEB_CLIENT_ID || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+
+const googleClient = new OAuth2Client();
 
 const prisma = new PrismaClient();
 
@@ -156,9 +161,16 @@ export const googleLogin = async (req: Request, res: Response) => {
     const { credential, displayName } = req.body;
     if (!credential) return res.status(400).json({ success: false, error: 'Credencial do Google é obrigatória.' });
 
+    if (googleClientIds.length === 0) {
+      return res.status(500).json({
+        success: false,
+        error: 'Login com Google não configurado no servidor. Defina GOOGLE_CLIENT_ID (ou GOOGLE_WEB_CLIENT_ID) no ambiente do backend.',
+      });
+    }
+
     const ticket = await googleClient.verifyIdToken({
       idToken: String(credential),
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: googleClientIds,
     });
     const payload = ticket.getPayload();
     if (!payload || !payload.email) return res.status(401).json({ success: false, error: 'Token do Google inválido.' });
