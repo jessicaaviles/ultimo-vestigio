@@ -19,6 +19,10 @@ export async function ensureAuthSchema(prisma: PrismaClient) {
       ADD COLUMN IF NOT EXISTS "deleted_at" TIMESTAMP(3);
   `);
 
+  await ensureFriendshipSchema(prisma);
+}
+
+export async function ensureFriendshipSchema(prisma: PrismaClient) {
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "anonymous_user_friendships" (
       "id" TEXT NOT NULL,
@@ -29,13 +33,19 @@ export async function ensureAuthSchema(prisma: PrismaClient) {
       "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT "anonymous_user_friendships_pkey" PRIMARY KEY ("id")
     );
+  `);
 
+  await prisma.$executeRawUnsafe(`
     CREATE UNIQUE INDEX IF NOT EXISTS "anonymous_user_friendships_requester_id_addressee_id_key"
       ON "anonymous_user_friendships"("requester_id", "addressee_id");
+  `);
 
+  await prisma.$executeRawUnsafe(`
     CREATE INDEX IF NOT EXISTS "anonymous_user_friendships_addressee_id_idx"
       ON "anonymous_user_friendships"("addressee_id");
+  `);
 
+  await prisma.$executeRawUnsafe(`
     DO $$
     BEGIN
       IF NOT EXISTS (

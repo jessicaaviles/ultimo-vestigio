@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { getSocketServer } from '../realtime/socketHub';
+import { ensureFriendshipSchema } from '../db/authSchema';
 
 const prisma = new PrismaClient();
 
@@ -68,11 +69,12 @@ const emitFriendEvent = (userId: string, event: string, payload: object) => {
 
 export const listFriends = async (req: Request, res: Response) => {
   try {
+    await ensureFriendshipSchema(prisma);
     const userId = String(req.query.userId || '');
-    if (!userId) return res.status(400).json({ success: false, error: 'User is required' });
+    if (!userId) return res.status(400).json({ success: false, error: 'Usuário não informado.' });
 
     const user = await prisma.anonymous_users.findUnique({ where: { id: userId } });
-    if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'User not found' });
+    if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Sua conta não foi encontrada.' });
 
     const friendships = await prisma.anonymous_user_friendships.findMany({
       where: {
@@ -90,17 +92,18 @@ export const listFriends = async (req: Request, res: Response) => {
     res.json({ success: true, data: { friends } });
   } catch (error) {
     console.error('Error listing friends:', error);
-    res.status(500).json({ success: false, error: 'Could not list friends' });
+    res.status(500).json({ success: false, error: 'Não foi possível carregar sua rede de amigos.' });
   }
 };
 
 export const listFriendInvitations = async (req: Request, res: Response) => {
   try {
+    await ensureFriendshipSchema(prisma);
     const userId = String(req.query.userId || '');
-    if (!userId) return res.status(400).json({ success: false, error: 'User is required' });
+    if (!userId) return res.status(400).json({ success: false, error: 'Usuário não informado.' });
 
     const user = await prisma.anonymous_users.findUnique({ where: { id: userId } });
-    if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'User not found' });
+    if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Sua conta não foi encontrada.' });
 
     const invitations = await prisma.anonymous_user_friendships.findMany({
       where: {
@@ -117,12 +120,13 @@ export const listFriendInvitations = async (req: Request, res: Response) => {
     res.json({ success: true, data: { invitations: data } });
   } catch (error) {
     console.error('Error listing invitations:', error);
-    res.status(500).json({ success: false, error: 'Could not list invitations' });
+    res.status(500).json({ success: false, error: 'Não foi possível carregar seus convites.' });
   }
 };
 
 export const addFriend = async (req: Request, res: Response) => {
   try {
+    await ensureFriendshipSchema(prisma);
     const userId = String(req.body.userId || '');
     const lookup = normalizeLookup(req.body.lookup);
     const lookupHandle = normalizeHandle(lookup);
@@ -219,9 +223,10 @@ export const addFriend = async (req: Request, res: Response) => {
 
 export const acceptFriendInvitation = async (req: Request, res: Response) => {
   try {
+    await ensureFriendshipSchema(prisma);
     const userId = String(req.body.userId || req.query.userId || '');
     const friendshipId = String(req.params.friendshipId || '');
-    if (!userId || !friendshipId) return res.status(400).json({ success: false, error: 'User and invitation are required' });
+    if (!userId || !friendshipId) return res.status(400).json({ success: false, error: 'Convite não informado.' });
 
     const invitation = await prisma.anonymous_user_friendships.findUnique({
       where: { id: friendshipId },
@@ -229,7 +234,7 @@ export const acceptFriendInvitation = async (req: Request, res: Response) => {
     });
 
     if (!invitation || invitation.status !== 'PENDING' || invitation.addressee_id !== userId) {
-      return res.status(404).json({ success: false, error: 'Invitation not found' });
+      return res.status(404).json({ success: false, error: 'Convite não encontrado.' });
     }
 
     const accepted = await prisma.anonymous_user_friendships.update({
@@ -244,19 +249,20 @@ export const acceptFriendInvitation = async (req: Request, res: Response) => {
     res.json({ success: true, data: { friend: publicFriend } });
   } catch (error) {
     console.error('Error accepting friend invitation:', error);
-    res.status(500).json({ success: false, error: 'Could not accept invitation' });
+    res.status(500).json({ success: false, error: 'Não foi possível aceitar o convite.' });
   }
 };
 
 export const declineFriendInvitation = async (req: Request, res: Response) => {
   try {
+    await ensureFriendshipSchema(prisma);
     const userId = String(req.body.userId || req.query.userId || '');
     const friendshipId = String(req.params.friendshipId || '');
-    if (!userId || !friendshipId) return res.status(400).json({ success: false, error: 'User and invitation are required' });
+    if (!userId || !friendshipId) return res.status(400).json({ success: false, error: 'Convite não informado.' });
 
     const invitation = await prisma.anonymous_user_friendships.findUnique({ where: { id: friendshipId } });
     if (!invitation || invitation.status !== 'PENDING' || (invitation.requester_id !== userId && invitation.addressee_id !== userId)) {
-      return res.status(404).json({ success: false, error: 'Invitation not found' });
+      return res.status(404).json({ success: false, error: 'Convite não encontrado.' });
     }
 
     await prisma.anonymous_user_friendships.delete({ where: { id: friendshipId } });
@@ -266,19 +272,20 @@ export const declineFriendInvitation = async (req: Request, res: Response) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Error declining friend invitation:', error);
-    res.status(500).json({ success: false, error: 'Could not decline invitation' });
+    res.status(500).json({ success: false, error: 'Não foi possível recusar o convite.' });
   }
 };
 
 export const removeFriend = async (req: Request, res: Response) => {
   try {
+    await ensureFriendshipSchema(prisma);
     const userId = String(req.body.userId || req.query.userId || '');
     const friendshipId = String(req.params.friendshipId || '');
-    if (!userId || !friendshipId) return res.status(400).json({ success: false, error: 'User and friendship are required' });
+    if (!userId || !friendshipId) return res.status(400).json({ success: false, error: 'Amizade não informada.' });
 
     const friendship = await prisma.anonymous_user_friendships.findUnique({ where: { id: friendshipId } });
     if (!friendship || (friendship.requester_id !== userId && friendship.addressee_id !== userId)) {
-      return res.status(404).json({ success: false, error: 'Friendship not found' });
+      return res.status(404).json({ success: false, error: 'Amizade não encontrada.' });
     }
 
     await prisma.anonymous_user_friendships.delete({ where: { id: friendshipId } });
@@ -287,6 +294,6 @@ export const removeFriend = async (req: Request, res: Response) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Error removing friend:', error);
-    res.status(500).json({ success: false, error: 'Could not remove friend' });
+    res.status(500).json({ success: false, error: 'Não foi possível remover esse amigo.' });
   }
 };
