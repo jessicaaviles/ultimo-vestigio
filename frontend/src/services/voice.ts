@@ -3,10 +3,10 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import type { SettingsState } from '../contexts/settingsTypes';
 
 const MALE_VOICE_HINTS_BY_PLATFORM: Record<string, string[]> = {
-  web: ['Felipe', 'Bruno', 'Lucas', 'Mateus', 'Matheus', 'Rafael', 'Ricardo', 'Rodrigo', 'Paulo', 'João', 'Joao', 'Daniel', 'Thiago', 'Marcos', 'André', 'Andre', 'Gustavo', 'Leandro', 'Fernando', 'Hugo', 'Diego', 'Caio', 'Samuel', 'Victor', 'Vitor'],
-  ios: ['Felipe', 'Google', 'João', 'Joao', 'Siri'],
-  android: ['Felipe', 'Google', 'João', 'Joao', 'Samsung'],
-  default: ['Felipe', 'Google', 'João', 'Joao'],
+  web: ['Felipe', 'Bruno', 'Lucas', 'Mateus', 'Matheus', 'Rafael', 'Ricardo', 'Rodrigo', 'Paulo', 'João', 'Joao', 'Daniel', 'Thiago', 'Marcos', 'André', 'Andre', 'Gustavo', 'Leandro', 'Fernando', 'Hugo', 'Diego', 'Caio', 'Samuel', 'Victor', 'Vitor', 'Google US English', 'Microsoft David', 'Alex', 'Daniel'],
+  ios: ['Felipe', 'Google', 'João', 'Joao', 'Siri', 'Alex', 'Daniel'],
+  android: ['Felipe', 'Google', 'João', 'Joao', 'Samsung', 'Google US English'],
+  default: ['Felipe', 'Google', 'João', 'Joao', 'Alex', 'Daniel'],
 };
 
 const isBrowser = typeof window !== 'undefined';
@@ -17,7 +17,11 @@ const getPlatformKey = () => {
   return 'default';
 };
 
-const getLanguage = (settings: SettingsState) => (settings.language === 'English' ? 'en-US' : 'pt-BR');
+const getLanguage = (settings: SettingsState) => {
+  if (settings.voiceLanguage === 'English') return 'en-US';
+  if (settings.voiceLanguage === 'Português (Brasil)') return 'pt-BR';
+  return settings.language === 'English' ? 'en-US' : 'pt-BR';
+};
 
 const normalizeMasterTone = (text: string) => text
   .replace(/\s+/g, ' ')
@@ -63,19 +67,20 @@ const buildSpeechStyle = (text: string) => {
   return { rate: 0.87, pitch: 0.8, volume: 0.94 };
 };
 
-export const pickPreferredVoice = (voices: SpeechSynthesisVoice[]) => {
+export const pickPreferredVoice = (voices: SpeechSynthesisVoice[], language: string) => {
   const platformKey = getPlatformKey();
   const hints = MALE_VOICE_HINTS_BY_PLATFORM[platformKey] || MALE_VOICE_HINTS_BY_PLATFORM.default;
   const lowerHints = hints.map(hint => hint.toLowerCase());
-  const ptVoices = voices.filter(v => v.lang?.toLowerCase().startsWith('pt'));
+  const languagePrefix = language.split('-')[0].toLowerCase();
+  const matchingVoices = voices.filter(v => v.lang?.toLowerCase().startsWith(languagePrefix));
 
-  const byMaleHint = ptVoices.find(v => lowerHints.some(hint => v.name.toLowerCase().includes(hint)));
+  const byMaleHint = matchingVoices.find(v => lowerHints.some(hint => v.name.toLowerCase().includes(hint)));
 
   return byMaleHint
-    || (ptVoices as Array<SpeechSynthesisVoice & { gender?: string }>).find(v => String(v.gender || '').toLowerCase() === 'male')
-    || ptVoices.find(v => /pt-br|pt_br/i.test(v.lang))
-    || ptVoices[0]
-    || voices.find(v => v.lang?.toLowerCase().startsWith('pt'))
+    || (matchingVoices as Array<SpeechSynthesisVoice & { gender?: string }>).find(v => String(v.gender || '').toLowerCase() === 'male')
+    || matchingVoices.find(v => v.lang?.toLowerCase() === language.toLowerCase())
+    || matchingVoices[0]
+    || voices.find(v => v.lang?.toLowerCase().startsWith(languagePrefix))
     || voices[0]
     || null;
 };
@@ -95,13 +100,14 @@ const speakWithWebSpeech = async (chunks: string[], settings: SettingsState) => 
   stopMasterVoice();
 
   const voices = window.speechSynthesis.getVoices();
-  const preferredVoice = pickPreferredVoice(voices);
+  const language = getLanguage(settings);
+  const preferredVoice = pickPreferredVoice(voices, language);
   const style = buildSpeechStyle(chunks.join(' '));
 
   for (const chunk of chunks) {
     await new Promise<void>((resolve, reject) => {
       const utterance = new SpeechSynthesisUtterance(chunk);
-      utterance.lang = getLanguage(settings);
+      utterance.lang = language;
       utterance.rate = style.rate;
       utterance.pitch = style.pitch;
       utterance.volume = style.volume;
@@ -116,10 +122,11 @@ const speakWithWebSpeech = async (chunks: string[], settings: SettingsState) => 
 
 const speakWithNativeTts = async (chunks: string[], settings: SettingsState) => {
   const style = buildSpeechStyle(chunks.join(' '));
+  const language = getLanguage(settings);
   for (const chunk of chunks) {
     await TextToSpeech.speak({
       text: chunk,
-      lang: getLanguage(settings),
+      lang: language,
       rate: style.rate,
       pitch: style.pitch,
       volume: style.volume,

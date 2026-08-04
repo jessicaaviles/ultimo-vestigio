@@ -1,5 +1,6 @@
 export type SettingsState = {
   language: string;
+  voiceLanguage: string;
   theme: string;
   music: boolean;
   effects: boolean;
@@ -14,6 +15,7 @@ export const SETTINGS_STORAGE_KEY = 'uv_settings';
 
 export const defaultSettings: SettingsState = {
   language: 'Português (Brasil)',
+  voiceLanguage: 'Automático',
   theme: 'Escuro',
   music: true,
   effects: true,

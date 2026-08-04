@@ -79,6 +79,15 @@ const Settings: React.FC = () => {
     { icon: Mic2, label: 'Voz dos personagens', key: 'voices' as const },
   ];
 
+  const voiceRows = [
+    {
+      icon: Globe2,
+      label: 'Idioma da voz do Mestre',
+      value: settings.voiceLanguage,
+      onClick: () => update('voiceLanguage', cycle(['Automático', 'Português (Brasil)', 'English'], settings.voiceLanguage)),
+    },
+  ];
+
   const notificationRows = [
     { icon: Bell, label: 'Notificações push', key: 'push' as const },
     { icon: Mail, label: 'Convites de amigos', key: 'invites' as const },
@@ -154,6 +163,17 @@ const Settings: React.FC = () => {
               />
               <span className="settings-switch" aria-hidden="true" />
             </label>
+          ))}
+          {voiceRows.map(({ icon: Icon, label, value, onClick }) => (
+            <button className="settings-row" key={label} onClick={onClick}>
+              <Icon size={20} strokeWidth={1.5} />
+              <span className="settings-row-copy">
+                <strong>{label}</strong>
+                <small>Define o idioma usado na leitura das respostas.</small>
+              </span>
+              <span className="settings-row-value">{value}</span>
+              <ChevronRight size={17} />
+            </button>
           ))}
         </div>
       </section>
