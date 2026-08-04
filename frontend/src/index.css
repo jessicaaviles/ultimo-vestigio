@@ -57,34 +57,6 @@ html[data-theme="alto-contraste"] {
   --line: rgba(255, 250, 240, .3);
 }
 
-html[data-text-size="pequeno"] { font-size: 93.75%; }
-html[data-text-size="medio"] { font-size: 100%; }
-html[data-text-size="grande"] { font-size: 112.5%; }
-
-html[data-text-size="grande"] p,
-html[data-text-size="grande"] button,
-html[data-text-size="grande"] input,
-html[data-text-size="grande"] label,
-html[data-text-size="grande"] .settings-row-copy strong,
-html[data-text-size="grande"] .settings-row-copy small,
-html[data-text-size="grande"] .messages-chat-content p,
-html[data-text-size="grande"] .home-stat-label,
-html[data-text-size="grande"] .home-stat-detail {
-  letter-spacing: 0;
-}
-
-html[data-accessibility="contraste-alto"] {
-  --muted: #e4dfd2;
-  --line: rgba(255, 250, 240, .34);
-}
-
-html[data-accessibility="contraste-alto"] .card-surface,
-html[data-accessibility="contraste-alto"] .settings-list,
-html[data-accessibility="contraste-alto"] .featured-card,
-html[data-accessibility="contraste-alto"] .messages-chat-card {
-  border-color: rgba(244, 206, 105, .55) !important;
-}
-
 .app-shell { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; position: relative; }
 .app-content { width: 100%; max-width: 1240px; margin: 0 auto; flex: 1; min-width: 0; padding: calc(88px + env(safe-area-inset-top)) 24px calc(100px + env(safe-area-inset-bottom)); }
 .app-content:has(.profile-editor-page) { padding-bottom: 0 !important; }

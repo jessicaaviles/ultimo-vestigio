@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import type { SettingsContextValue } from './settingsContextValue';
 import type { SettingsState } from './settingsTypes';
 import { SETTINGS_STORAGE_KEY, defaultSettings } from './settingsTypes';
+import { applyDocumentLanguage } from '../utils/i18nDom';
 
 const SettingsCtx = createContext<SettingsContextValue>({
   settings: defaultSettings,
@@ -24,23 +25,15 @@ const readStoredSettings = (): SettingsState => {
   }
 };
 
-const normalizeDataValue = (value: string) =>
-  value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-
 const applySettingsToDocument = (settings: SettingsState) => {
   const root = document.documentElement;
   root.dataset.theme = settings.theme === 'Alto contraste' ? 'alto-contraste' : 'escuro';
-  root.dataset.textSize = normalizeDataValue(settings.textSize);
-  root.dataset.accessibility = normalizeDataValue(settings.accessibility);
   root.lang = settings.language === 'English' ? 'en' : 'pt-BR';
+  root.dataset.language = settings.language === 'English' ? 'en' : 'pt-br';
   root.dataset.audioMusic = settings.music ? 'on' : 'off';
   root.dataset.audioEffects = settings.effects ? 'on' : 'off';
   root.dataset.audioVoices = settings.voices ? 'on' : 'off';
+  applyDocumentLanguage(settings.language);
 };
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

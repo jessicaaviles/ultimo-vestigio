@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Accessibility,
   Bell,
   CalendarDays,
   ChevronRight,
@@ -16,7 +15,6 @@ import {
   Moon,
   Music2,
   ShieldCheck,
-  Type,
   Volume2,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -73,19 +71,6 @@ const Settings: React.FC = () => {
       value: settings.theme,
       onClick: () => update('theme', cycle(['Escuro', 'Alto contraste'], settings.theme)),
     },
-    {
-      icon: Type,
-      label: 'Tamanho do texto',
-      value: settings.textSize,
-      onClick: () => update('textSize', cycle(['Pequeno', 'Médio', 'Grande'], settings.textSize)),
-    },
-    {
-      icon: Accessibility,
-      label: 'Acessibilidade',
-      value: settings.accessibility,
-      helper: 'Contraste, movimento e legibilidade.',
-      onClick: () => update('accessibility', cycle(['Padrão', 'Contraste alto', 'Reduzir movimento'], settings.accessibility)),
-    },
   ];
 
   const audioRows = [
@@ -139,12 +124,11 @@ const Settings: React.FC = () => {
       <section className="settings-section">
         <span className="eyebrow">Preferências</span>
         <div className="settings-list">
-          {preferenceRows.map(({ icon: Icon, label, value, helper, onClick }) => (
+          {preferenceRows.map(({ icon: Icon, label, value, onClick }) => (
             <button className="settings-row" key={label} onClick={onClick}>
               <Icon size={20} strokeWidth={1.5} />
               <span className="settings-row-copy">
                 <strong>{label}</strong>
-                {helper && <small>{helper}</small>}
               </span>
               <span className="settings-row-value">{value}</span>
               <ChevronRight size={17} />
@@ -233,7 +217,7 @@ const Settings: React.FC = () => {
               <h2>{confirmAction === 'reset' ? 'Restaurar configurações?' : 'Sair da conta?'}</h2>
               <p>
                 {confirmAction === 'reset'
-                  ? 'Isso vai voltar áudio, tema, acessibilidade e notificações para o padrão do jogo.'
+                  ? 'Isso vai voltar áudio, tema e notificações para o padrão do jogo.'
                   : 'Você será desconectado desta conta neste dispositivo.'}
               </p>
             </div>
