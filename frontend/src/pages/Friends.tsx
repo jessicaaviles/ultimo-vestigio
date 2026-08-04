@@ -26,6 +26,7 @@ import {
 type Friend = {
   id: string;
   name: string;
+  alias?: string;
   handle: string;
   email: string;
   status: 'active' | 'ausente';
@@ -65,9 +66,10 @@ const Friends: React.FC = () => {
   const userId = user?.userId || localStorage.getItem('userId') || '';
 
   const inviteCode = useMemo(() => {
+    if (user?.alias) return `@${user.alias}`;
     const raw = `${userId || 'UV'}-${user?.displayName || 'investigador'}`;
     return btoa(unescape(encodeURIComponent(raw))).replace(/=+$/g, '').slice(0, 10).toUpperCase();
-  }, [user?.displayName, userId]);
+  }, [user?.alias, user?.displayName, userId]);
 
   const inviteLink = userId
     ? `${window.location.origin}/register?friend=${encodeURIComponent(userId)}`

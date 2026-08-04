@@ -1,6 +1,7 @@
 export interface AuthUser {
   userId: string;
   displayName: string;
+  alias?: string | null;
   email: string | null;
   hasProfile: boolean;
   onboardingCompleted: boolean;

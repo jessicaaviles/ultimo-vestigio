@@ -12,6 +12,7 @@ const guestAvatar = '/backgrounds/guest-investigator-avatar.png';
 interface ProfileData {
   id: string;
   displayName: string;
+  alias?: string | null;
   bio: string;
   active: boolean;
   photo: string | null;
@@ -574,6 +575,11 @@ const Profile: React.FC = () => {
             <textarea value={name} onChange={(e) => setName(e.target.value)} maxLength={32} rows={2} required style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontFamily: 'var(--font-serif)', fontWeight: 400, margin: '0 0 5px', padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', color: '#F8F9FA', width: '100%', outline: 'none', lineHeight: 1.2, boxSizing: 'border-box', resize: 'none' }} />
           ) : (
             <h1 style={{ margin: '0 0 5px', lineHeight: 1.2, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{profile?.displayName || name}</h1>
+          )}
+          {profile?.alias && (
+            <div style={{ margin: '0 0 10px', color: 'var(--gold-soft)', fontSize: 13, fontWeight: 700, letterSpacing: '.08em' }}>
+              @{profile.alias}
+            </div>
           )}
           {editing ? (
             <textarea ref={bioInputRef} value={bio} onChange={(e) => { setBio(e.target.value); const el = e.target; el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }} maxLength={280} rows={1} placeholder="Como você investiga?" style={{ color: 'var(--muted)', maxWidth: 440, fontSize: 14, margin: 0, padding: 0, border: 'none', borderBottom: '1px solid var(--gold)', background: 'transparent', resize: 'none', width: '100%', outline: 'none', lineHeight: 1.5, fontFamily: 'inherit', boxSizing: 'border-box', overflow: 'hidden' }} />

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { getSocketServer } from '../realtime/socketHub';
 import { ensureFriendshipSchema } from '../db/authSchema';
+import { ensureUserAlias } from '../services/userAlias';
 
 const prisma = new PrismaClient();
 
@@ -11,8 +12,9 @@ const normalizeHandle = (value: string) => value.replace(/^@+/, '').trim().toLow
 const baseFriendData = (friend: any) => ({
   name: friend.default_display_name || 'Agente',
   email: friend.email || '',
-  handle: friend.email
-    ? `@${friend.email.split('@')[0]}`
+  alias: friend.alias || '',
+  handle: friend.alias
+    ? `@${friend.alias}`
     : `@${String(friend.default_display_name || 'investigador').toLowerCase().replace(/\s+/g, '')}`,
   avatar: friend.generated_profile_photo_data || friend.profile_photo_data || null
 });
@@ -40,7 +42,8 @@ const buildFriendStats = async (friendId: string) => {
 };
 
 const publicFriendship = async (viewerId: string, friendship: any, mode: 'friend' | 'invite') => {
-  const friend = friendship.requester_id === viewerId ? friendship.addressee : friendship.requester;
+  const rawFriend = friendship.requester_id === viewerId ? friendship.addressee : friendship.requester;
+  const friend = await ensureUserAlias(prisma, rawFriend);
   const stats = await buildFriendStats(friend.id);
 
   return {
@@ -75,6 +78,7 @@ export const listFriends = async (req: Request, res: Response) => {
 
     const user = await prisma.anonymous_users.findUnique({ where: { id: userId } });
     if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Sua conta não foi encontrada.' });
+    await ensureUserAlias(prisma, user);
 
     const friendships = await prisma.anonymous_user_friendships.findMany({
       where: {
@@ -104,6 +108,7 @@ export const listFriendInvitations = async (req: Request, res: Response) => {
 
     const user = await prisma.anonymous_users.findUnique({ where: { id: userId } });
     if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Sua conta não foi encontrada.' });
+    await ensureUserAlias(prisma, user);
 
     const invitations = await prisma.anonymous_user_friendships.findMany({
       where: {
@@ -135,12 +140,14 @@ export const addFriend = async (req: Request, res: Response) => {
 
     const requester = await prisma.anonymous_users.findUnique({ where: { id: userId } });
     if (!requester || requester.deleted_at) return res.status(404).json({ success: false, error: 'Sua conta não foi encontrada.' });
+    await ensureUserAlias(prisma, requester);
 
     const addressee = await prisma.anonymous_users.findFirst({
       where: {
         deleted_at: null,
         OR: [
           { id: lookup },
+          { alias: { equals: lookupHandle, mode: 'insensitive' } },
           { email: lookup },
           { email: { startsWith: `${lookupHandle}@`, mode: 'insensitive' } },
           { default_display_name: { equals: lookup, mode: 'insensitive' } },

@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import { generateProfilePortrait } from '../services/profilePortrait';
 import { hashToken } from '../security/secrets';
+import { ensureUserAlias } from '../services/userAlias';
 
 const prisma = new PrismaClient();
 
@@ -15,6 +16,7 @@ const PORTRAIT_RESET_EMAILS = (process.env.PORTRAIT_RESET_EMAILS || 'jessica.avi
 const publicProfile = (user: any, stats?: any) => ({
   id: user.id,
   displayName: user.default_display_name || 'Agente',
+  alias: user.alias || '',
   bio: user.bio || '',
   active: user.profile_active,
   photo: user.generated_profile_photo_data || user.profile_photo_data || null,
@@ -33,8 +35,10 @@ export const getProfile = async (req: Request, res: Response) => {
   res.set('Expires', '0');
 
   const userId = Array.isArray(req.params.userId) ? req.params.userId[0] : req.params.userId;
-  const user = await prisma.anonymous_users.findUnique({ where: { id: userId } });
+  const foundUser = await prisma.anonymous_users.findUnique({ where: { id: userId } });
+  let user = foundUser;
   if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Profile not found' });
+  user = await ensureUserAlias(prisma, user);
   
   // Calculate Stats
   const hostedRoomsCount = await prisma.room_players.count({
@@ -152,6 +156,7 @@ export const deleteProfile = async (req: Request, res: Response) => {
       where: { id: user.id },
       data: {
         email: null,
+        alias: null,
         password_hash: null,
         auth_token_hash: null,
         default_display_name: 'Conta excluída',

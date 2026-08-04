@@ -4,6 +4,7 @@ export async function ensureAuthSchema(prisma: PrismaClient) {
   await prisma.$executeRawUnsafe(`
     ALTER TABLE "anonymous_users"
       ADD COLUMN IF NOT EXISTS "email" TEXT,
+      ADD COLUMN IF NOT EXISTS "alias" TEXT,
       ADD COLUMN IF NOT EXISTS "password_hash" TEXT,
       ADD COLUMN IF NOT EXISTS "auth_token_hash" TEXT,
       ADD COLUMN IF NOT EXISTS "locale" TEXT DEFAULT 'pt-BR',
@@ -17,6 +18,12 @@ export async function ensureAuthSchema(prisma: PrismaClient) {
       ADD COLUMN IF NOT EXISTS "onboarding_completed" BOOLEAN NOT NULL DEFAULT false,
       ADD COLUMN IF NOT EXISTS "last_active_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
       ADD COLUMN IF NOT EXISTS "deleted_at" TIMESTAMP(3);
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE UNIQUE INDEX IF NOT EXISTS "anonymous_users_alias_key"
+      ON "anonymous_users"("alias")
+      WHERE "alias" IS NOT NULL;
   `);
 
   await ensureFriendshipSchema(prisma);

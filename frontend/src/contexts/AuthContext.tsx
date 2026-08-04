@@ -29,6 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUser({
               userId: validateRes.data.userId,
               displayName: profileRes.data.displayName || 'Agente',
+              alias: profileRes.data.alias || null,
               email: validateRes.data.email || null,
               hasProfile: profileRes.data.hasProfile || false,
               onboardingCompleted: profileRes.data.onboardingCompleted || false,
@@ -38,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             return {
               userId: validateRes.data.userId,
               displayName: profileRes.data.displayName || 'Agente',
+              alias: profileRes.data.alias || null,
               email: validateRes.data.email || null,
               hasProfile: profileRes.data.hasProfile || false,
               onboardingCompleted: profileRes.data.onboardingCompleted || false,
@@ -54,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser({
             userId: anonId,
             displayName: profileRes.data.displayName || 'Agente',
+            alias: profileRes.data.alias || null,
             email: null,
             hasProfile: profileRes.data.hasProfile || false,
             onboardingCompleted: profileRes.data.onboardingCompleted || false,
@@ -63,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return {
             userId: anonId,
             displayName: profileRes.data.displayName || 'Agente',
+            alias: profileRes.data.alias || null,
             email: null,
             hasProfile: profileRes.data.hasProfile || false,
             onboardingCompleted: profileRes.data.onboardingCompleted || false,

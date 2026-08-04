@@ -12,6 +12,7 @@ model anonymous_users {
   id                  String    @id @default(uuid())
   device_token_hash   String    @unique
   email               String?   @unique
+  alias               String?   @unique
   password_hash       String?
   auth_token_hash     String?
   default_display_name String?

@@ -3,6 +3,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import type { LoginTicket, TokenPayload } from 'google-auth-library';
 import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
+import { ensureUserAlias, generateUniqueAlias } from '../services/userAlias';
 
 const googleClientIds = String(process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_WEB_CLIENT_ID || '')
   .split(',')
@@ -52,7 +53,7 @@ export const register = async (req: Request, res: Response) => {
     const deviceTokenHash = crypto.createHash('sha256').update(deviceToken).digest('hex');
     const { authToken, authTokenHash } = createAuthToken();
 
-    const user = existing
+    let user = existing
       ? await prisma.anonymous_users.update({
           where: { id: existing.id },
           data: {
@@ -61,6 +62,7 @@ export const register = async (req: Request, res: Response) => {
             password_hash: hashPassword(String(password)),
             auth_token_hash: authTokenHash,
             default_display_name: displayName || existing.default_display_name || 'Agente',
+            alias: existing.alias || await generateUniqueAlias(prisma, displayName || existing.default_display_name || normalizedEmail, existing.id),
             profile_active: true,
             profile_photo_data: null,
             generated_profile_photo_data: null,
@@ -78,8 +80,10 @@ export const register = async (req: Request, res: Response) => {
             password_hash: hashPassword(String(password)),
             auth_token_hash: authTokenHash,
             default_display_name: displayName || 'Agente',
+            alias: await generateUniqueAlias(prisma, displayName || normalizedEmail),
           }
         });
+    user = await ensureUserAlias(prisma, user);
 
     res.json({
       success: true,
@@ -88,6 +92,7 @@ export const register = async (req: Request, res: Response) => {
         authToken,
         displayName: user.default_display_name,
         email: user.email,
+        alias: user.alias,
       }
     });
   } catch (error) {
@@ -109,6 +114,7 @@ export const login = async (req: Request, res: Response) => {
     if (!verifyPassword(String(password), user.password_hash)) return res.status(401).json({ success: false, error: 'Email ou senha inválidos.' });
 
     const { authToken, authTokenHash } = createAuthToken();
+    const userWithAlias = await ensureUserAlias(prisma, user);
     await prisma.anonymous_users.update({ where: { id: user.id }, data: { auth_token_hash: authTokenHash, last_active_at: new Date() } });
 
     res.json({
@@ -116,8 +122,9 @@ export const login = async (req: Request, res: Response) => {
       data: {
         userId: user.id,
         authToken,
-        displayName: user.default_display_name,
-        email: user.email,
+        displayName: userWithAlias.default_display_name,
+        email: userWithAlias.email,
+        alias: userWithAlias.alias,
       }
     });
   } catch (error) {
@@ -140,7 +147,7 @@ export const linkProfile = async (req: Request, res: Response) => {
 
     const { authToken, authTokenHash } = createAuthToken();
 
-    const updatedUser = await prisma.$transaction(async (tx) => {
+    let updatedUser = await prisma.$transaction(async (tx) => {
       if (existing && existing.id !== user.id && existing.deleted_at) {
         await tx.anonymous_users.update({
           where: { id: existing.id },
@@ -154,11 +161,13 @@ export const linkProfile = async (req: Request, res: Response) => {
           email: normalizedEmail,
           password_hash: hashPassword(String(password)),
           auth_token_hash: authTokenHash,
+          alias: user.alias || await generateUniqueAlias(prisma, user.default_display_name || normalizedEmail, user.id),
           profile_active: true,
           last_active_at: new Date(),
         }
       });
     });
+    updatedUser = await ensureUserAlias(prisma, updatedUser);
 
     res.json({
       success: true,
@@ -167,6 +176,7 @@ export const linkProfile = async (req: Request, res: Response) => {
         authToken,
         displayName: updatedUser.default_display_name,
         email: updatedUser.email,
+        alias: updatedUser.alias,
       }
     });
   } catch (error) {
@@ -188,13 +198,15 @@ export const validateToken = async (req: Request, res: Response) => {
 
     const user = await prisma.anonymous_users.findFirst({ where: { auth_token_hash: tokenHash, deleted_at: null } });
     if (!user) return res.status(401).json({ success: false, error: 'Token inválido ou expirado.' });
+    const userWithAlias = await ensureUserAlias(prisma, user);
 
     res.json({
       success: true,
       data: {
         userId: user.id,
-        displayName: user.default_display_name,
-        email: user.email,
+        displayName: userWithAlias.default_display_name,
+        email: userWithAlias.email,
+        alias: userWithAlias.alias,
       }
     });
   } catch (error) {
@@ -237,12 +249,13 @@ export const googleLogin = async (req: Request, res: Response) => {
     const { authToken, authTokenHash } = createAuthToken();
 
     if (user && !user.deleted_at) {
+      user = await ensureUserAlias(prisma, user);
       await prisma.anonymous_users.update({
         where: { id: user.id },
         data: { auth_token_hash: authTokenHash, last_active_at: new Date() },
       });
       return res.json({
-        success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email },
+        success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email, alias: user.alias },
       });
     }
 
@@ -253,6 +266,7 @@ export const googleLogin = async (req: Request, res: Response) => {
           email,
           auth_token_hash: authTokenHash,
           default_display_name: displayName || payload.name || user.default_display_name || 'Agente',
+          alias: user.alias || await generateUniqueAlias(prisma, displayName || payload.name || email, user.id),
           deleted_at: null,
           profile_active: true,
           password_hash: null,
@@ -265,7 +279,7 @@ export const googleLogin = async (req: Request, res: Response) => {
       });
 
       return res.json({
-        success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email },
+        success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email, alias: user.alias },
       });
     }
 
@@ -278,11 +292,12 @@ export const googleLogin = async (req: Request, res: Response) => {
         email,
         auth_token_hash: authTokenHash,
         default_display_name: displayName || payload.name || 'Agente',
+        alias: await generateUniqueAlias(prisma, displayName || payload.name || email),
       },
     });
 
     res.json({
-      success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email },
+      success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email, alias: user.alias },
     });
   } catch (error) {
     console.error('Google login error:', error);
