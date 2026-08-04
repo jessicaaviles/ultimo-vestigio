@@ -124,30 +124,42 @@ export const linkProfile = async (req: Request, res: Response) => {
     const { email, password, anonymousUserId } = req.body;
     if (!email || !password || !anonymousUserId) return res.status(400).json({ success: false, error: 'Email, senha e ID do perfil são obrigatórios.' });
 
-    const existing = await prisma.anonymous_users.findUnique({ where: { email: String(email).toLowerCase().trim() } });
-    if (existing) return res.status(409).json({ success: false, error: 'Este email já está cadastrado.' });
-
+    const normalizedEmail = String(email).toLowerCase().trim();
     const user = await prisma.anonymous_users.findUnique({ where: { id: String(anonymousUserId) } });
-    if (!user) return res.status(404).json({ success: false, error: 'Perfil não encontrado.' });
+    if (!user || user.deleted_at) return res.status(404).json({ success: false, error: 'Perfil local não encontrado. Tente criar a conta novamente.' });
+
+    const existing = await prisma.anonymous_users.findUnique({ where: { email: normalizedEmail } });
+    if (existing && existing.id !== user.id && !existing.deleted_at) return res.status(409).json({ success: false, error: 'Este email já está cadastrado.' });
 
     const { authToken, authTokenHash } = createAuthToken();
 
-    await prisma.anonymous_users.update({
-      where: { id: user.id },
-      data: {
-        email: String(email).toLowerCase().trim(),
-        password_hash: hashPassword(String(password)),
-        auth_token_hash: authTokenHash,
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      if (existing && existing.id !== user.id && existing.deleted_at) {
+        await tx.anonymous_users.update({
+          where: { id: existing.id },
+          data: { email: null, auth_token_hash: null },
+        });
       }
+
+      return tx.anonymous_users.update({
+        where: { id: user.id },
+        data: {
+          email: normalizedEmail,
+          password_hash: hashPassword(String(password)),
+          auth_token_hash: authTokenHash,
+          profile_active: true,
+          last_active_at: new Date(),
+        }
+      });
     });
 
     res.json({
       success: true,
       data: {
-        userId: user.id,
+        userId: updatedUser.id,
         authToken,
-        displayName: user.default_display_name,
-        email: user.email,
+        displayName: updatedUser.default_display_name,
+        email: updatedUser.email,
       }
     });
   } catch (error) {
