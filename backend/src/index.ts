@@ -9,6 +9,7 @@ import { buildClarificationText, buildContestationText, processQuestion, evaluat
 import { revealSecret } from './security/secrets';
 import { normalizeQuestion, theoryIsComplete } from './game/rules';
 import { setSocketServer } from './realtime/socketHub';
+import { ensureAuthSchema } from './db/authSchema';
 
 dotenv.config();
 
@@ -186,6 +187,13 @@ app.get('/version', (req, res) => {
     commit: process.env.RENDER_GIT_COMMIT || process.env.GIT_COMMIT || 'local',
     service: process.env.RENDER_SERVICE_NAME || 'local',
     deployedAt: process.env.RENDER || null
+  });
+});
+app.get('/api/auth/diagnostics', (req, res) => {
+  res.json({
+    success: true,
+    commit: process.env.RENDER_GIT_COMMIT || process.env.GIT_COMMIT || 'local',
+    googleConfigured: Boolean(process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_WEB_CLIENT_ID),
   });
 });
 
@@ -1064,6 +1072,13 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3001;
 
-server.listen(Number(PORT), '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-});
+ensureAuthSchema(prisma)
+  .then(() => {
+    server.listen(Number(PORT), '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Falha ao preparar schema de auth:', error);
+    process.exit(1);
+  });
