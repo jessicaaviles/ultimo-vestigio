@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { authRegister, authGoogle } from '../services/api';
+import { addFriend, authRegister, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
 import { Capacitor } from '@capacitor/core';
@@ -19,10 +19,16 @@ const Register: React.FC = () => {
   const { refresh } = useAuth();
   const location = useLocation();
   const returnUrl = new URLSearchParams(location.search).get('return') || '';
+  const invitedBy = new URLSearchParams(location.search).get('friend') || '';
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const googleConfigured = Boolean(googleClientId);
   const isWebPlatform = Capacitor.getPlatform() === 'web';
+
+  const connectInviter = useCallback(async (userId: string) => {
+    if (!invitedBy || invitedBy === userId) return;
+    await addFriend(userId, invitedBy, true).catch(() => undefined);
+  }, [invitedBy]);
 
   const handleGoogleCredential = useCallback(async (credential: string) => {
     setLoading(true);
@@ -32,6 +38,7 @@ const Register: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
+        await connectInviter(res.data.userId);
         await refresh();
         navigate(returnUrl || '/profile');
       } else {
@@ -42,7 +49,7 @@ const Register: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate, refresh, returnUrl]);
+  }, [connectInviter, navigate, refresh, returnUrl]);
 
   const handleGoogleClick = useCallback(async () => {
     if (loading) return;
@@ -68,6 +75,7 @@ const Register: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
+        await connectInviter(res.data.userId);
         await refresh();
         navigate(returnUrl || '/profile');
       } else {

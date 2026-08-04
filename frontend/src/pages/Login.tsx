@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { authLogin, authGoogle } from '../services/api';
+import { addFriend, authLogin, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
 import { Capacitor } from '@capacitor/core';
@@ -10,6 +10,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const returnUrl = new URLSearchParams(location.search).get('return') || '';
+  const invitedBy = new URLSearchParams(location.search).get('friend') || '';
   const { refresh } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +21,11 @@ const Login: React.FC = () => {
   const googleConfigured = Boolean(googleClientId);
   const isWebPlatform = Capacitor.getPlatform() === 'web';
 
+  const connectInviter = useCallback(async (userId: string) => {
+    if (!invitedBy || invitedBy === userId) return;
+    await addFriend(userId, invitedBy, true).catch(() => undefined);
+  }, [invitedBy]);
+
   const handleGoogleCredential = useCallback(async (credential: string) => {
     setLoading(true);
     setError('');
@@ -28,6 +34,7 @@ const Login: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
+        await connectInviter(res.data.userId);
         await refresh();
         navigate(returnUrl || '/profile');
       } else {
@@ -38,7 +45,7 @@ const Login: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate, refresh, returnUrl]);
+  }, [connectInviter, navigate, refresh, returnUrl]);
 
   const handleGoogleClick = useCallback(async () => {
     if (loading) return;
@@ -63,6 +70,7 @@ const Login: React.FC = () => {
       if (res.success) {
         localStorage.setItem('authToken', res.data.authToken);
         localStorage.setItem('userId', res.data.userId);
+        await connectInviter(res.data.userId);
         await refresh();
         navigate(returnUrl || '/profile');
       } else {

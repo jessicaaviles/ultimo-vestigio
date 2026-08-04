@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import {
   Copy,
@@ -62,41 +62,39 @@ const Friends: React.FC = () => {
   const [nameOrEmail, setNameOrEmail] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
+  const userId = user?.userId || localStorage.getItem('userId') || '';
 
   const inviteCode = useMemo(() => {
-    const raw = `${user?.userId || localStorage.getItem('userId') || 'UV'}-${user?.displayName || 'investigador'}`;
+    const raw = `${userId || 'UV'}-${user?.displayName || 'investigador'}`;
     return btoa(unescape(encodeURIComponent(raw))).replace(/=+$/g, '').slice(0, 10).toUpperCase();
-  }, [user?.displayName, user?.userId]);
+  }, [user?.displayName, userId]);
 
-  const inviteLink = `${window.location.origin}/register?invite=${inviteCode}`;
+  const inviteLink = userId
+    ? `${window.location.origin}/register?friend=${encodeURIComponent(userId)}`
+    : `${window.location.origin}/register`;
 
-  useEffect(() => {
-    const userId = user?.userId || localStorage.getItem('userId');
+  const loadNetwork = useCallback(async () => {
     if (!userId) {
       setLoading(false);
       return;
     }
 
-    let active = true;
     setLoading(true);
-    Promise.all([listFriends(userId), listFriendInvitations(userId)])
-      .then(([friendsResponse, invitationsResponse]) => {
-        if (!active) return;
-        if (friendsResponse.success) setFriends(friendsResponse.data?.friends || []);
-        else setStatus(friendsResponse.error || 'Não foi possível carregar sua rede.');
-        if (invitationsResponse.success) setInvitations(invitationsResponse.data?.invitations || []);
-      })
-      .catch(() => {
-        if (active) setStatus('Não foi possível carregar sua rede.');
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
+    try {
+      const [friendsResponse, invitationsResponse] = await Promise.all([listFriends(userId), listFriendInvitations(userId)]);
+      if (friendsResponse.success) setFriends(friendsResponse.data?.friends || []);
+      else setStatus(friendsResponse.error || 'Não foi possível carregar sua rede.');
+      if (invitationsResponse.success) setInvitations(invitationsResponse.data?.invitations || []);
+    } catch {
+      setStatus('Não foi possível carregar sua rede.');
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
 
-    return () => {
-      active = false;
-    };
-  }, [user?.userId]);
+  useEffect(() => {
+    void loadNetwork();
+  }, [loadNetwork]);
 
   const filteredFriends = friends.filter((friend) => {
     const haystack = `${friend.name} ${friend.handle} ${friend.email}`.toLowerCase();
@@ -116,7 +114,6 @@ const Friends: React.FC = () => {
     event.preventDefault();
     const value = nameOrEmail.trim();
     if (!value) return;
-    const userId = user?.userId || localStorage.getItem('userId');
     if (!userId) {
       setStatus('Crie ou acesse sua conta para adicionar amigos.');
       return;
@@ -139,9 +136,10 @@ const Friends: React.FC = () => {
               const withoutDuplicate = current.filter((friend) => friend.id !== nextInvite.id);
               return [nextInvite, ...withoutDuplicate];
             });
-            setStatus('Convite enviado.');
+            setStatus('Convite enviado. A pessoa aparecerá como amiga quando aceitar.');
           }
           setNameOrEmail('');
+          await loadNetwork();
           return;
         }
         await navigator.clipboard?.writeText(`${inviteLink}&to=${encodeURIComponent(value)}`).catch(() => {});
@@ -157,7 +155,6 @@ const Friends: React.FC = () => {
   };
 
   const handleRemoveFriend = async (friendshipId: string) => {
-    const userId = user?.userId || localStorage.getItem('userId');
     if (!userId) return;
     setLoading(true);
     const response = await removeFriend(userId, friendshipId).catch(() => ({ success: false, error: 'Não foi possível remover.' }));
@@ -165,6 +162,7 @@ const Friends: React.FC = () => {
       setFriends((current) => current.filter((friend) => friend.id !== friendshipId));
       setInvitations((current) => current.filter((friend) => friend.id !== friendshipId));
       setStatus('Amigo removido da sua rede.');
+      await loadNetwork();
     } else {
       setStatus(response.error || 'Não foi possível remover.');
     }
@@ -172,7 +170,6 @@ const Friends: React.FC = () => {
   };
 
   const handleAcceptInvitation = async (friendshipId: string) => {
-    const userId = user?.userId || localStorage.getItem('userId');
     if (!userId) return;
     setLoading(true);
     const response = await acceptFriendInvitation(userId, friendshipId).catch(() => ({ success: false, error: 'Não foi possível aceitar.' }));
@@ -186,6 +183,7 @@ const Friends: React.FC = () => {
         });
       }
       setStatus('Convite aceito.');
+      await loadNetwork();
     } else {
       setStatus(response.error || 'Não foi possível aceitar.');
     }
@@ -193,13 +191,13 @@ const Friends: React.FC = () => {
   };
 
   const handleDeclineInvitation = async (friendshipId: string) => {
-    const userId = user?.userId || localStorage.getItem('userId');
     if (!userId) return;
     setLoading(true);
     const response = await declineFriendInvitation(userId, friendshipId).catch(() => ({ success: false, error: 'Não foi possível recusar.' }));
     if (response.success) {
       setInvitations((current) => current.filter((friend) => friend.id !== friendshipId));
       setStatus('Convite recusado.');
+      await loadNetwork();
     } else {
       setStatus(response.error || 'Não foi possível recusar.');
     }

@@ -130,11 +130,11 @@ export const listFriendInvitations = async (userId: string) => {
   return res.json();
 };
 
-export const addFriend = async (userId: string, lookup: string) => {
+export const addFriend = async (userId: string, lookup: string, autoAccept = false) => {
   const res = await apiFetch(`${API_URL}/friends`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, lookup })
+    body: JSON.stringify({ userId, lookup, autoAccept })
   });
   return res.json();
 };

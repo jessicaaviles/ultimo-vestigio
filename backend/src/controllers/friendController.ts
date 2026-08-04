@@ -5,6 +5,7 @@ import { getSocketServer } from '../realtime/socketHub';
 const prisma = new PrismaClient();
 
 const normalizeLookup = (value: unknown) => String(value || '').trim().toLowerCase();
+const normalizeHandle = (value: string) => value.replace(/^@+/, '').trim().toLowerCase();
 
 const baseFriendData = (friend: any) => ({
   name: friend.default_display_name || 'Agente',
@@ -124,6 +125,8 @@ export const addFriend = async (req: Request, res: Response) => {
   try {
     const userId = String(req.body.userId || '');
     const lookup = normalizeLookup(req.body.lookup);
+    const lookupHandle = normalizeHandle(lookup);
+    const autoAccept = req.body.autoAccept === true;
     if (!userId || !lookup) return res.status(400).json({ success: false, error: 'User and friend lookup are required' });
 
     const requester = await prisma.anonymous_users.findUnique({ where: { id: userId } });
@@ -135,7 +138,9 @@ export const addFriend = async (req: Request, res: Response) => {
         OR: [
           { id: lookup },
           { email: lookup },
-          { default_display_name: { equals: lookup, mode: 'insensitive' } }
+          { email: { startsWith: `${lookupHandle}@`, mode: 'insensitive' } },
+          { default_display_name: { equals: lookup, mode: 'insensitive' } },
+          { default_display_name: { contains: lookupHandle, mode: 'insensitive' } }
         ]
       }
     });
@@ -185,13 +190,22 @@ export const addFriend = async (req: Request, res: Response) => {
         data: { status: 'ACCEPTED' },
         include: { requester: true, addressee: true }
       });
+      emitFriendEvent(addressee.id, 'friend_invitation_accepted', { friendshipId: accepted.id });
+      emitFriendEvent(userId, 'friendship_accepted', { friendshipId: accepted.id });
       return res.json({ success: true, data: { friend: await publicFriendship(userId, accepted, 'friend') } });
     }
 
     const invitation = await prisma.anonymous_user_friendships.create({
-      data: { requester_id: userId, addressee_id: addressee.id, status: 'PENDING' },
+      data: { requester_id: userId, addressee_id: addressee.id, status: autoAccept ? 'ACCEPTED' : 'PENDING' },
       include: { requester: true, addressee: true }
     });
+
+    if (autoAccept) {
+      const publicFriend = await publicFriendship(userId, invitation, 'friend');
+      emitFriendEvent(addressee.id, 'friendship_accepted', { friendshipId: invitation.id, friend: publicFriend });
+      emitFriendEvent(userId, 'friendship_accepted', { friendshipId: invitation.id, friend: publicFriend });
+      return res.json({ success: true, data: { friend: publicFriend } });
+    }
 
     const publicInvitation = await publicFriendship(userId, invitation, 'invite');
     emitFriendEvent(addressee.id, 'friend_invitation_received', { invitation: publicInvitation });
