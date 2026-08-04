@@ -236,7 +236,7 @@ const Profile: React.FC = () => {
     if (!profile?.id || !authToken) return;
     const hasPhoto = Boolean(photoData || preview && !profile.photo);
     setSaving(true);
-    setStatus(hasPhoto ? 'Gerando retrato investigador…' : 'Salvando perfil…');
+    setStatus(hasPhoto ? 'Gerando retrato…' : 'Salvando perfil…');
     if (hasPhoto) setGeneratingPortrait(true);
     try {
       const response = await updateProfile(profile.id, {
@@ -285,7 +285,7 @@ const Profile: React.FC = () => {
     setPhotoSheetOpen(false);
       setPhotoData(value);
       setPreview(value);
-      setStatus('Gerando retrato investigador…');
+      setStatus('Gerando retrato…');
       setGeneratingPortrait(true);
       if (profile?.id && authToken) {
         try {

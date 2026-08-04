@@ -95,22 +95,50 @@ html[data-accessibility="reduzir-movimento"] *::after {
 }
 html[data-accessibility="reduzir-movimento"] .loading-spinner,
 html[data-accessibility="reduzir-movimento"] .profile-avatar-spinner,
-html[data-accessibility="reduzir-movimento"] .home-hero-loading span,
+html[data-accessibility="reduzir-movimento"] .profile-avatar--generating,
 html[data-accessibility="reduzir-movimento"] .home-header-profile-avatar--loading,
 html[data-accessibility="reduzir-movimento"] .home-header-profile-name--loading,
 html[data-accessibility="reduzir-movimento"] .home-header-profile-status--loading,
 html[data-accessibility="reduzir-movimento"] .nav-badge {
-  animation: none !important;
-  transition: none !important;
+  animation-iteration-count: infinite !important;
+}
+html[data-accessibility="reduzir-movimento"] .loading-spinner,
+html[data-accessibility="reduzir-movimento"] .profile-avatar-spinner {
+  animation-name: spin !important;
+  animation-duration: .8s !important;
+  animation-timing-function: linear !important;
+}
+html[data-accessibility="reduzir-movimento"] .profile-avatar--generating {
+  animation-name: portrait-pulse !important;
+  animation-duration: 1.6s !important;
+  animation-timing-function: ease-in-out !important;
+}
+html[data-accessibility="reduzir-movimento"] .home-hero-loading span {
+  animation-name: home-hero-loading !important;
+  animation-duration: 1.3s !important;
+  animation-timing-function: ease-in-out !important;
+  animation-iteration-count: infinite !important;
+}
+html[data-accessibility="reduzir-movimento"] .home-header-profile-avatar--loading,
+html[data-accessibility="reduzir-movimento"] .home-header-profile-name--loading,
+html[data-accessibility="reduzir-movimento"] .home-header-profile-status--loading {
+  animation-name: home-header-pulse !important;
+  animation-duration: 1.4s !important;
+  animation-timing-function: ease-in-out !important;
+}
+html[data-accessibility="reduzir-movimento"] .nav-badge {
+  animation-name: badge-pulse !important;
+  animation-duration: 2.4s !important;
+  animation-timing-function: ease !important;
 }
 html[data-accessibility="reduzir-movimento"] .loading-spinner::before,
 html[data-accessibility="reduzir-movimento"] .profile-avatar-spinner::before,
+html[data-accessibility="reduzir-movimento"] .profile-avatar--generating::before,
 html[data-accessibility="reduzir-movimento"] .home-hero-loading span::before,
 html[data-accessibility="reduzir-movimento"] .home-header-profile-avatar--loading::before,
 html[data-accessibility="reduzir-movimento"] .home-header-profile-name--loading::before,
 html[data-accessibility="reduzir-movimento"] .home-header-profile-status--loading::before,
 html[data-accessibility="reduzir-movimento"] .nav-badge::before {
-  animation: none !important;
   transition: none !important;
 }
 .app-shell { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; position: relative; }
