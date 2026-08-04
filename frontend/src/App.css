@@ -292,6 +292,7 @@
 .profile-hero h1 { margin: 0 0 5px; font-size: clamp(32px, 6vw, 52px); }
 .profile-hero p { color: var(--muted); max-width: 440px; }
 .profile-avatar-wrap { position: relative; }
+.profile-avatar-wrap--generating > span { min-height: 22px; display: inline-flex; align-items: center; justify-content: center; padding: 0 8px; color: var(--gold-soft) !important; border: 1px solid rgba(184,153,83,.38); border-radius: 999px; background: rgba(10,13,16,.82); box-shadow: 0 8px 24px rgba(0,0,0,.22); font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
 .profile-avatar { width: 140px; height: 140px; overflow: hidden; display: grid; place-items: center; color: var(--gold-soft); border: 1px solid var(--gold); border-radius: 50%; background: rgba(44,48,46,.78); position: relative; }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: center center; }
 .portrait-badge { position: absolute; right: 2px; bottom: 4px; display: grid; place-items: center; width: 24px; height: 24px; color: var(--ink); border: 2px solid var(--petrol); border-radius: 50%; background: var(--olive-light); }

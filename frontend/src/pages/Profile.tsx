@@ -298,13 +298,18 @@ const Profile: React.FC = () => {
       setEditing(false);
       await refresh();
       const genStatus = (response as any).portraitStatus;
-      if (hasPhoto && genStatus === 'READY') setStatus('Perfil salvo! Retrato gerado com sucesso.');
+      if (hasPhoto && genStatus === 'READY' && response.data?.hasGeneratedPortrait) setStatus('Perfil salvo! Retrato gerado com sucesso.');
       else if (hasPhoto && genStatus === 'GENERATING') {
         setStatus('Perfil salvo. O retrato será atualizado em instantes.');
         keepPortraitLoading = true;
         schedulePortraitRefresh(profile.id);
       }
       else if (hasPhoto && genStatus === 'UNAVAILABLE') setStatus('Perfil salvo, mas o retrato não pôde ser gerado no momento.');
+      else if (hasPhoto) {
+        setStatus('Perfil salvo. Gerando retrato a partir da nova foto.');
+        keepPortraitLoading = true;
+        schedulePortraitRefresh(profile.id);
+      }
       else setStatus('Perfil salvo com sucesso!');
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Não foi possível atualizar o perfil.');
@@ -345,14 +350,18 @@ const Profile: React.FC = () => {
         setPreview('');
         await refresh();
         const genStatus = (response as any).portraitStatus;
-        if (genStatus === 'READY') setStatus('Retrato gerado com sucesso!');
+        if (genStatus === 'READY' && response.data?.hasGeneratedPortrait) setStatus('Retrato gerado com sucesso!');
         else if (genStatus === 'GENERATING') {
           setStatus('Sua selfie foi enviada. O retrato aparecerá em instantes.');
           keepPortraitLoading = true;
           schedulePortraitRefresh(profile.id);
         }
         else if (genStatus === 'UNAVAILABLE') setStatus('Não foi possível gerar o retrato no momento.');
-        else setStatus('Perfil salvo com sucesso!');
+        else {
+          setStatus('Sua selfie foi enviada. Gerando retrato a partir da nova foto.');
+          keepPortraitLoading = true;
+          schedulePortraitRefresh(profile.id);
+        }
       } catch (error) {
         setStatus(error instanceof Error ? error.message : 'Erro ao gerar retrato.');
       } finally {
@@ -535,7 +544,7 @@ const Profile: React.FC = () => {
   return (
     <div className="profile-page profile-editor-page" style={{ minHeight: '100vh', backgroundColor: '#0F1417', color: '#F8F9FA', padding: '24px 24px 96px 24px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div className="profile-hero">
-        <div className="profile-avatar-wrap" style={{ position: 'relative' }}>
+        <div className={`profile-avatar-wrap${generatingPortrait ? ' profile-avatar-wrap--generating' : ''}`} style={{ position: 'relative' }}>
           <div
             className={`profile-avatar${generatingPortrait ? ' profile-avatar--generating' : ''}`}
             style={{ cursor: 'pointer' }}
@@ -555,7 +564,7 @@ const Profile: React.FC = () => {
           {profile?.hasGeneratedPortrait && <span className="portrait-badge" title="Retrato gerado pela IA"><Check size={12} /></span>}
           {profile?.portraitGenerationsRemaining !== undefined && (
             <span style={{ position: 'absolute', bottom: -16, left: '50%', transform: 'translateX(-50%)', fontSize: 10, color: 'var(--muted)', whiteSpace: 'nowrap' }}>
-              {profile.portraitGenerationsRemaining}/3 gerações
+              {generatingPortrait ? (portraitLoadingMessage || 'Gerando retrato') : `${profile.portraitGenerationsRemaining}/3 gerações`}
             </span>
           )}
         </div>
