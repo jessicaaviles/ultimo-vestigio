@@ -15,6 +15,12 @@ const prisma = new PrismaClient();
 const SALT_LENGTH = 16;
 const KEY_LENGTH = 64;
 
+const isKnownGoogleAuthError = (error: unknown) => {
+  if (!(error instanceof Error)) return false;
+  const message = error.message.toLowerCase();
+  return message.includes('wrong recipient') || message.includes('invalid token') || message.includes('token used too late') || message.includes('jwt');
+};
+
 function hashPassword(password: string): string {
   const salt = crypto.randomBytes(SALT_LENGTH).toString('hex');
   const hash = crypto.scryptSync(password, salt, KEY_LENGTH).toString('hex');
@@ -27,29 +33,54 @@ function verifyPassword(password: string, stored: string): boolean {
   return hash === key;
 }
 
+function createAuthToken() {
+  const authToken = crypto.randomUUID();
+  const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
+  return { authToken, authTokenHash };
+}
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, displayName } = req.body;
     if (!email || !password) return res.status(400).json({ success: false, error: 'Email e senha são obrigatórios.' });
     if (String(password).length < 6) return res.status(400).json({ success: false, error: 'A senha deve ter pelo menos 6 caracteres.' });
 
-    const existing = await prisma.anonymous_users.findUnique({ where: { email: String(email).toLowerCase().trim() } });
-    if (existing) return res.status(409).json({ success: false, error: 'Este email já está cadastrado.' });
+    const normalizedEmail = String(email).toLowerCase().trim();
+    const existing = await prisma.anonymous_users.findUnique({ where: { email: normalizedEmail } });
+    if (existing && !existing.deleted_at) return res.status(409).json({ success: false, error: 'Este email já está cadastrado.' });
 
     const deviceToken = crypto.randomUUID();
     const deviceTokenHash = crypto.createHash('sha256').update(deviceToken).digest('hex');
-    const authToken = crypto.randomUUID();
-    const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
+    const { authToken, authTokenHash } = createAuthToken();
 
-    const user = await prisma.anonymous_users.create({
-      data: {
-        device_token_hash: deviceTokenHash,
-        email: String(email).toLowerCase().trim(),
-        password_hash: hashPassword(String(password)),
-        auth_token_hash: authTokenHash,
-        default_display_name: displayName || 'Investigador',
-      }
-    });
+    const user = existing
+      ? await prisma.anonymous_users.update({
+          where: { id: existing.id },
+          data: {
+            device_token_hash: deviceTokenHash,
+            email: normalizedEmail,
+            password_hash: hashPassword(String(password)),
+            auth_token_hash: authTokenHash,
+            default_display_name: displayName || existing.default_display_name || 'Investigador',
+            profile_active: true,
+            profile_photo_data: null,
+            generated_profile_photo_data: null,
+            portrait_generations: 0,
+            profile_photo_updated_at: null,
+            onboarding_completed: false,
+            deleted_at: null,
+            last_active_at: new Date(),
+          }
+        })
+      : await prisma.anonymous_users.create({
+          data: {
+            device_token_hash: deviceTokenHash,
+            email: normalizedEmail,
+            password_hash: hashPassword(String(password)),
+            auth_token_hash: authTokenHash,
+            default_display_name: displayName || 'Investigador',
+          }
+        });
 
     res.json({
       success: true,
@@ -75,8 +106,7 @@ export const login = async (req: Request, res: Response) => {
     if (!user || user.deleted_at || !user.password_hash) return res.status(401).json({ success: false, error: 'Email ou senha inválidos.' });
     if (!verifyPassword(String(password), user.password_hash)) return res.status(401).json({ success: false, error: 'Email ou senha inválidos.' });
 
-    const authToken = crypto.randomUUID();
-    const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
+    const { authToken, authTokenHash } = createAuthToken();
     await prisma.anonymous_users.update({ where: { id: user.id }, data: { auth_token_hash: authTokenHash, last_active_at: new Date() } });
 
     res.json({
@@ -105,8 +135,7 @@ export const linkProfile = async (req: Request, res: Response) => {
     const user = await prisma.anonymous_users.findUnique({ where: { id: String(anonymousUserId) } });
     if (!user) return res.status(404).json({ success: false, error: 'Perfil não encontrado.' });
 
-    const authToken = crypto.randomUUID();
-    const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
+    const { authToken, authTokenHash } = createAuthToken();
 
     await prisma.anonymous_users.update({
       where: { id: user.id },
@@ -177,10 +206,9 @@ export const googleLogin = async (req: Request, res: Response) => {
 
     const email = payload.email.toLowerCase().trim();
     let user = await prisma.anonymous_users.findUnique({ where: { email } });
+    const { authToken, authTokenHash } = createAuthToken();
 
     if (user && !user.deleted_at) {
-      const authToken = crypto.randomUUID();
-      const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
       await prisma.anonymous_users.update({
         where: { id: user.id },
         data: { auth_token_hash: authTokenHash, last_active_at: new Date() },
@@ -190,9 +218,30 @@ export const googleLogin = async (req: Request, res: Response) => {
       });
     }
 
+    if (user && user.deleted_at) {
+      user = await prisma.anonymous_users.update({
+        where: { id: user.id },
+        data: {
+          email,
+          auth_token_hash: authTokenHash,
+          default_display_name: displayName || payload.name || user.default_display_name || 'Investigador',
+          deleted_at: null,
+          profile_active: true,
+          password_hash: null,
+          generated_profile_photo_data: null,
+          portrait_generations: 0,
+          profile_photo_updated_at: null,
+          onboarding_completed: false,
+          last_active_at: new Date(),
+        },
+      });
+
+      return res.json({
+        success: true, data: { userId: user.id, authToken, displayName: user.default_display_name, email: user.email },
+      });
+    }
+
     const deviceToken = crypto.randomUUID();
-    const authToken = crypto.randomUUID();
-    const authTokenHash = crypto.createHash('sha256').update(authToken).digest('hex');
     const deviceTokenHash = crypto.createHash('sha256').update(deviceToken).digest('hex');
 
     user = await prisma.anonymous_users.create({
@@ -209,7 +258,14 @@ export const googleLogin = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Google login error:', error);
-    res.status(401).json({ success: false, error: 'Falha na autenticação com Google.' });
+    if (isKnownGoogleAuthError(error)) {
+      return res.status(401).json({
+        success: false,
+        error: 'Falha ao validar o token do Google. Verifique se o Client ID web do frontend é o mesmo aceito pelo backend.',
+      });
+    }
+
+    res.status(500).json({ success: false, error: 'Erro interno ao autenticar com Google.' });
   }
 };
 
