@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import type { LoginTicket, TokenPayload } from 'google-auth-library';
 import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 
@@ -14,12 +15,6 @@ const prisma = new PrismaClient();
 
 const SALT_LENGTH = 16;
 const KEY_LENGTH = 64;
-
-const isKnownGoogleAuthError = (error: unknown) => {
-  if (!(error instanceof Error)) return false;
-  const message = error.message.toLowerCase();
-  return message.includes('wrong recipient') || message.includes('invalid token') || message.includes('token used too late') || message.includes('jwt');
-};
 
 function hashPassword(password: string): string {
   const salt = crypto.randomBytes(SALT_LENGTH).toString('hex');
@@ -197,12 +192,23 @@ export const googleLogin = async (req: Request, res: Response) => {
       });
     }
 
-    const ticket = await googleClient.verifyIdToken({
-      idToken: String(credential),
-      audience: googleClientIds,
-    });
-    const payload = ticket.getPayload();
+    let ticket: LoginTicket;
+    try {
+      ticket = await googleClient.verifyIdToken({
+        idToken: String(credential),
+        audience: googleClientIds,
+      });
+    } catch (verifyError) {
+      console.error('Google token verification error:', verifyError);
+      return res.status(401).json({
+        success: false,
+        error: 'Falha ao validar o token do Google. Confirme se o Client ID web usado no Vercel é o mesmo aceito no Render.',
+      });
+    }
+
+    const payload = ticket.getPayload() as TokenPayload | undefined;
     if (!payload || !payload.email) return res.status(401).json({ success: false, error: 'Token do Google inválido.' });
+    if (payload.email_verified === false) return res.status(401).json({ success: false, error: 'O Google não confirmou este email.' });
 
     const email = payload.email.toLowerCase().trim();
     let user = await prisma.anonymous_users.findUnique({ where: { email } });
@@ -258,13 +264,6 @@ export const googleLogin = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Google login error:', error);
-    if (isKnownGoogleAuthError(error)) {
-      return res.status(401).json({
-        success: false,
-        error: 'Falha ao validar o token do Google. Verifique se o Client ID web do frontend é o mesmo aceito pelo backend.',
-      });
-    }
-
     res.status(500).json({ success: false, error: 'Erro interno ao autenticar com Google.' });
   }
 };
