@@ -142,8 +142,7 @@ const Friends: React.FC = () => {
           await loadNetwork();
           return;
         }
-        await navigator.clipboard?.writeText(`${inviteLink}&to=${encodeURIComponent(value)}`).catch(() => {});
-        setStatus(response.error || 'Jogador não encontrado. Link de convite copiado.');
+        setStatus(response.error || 'Não foi possível adicionar esse amigo. Confira o nome, @usuário ou e-mail.');
       })
       .catch(() => setStatus('Não foi possível adicionar agora. Tente novamente.'))
       .finally(() => setLoading(false));

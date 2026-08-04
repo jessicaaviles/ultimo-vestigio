@@ -127,10 +127,10 @@ export const addFriend = async (req: Request, res: Response) => {
     const lookup = normalizeLookup(req.body.lookup);
     const lookupHandle = normalizeHandle(lookup);
     const autoAccept = req.body.autoAccept === true;
-    if (!userId || !lookup) return res.status(400).json({ success: false, error: 'User and friend lookup are required' });
+    if (!userId || !lookup) return res.status(400).json({ success: false, error: 'Informe o amigo que deseja adicionar.' });
 
     const requester = await prisma.anonymous_users.findUnique({ where: { id: userId } });
-    if (!requester || requester.deleted_at) return res.status(404).json({ success: false, error: 'User not found' });
+    if (!requester || requester.deleted_at) return res.status(404).json({ success: false, error: 'Sua conta não foi encontrada.' });
 
     const addressee = await prisma.anonymous_users.findFirst({
       where: {
@@ -149,7 +149,7 @@ export const addFriend = async (req: Request, res: Response) => {
       return res.status(404).json({ success: false, error: 'Nenhum jogador encontrado com esse e-mail, ID ou nome.' });
     }
     if (addressee.id === userId) {
-      return res.status(400).json({ success: false, error: 'Você não pode adicionar a si mesma.' });
+      return res.status(400).json({ success: false, error: 'Você não pode adicionar sua própria conta.' });
     }
 
     const outgoing = await prisma.anonymous_user_friendships.findUnique({
@@ -213,7 +213,7 @@ export const addFriend = async (req: Request, res: Response) => {
     res.json({ success: true, data: { invitation: publicInvitation } });
   } catch (error) {
     console.error('Error adding friend:', error);
-    res.status(500).json({ success: false, error: 'Could not add friend' });
+    res.status(500).json({ success: false, error: 'Não foi possível adicionar esse amigo agora.' });
   }
 };
 
