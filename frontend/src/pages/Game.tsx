@@ -5,7 +5,7 @@ import { useSocket } from '../contexts/useSocket';
 import { useSettings } from '../contexts/SettingsContext';
 import Loading from '../components/Loading';
 import FinalTheoryForm, { getSuspectPortrait } from '../components/FinalTheoryForm';
-import { clearAllProgressReset } from '../utils/progressReset';
+import { clearAllProgressReset, readSolvedCases } from '../utils/progressReset';
 
 import { speakMasterResponse } from '../services/voice';
 
@@ -456,7 +456,7 @@ const Game: React.FC = () => {
       const slug = roomData?.case_version?.case_ref?.slug;
       if (slug) {
         clearAllProgressReset(userId);
-        const solved = JSON.parse(localStorage.getItem('solvedCases') || '[]');
+        const solved = readSolvedCases();
         if (!solved.includes(slug)) {
           localStorage.setItem('solvedCases', JSON.stringify([...solved, slug]));
         }

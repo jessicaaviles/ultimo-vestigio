@@ -4,15 +4,18 @@ import { addFriend, authRegister, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
 import { Capacitor } from '@capacitor/core';
+import { Eye, EyeOff } from 'lucide-react';
 import { initializeWebGoogleButton, signInWithGoogle } from '../services/googleAuth';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const googleAuthInFlightRef = useRef(false);
   const displayNameRef = useRef(displayName);
   displayNameRef.current = displayName;
 
@@ -52,7 +55,8 @@ const Register: React.FC = () => {
   }, [connectInviter, navigate, refresh, returnUrl]);
 
   const handleGoogleClick = useCallback(async () => {
-    if (loading) return;
+    if (loading || googleAuthInFlightRef.current) return;
+    googleAuthInFlightRef.current = true;
     setLoading(true);
     setError('');
     try {
@@ -61,6 +65,8 @@ const Register: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao autenticar com Google.');
       setLoading(false);
+    } finally {
+      googleAuthInFlightRef.current = false;
     }
   }, [handleGoogleCredential, loading]);
 
@@ -159,7 +165,18 @@ const Register: React.FC = () => {
           </label>
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Senha
-            <input className="input-field" type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+            <div className="password-field">
+              <input className="input-field" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </label>
           {error && <p role="alert" style={{ color: '#d79b8e', fontSize: 13 }}>{error}</p>}
           <button className="btn-primary" type="submit" disabled={loading} style={{ marginTop: 8 }}>

@@ -108,7 +108,7 @@ const MapOverview: React.FC = () => {
               <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
                 <div style={{ width: `${progressPercent}%`, height: '100%', background: '#C5A880' }} />
               </div>
-              <span style={{ fontSize: '7px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Pistas</span>
+              <span style={{ fontSize: '8px', color: 'var(--eyebrow-gold)', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center' }}>Pistas</span>
             </div>
 
           </div>

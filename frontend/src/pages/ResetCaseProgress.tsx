@@ -3,7 +3,7 @@ import { RotateCcw } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { resetCaseProgress } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { markAllProgressReset } from '../utils/progressReset';
+import { markAllProgressReset, readSolvedCases } from '../utils/progressReset';
 
 const clearLocalCaseState = (caseSlug: string, userId: string) => {
   localStorage.removeItem('currentRoomId');
@@ -12,7 +12,7 @@ const clearLocalCaseState = (caseSlug: string, userId: string) => {
   if (caseSlug.toLowerCase() === 'all') {
     markAllProgressReset(userId);
   } else {
-    const solvedCases = JSON.parse(localStorage.getItem('solvedCases') || '[]');
+    const solvedCases = readSolvedCases();
     if (Array.isArray(solvedCases)) {
       localStorage.setItem('solvedCases', JSON.stringify(solvedCases.filter((slug) => slug !== caseSlug)));
     }

@@ -14,12 +14,21 @@ import { ensureAuthSchema } from './db/authSchema';
 dotenv.config();
 
 const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : undefined;
+const corsOrigins = [
+  frontendUrl,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'capacitor://localhost',
+  'http://localhost',
+  'http://127.0.0.1',
+  'ionic://localhost',
+].filter((origin): origin is string => Boolean(origin));
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: frontendUrl ? [frontendUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'] : '*',
+    origin: corsOrigins.length > 0 ? corsOrigins : '*',
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -142,7 +151,7 @@ const recordRoomEvent = async (room_id: string, event_type: string, payload: obj
 };
 
 app.use(cors({
-  origin: frontendUrl ? [frontendUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'] : '*',
+  origin: corsOrigins.length > 0 ? corsOrigins : '*',
   credentials: true
 }));
 app.use(express.json({ limit: '7mb' }));

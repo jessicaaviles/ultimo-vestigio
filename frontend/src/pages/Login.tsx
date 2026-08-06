@@ -4,6 +4,7 @@ import { addFriend, authLogin, authGoogle } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import Loading from '../components/Loading';
 import { Capacitor } from '@capacitor/core';
+import { Eye, EyeOff } from 'lucide-react';
 import { initializeWebGoogleButton, signInWithGoogle } from '../services/googleAuth';
 
 const Login: React.FC = () => {
@@ -14,9 +15,11 @@ const Login: React.FC = () => {
   const { refresh } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const googleAuthInFlightRef = useRef(false);
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const googleConfigured = Boolean(googleClientId);
   const isWebPlatform = Capacitor.getPlatform() === 'web';
@@ -48,7 +51,8 @@ const Login: React.FC = () => {
   }, [connectInviter, navigate, refresh, returnUrl]);
 
   const handleGoogleClick = useCallback(async () => {
-    if (loading) return;
+    if (loading || googleAuthInFlightRef.current) return;
+    googleAuthInFlightRef.current = true;
     setLoading(true);
     setError('');
     try {
@@ -57,6 +61,8 @@ const Login: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao autenticar com Google.');
       setLoading(false);
+    } finally {
+      googleAuthInFlightRef.current = false;
     }
   }, [handleGoogleCredential, loading]);
 
@@ -147,7 +153,18 @@ const Login: React.FC = () => {
           </label>
           <label style={{ color: 'var(--eyebrow-gold)', fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase' }}>
             Senha
-            <input className="input-field" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+            <div className="password-field">
+              <input className="input-field" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </label>
           {error && <p role="alert" style={{ color: '#d79b8e', fontSize: 13 }}>{error}</p>}
           <button className="btn-primary" type="submit" disabled={loading} style={{ marginTop: 8 }}>

@@ -4,7 +4,7 @@ import { listCases } from '../services/api';
 import { Clock3, Flame, UsersRound } from 'lucide-react';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
-import { clearAllProgressReset, hasAllProgressReset } from '../utils/progressReset';
+import { clearAllProgressReset, hasAllProgressReset, readSolvedCases } from '../utils/progressReset';
 import { getCaseCoverImage } from '../utils/caseAssets';
 
 interface CaseItem {
@@ -44,7 +44,7 @@ const Cases: React.FC = () => {
   const { user } = useAuth();
 
   React.useEffect(() => {
-    const localSolved = JSON.parse(localStorage.getItem('solvedCases') || '[]');
+    const localSolved = readSolvedCases();
     const userId = user?.userId || localStorage.getItem('userId');
     const requestedCaseSlug = new URLSearchParams(location.search).get('case');
     

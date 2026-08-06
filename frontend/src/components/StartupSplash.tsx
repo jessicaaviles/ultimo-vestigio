@@ -67,11 +67,6 @@ const StartupSplash: React.FC = () => {
           />
         </div>
 
-        <div className="startup-splash__title-block">
-          <span className="startup-splash__eyebrow">Investigação em andamento</span>
-          <p className="startup-splash__subtitle">Carregando o arquivo do caso</p>
-        </div>
-
         <div className="startup-splash__pulse" aria-hidden="true">
           <span />
           <span />

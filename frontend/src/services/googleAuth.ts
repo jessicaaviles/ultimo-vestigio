@@ -14,6 +14,8 @@ type SocialLoginModule = typeof import('@capgo/capacitor-social-login');
 const GOOGLE_SCRIPT_ID = 'google-gis-script';
 const isWebPlatform = () => Capacitor.getPlatform() === 'web';
 let googleIdentityScriptPromise: Promise<void> | null = null;
+let nativeGoogleInitializePromise: Promise<void> | null = null;
+let nativeGoogleClientId: string | null = null;
 
 const googleIdentityIsReady = () => Boolean(window.google?.accounts?.id);
 
@@ -92,24 +94,39 @@ const loadNativeSocialLogin = async () => {
   return (imported as SocialLoginModule).SocialLogin;
 };
 
+const initializeNativeGoogle = async (clientId: string) => {
+  const SocialLogin = await loadNativeSocialLogin();
+
+  if (!nativeGoogleInitializePromise || nativeGoogleClientId !== clientId) {
+    nativeGoogleClientId = clientId;
+    nativeGoogleInitializePromise = SocialLogin.initialize({
+      google: {
+        webClientId: clientId,
+        mode: 'online',
+      },
+    });
+  }
+
+  await nativeGoogleInitializePromise;
+  return SocialLogin;
+};
+
 export const signInWithGoogle = async (clientId?: string) => {
   if (isWebPlatform()) {
     throw new Error('Use initializeWebGoogleButton no navegador.');
   }
+  if (!clientId) {
+    throw new Error('Google Client ID não configurado para o app.');
+  }
 
-  const SocialLogin = await loadNativeSocialLogin();
-
-  await SocialLogin.initialize({
-    google: {
-      webClientId: clientId,
-      mode: 'online',
-    },
-  });
+  const SocialLogin = await initializeNativeGoogle(clientId);
 
   const result = await SocialLogin.login({
     provider: 'google',
     options: {
-      scopes: ['email', 'profile'],
+      style: 'standard',
+      filterByAuthorizedAccounts: false,
+      autoSelectEnabled: false,
     },
   }) as LoginResult;
 

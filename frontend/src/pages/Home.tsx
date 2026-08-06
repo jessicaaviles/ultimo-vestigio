@@ -6,7 +6,7 @@ import {
 import { registerAnonymousUser, listCases, getProfile } from '../services/api';
 import Loading from '../components/Loading';
 import { useAuth } from '../contexts/AuthContext';
-import { clearAllProgressReset, emptyProgressStats, hasAllProgressReset } from '../utils/progressReset';
+import { clearAllProgressReset, emptyProgressStats, hasAllProgressReset, readSolvedCases } from '../utils/progressReset';
 import { caseCoverImages, getCaseCoverImage } from '../utils/caseAssets';
 
 interface FeaturedCase {
@@ -123,7 +123,7 @@ const Home: React.FC = () => {
       if (!res.success || !Array.isArray(res.data)) throw new Error('Invalid cases response');
 
       const apiSolved = Array.isArray(res.solvedSlugs) ? res.solvedSlugs : [];
-      const localSolved = JSON.parse(localStorage.getItem('solvedCases') || '[]');
+      const localSolved = readSolvedCases();
       if (apiSolved.length > 0) clearAllProgressReset(userId);
       const resetAllProgress = hasAllProgressReset(userId) && apiSolved.length === 0 && localSolved.length === 0;
       const solvedSlugs = resetAllProgress ? [] : Array.from(new Set([...localSolved, ...apiSolved]));

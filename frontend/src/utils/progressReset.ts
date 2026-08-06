@@ -12,6 +12,17 @@ export const emptyProgressStats: ProgressStats = {
   correctTheoriesCount: 0,
 };
 
+export const readSolvedCases = (): string[] => {
+  try {
+    const raw = localStorage.getItem('solvedCases');
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((slug): slug is string => typeof slug === 'string') : [];
+  } catch {
+    return [];
+  }
+};
+
 export const markAllProgressReset = (userId: string) => {
   localStorage.setItem('progressResetUserId', userId);
   localStorage.setItem('progressResetAllAt', String(Date.now()));

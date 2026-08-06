@@ -875,29 +875,6 @@
   transform-origin: center;
 }
 
-.startup-splash__title-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.startup-splash__eyebrow {
-  color: var(--eyebrow-gold);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.32em;
-}
-
-.startup-splash__subtitle {
-  margin: 0;
-  font-family: var(--font-serif);
-  font-size: clamp(18px, 4vw, 24px);
-  line-height: 1.2;
-  color: var(--text);
-  opacity: 0.92;
-}
-
 .startup-splash__pulse {
   display: flex;
   align-items: center;
