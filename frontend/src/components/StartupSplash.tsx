@@ -29,14 +29,7 @@ const StartupSplash: React.FC = () => {
   };
 
   useEffect(() => {
-    const onHomeReady = () => {
-      if (!isHomeRoute) return;
-      const elapsed = window.performance.now() - mountedAtRef.current;
-      scheduleExit(Math.max(0, STARTUP_SPLASH_MIN_VISIBLE_MS - elapsed));
-    };
-
-    const onAppReady = () => {
-      if (isHomeRoute) return;
+    const finishSplash = () => {
       const elapsed = window.performance.now() - mountedAtRef.current;
       scheduleExit(Math.max(0, STARTUP_SPLASH_MIN_VISIBLE_MS - elapsed));
     };
@@ -45,15 +38,17 @@ const StartupSplash: React.FC = () => {
       scheduleExit(0);
     }, STARTUP_SPLASH_MAX_VISIBLE_MS);
 
-    window.addEventListener('ultimo-vestigio:home-ready', onHomeReady as EventListener);
-    window.addEventListener('ultimo-vestigio:app-ready', onAppReady as EventListener);
+    window.addEventListener(
+      isHomeRoute ? 'ultimo-vestigio:home-ready' : 'ultimo-vestigio:app-ready',
+      finishSplash as EventListener,
+    );
     scheduleExit(STARTUP_SPLASH_MIN_VISIBLE_MS);
 
     return () => {
       clearTimers();
       window.clearTimeout(hardTimeout);
-      window.removeEventListener('ultimo-vestigio:home-ready', onHomeReady as EventListener);
-      window.removeEventListener('ultimo-vestigio:app-ready', onAppReady as EventListener);
+      window.removeEventListener('ultimo-vestigio:home-ready', finishSplash as EventListener);
+      window.removeEventListener('ultimo-vestigio:app-ready', finishSplash as EventListener);
     };
   }, [isHomeRoute]);
 
@@ -62,10 +57,6 @@ const StartupSplash: React.FC = () => {
   return (
     <div className={`startup-splash${exiting ? ' is-exiting' : ''}`} aria-label="Carregando Último Vestígio">
       <div className="startup-splash__backdrop" />
-      <div className="startup-splash__fingerprint startup-splash__fingerprint--one" />
-      <div className="startup-splash__fingerprint startup-splash__fingerprint--two" />
-      <div className="startup-splash__fingerprint startup-splash__fingerprint--three" />
-
       <div className="startup-splash__content">
         <div className="startup-splash__logo-wrap">
           <img
